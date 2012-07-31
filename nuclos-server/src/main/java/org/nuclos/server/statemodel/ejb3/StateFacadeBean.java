@@ -76,6 +76,8 @@ import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeLocal;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
@@ -130,7 +132,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 	private final static String STATE_TABLE = "t_md_state";
 
-	//
+	private LocaleFacadeLocal localeFacade;
 	
 	private SessionUtils utils;
 	
@@ -139,8 +141,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	private GenericObjectFacadeLocal genericObjectFacade;
 	
 	private MasterDataFacadeLocal masterDataFacade;
-	
-	private LocaleFacadeLocal localeFacade;
 	
 	private ValidationSupport validationSupport;
 	
@@ -270,7 +270,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			StateModelVO dbStateModel = findStateModelById(statemodelvo.getId());
 			result = dbStateModel.getId();
 
-			checkForStaleVersion(dbStateModel, statemodelvo);
+		 	checkForStaleVersion(dbStateModel, statemodelvo);
 
 			if (statemodelvo.isRemoved()) {
 				// remove state model graph:
@@ -985,9 +985,13 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		List<Integer> dbRuleIds = new ArrayList<Integer>();
 		List<Pair<Integer, Boolean>> clientRules = vo.getRuleIdsWithRunAfterwards();
+		List<Pair<String, Boolean>> clientRulesByClasses = vo.getEventSupportWithRunAfterwards();
+		
 		int order = 1;
 
 		final String ruleTransition = NuclosEntity.RULETRANSITION.getEntityName();
+		final String eventSupportTransition = NuclosEntity.EVENTSUPPORTTRANSITION.getEntityName();
+		
 		for (Iterator<RuleEngineTransitionVO> iter = dbRules.iterator(); iter.hasNext();) {
 			RuleEngineTransitionVO retVO = iter.next();
 			dbRuleIds.add(retVO.getRuleId());
@@ -1004,6 +1008,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		//add all new rules for transition because or new ordering
 		//clientRuleIds.removeAll(dbRuleIds);
 
+		// Rules
 		for (Pair<Integer, Boolean> rule : clientRules) {
 			RuleEngineTransitionVO ruleTransitionVO = new RuleEngineTransitionVO(new NuclosValueObject(),vo.getId(),rule.x,order++,rule.y);
 			dependants.addData(ruleTransition,
@@ -1011,6 +1016,14 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 						MasterDataWrapper.wrapRuleEngineTransitionVO(ruleTransitionVO)));
 		}
 
+		// Eventsupports
+		for (Pair<String, Boolean> rule : clientRulesByClasses) {
+			EventSupportTransitionVO ruleTransitionVO = new EventSupportTransitionVO(new NuclosValueObject(), rule.x, vo.getId(), order++,rule.y);
+			dependants.addData(eventSupportTransition,
+				DalSupportForMD.getEntityObjectVO(eventSupportTransition, 
+						MasterDataWrapper.wrapEventSupportTransitionVO(ruleTransitionVO)));
+		}
+	
 		// --- create RoleTransitions ---
 		Collection<RoleTransitionVO> dbRoles;
 		try {
@@ -1362,7 +1375,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		try {
 			RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
-
+			EventSupportFacadeLocal evtSupFacade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
+			
 			final StateVO targetState = iTargetStateId==null? null: stateCache.getState(iTargetStateId);
 			final Integer iTargetStateNum = targetState==null? null: targetState.getNumeral();
 			final String sTargetStateName = targetState==null? null: targetState.getStatename();
@@ -1379,7 +1393,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			loccvoBefore.setSourceStateName(sSourceStateName);
 
 			RuleObjectContainerCVO loccvoAfter = facade.fireRule(iSourceStateId, iTargetStateId, loccvoBefore, false);
-
+			evtSupFacade.fireEventSupports(iSourceStateId, iTargetStateId, loccvoBefore, false);
+			
 			// check mandatory fields and subform columns
 			EntityObjectVO validation = DalSupportForGO.wrapGenericObjectVO(loccvoAfter.getGenericObject());
 			validation.getFieldIds().put(NuclosEOField.STATE.getName(), IdUtils.toLongId(iTargetStateId));

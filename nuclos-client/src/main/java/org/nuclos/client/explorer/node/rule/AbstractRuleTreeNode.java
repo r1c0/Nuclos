@@ -169,8 +169,8 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	 */
 	public void setSubNodes(List<? extends TreeNode> lstSubNodes) {
 		this.lstSubNodes = lstSubNodes;
-	}
-
+	} 
+ 
 	@Override
 	public boolean implementsNewRefreshMethod() {
 		return false;

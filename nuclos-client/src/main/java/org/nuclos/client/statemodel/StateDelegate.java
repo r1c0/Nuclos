@@ -62,6 +62,7 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+
 public class StateDelegate {
 	
 	private static StateDelegate INSTANCE;
@@ -150,6 +151,21 @@ public class StateDelegate {
 		}
 	}
 
+	/**
+	 * @param targetStateId
+	 * @return
+	 */
+	public StateTransitionVO getStateTransitionByNullAndTargetState(Integer targetStateId)
+	{
+		return stateFacadeRemote.findStateTransitionByNullAndTargetState(targetStateId);		
+	}
+	
+	
+	public StateTransitionVO getStateTransitionBySourceAndTargetState(Integer sourceStateId, Integer targetStateId)
+	{
+		return stateFacadeRemote.findStateTransitionBySourceAndTargetState(sourceStateId, targetStateId);
+	}
+	
 	/**
 	 * @param iGenericObjectId
 	 * @param iNewStateId

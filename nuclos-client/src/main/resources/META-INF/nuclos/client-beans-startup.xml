@@ -553,7 +553,14 @@
 		<property name="serviceInterface"
 			value="org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeRemote" />
 	</bean>
-
+	
+	<bean id="eventSupportService" parent="httpInvokerProxyFactoryBean">
+		<qualifier value="eventSupportService" />
+		<property name="serviceUrl" value="${url.remoting}/EventSupportService" />
+		<property name="serviceInterface"
+			value="org.nuclos.server.eventsupport.ejb3.EventSupportFacadeRemote" />
+	</bean>
+	
 	<bean id="timelimitRuleService" parent="httpInvokerProxyFactoryBean">
 		<qualifier value="timelimitRuleService" />
 		<property name="serviceUrl" value="${url.remoting}/TimelimitRuleService" />

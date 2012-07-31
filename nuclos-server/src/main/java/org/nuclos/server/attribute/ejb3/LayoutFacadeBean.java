@@ -296,6 +296,7 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 				case STATETRANSITION:
 					result.put(new EntityAndFieldName(NuclosEntity.ROLETRANSITION, "transition"), null);
 					result.put(new EntityAndFieldName(NuclosEntity.RULETRANSITION, "transition"), null);
+					result.put(new EntityAndFieldName(NuclosEntity.EVENTSUPPORTTRANSITION, "transition"), null);
 					break;
 				case CHART:
 					result.put(new EntityAndFieldName(NuclosEntity.CHARTUSAGE, "chart"), null);

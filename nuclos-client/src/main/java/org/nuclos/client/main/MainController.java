@@ -103,6 +103,7 @@ import org.nuclos.client.customcomp.CustomComponentCache;
 import org.nuclos.client.customcomp.CustomComponentController;
 import org.nuclos.client.customcomp.resplan.ResPlanAction;
 import org.nuclos.client.customcomp.wizard.CustomComponentWizard;
+import org.nuclos.client.eventsupport.EventSupportManagementController;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -668,6 +669,17 @@ public class MainController {
 					final MainFrameTabbedPane desktopPane = MainController.this.getHomePane();
 					UIUtils.runCommand(frm, new ShowNuclosWizard.NuclosWizardRoRunnable(desktopPane));
 				}};
+				
+			cmdOpenEventSupportManagement = new AbstractAction(
+					localeDelegate.getMessage("miEventSupportManagement", "EventSupport Management"),
+					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.34-coffee.png"))) {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					final MainFrameTabbedPane desktopPane = MainController.this.getHomePane();
+					UIUtils.runCommand(frm, new EventSupportManagementController.NuclosESMRunnable(desktopPane));
+				}};
+			
 			cmdOpenCustomComponentWizard = new AbstractAction(
 					localeDelegate.getMessage("miResPlanWizard", "Ressourcenplanung"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png"))) {
@@ -851,6 +863,8 @@ public class MainController {
 	private Action cmdOpenManagementConsole;
 
 	private Action cmdOpenEntityWizard;
+	
+	private Action cmdOpenEventSupportManagement;
 
 	private Action cmdOpenCustomComponentWizard;
 
@@ -1498,6 +1512,11 @@ public class MainController {
 			addGenericCommandAction(genericActions, "EntityWizard", cmdOpenEntityWizard, menuPath);
 		}
 
+		if (securityCache.isActionAllowed("EntityWizard")) {
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenEventSupportManagement));
+			addGenericCommandAction(genericActions, "EventSupportManagement", cmdOpenEventSupportManagement, menuPath);
+		}
+	
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.LAYOUT, genericActions);
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.STATEMODEL, genericActions);
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.GENERATION, genericActions);

@@ -242,7 +242,11 @@
 	<bean id="ruleEngineService" class="org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeBean">
 		<property name="customCodeManager" ref="customCodeManager" />
 	</bean>
-
+	
+	<bean id="eventSupportService" class="org.nuclos.server.eventsupport.ejb3.EventSupportFacadeBean">
+		<property name="customCodeManager" ref="customCodeManager" />
+	</bean>
+	
 	<bean id="ruleInterfaceService" class="org.nuclos.server.ruleengine.ejb3.RuleInterfaceFacadeBean"/>
 
 	<bean id="timelimitRuleService" class="org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeBean">
@@ -300,7 +304,9 @@
 	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" depends-on="appContext"/>
 
 	<bean id="ruleCache" class="org.nuclos.server.common.RuleCache" />
-
+	
+	<bean id="EventSupportCache" class="org.nuclos.server.common.EventSupportCache" />
+	
 	<bean id="stateCache" class="org.nuclos.server.common.StateCache" />
 
 	<!-- quartz scheduler instance start -->

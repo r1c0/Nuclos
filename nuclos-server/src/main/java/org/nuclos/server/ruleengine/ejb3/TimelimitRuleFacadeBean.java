@@ -16,6 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.ruleengine.ejb3;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +39,7 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
@@ -143,6 +147,70 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		return sortedByName(list);
 	}
 
+	/**
+	 * get all stores timnelimtrules for a given nuclet
+	 * @return Collection<RuleVO> all TimelimitRule definitions
+	 * @throws CommonFinderException
+	 */
+	public Collection<RuleVO> getTimelimitRulesByNuclet(int nucletId) {
+		List<RuleVO> list = new ArrayList<RuleVO>();
+		CollectableSearchCondition csc = new CollectableSearchCondition() {
+			
+			@Override
+			public boolean isDataFlavorSupported(DataFlavor flavor) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public DataFlavor[] getTransferDataFlavors() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Object getTransferData(DataFlavor flavor)
+					throws UnsupportedFlavorException, IOException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public void setConditionName(String conditionName) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public boolean isSyntacticallyCorrect() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public int getType() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public String getConditionName() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public <O, Ex extends Exception> O accept(Visitor<O, Ex> visitor) throws Ex {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
+		list = CollectionUtils.transform(
+				getMasterDataFacade().getMasterData(NuclosEntity.TIMELIMITRULE.getEntityName(), null, false), new MakeTimelimitRule());
+
+		return sortedByName(list);
+	}
+	
 	/**
 	 * get all active records
 	 * @return Collection<RuleVO> all active TimelimitRule definitions

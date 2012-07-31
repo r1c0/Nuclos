@@ -120,12 +120,21 @@ public class StateTransition extends ArrowConnector implements ImageObserver {
 		transitionvo.getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(ruleId, bRunAfterwards));
 	}
 
+	public void addRule(String classname, Boolean bRunAfterwards) {
+		transitionvo.getEventSupportWithRunAfterwards().add(new Pair<String, Boolean>(classname, bRunAfterwards));
+	}
+	
 	public void removeRule(Integer iRuleId) {
 		transitionvo.removeRule(iRuleId);
 	}
 
+	public void removeEventSupport(String ruleClassname) {
+		transitionvo.removeEventSupport(ruleClassname);
+	}
+	
 	public void removeAllRules() {
 		transitionvo.getRuleIdsWithRunAfterwards().clear();
+		transitionvo.getEventSupportWithRunAfterwards().clear();
 	}
 
 	public java.util.List<Integer> getRules() {
@@ -136,6 +145,7 @@ public class StateTransition extends ArrowConnector implements ImageObserver {
 		return transitionvo.getRuleIdsWithRunAfterwards();
 	}
 	
+	
 	public Pair<Integer, Boolean> getRule(Integer iRuleId) {
 		for (Pair<Integer, Boolean> rule : transitionvo.getRuleIdsWithRunAfterwards()){
 			if (rule.x.equals(iRuleId))
@@ -143,7 +153,24 @@ public class StateTransition extends ArrowConnector implements ImageObserver {
 		}
 		return null;
 	}
-
+	
+	public java.util.List<String> getEventSupports() {
+		return transitionvo.getEventSupports();
+	}
+	
+	public List<Pair<String, Boolean>> getEventSupportsWithRunAfterwards() {
+		return transitionvo.getEventSupportWithRunAfterwards();
+	}
+	
+	
+	public Pair<String, Boolean> getEventSupport(String classname) {
+		for (Pair<String, Boolean> rule : transitionvo.getEventSupportWithRunAfterwards()){
+			if (rule.x.equals(classname))
+				return rule;
+		}
+		return null;
+	}
+	
 	public void addRole(Integer iRoleId) {
 		transitionvo.getRoleIds().add(iRoleId);
 	}

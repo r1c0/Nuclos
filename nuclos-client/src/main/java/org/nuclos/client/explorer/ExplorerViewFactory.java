@@ -17,6 +17,7 @@
 package org.nuclos.client.explorer;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -63,6 +64,9 @@ public class ExplorerViewFactory {
 		final DefaultExplorerView result;
 		if (treenode instanceof NucletTreeNode) {
 			result = new NucletExplorerView((NucletTreeNode) treenode);
+		}
+		else if (treenode instanceof EventSupportTreeNode)	{
+			result = new EventSupportManagementExplorerView(treenode);
 		}
 		else {
 			result = new DefaultExplorerView(treenode);

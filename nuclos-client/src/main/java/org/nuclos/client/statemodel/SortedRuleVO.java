@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel;
 
+import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 /**
@@ -31,10 +32,11 @@ public class SortedRuleVO {
 
 	private Integer iOrder;
 	private Integer iId;
-	private String sName;
-	private String sDescription;
+	private String  sName;
+	private String  sDescription;
 	private boolean bRunAfterwards = false;
-
+	private String  sClassname;
+	
 	public SortedRuleVO(RuleVO vo) {
 		iOrder = new Integer(-1);
 		iId = vo.getId();
@@ -42,6 +44,15 @@ public class SortedRuleVO {
 		sDescription = vo.getDescription();
 	}
 
+	public SortedRuleVO(EventSupportVO vo) {
+		iOrder = new Integer(-1);
+		iId = vo.getId();
+		sName = vo.getName();
+		sDescription = vo.getDescription();
+		sClassname = vo.getClassname();
+	}
+
+	
 	public SortedRuleVO(Integer iId, String name, String description, Integer iOrder, boolean bRunAfterwards) {
 		this.iOrder = iOrder;
 		this.iId = iId;
@@ -56,6 +67,14 @@ public class SortedRuleVO {
 		this.sDescription = stateModelRuleVO.getDescription();
 	}
 
+	public SortedRuleVO(StateModelEventSupportVO stateModelRuleVO) {
+		this.iId = null;
+		this.sName = stateModelRuleVO.getName();
+		this.sDescription = stateModelRuleVO.getDescription();
+		this.sClassname = stateModelRuleVO.getClassname();
+	}
+
+	
 	public Integer getOrder() {
 		return iOrder;
 	}
@@ -94,6 +113,14 @@ public class SortedRuleVO {
 
 	public void setRunAfterwards(boolean bRunAfterwards) {
 		this.bRunAfterwards = bRunAfterwards;
+	}
+
+	public String getClassname() {
+		return sClassname;
+	}
+
+	public void setClassname(String sClassname) {
+		this.sClassname = sClassname;
 	}
 
 	@Override

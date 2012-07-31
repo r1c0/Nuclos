@@ -44,6 +44,8 @@ import org.nuclos.server.common.valueobject.TaskObjectVO;
 import org.nuclos.server.common.valueobject.TaskVO;
 import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 import org.nuclos.server.customcode.valueobject.CodeVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorUsageVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectRelationVO;
@@ -142,6 +144,22 @@ public class MasterDataWrapper {
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
+	public static EventSupportEventVO getEventSupportEventVO(MasterDataVO mdVO) {
+
+		// Mandatory fields that cannot be null
+		String eseSupClass = mdVO.getField("eventsupportclass").toString();
+		String eseEntity = mdVO.getField("entity").toString();
+		Integer eseOrder = Integer.parseInt(mdVO.getField("order").toString());
+		
+		// Fields that can be null
+		Integer eseState = mdVO.getField("state") != null ? Integer.parseInt(mdVO.getField("state").toString()) : null;
+		Integer eseProcess = mdVO.getField("process") != null ? Integer.parseInt(mdVO.getField("process").toString()) : null;
+		
+		EventSupportEventVO esevo = new EventSupportEventVO(eseSupClass,eseEntity,eseProcess,eseState,eseOrder);
+		
+		return esevo;
+	}
+	
 	public static RuleVO getRuleVO(MasterDataVO mdVO) {
 		String name = (String)mdVO.getField("rule");
 		if(name == null && mdVO.getField("name") != null)
@@ -270,13 +288,37 @@ public class MasterDataWrapper {
 	public static MasterDataVO wrapRuleEngineTransitionVO(RuleEngineTransitionVO vo) {
 		Map<String, Object> mpFields = new HashMap<String,Object>();
 		mpFields.put("transitionId", vo.getTransitionId());
+		
 		mpFields.put("ruleId", vo.getRuleId());
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("runafterwards", vo.isRunAfterwards());
-
+	
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
+	public static MasterDataVO wrapEventSupportTransitionVO(EventSupportTransitionVO vo) {
+		Map<String, Object> mpFields = new HashMap<String,Object>();
+		
+		mpFields.put("transitionId", vo.getTransitionId());
+		mpFields.put("eventsupportclass", vo.getEventSupportClass());
+		mpFields.put("order", vo.getOrder());
+		mpFields.put("runafterwards", vo.isRunAfterwards());
+		
+		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+	}
+	
+	public static MasterDataVO wrapEventSupportEventVO(EventSupportEventVO vo) {
+		Map<String, Object> mpFields = new HashMap<String,Object>();
+		
+		mpFields.put("state", vo.getStateId());
+		mpFields.put("entity", vo.getEntity());
+		mpFields.put("order", vo.getOrder());
+		mpFields.put("process", vo.getProcessId());
+		mpFields.put("eventsupportclass", vo.getEventSupportClass());
+		
+		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+	}
+	
 	public static StateTransitionVO getStateTransitionVOWithoutDependants(MasterDataVO mdVO) {
 		StateTransitionVO vo = new StateTransitionVO(
 			mdVO.getIntId(),
@@ -297,18 +339,28 @@ public class MasterDataWrapper {
 	public static StateTransitionVO getStateTransitionVO(MasterDataWithDependantsVO mdVO) {
 		StateTransitionVO vo = getStateTransitionVOWithoutDependants(mdVO);
 
+		// Get all added rules
 		Collection<EntityObjectVO> mdRules = mdVO.getDependants().getData(NuclosEntity.RULETRANSITION.getEntityName());
 		List<Pair<Integer, Boolean>> rules = new ArrayList<Pair<Integer, Boolean>>();
 		for (EntityObjectVO md : mdRules) {
 			rules.add(new Pair<Integer, Boolean>(md.getField("ruleId", Integer.class), md.getField("runafterwards", Boolean.class)));
 		}
 
+		// Get all added eventsupports
+		Collection<EntityObjectVO> mdEventSupport = mdVO.getDependants().getData(NuclosEntity.EVENTSUPPORTTRANSITION.getEntityName());
+		List<Pair<String, Boolean>> evtSupp = new ArrayList<Pair<String, Boolean>>();
+		for (EntityObjectVO md : mdEventSupport) {
+			evtSupp.add(new Pair<String, Boolean>(md.getField("eventsupportclass", String.class), md.getField("runafterwards", Boolean.class)));
+		}
+
+		// Get all added roles
 		Collection<EntityObjectVO> mdRoles = mdVO.getDependants().getData(NuclosEntity.ROLETRANSITION.getEntityName());
 		List<Integer> roleIds = new ArrayList<Integer>();
 		for (EntityObjectVO md : mdRoles)
 			roleIds.add(md.getField("roleId", Integer.class));
 
 		vo.setRuleIdsWithRunAfterwards(rules);
+		vo.setEventSupportsWithRunAfterwards(evtSupp);
 		vo.setRoleIds(roleIds);
 
 		return vo;

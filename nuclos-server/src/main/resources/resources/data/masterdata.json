@@ -2784,6 +2784,97 @@
       }
     ]
   },
+   {
+    "name": "Zuweisung von EventSupports an Entitaetenereignisse",
+    "entity": "nuclos_eventsupport_event",
+    "searchable": true,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "T_MD_EVENTSUPPORT_EVENT",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.rulegeneration.label",
+    "uniquefields": [
+      [
+        "eventsupportclass",
+        "entity",
+        "order"
+      ]
+    ],
+    "nuclos_entityfield": [
+      {
+        "name": "state",
+        "dbfield": "INTID_T_MD_STATE",
+        "label": "Status",
+        "description": "Status",
+        "foreignentity": "nuclos_state",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.statetransition.state1.label",
+        "descriptionres": "nuclos.entityfield.statetransition.state1.description"
+      },
+      {
+        "name": "process",
+        "dbfield": "INTID_T_MD_PROCESS",
+        "label": "Process",
+        "description": "Process",
+        "foreignentity": "nuclos_process",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.eventsupportevent.process.label",
+        "descriptionres": "nuclos.entityfield.eventsupportevent.process.description"
+      },
+       {
+        "name": "eventsupportclass",
+        "dbfield": "STREVENTSUPPORTCLASS",
+        "label": "Klasse fuer EventSupport",
+        "description": "Klasse fuer EventSupport",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
+        "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
+      },
+      {
+        "name": "order",
+        "dbfield": "INTORDER",
+        "label": "Reihenfolge",
+        "description": "Reihenfolge",
+        "datatype": "java.lang.Integer",
+        "datascale": 9,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.rulegeneration.order.label",
+        "descriptionres": "nuclos.entityfield.rulegeneration.order.description"
+      },
+     {
+        "name": "entity",
+        "dbfield": "STRMASTERDATA",
+        "label": "Entität",
+        "description": "Entität",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "labelres": "nuclos.entityfield.ruleUsage.entity.label",
+        "descriptionres": "nuclos.entityfield.ruleUsage.entity.description"
+      }
+    ]
+  },
   {
     "name": "Statusübergänge",
     "entity": "nuclos_statetransition",
@@ -3130,6 +3221,85 @@
         "unique": true,
         "labelres": "nuclos.entityfield.ruletransition.rule.label",
         "descriptionres": "nuclos.entityfield.ruletransition.rule.description"
+      },
+      {
+        "name": "order",
+        "dbfield": "INTORDER",
+        "label": "Reihenfolge",
+        "description": "Reihenfolge",
+        "datatype": "java.lang.Integer",
+        "datascale": 9,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.ruletransition.order.label",
+        "descriptionres": "nuclos.entityfield.ruletransition.order.description"
+      },
+      {
+        "name": "runafterwards",
+        "dbfield": "BLNRUNAFTERWARDS",
+        "label": "Lauf im Anschluss",
+        "description": "Lauf nach erfolgreichem Statuswechsel",
+        "datatype": "java.lang.Boolean",
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.ruletransition.runafterwards.label",
+        "descriptionres": "nuclos.entityfield.ruletransition.runafterwards.description"
+      }
+    ]
+  },
+  {
+    "name": "Statusabhängiger EventSupport",
+    "entity": "nuclos_eventsupporttransition",
+    "searchable": true,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "T_MD_EVENTSUPPORT_TRANSITION",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.eventsupporttransition.label",
+    "uniquefields": [
+      [
+        "eventsupportclass",
+        "transition"
+      ],
+      [
+        "transition",
+        "order"
+      ]
+    ],
+    "nuclos_entityfield": [
+      {
+        "name": "transition",
+        "dbfield": "INTID_T_MD_STATE_TRANSITION",
+        "label": "Transition",
+        "description": "Transition",
+        "foreignentity": "nuclos_statetransition",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.ruletransition.transition.label",
+        "descriptionres": "nuclos.entityfield.ruletransition.transition.description"
+      },
+      {
+        "name": "eventsupportclass",
+        "dbfield": "STREVENTSUPPORTCLASS",
+        "label": "Klasse fuer EventSupport",
+        "description": "Klasse fuer EventSupport",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
+        "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
       },
       {
         "name": "order",

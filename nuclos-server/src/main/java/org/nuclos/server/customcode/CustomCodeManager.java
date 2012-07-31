@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,15 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.nuclos.api.annotation.Function;
+import org.nuclos.api.event.AfterDeleteEvent;
+import org.nuclos.api.event.AfterSaveEvent;
+import org.nuclos.api.event.DeleteEvent;
+import org.nuclos.api.event.SaveEvent;
+import org.nuclos.api.event.StateChangeEvent;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -41,6 +48,7 @@ import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.RuleClassLoader;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.support.AopUtils;
@@ -66,6 +74,8 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 	private ApplicationContext parent;
 
+	private Map<Class<?>, List<EventSupportVO>> executableEventSupportFiles;
+	
 	// End of Spring injection
 
 	private RuleClassLoader cl;
@@ -74,7 +84,13 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 	private Map<String, BeanFunction> functions = new HashMap<String, BeanFunction>();
 
+	private final Class[] registeredEvenTypes = new Class[] {StateChangeEvent.class, DeleteEvent.class, AfterDeleteEvent.class, SaveEvent.class, AfterSaveEvent.class};
+	
+	@Autowired
+	private ServletContext servletContext;
+	
 	CustomCodeManager() {
+		
 	}
 
 	@Autowired
@@ -160,7 +176,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 				this.context.setParent(this.parent);
 				this.context.setClassLoader(this.cl);
 				this.context.getBeanFactory().addBeanPostProcessor(new BeanFunctionPostProcessor());
-
+				
 				// add all nuclet packages to scan:
 				List<String> packages = new ArrayList<String>();
 				for (EntityObjectVO nuclet : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLET).getAll()) {
@@ -175,6 +191,11 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 				this.context.refresh();
 				this.context.start();
+				
+				// load and cache all executable rules
+				this.executableEventSupportFiles = new CustomCodeRuleScanner(this.cl, this.servletContext).
+						getExecutableRulesFromClasspath(registeredEvenTypes);
+
 			}
 			catch (IOException ex) {
 				throw new NuclosFatalException(ex);
@@ -192,12 +213,54 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 		}
 		return this.cl;
 	}
-
+	
+	public List<Class> getRegisteredSupportEventTypes()
+	{
+		return Arrays.asList(this.registeredEvenTypes);
+	}
+	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.parent = applicationContext;
 	}
 
+	public List<EventSupportVO> getExecutableEventSupportFiles()
+	{
+		try {
+			getClassLoader();
+		}
+		catch (NuclosCompileException e) {
+			throw new NuclosFatalException(e);
+		}
+		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
+	
+		for(Class n : this.executableEventSupportFiles.keySet())
+		{
+			list.addAll(0,this.executableEventSupportFiles.get(n));
+		}
+		
+		return list;
+	}
+	
+	public List<EventSupportVO> getExecutableEventSupportFilesByClassType(List<Class<?>> listOfInterfaces)
+	{
+		try {
+			getClassLoader();
+		}
+		catch (NuclosCompileException e) {
+			throw new NuclosFatalException(e);
+		}
+		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
+	
+		for(Class n : listOfInterfaces)
+		{
+			list.addAll(0,this.executableEventSupportFiles.get(n));
+		}
+		
+		return list;
+	}
+	
+	
 	public Object invokeFunction(String functionname, Object[] args) {
 		try {
 			getClassLoader();
@@ -229,6 +292,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 		}
 	}
 
+	
 	private class BeanFunctionPostProcessor implements BeanPostProcessor {
 
 		@Override
@@ -275,4 +339,5 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 			return method;
 		}
 	}
+	
 }

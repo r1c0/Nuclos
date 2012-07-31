@@ -722,7 +722,14 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			setDefaultTransitionActionSelected(((StateTransition) shapeSelected).getStateTransitionVO().isDefault());
 			
 			try {
-				pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shape).getRuleIdsWithRunAfterwards()));
+				List<SortedRuleVO> selectedRules = 
+						RuleRepository.getInstance().selectRulesById(((StateTransition) shape).getRuleIdsWithRunAfterwards());
+				
+				selectedRules.addAll(0,
+						EventSupportRepository.getInstance().selectEventSupportById(((StateTransition) shape).getEventSupportsWithRunAfterwards()));
+				
+				pnlProperties.getTransitionRulePanel().getModel().setRules(selectedRules);
+				
 				TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRulePanel().getTblRules(), 10, 10);
 				pnlProperties.getTransitionRulePanel().getBtnAutomatic().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isAutomatic());
 				pnlProperties.getTransitionRulePanel().getBtnDefault().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isDefault());
@@ -917,29 +924,66 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 
 	public void removeRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
-			((StateTransition) shapeSelected).removeRule(vo.getId());
-			pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
+			// Rules are available by importing via jar oder creating them in Nuclos in an editor
+			// With first case there is no id avaibable beacuse the rule does not exist as an entry in the database
+			if (vo.getId() != null)
+			{
+				((StateTransition) shapeSelected).removeRule(vo.getId());
+				pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
+			}
+			else
+			{
+				((StateTransition) shapeSelected).removeEventSupport(vo.getClassname());
+				pnlProperties.getTransitionRulePanel().getModel().setRules(EventSupportRepository.getInstance().selectEventSupportById(((StateTransition) shapeSelected).getEventSupportsWithRunAfterwards()));
+				
+			}
 			pnlShapeViewer.getModel().fireModelChanged();
 			pnlShapeViewer.repaint();
 		}
 	}
-
+ 
 	public void addRule(SortedRuleVO vo) throws RemoteException {
-		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
-			((StateTransition) shapeSelected).addRule(vo.getId(), vo.isRunAfterwards());
-			pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
+		if (shapeSelected != null && shapeSelected instanceof StateTransition) 
+		{
+			if (vo.getId() != null)
+			{
+				((StateTransition) shapeSelected).addRule(vo.getId(), vo.isRunAfterwards());
+				pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));				
+			}
+			else
+			{
+				((StateTransition) shapeSelected).addRule(vo.getClassname(), vo.isRunAfterwards());
+				pnlProperties.getTransitionRulePanel().getModel().setRules(EventSupportRepository.getInstance().selectEventSupportById(((StateTransition) shapeSelected).getEventSupportsWithRunAfterwards()));
+			}
 			pnlShapeViewer.getModel().fireModelChanged();
 			pnlShapeViewer.repaint();
 		}
 	}
 	
 	public void updateRule(SortedRuleVO vo) {
-		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
-			Pair<Integer, Boolean> rule = ((StateTransition) shapeSelected).getRule(vo.getId());
-			if (rule != null) {
-				rule.setY(vo.isRunAfterwards());
-				pnlShapeViewer.getModel().fireModelChanged();
-				pnlShapeViewer.repaint();
+		if (shapeSelected != null && shapeSelected instanceof StateTransition) 
+		{
+			
+			if (vo.getId() != null)
+			{
+				Pair<Integer, Boolean> rule = null;
+				rule = ((StateTransition) shapeSelected).getRule(vo.getId());
+				if (rule != null) {
+					rule.setY(vo.isRunAfterwards());
+					pnlShapeViewer.getModel().fireModelChanged();
+					pnlShapeViewer.repaint();
+				}
+				
+			}
+			else
+			{
+				Pair<String, Boolean> rule = null;
+					rule = ((StateTransition) shapeSelected).getEventSupport(vo.getClassname());
+					if (rule != null) {
+						rule.setY(vo.isRunAfterwards());
+						pnlShapeViewer.getModel().fireModelChanged();
+						pnlShapeViewer.repaint();
+					}
 			}
 		}
 	}

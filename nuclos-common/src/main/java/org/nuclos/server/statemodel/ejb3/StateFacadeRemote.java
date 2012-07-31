@@ -37,6 +37,7 @@ import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
 import org.nuclos.server.statemodel.valueobject.StateGraphVO;
 import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
+import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
 // @Remote
@@ -177,4 +178,9 @@ public interface StateFacadeRemote {
 	Statemodel getStatemodel(UsageCriteria usageCriteria);
 
 	StatemodelClosure getStatemodelClosureForModule(Integer moduleId);
+	
+	StateTransitionVO findStateTransitionByNullAndTargetState(Integer targetStateId);
+	
+	StateTransitionVO findStateTransitionBySourceAndTargetState(Integer sourceStateId, Integer targetStateId);
+	
 }

@@ -5429,6 +5429,36 @@
     "locale": "de",
     "text": "Statuswechsel"
   },
+   {
+    "resourceID": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
+    "locale": "i-default",
+    "text": "EventSupportClass"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
+    "locale": "en",
+    "text": "EventSupportClass"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
+    "locale": "de",
+    "text": "Klasse fuer EventSpport"
+  },
+  {
+    "resourceID": " nuclos.entityfield.eventsupportevent.process.label",
+    "locale": "i-default",
+    "text": "EventSupportEvent"
+  },
+  {
+    "resourceID": " nuclos.entityfield.eventsupportevent.process.label",
+    "locale": "en",
+    "text": "EventSupportEvent"
+  },
+  {
+    "resourceID": " nuclos.entityfield.eventsupportevent.process.label",
+    "locale": "de",
+    "text": "Event mit EventSupport"
+  },
   {
     "resourceID": "nuclos.entityfield.ruletransition.order.label",
     "locale": "i-default",
@@ -7063,6 +7093,36 @@
     "resourceID": "nuclos.entityfield.generationSubentity.sourceType.description",
     "locale": "de",
     "text": "Spezifiziert welches Objekt als Quelle benutzt wird (null für reguläre Quelle, oder parameter)"
+  },
+   {
+    "resourceID": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description",
+    "locale": "i-default",
+    "text": "Specifies the class that is executed if the binded event happens"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description",
+    "locale": "en",
+    "text": "Specifies the class that is executed if the binded event happens"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupporte.eventsupportclass.description",
+    "locale": "de",
+    "text": "Spezifiziert welche Klasse ausgeführt werden soll, wenn ein bestimmter Event stattfindet"
+  },
+   {
+    "resourceID": "nuclos.entityfield.eventsupportevent.process.description",
+    "locale": "i-default",
+    "text": "Specifies the event of an entitiy that will trigger the execution of an eventsupport"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupportevent.process.description",
+    "locale": "en",
+    "text": "Specifies the event of an entitiy that will trigger the execution of an eventsupport"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupportevent.process.description",
+    "locale": "de",
+    "text": "Spezifiziert das Event einer verbundenen Entität, das zur Ausführung einer bestimmten Regel führt"
   },
   {
     "resourceID": "R00012170",
@@ -15959,6 +16019,16 @@
     "locale": "de",
     "text": "Verwendung Arbeitsschritt"
   },
+   {
+    "resourceID": "nuclos.entity.eventsupportmangagement.label",
+    "locale": "de",
+    "text": "EventSupport Management"
+  },
+    {
+    "resourceID": "nuclos.entity.eventsupportmangagement.label",
+    "locale": "en",
+    "text": "EventSupport Management"
+  },
   {
     "resourceID": "R00016383",
     "locale": "i-default",
@@ -16033,6 +16103,21 @@
     "resourceID": "nuclos.entity.rule.label",
     "locale": "de",
     "text": "Geschäftsregel"
+  },
+   {
+    "resourceID": "nuclos.entity.eventsupporttransition.label",
+    "locale": "i-default",
+    "text": "EventSupport"
+  },
+  {
+    "resourceID": "nuclos.entity.eventsupporttransition.label",
+    "locale": "en",
+    "text": "EventSupport"
+  },
+  {
+    "resourceID": "nuclos.entity.eventsupporttransition.label",
+    "locale": "de",
+    "text": "EventSupport"
   },
   {
     "resourceID": "nuclos.entity.attribute.menupath",
@@ -19334,6 +19419,21 @@
     "locale": "de",
     "text": "Statusmodellverwendung"
   },
+   {
+    "resourceID": "nuclos.entity.statetransitionState.label",
+    "locale": "i-default",
+    "text": "State transition of a state"
+  },
+  {
+    "resourceID": "nuclos.entity.statetransitionState.label",
+    "locale": "en",
+    "text": "State transition of a state"
+  },
+  {
+    "resourceID": "nuclos.entity.statetransitionState.label",
+    "locale": "de",
+    "text": "Statusübergänge eines Status"
+  },
   {
     "resourceID": "nuclos.entity.grouptype.label",
     "locale": "i-default",
@@ -21045,6 +21145,21 @@
     "text": "Umbenennen"
   },
   {
+    "resourceID": "ExplorerController.32",
+    "locale": "i-default",
+    "text": "Regelzuweisung"
+  },
+  {
+    "resourceID": "ExplorerController.32",
+    "locale": "en",
+    "text": "Rule usage"
+  },
+  {
+    "resourceID": "ExplorerController.32",
+    "locale": "de",
+    "text": "Regelzuweisung"
+  },
+  {
     "resourceID": "CollectableTimelimitTask.22",
     "locale": "i-default",
     "text": "Assigned object state"
@@ -21994,6 +22109,82 @@
     "locale": "de",
     "text": "Boolean"
   },
+   {
+    "resourceID": "EventSupportTableModel.1",
+    "locale": "i-default",
+    "text": "Name"
+  },
+  {
+    "resourceID": "EventSupportTableModel.1",
+    "locale": "en",
+    "text": "Name"
+  },
+  {
+    "resourceID": "EventSupportTableModel.1",
+    "locale": "de",
+    "text": "Name"
+  },
+     {
+    "resourceID": "EventSupportTableModel.2",
+    "locale": "i-default",
+    "text": "Type"
+  },
+  {
+    "resourceID": "EventSupportTableModel.2",
+    "locale": "en",
+    "text": "Type"
+  },
+  {
+    "resourceID": "EventSupportTableModel.2",
+    "locale": "de",
+    "text": "Typ"
+  },
+     {
+    "resourceID": "EventSupportTableModel.3",
+    "locale": "i-default",
+    "text": "Nuclet"
+  },
+  {
+    "resourceID": "EventSupportTableModel.3",
+    "locale": "en",
+    "text": "Nuclet"
+  },
+  {
+    "resourceID": "EventSupportTableModel.3",
+    "locale": "de",
+    "text": "Nuclet"
+  },
+     {
+    "resourceID": "EventSupportTableModel.4",
+    "locale": "i-default",
+    "text": "Package"
+  },
+  {
+    "resourceID": "EventSupportTableModel.4",
+    "locale": "en",
+    "text": "Package"
+  },
+  {
+    "resourceID": "EventSupportTableModel.4",
+    "locale": "de",
+    "text": "Package"
+  },
+     {
+    "resourceID": "EventSupportTableModel.5",
+    "locale": "i-default",
+    "text": "Created"
+  },
+  {
+    "resourceID": "EventSupportTableModel.5",
+    "locale": "en",
+    "text": "Created"
+  },
+  {
+    "resourceID": "EventSupportTableModel.5",
+    "locale": "de",
+    "text": "Erstell am"
+  },
+  
   {
     "resourceID": "MasterDataModuleController.2",
     "locale": "i-default",
@@ -35223,6 +35414,16 @@
     "resourceID": "miEntityWizard",
     "locale": "i-default",
     "text": "Entity wizard"
+  },
+  {
+    "resourceID": "miEventSupportManagement",
+    "locale": "de",
+    "text": "EventSupport Management"
+  },
+   {
+    "resourceID": "miEventSupportManagement",
+    "locale": "i-default",
+    "text": "EventSupport Management"
   },
   {
     "resourceID": "miEntityWizard",

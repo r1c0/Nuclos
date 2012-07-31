@@ -41,6 +41,7 @@ public class StateTransitionVO extends NuclosValueObject {
 	private boolean bAutomatic;
 	private boolean bDefault;
 	private List<Pair<Integer, Boolean>> lstRuleIdsWithRunAfterwards = new ArrayList<Pair<Integer, Boolean>>();
+	private List<Pair<String, Boolean>> lstEventSupportsWithRunAfterwards = new ArrayList<Pair<String, Boolean>>();
 	private List<Integer> lstRoleIds = new ArrayList<Integer>();
 
 	/**
@@ -178,6 +179,13 @@ public class StateTransitionVO extends NuclosValueObject {
 		lstRuleIdsWithRunAfterwards.remove(new Pair<Integer, Boolean>(ruleId, null));
 	}
 	
+	public void removeEventSupport(String supportclassname)
+	{
+		lstEventSupportsWithRunAfterwards.remove(new Pair<String, Boolean>(supportclassname, Boolean.TRUE));
+		lstEventSupportsWithRunAfterwards.remove(new Pair<String, Boolean>(supportclassname, Boolean.FALSE));
+		lstEventSupportsWithRunAfterwards.remove(new Pair<String, Boolean>(supportclassname, null));
+	}
+	
 	public List<Integer> getRuleIds() {
 		List<Integer> result = new ArrayList<Integer>();
 		for (Pair<Integer, Boolean> p : lstRuleIdsWithRunAfterwards) {
@@ -186,6 +194,14 @@ public class StateTransitionVO extends NuclosValueObject {
 		return result;
 	}
 
+	public List<String> getEventSupports() {
+		List<String> result = new ArrayList<String>();
+		for (Pair<String, Boolean> p : lstEventSupportsWithRunAfterwards) {
+			result.add(p.x);
+		}
+		return result;
+	}
+	
 	/**
 	 * get list of rules attached to transition
 	 * @return list of rules attached to transition
@@ -195,6 +211,14 @@ public class StateTransitionVO extends NuclosValueObject {
 	}
 
 	/**
+	 * get list of rules attached to transition
+	 * @return list of rules attached to transition
+	 */
+	public List<Pair<String, Boolean>> getEventSupportWithRunAfterwards() {
+		return lstEventSupportsWithRunAfterwards;
+	}
+	
+	/**
 	 * attach list of rules to transition
 	 * @param lstRuleIdsWithRunAfterwards list of rules to attach to transition
 	 */
@@ -202,6 +226,15 @@ public class StateTransitionVO extends NuclosValueObject {
 		this.lstRuleIdsWithRunAfterwards = lstRuleIdsWithRunAfterwards;
 	}
 
+
+	/**
+	 * attach list of rules to transition
+	 * @param lstRuleIdsWithRunAfterwards list of rules to attach to transition
+	 */
+	public void setEventSupportsWithRunAfterwards(List<Pair<String, Boolean>> lstEventSupportsWithRunAfterwards) {
+		this.lstEventSupportsWithRunAfterwards = lstEventSupportsWithRunAfterwards;
+	}
+	
 	/**
 	 * get list of roles attached to transition
 	 * @return list of roles attached to transition
