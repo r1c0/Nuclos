@@ -1512,7 +1512,7 @@ public class MainController {
 			addGenericCommandAction(genericActions, "EntityWizard", cmdOpenEntityWizard, menuPath);
 		}
 
-		if (securityCache.isActionAllowed("EntityWizard")) {
+		if (ApplicationProperties.getInstance().isFunctionBlockDev()) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenEventSupportManagement));
 			addGenericCommandAction(genericActions, "EventSupportManagement", cmdOpenEventSupportManagement, menuPath);
 		}
