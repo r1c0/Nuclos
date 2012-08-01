@@ -3242,6 +3242,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (clct != null)
 			try {
 				StateVO statevo = StateDelegate.getInstance().getState(getModuleId(), (Integer) clct.getValueId(NuclosEOField.STATE.getMetaData().getField()));
+				if (statevo == null)
+					return null;
 				id = statevo.getId();
 				iNumeral = statevo.getNumeral();
 				sName = statevo.getStatename();

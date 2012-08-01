@@ -157,8 +157,10 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 						 if (event instanceof MouseEvent) {
 							 MouseEvent me = (MouseEvent)event;
 							 if (me.getID() == MouseEvent.MOUSE_CLICKED
+									 && resultPane != null
 									 && !me.getComponent().equals(resultPane)
 									 && !me.getComponent().equals(resultPane.getTable())
+									 && searchComponent != null
 									 && !me.getComponent().equals(searchComponent)
 									 && !me.getComponent().equals(searchComponent.getButton())) {
 				            	searchComponent.setButtonSelection(false);

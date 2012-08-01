@@ -52,6 +52,9 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
+import javax.print.PrintService;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.NuclosAttributeNotFoundException;
@@ -128,7 +131,15 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
+import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.ejb3.ReportFacadeRemote;
+import org.nuclos.server.report.print.CSVPrintJob;
+import org.nuclos.server.report.print.DOCPrintJob;
+import org.nuclos.server.report.print.FilePrintJob;
+import org.nuclos.server.report.print.PDFPrintJob;
+import org.nuclos.server.report.print.XLSPrintJob;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
@@ -2771,6 +2782,85 @@ public class RuleInterface extends CustomCodeInterface {
 
 		return result;
 	}
+	public void printSilent(String reportName, final Collection<NuclosFile> files) {
+		for (NuclosFile nuclosFile : files) {
+			printSilent(reportName, nuclosFile);
+		}
+	}
+	
+	public void printSilent(String reportName, final NuclosFile file) {
+		try {
+			final ReportFacadeRemote reportFacade = ServerServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
+
+			final CollectableSearchCondition clctcond = SearchConditionUtils.newEOComparison(NuclosEntity.REPORT.getEntityName(), "name", ComparisonOperator.EQUAL, reportName, MetaDataServerProvider.getInstance());
+			final List<EntityObjectVO> lstReport = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.REPORT.getEntityName()).getBySearchExpression(new CollectableSearchExpression(clctcond));
+
+			final Set<ReportOutputVO> reportOutputs = new HashSet<ReportOutputVO>();
+			for (EntityObjectVO reportVO : lstReport) {
+				for (ReportOutputVO outputVO : reportFacade.getReportOutputs(reportVO.getId().intValue())) {
+					if (outputVO.getFormat().equals(ReportOutputVO.Format.PDF)) {
+						reportOutputs.add(outputVO);
+					}
+				}
+			}
+
+			if (reportOutputs.isEmpty()) {
+				throw new NuclosFatalRuleException(StringUtils.getParameterizedExceptionMessage("rule.interface.error.18", reportName));
+			}
+
+			PrintService prservDflt = reportFacade.lookupDefaultPrintService();
+
+			PrintService[] prservices = reportFacade.lookupPrintServices(null, null);
+
+			if (null == prservices || 0 >= prservices.length) {
+				if (null != prservDflt) {
+					prservices = new PrintService[] { prservDflt };
+				}
+				else {
+					throw new NuclosFatalRuleException(SpringLocaleDelegate.getInstance().getMessage("AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
+				}
+			}
+
+			final PrintService prserv = prservDflt;
+			final PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+
+			for (final ReportOutputVO outputVO : reportOutputs) {
+				NuclosLocalServerSession.getInstance().runUnrestricted(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							if (null != prserv) {
+								reportFacade.printViaPrintService((NuclosReportRemotePrintService) prserv, getNuclosReportPrintJob(outputVO.getFormat()), aset, file.getFileContents());
+							}
+						}
+						catch (CommonBusinessException e) {
+							throw new NuclosFatalRuleException(e);
+						}
+					}
+				});
+			}
+		}
+		catch (Exception e) {
+			throw new NuclosFatalRuleException(e);
+		}
+	}
+	
+	private static NuclosReportPrintJob getNuclosReportPrintJob(ReportOutputVO.Format format) {
+		switch (format) {
+		case PDF:
+			return new PDFPrintJob();
+		case CSV:
+			return new CSVPrintJob();
+		case XLS:
+		case XLSX:
+			return new XLSPrintJob();
+		case DOC:
+			return new DOCPrintJob();
+		default:
+			return new FilePrintJob();
+		}
+	}
+
 
 	/**
 	 * define and execute a file import (csv)
