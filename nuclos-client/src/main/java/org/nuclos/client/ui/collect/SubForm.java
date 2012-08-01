@@ -1036,7 +1036,8 @@ public class SubForm extends JPanel
 							@Override
 							public void run() {
 								Component editor = getJTable().getEditorComponent();
-								editor.requestFocusInWindow();
+								if (editor != null)
+									editor.requestFocusInWindow();
 							}
 						});
 

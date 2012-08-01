@@ -21,6 +21,7 @@ package org.nuclos.common.collect.collectable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,12 +38,12 @@ import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.ExtendedRelativeDate;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -537,7 +538,38 @@ public abstract class CollectableFieldFormat {
 				ParseException pe = null;
 				if (sInputFormat != null) {
 					try {
-						return new DecimalFormat(sInputFormat).parse(sText).doubleValue();
+						double value;
+						DecimalFormat df;
+						// try to test if input is in english or german locale is used for input.
+						// therefore we have to remove 0´s at the end of input format. 
+						String sOriginInputFormat = sInputFormat;
+						int idxDot = sInputFormat.lastIndexOf(".");
+						if (idxDot != -1)
+							sInputFormat = sInputFormat.substring(0, idxDot + 1)
+								+ sInputFormat.substring(idxDot + 1).replaceAll("0", "#");
+						int iTrim = 0;
+						if (idxDot != -1)
+							iTrim = sInputFormat.substring(idxDot + 1).length();
+						df = (DecimalFormat) DecimalFormat.getInstance(Locale.GERMAN);
+						df.applyPattern(sInputFormat);
+						value = df.parse(sText).doubleValue();
+						if (df.format(value).equals(sText)
+								|| df.format(value).equals(sText.length() > iTrim ? sText.subSequence(0,  sText.length() - iTrim - 1) : sText))
+							return value; // must be right
+						df.applyPattern(sOriginInputFormat);
+						// test if we get an text in right input format.
+						if (df.format(value).equals(sText))
+							return value; // must be right
+
+						df = (DecimalFormat) DecimalFormat.getInstance(Locale.ENGLISH);
+						df.applyPattern(sOriginInputFormat);
+						value = df.parse(sText).doubleValue();
+						//if (df.format(value).equals(sText)
+								//|| df.format(value).equals(sText.length() > iTrim ? sText.subSequence(0,  sText.length() - iTrim - 1) : sText))
+							//return value; // must be right
+						
+						//return new DecimalFormat().parse(sText).doubleValue();
+						return value;
 					}
 					catch (ParseException ex) {
 						pe = ex;
@@ -650,6 +682,86 @@ public abstract class CollectableFieldFormat {
 		public Object parse(String sInputFormat, String sText) throws CollectableFieldFormatException {
 			throw new UnsupportedOperationException(
 					SpringLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.1","DefaultFormat.parse not implemented."));
+		}
+	}
+	
+	public static void main(String[] args) {
+		try {
+			String deFORM = "#,##0.###";
+			String enFORM = "#,##0.###";
+
+			/*DecimalFormat enDF = (DecimalFormat)DecimalFormat.getNumberInstance(Locale.ENGLISH);
+			enDF.applyPattern(enFORM);
+			DecimalFormat deDF = (DecimalFormat)DecimalFormat.getNumberInstance(Locale.GERMAN);
+			deDF.applyPattern(deFORM);
+			
+			System.err.println("parsing enIN");
+			String enIN = "5,020,232.23";
+			
+			double endenIN = enDF.parse(enIN).doubleValue();
+			double dedenIN = deDF.parse(enIN).doubleValue();
+			
+			System.err.println("endenIN > dedenIN: " + endenIN + ">" + dedenIN + "=" + (endenIN>dedenIN));
+			
+			System.err.println("parsing deIN");
+			String deIN = "5.020.232,23";
+			
+			double enddeIN = enDF.parse(deIN).doubleValue();
+			double deddeIN = deDF.parse(deIN).doubleValue();
+			
+			System.err.println("enddeIN > deddeIN: " + enddeIN + ">" + deddeIN + "=" + (enddeIN>deddeIN));
+			*/
+			
+			/*CollectableDoubleFormat df = new CollectableDoubleFormat();
+			DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
+			otherSymbols.setDecimalSeparator('');
+			otherSymbols.setGroupingSeparator(','); 
+			DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance(Locale.GERMAN);
+			df.applyPattern("#,##0.###");
+
+			System.err.println("parsing enIN");
+			String enIN = "5,122,122.23";
+			//System.err.println(Double.parseDouble(enIN));
+			System.err.println(df.parse( enIN));
+			System.err.println(df.format(df.parse( enIN).doubleValue()));
+			if (df.format(df.parse(enIN).doubleValue()).equals(enIN))
+				System.err.println("must be right");
+			else
+				System.err.println("must not be right");
+			
+			System.err.println("parsing deIN");
+			String deIN = "5.122.122,23";
+			//System.err.println(Double.parseDouble(deIN));
+			System.err.println(df.parse(deIN));
+			System.err.println(df.format(df.parse(deIN).doubleValue()));
+			if (df.format(df.parse(deIN).doubleValue()).equals(deIN))
+				System.err.println("must be right");
+			else
+				System.err.println("must not be right");*/
+			CollectableDoubleFormat df = new CollectableDoubleFormat();
+			
+			System.err.println("parsing enIN");
+			String enIN = "5,122,122.23";
+			//System.err.println(Double.parseDouble(enIN));
+			System.err.println(df.parse("#,##0.###", enIN));
+			System.err.println(df.format("#,##0.###", df.parse("#,##0.###", enIN).doubleValue()));
+			if (df.format("#,##0.###", df.parse("#,##0.###", enIN).doubleValue()).equals(enIN))
+				System.err.println("must be right");
+			else
+				System.err.println("must not be right");
+			
+			System.err.println("parsing deIN");
+			String deIN = "5.122.122,23";
+			//System.err.println(Double.parseDouble(deIN));
+			System.err.println(df.parse("#,##0.###", deIN));
+			System.err.println(df.format("#,##0.###", df.parse("#,##0.###", deIN).doubleValue()));
+			if (df.format("#,##0.###", df.parse("#,##0.###", deIN).doubleValue()).equals(deIN))
+				System.err.println("must be right");
+			else
+				System.err.println("must not be right");
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }	// class CollectableFieldFormat
