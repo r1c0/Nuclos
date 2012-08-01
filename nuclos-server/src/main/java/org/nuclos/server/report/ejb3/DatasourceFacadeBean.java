@@ -614,7 +614,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 					DatasourceUtils.validateChartEntityName(newDEVO.getName());
 					sqlSelect = createSQL(newDEVO.getSource());
 					LOG.debug("validate chart entity sql <SQL>" + sqlSelect + "</SQL>");
-					DatasourceUtils.validateChartEntitySQL(sqlSelect, getColumns(sqlSelect));
+					DatasourceUtils.validateChartEntitySQL(sqlSelect, getColumns(createSQL(newDEVO.getSource(), getTestParameters(newDEVO.getSource()))));
 					DatasourceUtils.validateChartEntitySQLWithParameters(createSQL(newDEVO.getSource(), getTestParameters(newDEVO.getSource())));
 				}
 				catch (NuclosDatasourceException e) {

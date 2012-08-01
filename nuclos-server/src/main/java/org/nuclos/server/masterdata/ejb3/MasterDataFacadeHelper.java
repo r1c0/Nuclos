@@ -307,9 +307,16 @@ public class MasterDataFacadeHelper {
 
 		Collection<MasterDataVO> result = new ArrayList<MasterDataVO>();
 		if (mdmetavo.isDynamic()) {
-			if (sEntityName.startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX))
-				result = getDependantMasterDataForDatasource(oRelatedId, mdmetavo);
-			else if (sEntityName.startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX)) {
+			if (sEntityName.startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX)) {
+				String sDataSource = mdmetavo.getDBEntity().substring(MasterDataMetaVO.DYNAMIC_ENTITY_VIEW_PREFIX.length()).toLowerCase();
+				
+				try {
+					//DatasourceVO datasourceVO = getDatasourceFacade().getDynamicEntity(sDataSource);
+					result = getDependantMasterDataForDatasource(oRelatedId, mdmetavo);
+				} catch (Exception e) {
+					LOG.warn("getDependantMasterDataForDatasource failed for datasource " + sDataSource, e);
+				}
+			} else if (sEntityName.startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX)) {
 				String sDataSource = mdmetavo.getDBEntity().substring(MasterDataMetaVO.CHART_ENTITY_VIEW_PREFIX.length()).toLowerCase();
 				
 				try {
@@ -357,7 +364,8 @@ public class MasterDataFacadeHelper {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(mdmetavo.getDBEntity()).alias(SystemFields.BASE_ALIAS);
-		DbColumnExpression<Integer> goColumn = t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class);
+		
+		DbColumnExpression<Integer> goColumn = t.baseColumnCaseSensitive("INTID_T_UD_GENERICOBJECT", Integer.class,false);
 		List<DbSelection<?>> selection = new ArrayList<DbSelection<?>>();
 		for (MasterDataMetaFieldVO field : collFields) {
 			String fieldName = field.getFieldName();
@@ -368,7 +376,7 @@ public class MasterDataFacadeHelper {
 				selection.add(t.baseColumnCaseSensitive(fieldName, javaType, false));
 			}
 		}
-		selection.add(t.baseColumn("INTID", Integer.class));
+		selection.add(t.baseColumnCaseSensitive("INTID", Integer.class, false));
 		query.multiselect(selection);
 		query.where(builder.equal(goColumn, oRelatedId));
 
