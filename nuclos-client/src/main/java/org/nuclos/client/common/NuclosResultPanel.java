@@ -81,7 +81,6 @@ import org.nuclos.client.ui.util.SwingUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;

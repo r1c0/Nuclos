@@ -28,7 +28,6 @@ import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;

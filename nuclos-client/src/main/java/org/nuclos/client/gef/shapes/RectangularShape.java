@@ -28,7 +28,6 @@ package org.nuclos.client.gef.shapes;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;

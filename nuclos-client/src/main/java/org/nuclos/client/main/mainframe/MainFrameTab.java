@@ -44,7 +44,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -65,9 +64,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
-import org.codehaus.groovy.tools.shell.AnsiDetector;
 import org.jdesktop.jxlayer.JXLayer;
 import org.jdesktop.jxlayer.plaf.LayerUI;
 import org.jdesktop.jxlayer.plaf.ext.LockableUI;
@@ -94,10 +91,8 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
-import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 

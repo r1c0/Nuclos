@@ -44,11 +44,9 @@ import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.LabelProvider;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SimpleDocumentListener;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 
 /**

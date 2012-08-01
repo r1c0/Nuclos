@@ -103,7 +103,6 @@ import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
-import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.component.CollectableCheckBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;

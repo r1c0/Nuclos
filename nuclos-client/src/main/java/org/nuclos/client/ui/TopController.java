@@ -23,7 +23,6 @@ import javax.swing.ImageIcon;
 
 import org.nuclos.client.main.mainframe.IconResolver;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.common.NuclosCancelException;
 import org.nuclos.common.collection.Pair;
 
 /**
