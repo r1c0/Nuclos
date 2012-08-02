@@ -58,6 +58,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common.transport.GzipList;
 import org.nuclos.common2.EntityAndFieldName;
@@ -311,8 +312,16 @@ public class MasterDataFacadeHelper {
 				String sDataSource = mdmetavo.getDBEntity().substring(MasterDataMetaVO.DYNAMIC_ENTITY_VIEW_PREFIX.length()).toLowerCase();
 				
 				try {
-					//DatasourceVO datasourceVO = getDatasourceFacade().getDynamicEntity(sDataSource);
-					result = getDependantMasterDataForDatasource(oRelatedId, mdmetavo);
+					DatasourceVO datasourceVO = getDatasourceFacade().getDynamicEntity(sDataSource);
+					boolean bIntidCaseInsensitive = true;
+					boolean bIntidGenericObjectCaseInsensitive = true;
+					String sql = getDatasourceFacade().createSQL(datasourceVO.getSource(), new HashMap<String, Object>());
+					if (sql.toUpperCase().indexOf(" \"INTID\"") != -1)
+						bIntidCaseInsensitive = false;
+					if (sql.toUpperCase().indexOf(" \"INTID_T_UD_GENERICOBJECT\"") != -1)
+						bIntidGenericObjectCaseInsensitive = false;
+				
+					result = getDependantMasterDataForDatasource(oRelatedId, mdmetavo, bIntidCaseInsensitive, bIntidGenericObjectCaseInsensitive);
 				} catch (Exception e) {
 					LOG.warn("getDependantMasterDataForDatasource failed for datasource " + sDataSource, e);
 				}
@@ -357,7 +366,7 @@ public class MasterDataFacadeHelper {
 		return getGenericMasterData(sEntityName, cond, true);
 	}
 
-	Collection<MasterDataVO> getDependantMasterDataForDatasource(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
+	Collection<MasterDataVO> getDependantMasterDataForDatasource(Object oRelatedId, final MasterDataMetaVO mdmetavo, boolean bIntidCaseInsensitive, boolean bIntidGenericObjectCaseInsensitive) {
 		final List<MasterDataMetaFieldVO> collFields = mdmetavo.getFields();
 		final int fieldCount = collFields.size();
 
@@ -365,7 +374,9 @@ public class MasterDataFacadeHelper {
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(mdmetavo.getDBEntity()).alias(SystemFields.BASE_ALIAS);
 		
-		DbColumnExpression<Integer> goColumn = t.baseColumnCaseSensitive("INTID_T_UD_GENERICOBJECT", Integer.class,false);
+		DbColumnExpression<Integer> goColumn = bIntidGenericObjectCaseInsensitive ? 
+				t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class)
+					: t.baseColumnCaseSensitive("INTID_T_UD_GENERICOBJECT", Integer.class,false);
 		List<DbSelection<?>> selection = new ArrayList<DbSelection<?>>();
 		for (MasterDataMetaFieldVO field : collFields) {
 			String fieldName = field.getFieldName();
@@ -376,7 +387,9 @@ public class MasterDataFacadeHelper {
 				selection.add(t.baseColumnCaseSensitive(fieldName, javaType, false));
 			}
 		}
-		selection.add(t.baseColumnCaseSensitive("INTID", Integer.class, false));
+		selection.add(bIntidCaseInsensitive ? 
+				t.baseColumn("INTID", Integer.class)
+					: t.baseColumnCaseSensitive("INTID", Integer.class, false));
 		query.multiselect(selection);
 		query.where(builder.equal(goColumn, oRelatedId));
 
