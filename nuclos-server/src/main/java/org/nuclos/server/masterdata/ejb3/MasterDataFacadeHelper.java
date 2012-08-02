@@ -313,6 +313,7 @@ public class MasterDataFacadeHelper {
 				
 				try {
 					DatasourceVO datasourceVO = getDatasourceFacade().getDynamicEntity(sDataSource);
+					// @see NUCLOS-654
 					boolean bIntidCaseInsensitive = true;
 					boolean bIntidGenericObjectCaseInsensitive = true;
 					String sql = getDatasourceFacade().createSQL(datasourceVO.getSource(), new HashMap<String, Object>());
