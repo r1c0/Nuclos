@@ -75,10 +75,7 @@ public class TreeUtils {
 	    			leafs.add(start);
 	    		}
 	    		if (paths != null) {
-	    			// TreePaths for JTree.expandPath must not contain leafs. (tp)
-	    			final T[] path = (T[]) Array.newInstance(tclass, len - 1);
-	    			System.arraycopy(startPath, 0, path, 0, len - 1);
-	    			paths.add(new TreePath(path));
+	    			paths.add(new TreePath(startPath));
 	    		}
     		}
     	}
