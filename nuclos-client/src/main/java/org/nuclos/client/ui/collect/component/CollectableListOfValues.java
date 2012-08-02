@@ -455,7 +455,10 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		if (this.oValueId == null && !blnIsLookupEntity) {
 			return new CollectableValueIdField(this.oValueId, null);
 		} else {
-			return new CollectableValueIdField(this.oValueId, CollectableTextComponentHelper.write(this.getJTextField(), this.getEntityField()).getValue());
+			if (blnIsLookupEntity)
+				return new CollectableValueIdField(null, CollectableTextComponentHelper.write(this.getJTextField(), this.getEntityField()).getValue());
+			else
+				return new CollectableValueIdField(this.oValueId, CollectableTextComponentHelper.write(this.getJTextField(), this.getEntityField()).getValue());
 		}
 	}
 
