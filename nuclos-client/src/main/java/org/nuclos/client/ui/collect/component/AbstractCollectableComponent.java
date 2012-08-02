@@ -1899,7 +1899,18 @@ public abstract class AbstractCollectableComponent
 				if (tblModel.getRowCount() > iRow) {
 					final Collectable clct = tblModel.getCollectable(iRow);
 					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex() - adjustColIndex;
-					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
+					
+					final CollectableEntityField clctef;
+					try {
+						clctef = tblModel.getCollectableEntityField(iTColumn);
+					} catch (IndexOutOfBoundsException e) {
+						//@see  NUCLOS-706 - return same as not readable column. should never occour. may be threading.
+						final BufferedLayerUI<JComponent> layerUI = new BufferedLayerUI<JComponent>();
+						final JXLayer<JComponent> layer = new JXLayer<JComponent>(this, layerUI);
+						layerUI.setLayerEffects(blurEffect);
+						return layer; 
+					}
+					
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 					}
