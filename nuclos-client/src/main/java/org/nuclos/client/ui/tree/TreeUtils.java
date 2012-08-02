@@ -16,8 +16,15 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.tree;
 
+import java.lang.reflect.Array;
+import java.util.List;
+import java.util.Set;
+
 import javax.swing.*;
 import javax.swing.tree.*;
+
+import org.nuclos.client.explorer.ExplorerNode;
+import org.nuclos.common.collection.Predicate;
 
 /**
  * Utility methods for trees.
@@ -55,5 +62,37 @@ public class TreeUtils {
 			expandAllNodes(tree, node.getChildAt(i));
 		}
 	}
-
+	
+    public static <T extends ExplorerNode<org.nuclos.server.navigation.treenode.TreeNode>> void findLeafs(
+    		TreeModel model, Class<T> tclass, T[] startPath, Set<T> leafs, List<TreePath> paths, Predicate<T> leafPred) {
+    	
+    	final int len = startPath.length;
+    	final T start = startPath[len - 1];
+    	final int size = model.getChildCount(start);
+    	if (size == 0) {
+    		if (leafPred.evaluate(start)) {
+	    		if (leafs != null) {
+	    			leafs.add(start);
+	    		}
+	    		if (paths != null) {
+	    			// TreePaths for JTree.expandPath must not contain leafs. (tp)
+	    			final T[] path = (T[]) Array.newInstance(tclass, len - 1);
+	    			System.arraycopy(startPath, 0, path, 0, len - 1);
+	    			paths.add(new TreePath(path));
+	    		}
+    		}
+    	}
+    	else {
+	    	for (int i = 0; i < size; ++i) {
+	    		final T c = (T) model.getChild(start, i);
+	    		c.loadChildren(false);
+	    		
+	    		final T[] path = (T[]) Array.newInstance(tclass, len + 1);
+	    		System.arraycopy(startPath, 0, path, 0, len);
+	    		path[len] = c;
+	    		findLeafs(model, tclass, path, leafs, paths, leafPred);
+	    	}
+    	}
+    }
+    
 }	// class TreeUtils
