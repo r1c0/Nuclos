@@ -297,7 +297,6 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected List<ResultActionCollection> getResultActionsMultiThreaded(Collection<Clct> selectedCollectablesFromResult) {
 		List<ResultActionCollection> result = new ArrayList<ResultActionCollection>();
 		ResultActionCollection rac = new ResultActionCollection(SpringLocaleDelegate.getInstance().getMessage("ResultPanel.12","Arbeitsschritte"));
-		result.add(rac);
 		
 		List<GeneratorActionVO> actions = getGeneratorActions(selectedCollectablesFromResult);
 		if (actions!=null && !actions.isEmpty()) {
@@ -312,6 +311,11 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				rac.addAction(act);
 			}
 		}
+		
+		if (!rac.getActions().isEmpty()) {
+			result.add(rac);
+		}
+		
 		return result;
 	}
 
