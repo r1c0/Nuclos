@@ -1284,7 +1284,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 	}
 	
 	public void removeNotExistentEntitiesFromModel() {
-		Collection<EntityMetaDataVO> lstEntities = MetaDataDelegate.getInstance().getAllEntities();
+		Collection<EntityMetaDataVO> lstEntities = MetaDataClientProvider.getInstance().getAllEntities();
 		for(EntityMetaDataVO voInModel : getEntitiesInModel()) {
 			if(!lstEntities.contains(voInModel)) {
 				mxCell cellRemove = getCellByEntityName(voInModel.getEntity());

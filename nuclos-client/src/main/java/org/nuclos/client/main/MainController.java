@@ -1580,7 +1580,7 @@ public class MainController {
 			}
 		}
 
-		for (final EntityMetaDataVO entitymetavo : MetaDataDelegate.getInstance().getAllEntities()) {
+		for (final EntityMetaDataVO entitymetavo : MetaDataClientProvider.getInstance().getAllEntities()) {
 			if (customConfigurationEntities.contains(entitymetavo.getEntity())) {
 				continue;
 			}

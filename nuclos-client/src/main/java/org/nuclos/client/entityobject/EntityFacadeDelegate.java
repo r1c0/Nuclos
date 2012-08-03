@@ -46,7 +46,7 @@ public class EntityFacadeDelegate implements EntityFacadeRemote {
 	public static EntityFacadeDelegate getInstance() {
 		if (INSTANCE == null) {
 			// lazy support
-			SpringApplicationContextHolder.getBean(EntityFacadeDelegate.class);			
+			INSTANCE = SpringApplicationContextHolder.getBean(EntityFacadeDelegate.class);			
 		}
 		return INSTANCE;
 	}

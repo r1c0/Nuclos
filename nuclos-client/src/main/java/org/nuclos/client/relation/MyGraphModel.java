@@ -157,7 +157,7 @@ public class MyGraphModel extends mxGraphModel {
 							while(blnNotSet) {
 								sEntity = JOptionPane.showInputDialog(editPanel, localeDelegate.getMessage(
 										"nuclos.entityrelation.editor.20", "Bitte geben Sie den Namen der neuen Entit\u00e4t an!"));
-								for(EntityMetaDataVO voMeta : MetaDataDelegate.getInstance().getAllEntities()) {
+								for(EntityMetaDataVO voMeta : MetaDataClientProvider.getInstance().getAllEntities()) {
 									if(voMeta.getEntity().equals(sEntity)){
 										JOptionPane.showMessageDialog(editPanel, localeDelegate.getMessage(
 												"nuclos.entityrelation.editor.19", "Entit\u00e4t schon vorhanden"));

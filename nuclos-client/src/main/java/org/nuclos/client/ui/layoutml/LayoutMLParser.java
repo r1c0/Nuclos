@@ -910,7 +910,81 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		/**
 		 * maps elements to <code>ElementProcessor</code>s
 		 */
-		private final Map<String, ElementProcessor> mpElementProcessors = new HashMap<String, ElementProcessor>();
+		private static final Map<String, ElementProcessor> mpElementProcessors = new HashMap<String, ElementProcessor>();
+		{
+			this.mpElementProcessors.put(ELEMENT_PANEL, new PanelElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_EMPTYPANEL, new PanelElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TABBEDPANE, new TabbedPaneElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_SCROLLPANE, new ScrollPaneElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_SPLITPANE, new SplitPaneElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_SUBFORM, new SubFormElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_SUBFORMCOLUMN, new SubFormColumnElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_CHART, new ChartElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_LABEL, new LabelElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_IMAGE, new ImageElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TEXTFIELD, new TextFieldElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TEXTAREA, new TextAreaElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_COMBOBOX, new ComboBoxElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_BUTTON, new ButtonElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_COLLECTABLECOMPONENT, new CollectableComponentElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_DESCRIPTION, new DescriptionElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_BORDERLAYOUT, new BorderLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_FLOWLAYOUT, new FlowLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_GRIDLAYOUT, new GridLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_GRIDBAGLAYOUT, new GridBagLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TABLELAYOUT, new TableLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_BOXLAYOUT, new BoxLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_ROWLAYOUT, new RowLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_COLUMNLAYOUT, new ColumnLayoutElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_BORDERLAYOUTCONSTRAINTS, new BorderLayoutConstraintsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TABBEDPANECONSTRAINTS, new TabbedPaneConstraintsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_SPLITPANECONSTRAINTS, new SplitPaneConstraintsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_GRIDBAGCONSTRAINTS, new GridBagConstraintsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TABLELAYOUTCONSTRAINTS, new TableLayoutConstraintsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_MINIMUMSIZE, new MinimumSizeElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PREFERREDSIZE, new PreferredSizeElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_STRICTSIZE, new StrictSizeElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_CLEARBORDER, new ClearBorderElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_EMPTYBORDER, new EmptyBorderElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_ETCHEDBORDER, new EtchedBorderElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_BEVELBORDER, new BevelBorderElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_LINEBORDER, new LineBorderElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TITLEDBORDER, new TitledBorderElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_FONT, new FontElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_BACKGROUND, new BackgroundElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_SEPARATOR, new SeparatorElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TITLEDSEPARATOR, new TitledSeparatorElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_OPTIONS, new OptionsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_OPTION, new OptionElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_RULE, new RuleElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_EVENT, new EventElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TRANSFERLOOKEDUPVALUE, new TransferLookedUpValueElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_CLEAR, new ClearElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_REFRESHVALUELIST, new RefreshValueListElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_DEPENDENCY, new DependencyElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_VALUELISTPROVIDER, new ValueListProviderElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PARAMETER, new ParameterElementProcessor());
+
+			this.mpElementProcessors.put(ELEMENT_PROPERTY, new PropertyElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_SIZE, new PropertySizeElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_COLOR, new PropertyColorElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_FONT, new PropertyFontElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_SCRIPT, new PropertyScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_TRANSLATIONS, new PropertyTranslationsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_VALUELIST_PROVIDER, new PropertyValuelistProviderElementProcessor());
+
+			this.mpElementProcessors.put(ELEMENT_INITIALFOCUSCOMPONENT, new InitialFocusComponentProcessor());
+			this.mpElementProcessors.put(ELEMENT_INITIALSORTINGORDER, new InitialSortingOrderProcessor());
+			this.mpElementProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_TRANSLATION, new TranslationElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_LAYOUTCOMPONENT, new LayoutComponentElementProcessor());
+
+			this.mpElementProcessors.put(ELEMENT_ENABLED, new ScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_NEW_ENABLED, new ScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_EDIT_ENABLED, new ScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_DELETE_ENABLED, new ScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_CLONE_ENABLED, new ScriptElementProcessor());
+		}
 
 		/**
 		 * maps field names to (multiple) <code>CollectableComponent</code>s
@@ -931,49 +1005,26 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		 * maps XML attribute values (e.g. <code>ATTRIBUTEVALUE_TEXTFIELD</code>)
 		 * to control types (e.g. <code>TYPE_TEXTFIELD</code>)
 		 */
-		private final Map<String, Integer> mpEnumeratedControlTypes = new HashMap<String, Integer>(5);
+		private static final Map<String, Integer> mpEnumeratedControlTypes = new HashMap<String, Integer>();
 
-		private final Map<String, Integer> mpFlowLayoutConstants = new HashMap<String, Integer>(5);
-		private final Map<String, String> mpBorderLayoutConstraints = new HashMap<String, String>(5);
-		private final Map<String, Integer> mpTabLayoutPolicies = new HashMap<String, Integer>(2);
-		private final Map<String, Integer> mpTabPlacementConstants = new HashMap<String, Integer>(4);
-		private final Map<String, Integer> mpGridBagConstraintAnchor = new HashMap<String, Integer>(10);
-		private final Map<String, Integer> mpGridBagConstraintFill = new HashMap<String, Integer>(4);
-		private final Map<String, Integer> mpHorizontalScrollBarPolicies = new HashMap<String, Integer>(3);
-		private final Map<String, Integer> mpVerticalScrollBarPolicies = new HashMap<String, Integer>(3);
-		private final Map<String, String> mpSplitPaneConstraints = new HashMap<String, String>(4);
-		private final Map<String, Integer> mpSplitPaneOrientation = new HashMap<String, Integer>(2);
-		private final Map<String, Integer> mpLineLayoutOrientation = new HashMap<String, Integer>(2);
-		private final Map<String, Integer> mpSwingConstantsOrientation = new HashMap<String, Integer>(2);
-		private final Map<String, Integer> mpSeparatorOrientation;
-		private final Map<String, Integer> mpToolBarOrientation = new HashMap<String, Integer>(3);
-		private final Map<String, Integer> mpScrollPane = new HashMap<String, Integer>(4);
-		private final Map<String, Integer> mpSwingConstantsScrollpane = new HashMap<String, Integer>(3);
-
-		private EntityAndFieldName eafnInitialFocus;
-
-		private String sInitialSortingColumnName;
-		private String sInitialSortingOrder;
-
-		/**
-		 * initializes the maps.
-		 * @param clcte the optional <code>CollectableEntity</code> that defines the structure of
-		 * collectable-component elements
-		 * @param bCreateSearchableComponents
-		 * @param alButtons the common <code>ActionListener</code>, if any, for all button elements.
-		 * @param valueListProviderFactory
-		 * @precondition clcte != null
-		 */
-		private BuildFormHandler(CollectableEntity clcte, boolean bCreateSearchableComponents, ActionListener alButtons,
-				CollectableComponentFactory collectableComponentFactory, CollectableFieldsProviderFactory valueListProviderFactory) {
-			this.clcte = clcte;
-			this.bCreateSearchableComponents = bCreateSearchableComponents;
-			this.alButtons = alButtons;
-			this.valueListProviderFactory = valueListProviderFactory;
-			this.clctcompfactory = collectableComponentFactory;
-
-			this.setupElementProcessors();
-
+		private static final Map<String, Integer> mpFlowLayoutConstants = new HashMap<String, Integer>(5);
+		private static final Map<String, String> mpBorderLayoutConstraints = new HashMap<String, String>(5);
+		private static final Map<String, Integer> mpTabLayoutPolicies = new HashMap<String, Integer>(2);
+		private static final Map<String, Integer> mpTabPlacementConstants = new HashMap<String, Integer>(4);
+		private static final Map<String, Integer> mpGridBagConstraintAnchor = new HashMap<String, Integer>(10);
+		private static final Map<String, Integer> mpGridBagConstraintFill = new HashMap<String, Integer>(4);
+		private static final Map<String, Integer> mpHorizontalScrollBarPolicies = new HashMap<String, Integer>(3);
+		private static final Map<String, Integer> mpVerticalScrollBarPolicies = new HashMap<String, Integer>(3);
+		private static final Map<String, String> mpSplitPaneConstraints = new HashMap<String, String>(4);
+		private static final Map<String, Integer> mpSplitPaneOrientation = new HashMap<String, Integer>(2);
+		private static final Map<String, Integer> mpLineLayoutOrientation = new HashMap<String, Integer>(2);
+		private static final Map<String, Integer> mpSwingConstantsOrientation = new HashMap<String, Integer>(2);
+		private static final Map<String, Integer> mpSeparatorOrientation = new HashMap<String, Integer>(2);
+		private static final Map<String, Integer> mpToolBarOrientation = new HashMap<String, Integer>(3);
+		private static final Map<String, Integer> mpScrollPane = new HashMap<String, Integer>(4);
+		private static final Map<String, Integer> mpSwingConstantsScrollpane = new HashMap<String, Integer>(3);
+		
+		{
 			// control types:
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_TEXTFIELD, CollectableComponentTypes.TYPE_TEXTFIELD);
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_IDTEXTFIELD, CollectableComponentTypes.TYPE_IDTEXTFIELD);
@@ -1057,7 +1108,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpSwingConstantsOrientation.put("horizontal", SwingConstants.HORIZONTAL);
 			this.mpSwingConstantsOrientation.put("vertical", SwingConstants.VERTICAL);
 
-			this.mpSeparatorOrientation = this.mpSwingConstantsOrientation;
+			this.mpSeparatorOrientation.putAll(mpSwingConstantsOrientation);
 			this.mpToolBarOrientation.putAll(mpSwingConstantsOrientation);
 			this.mpToolBarOrientation.put("hide", -1);
 
@@ -1070,80 +1121,27 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpScrollPane.put("none", -1);
 		}
 
-		private void setupElementProcessors() {
-			// element processors:
-			this.mpElementProcessors.put(ELEMENT_PANEL, new PanelElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_EMPTYPANEL, new PanelElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TABBEDPANE, new TabbedPaneElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_SCROLLPANE, new ScrollPaneElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_SPLITPANE, new SplitPaneElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_SUBFORM, new SubFormElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_SUBFORMCOLUMN, new SubFormColumnElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_CHART, new ChartElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_LABEL, new LabelElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_IMAGE, new ImageElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TEXTFIELD, new TextFieldElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TEXTAREA, new TextAreaElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_COMBOBOX, new ComboBoxElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_BUTTON, new ButtonElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_COLLECTABLECOMPONENT, new CollectableComponentElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_DESCRIPTION, new DescriptionElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_BORDERLAYOUT, new BorderLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_FLOWLAYOUT, new FlowLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_GRIDLAYOUT, new GridLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_GRIDBAGLAYOUT, new GridBagLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TABLELAYOUT, new TableLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_BOXLAYOUT, new BoxLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_ROWLAYOUT, new RowLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_COLUMNLAYOUT, new ColumnLayoutElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_BORDERLAYOUTCONSTRAINTS, new BorderLayoutConstraintsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TABBEDPANECONSTRAINTS, new TabbedPaneConstraintsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_SPLITPANECONSTRAINTS, new SplitPaneConstraintsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_GRIDBAGCONSTRAINTS, new GridBagConstraintsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TABLELAYOUTCONSTRAINTS, new TableLayoutConstraintsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_MINIMUMSIZE, new MinimumSizeElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PREFERREDSIZE, new PreferredSizeElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_STRICTSIZE, new StrictSizeElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_CLEARBORDER, new ClearBorderElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_EMPTYBORDER, new EmptyBorderElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_ETCHEDBORDER, new EtchedBorderElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_BEVELBORDER, new BevelBorderElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_LINEBORDER, new LineBorderElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TITLEDBORDER, new TitledBorderElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_FONT, new FontElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_BACKGROUND, new BackgroundElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_SEPARATOR, new SeparatorElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TITLEDSEPARATOR, new TitledSeparatorElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_OPTIONS, new OptionsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_OPTION, new OptionElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_RULE, new RuleElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_EVENT, new EventElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TRANSFERLOOKEDUPVALUE, new TransferLookedUpValueElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_CLEAR, new ClearElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_REFRESHVALUELIST, new RefreshValueListElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_DEPENDENCY, new DependencyElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_VALUELISTPROVIDER, new ValueListProviderElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PARAMETER, new ParameterElementProcessor());
+		private EntityAndFieldName eafnInitialFocus;
 
-			this.mpElementProcessors.put(ELEMENT_PROPERTY, new PropertyElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PROPERTY_SIZE, new PropertySizeElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PROPERTY_COLOR, new PropertyColorElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PROPERTY_FONT, new PropertyFontElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PROPERTY_SCRIPT, new PropertyScriptElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PROPERTY_TRANSLATIONS, new PropertyTranslationsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_PROPERTY_VALUELIST_PROVIDER, new PropertyValuelistProviderElementProcessor());
+		private String sInitialSortingColumnName;
+		private String sInitialSortingOrder;
 
-			this.mpElementProcessors.put(ELEMENT_INITIALFOCUSCOMPONENT, new InitialFocusComponentProcessor());
-			this.mpElementProcessors.put(ELEMENT_INITIALSORTINGORDER, new InitialSortingOrderProcessor());
-			this.mpElementProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_TRANSLATION, new TranslationElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_LAYOUTCOMPONENT, new LayoutComponentElementProcessor());
-
-			this.mpElementProcessors.put(ELEMENT_ENABLED, new ScriptElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_NEW_ENABLED, new ScriptElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_EDIT_ENABLED, new ScriptElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_DELETE_ENABLED, new ScriptElementProcessor());
-			this.mpElementProcessors.put(ELEMENT_CLONE_ENABLED, new ScriptElementProcessor());
+		/**
+		 * initializes the maps.
+		 * @param clcte the optional <code>CollectableEntity</code> that defines the structure of
+		 * collectable-component elements
+		 * @param bCreateSearchableComponents
+		 * @param alButtons the common <code>ActionListener</code>, if any, for all button elements.
+		 * @param valueListProviderFactory
+		 * @precondition clcte != null
+		 */
+		private BuildFormHandler(CollectableEntity clcte, boolean bCreateSearchableComponents, ActionListener alButtons,
+				CollectableComponentFactory collectableComponentFactory, CollectableFieldsProviderFactory valueListProviderFactory) {
+			this.clcte = clcte;
+			this.bCreateSearchableComponents = bCreateSearchableComponents;
+			this.alButtons = alButtons;
+			this.valueListProviderFactory = valueListProviderFactory;
+			this.clctcompfactory = collectableComponentFactory;
 		}
 
 		/**

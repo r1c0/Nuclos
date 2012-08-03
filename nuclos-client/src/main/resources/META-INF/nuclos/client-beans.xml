@@ -211,8 +211,11 @@
 		<property name="searchFilterFacadeRemote" ref="searchFilterService"/>
 		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
 	</bean>
-	<bean id="stateDelegate" class="org.nuclos.client.statemodel.StateDelegate">
+	<bean id="stateDelegate" class="org.nuclos.client.statemodel.StateDelegate"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.statemodel.StateDelegate" />
 		<property name="stateFacadeRemote" ref="stateService"/>
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 	</bean>
 	<bean id="taskDelegate" class="org.nuclos.client.task.TaskDelegate">
 		<property name="taskFacadeRemote" ref="taskService"/>

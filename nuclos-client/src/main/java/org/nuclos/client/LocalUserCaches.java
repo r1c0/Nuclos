@@ -55,6 +55,7 @@ import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.searchfilter.SearchFilterCache;
+import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.tasklist.TasklistCache;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
@@ -236,6 +237,7 @@ public class LocalUserCaches extends java.util.Properties {
             	storeObject(ClientParameterProvider.getInstance());
             	storeObject(LocaleDelegate.getInstance());
             	storeObject(TasklistCache.getInstance());
+            	storeObject(StateDelegate.getInstance());
             	
             	put(LOCALUSERCACHES_APP_VERSION, ApplicationProperties.getInstance().getCurrentVersion().getSchemaVersion());
             	store(out, ApplicationProperties.getInstance().getAppId() + " Local User Caches");

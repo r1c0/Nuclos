@@ -271,7 +271,7 @@ public class NuclosCollectControllerFactory {
 
 		final String sControllerType = subform.getControllerType();
 		if (sControllerType == null || sControllerType.equals("default")) {
-			if (MasterDataDelegate.getInstance().getMetaData(subform.getEntityName()).isDynamic()) {
+			if (MetaDataClientProvider.getInstance().getEntity(subform.getEntityName()).isDynamic()) {
 				result = new DynamicEntitySubFormController(tab, clctcompmodelprovider, sParentEntityName, subform, prefs, entityPrefs, valueListProviderCache);
 			}
 			else {

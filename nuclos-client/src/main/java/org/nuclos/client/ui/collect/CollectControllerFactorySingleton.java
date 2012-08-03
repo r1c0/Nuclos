@@ -18,6 +18,7 @@ package org.nuclos.client.ui.collect;
 
 import java.util.Collection;
 
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.customcode.CodeCollectController;
 import org.nuclos.client.datasource.admin.ChartCollectController;
 import org.nuclos.client.datasource.admin.CollectableDataSource;
@@ -42,7 +43,6 @@ import org.nuclos.client.masterdata.GenerationCollectController;
 import org.nuclos.client.masterdata.GenericObjectImportStructureCollectController;
 import org.nuclos.client.masterdata.GroupCollectController;
 import org.nuclos.client.masterdata.MasterDataCollectController;
-import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.masterdata.NucletCollectController;
 import org.nuclos.client.masterdata.RelationTypeCollectController;
 import org.nuclos.client.masterdata.SearchFilterCollectController;
@@ -430,8 +430,7 @@ public class CollectControllerFactorySingleton {
 	 */
 	public GenericObjectCollectController newGenericObjectCollectController(Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableGenericObjectWithDependants> ss;
-		final MetaDataDelegate md = MetaDataDelegate.getInstance();
-		final EntityMetaDataVO mdvo = md.getEntityById(IdUtils.toLongId(iModuleId));
+		final EntityMetaDataVO mdvo = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 		final CollectableEntityProvider cep = CollectableEOEntityClientProvider.getInstance();
 		ss = new GenericObjectViaEntityObjectSearchStrategy((CollectableEOEntity) cep.getCollectableEntity(mdvo.getEntity()));
 		// Old (pre-pivot) search strategy

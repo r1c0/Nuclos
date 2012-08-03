@@ -2377,7 +2377,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 		finally {
 			/** @todo this doesn't seem to belong here... */
-			this.addUsageCriteriaFieldListeners(false);
+			if (!getUsageCriteriaFieldListenersAdded(false))
+				this.addUsageCriteriaFieldListeners(false);
 		}
 		LOG.debug("GenericObjectCollectController.unsafeFillDetailsPanel done");
 	}
@@ -2717,18 +2718,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		return sbResult.toString();
 	}
-
+	
 	private void loadLayoutForDetailsTab(CollectableGenericObject clct, CollectState collectstate, boolean getUsageCriteriaFromClctOnly) throws CommonBusinessException {
 		LOG.debug("loadLayoutForDetailsTab start");
-		boolean transferContents = !collectstate.isDetailsModeNew();
-		if (collectstate.isDetailsModeNew()) {
-			this.reloadLayout(getUsageCriteriaFromClctOnly?
-					getUsageCriteria(clct) :
-					getUsageCriteriaFromView(false), collectstate, transferContents, false);
 
-		}
+		boolean transferContents = !collectstate.isDetailsModeNew();
+		UsageCriteria uc = null;
+		if (collectstate.isDetailsModeNew())
+			uc = getUsageCriteriaFromClctOnly ? getUsageCriteria(clct) : getUsageCriteriaFromView(false);
 		else
-			this.reloadLayout(getUsageCriteria(clct), collectstate, transferContents, false);
+			uc = getUsageCriteria(clct);
+		
+		this.reloadLayout(uc, collectstate, transferContents, false);
+
 		LOG.debug("loadLayoutForDetailsTab done");
 	}
 
@@ -2748,6 +2750,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 		else
 			result = super.readSelectedCollectable();
+		
 		return result;
 	}
 
@@ -4710,16 +4713,26 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		this.reloadLayout(usagecriteria, collectstate, true, bAddUsageCriteriaFieldListeners);
 	}
 
-	private void reloadLayout(UsageCriteria usagecriteria, CollectState collectstate, boolean bTransferContents, boolean bAddUsageCriteriaFieldListeners)
+	private Integer iCurrentLayoutId = null;
+
+	private void reloadLayout(final UsageCriteria usagecriteria, final CollectState collectstate, final boolean bTransferContents, final boolean bAddUsageCriteriaFieldListeners)
 	throws CommonBusinessException {
 		/** @todo don't do this unless the layout really changed! */
-
 		if (bReloadingLayout)
 			throw new IllegalStateException("reloadLayout must not be called recursively!");
 
 		final boolean bSearchPanel = collectstate.isSearchMode();
 		try {
 			bReloadingLayout = true;
+
+			final boolean bSearchMode = collectstate.isSearchMode();
+			/** @todo maybe factor this out in a protected method and override in GeneralSearchCollectController */
+			final org.nuclos.common.collect.collectable.CollectableEntity clcte = bSearchMode ? getCollectableEntity() : CollectableGenericObjectEntity.getByModuleId(usagecriteria.getModuleId());
+			final Integer iLayout = GenericObjectLayoutCache.getInstance().getLayoutId(clcte, usagecriteria, bSearchMode);
+			if (LangUtils.equals(iCurrentLayoutId, iLayout))
+				return;
+			
+			iCurrentLayoutId = iLayout;
 
 			final LayoutRoot layoutroot = getLayoutFromCache(usagecriteria, collectstate);
 
@@ -4744,7 +4757,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 				respectRights(getDetailsPanel().getEditView().getCollectableComponents(), collsubform, usagecriteria, collectstate);
 				respectRights(getDetailsPanel().getEditView().getCollectableLabels(), collsubform, usagecriteria, collectstate);
-
+				
 				// ensure the (possibly new) edit panel is shown completely:
 				UIUtils.ensureMinimumSize(getTab());
 
@@ -4753,7 +4766,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 			finally {
 				if (bAddUsageCriteriaFieldListeners)
-					this.addUsageCriteriaFieldListeners(bSearchPanel);
+					GenericObjectCollectController.this.addUsageCriteriaFieldListeners(bSearchPanel);
 			}
 		}
 		finally {
@@ -4782,7 +4795,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private void transferDetailsPanel(final LayoutRoot layoutroot, JComponent compEditOld) {
 		// transfer field contents from the old components to the new ones:
-
 		final boolean bChangeListenersWereAdded = changeListenersForDetailsAdded();
 
 		if (bChangeListenersWereAdded)

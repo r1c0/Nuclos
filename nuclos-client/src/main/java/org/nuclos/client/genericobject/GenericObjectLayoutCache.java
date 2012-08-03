@@ -68,7 +68,7 @@ public class GenericObjectLayoutCache extends AbstractLocalUserCache implements 
 	private static final Logger LOG = Logger.getLogger(GenericObjectLayoutCache.class);
 
 	private static GenericObjectLayoutCache INSTANCE;
-	
+
 	// 
 	
 	// Spring injection
@@ -179,6 +179,33 @@ public class GenericObjectLayoutCache extends AbstractLocalUserCache implements 
 	 * @param clcte
 	 * @param usagecriteria
 	 * @param bSearchScreen
+	 * @return id of the LayoutRoot
+	 * @precondition clcte != null
+	 * @precondition usagecriteria != null
+	 * @precondition clcte.getName().equals(Modules.getInstance().getEntityNameByModuleId(usagecriteria.getModuleId()))
+	 */
+	public synchronized Integer getLayoutId(CollectableEntity clcte, UsageCriteria usagecriteria, boolean bSearchScreen) {
+		if (clcte == null) {
+			throw new NullArgumentException("clcte");
+		}
+		if (usagecriteria == null) {
+			throw new NullArgumentException("usagecriteria");
+		}
+		final String sEntityName = clcte.getName();
+		final Integer iModuleId = usagecriteria.getModuleId();
+		
+		if (!sEntityName.equals(Modules.getInstance().getEntityNameByModuleId(iModuleId))) {
+			throw new IllegalArgumentException("The entity (\"" + sEntityName + "\") doesn't match the module id (" + iModuleId + ").");
+		}
+		
+		return this.getLayoutId(usagecriteria, bSearchScreen);
+	}
+
+	/**
+	 * parses the LayoutML definition and gets the layout information
+	 * @param clcte
+	 * @param usagecriteria
+	 * @param bSearchScreen
 	 * @param actionlistener
 	 * @return the LayoutRoot containing the layout information
 	 * @precondition clcte != null
@@ -228,7 +255,6 @@ public class GenericObjectLayoutCache extends AbstractLocalUserCache implements 
 			throw new NuclosFatalException(ex.getMessage(), ex);
 			/** @todo It would be better if new NuclosFatalException(ex) would do the same. */
 		}
-		
 		return result;
 	}
 

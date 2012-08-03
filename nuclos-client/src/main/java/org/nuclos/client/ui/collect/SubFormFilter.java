@@ -77,6 +77,7 @@ import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
 import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.ui.gc.ListenerUtil;
+import org.nuclos.common.CopyUtils;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
@@ -134,8 +135,10 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
       this.miFilter = miFilter;
       this.collectableFieldsProviderFactory = collectableFieldsProviderFactory;
 
-      setFixedSubFormFilter(fixedTable, fixedColumnModel);
-      setExternalSubFormFilter(externalTable, externalColumnModel);
+      //Map<String, CollectableComponent> searchFilterComponents = getSearchFilterComponents();
+      
+      setFixedSubFormFilter(fixedTable, fixedColumnModel, getSearchFilterComponents());
+      setExternalSubFormFilter(externalTable, externalColumnModel, getSearchFilterComponents());
 
       addActionListener();
    }
@@ -378,8 +381,8 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
       return ClientPreferences.getUserPreferences().node("collect").node("entity").node(entityName).node("subformfilter").node(subform.getEntityName());
    }
 
-   private void setFixedSubFormFilter(JTable table, TableColumnModel columnModel) {
-      this.fixedSubFormFilter = new SubFormFilterPanel(columnModel, getSearchFilterComponents(), true);
+   private void setFixedSubFormFilter(JTable table, TableColumnModel columnModel, Map<String, CollectableComponent> searchFilterComponents) {
+      this.fixedSubFormFilter = new SubFormFilterPanel(columnModel, searchFilterComponents, true);
       setupResetFilterAction();
    }
 
@@ -387,8 +390,8 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
       return this.fixedSubFormFilter;
    }
 
-   private void setExternalSubFormFilter(JTable table, TableColumnModel columnModel) {
-      this.externalSubFormFilter = new SubFormFilterPanel(columnModel, getSearchFilterComponents(), false);
+   private void setExternalSubFormFilter(JTable table, TableColumnModel columnModel, Map<String, CollectableComponent> searchFilterComponents) {
+      this.externalSubFormFilter = new SubFormFilterPanel(columnModel, searchFilterComponents, false);
    }
 
    public SubFormFilterPanel getExternalSubFormFilter() {

@@ -21,14 +21,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.nuclos.client.caching.JMSFlushingCache;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.gef.shapes.AbstractShape;
+import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
-import org.nuclos.common.caching.GenCache;
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -41,6 +48,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.statemodel.NuclosNoAdequateStatemodelException;
 import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
@@ -52,6 +60,8 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.nuclos.server.statemodel.valueobject.TransitionLayout;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Business Delegate for <code>StateFacadeBean</code>.
@@ -63,13 +73,20 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  * @version 01.00.00
  */
 
-public class StateDelegate {
+public class StateDelegate extends AbstractLocalUserCache implements MessageListener, InitializingBean, DisposableBean {
 	
 	private static StateDelegate INSTANCE;
 	
+	//
+	
+	private Map<Integer, StatemodelClosure> mp;
+	
 	// Spring injection
 	
-	private StateFacadeRemote stateFacadeRemote;
+	private transient StateFacadeRemote stateFacadeRemote;
+	
+	private transient TopicNotificationReceiver tnr;
+
 	
 	// end of Spring injection
 
@@ -77,15 +94,47 @@ public class StateDelegate {
 		INSTANCE = this;
 	}
 	
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
+	}
+
+	// @Autowired
 	public final void setStateFacadeRemote(StateFacadeRemote stateFacadeRemote) {
 		this.stateFacadeRemote = stateFacadeRemote;
 	}
 
+	@Override
+	public void afterPropertiesSet() {
+		if (!wasDeserialized() || !isValid())
+			invalidate();
+		tnr.subscribe(getCachingTopic(), this);
+	}
+	
+	private void invalidate() {
+		mp = new ConcurrentHashMap<Integer, StatemodelClosure>();
+		for (MasterDataVO mdvo : Modules.getInstance().getModules()) {
+			mp.put(mdvo.getIntId(), stateFacadeRemote.getStatemodelClosureForModule(mdvo.getIntId()));
+		}
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_STATEMODEL;
+	}
+
 	public static StateDelegate getInstance() {
 		if (INSTANCE == null) {
-			throw new IllegalStateException("too early");
+			// throw new IllegalStateException("too early");
+			// lazy support
+			INSTANCE =  (StateDelegate) SpringApplicationContextHolder.getBean("stateDelegate");
 		}
 		return INSTANCE;
+	}
+
+	@Override
+	public void onMessage(Message arg0) {
+		invalidate();
 	}
 
 
@@ -328,22 +377,19 @@ public class StateDelegate {
 		}
 	}
 
-	private JMSFlushingCache<Integer, StatemodelClosure> closureCache
-		= new JMSFlushingCache<Integer, StatemodelClosure>(
-			JMSConstants.TOPICNAME_STATEMODEL, 
-			new GenCache.LookupProvider<Integer, StatemodelClosure>() {
-				@Override
-	            public StatemodelClosure lookup(Integer moduleId) {
-					return stateFacadeRemote.getStatemodelClosureForModule(moduleId);
-	            }
-			});
-
 	public StatemodelClosure getStatemodelClosure(Integer moduleId) {
-		return closureCache.get(moduleId);
+		if (!mp.containsKey(moduleId))
+			mp.put(moduleId, stateFacadeRemote.getStatemodelClosureForModule(moduleId));
+		return mp.get(moduleId);
 	}
 
 	public Statemodel getStatemodel(UsageCriteria ucrit) {
 		return getStatemodelClosure(ucrit.getModuleId()).getStatemodel(ucrit);
+	}
+
+	@Override
+	public synchronized void destroy() {
+		tnr.unsubscribe(this);
 	}
 
 }	// class StateDelegate

@@ -119,7 +119,7 @@ public class DatasourceCache {
 
 	@PostConstruct
 	public final void init() {
-		findDatasourcesById();
+		initializeCache();
 	}
 
 	@Autowired
@@ -142,7 +142,7 @@ public class DatasourceCache {
 		this.nucletDalProvider = nucletDalProvider;
 	}
 
-	private void findDatasourcesById() {
+	private void initializeCache() {
 		LOG.info("Initializing DatasourceCache");
 		// Check if it is 'too early'
 		NucletDalProvider.getInstance();
@@ -230,7 +230,7 @@ public class DatasourceCache {
 		mpChartById.clear();
 
 		datasourceServerUtils.invalidateCache();
-		findDatasourcesById();
+		initializeCache();
 	}
 	
 
@@ -258,7 +258,7 @@ public class DatasourceCache {
 		List<DatasourceVO>result = new ArrayList<DatasourceVO>();
 
 		if (mpDatasourcesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		for (DatasourceVO datasourceVO : mpDatasourcesById.values()) {
 			if(getPermission(datasourceVO.getId(), sUser) != DatasourceVO.PERMISSION_NONE) {
@@ -276,7 +276,7 @@ public class DatasourceCache {
 		List<DatasourceVO>result = new ArrayList<DatasourceVO>();
 
 		if (mpDatasourcesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		result.addAll(mpDatasourcesById.values());
 
@@ -306,7 +306,7 @@ public class DatasourceCache {
 		List<ValuelistProviderVO> result = new ArrayList<ValuelistProviderVO>();
 
 		if (mpValuelistProviderById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		result.addAll(mpValuelistProviderById.values());
 
@@ -323,7 +323,7 @@ public class DatasourceCache {
 			return null;
 		}
 		if (mpValuelistProviderById.isEmpty()) {
-			findDatasourcesById();
+			;//findDatasourcesById();
 		}
 		return mpValuelistProviderById.get(iValuelistProviderId);
 	}
@@ -336,7 +336,7 @@ public class DatasourceCache {
 		List<RecordGrantVO> result = new ArrayList<RecordGrantVO>();
 
 		if (mpRecordGrantById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		result.addAll(mpRecordGrantById.values());
 
@@ -350,7 +350,7 @@ public class DatasourceCache {
 	 */
 	public RecordGrantVO getRecordGrant(Integer iRecordGrantId) {
 		if (mpRecordGrantById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		return mpRecordGrantById.get(iRecordGrantId);
 	}
@@ -363,7 +363,7 @@ public class DatasourceCache {
 		List<DynamicEntityVO>result = new ArrayList<DynamicEntityVO>();
 
 		if (mpDynamicEntitiesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		result.addAll(mpDynamicEntitiesById.values());
 
@@ -377,7 +377,7 @@ public class DatasourceCache {
 	 */
 	public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) {
 		if (mpDynamicEntitiesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		return mpDynamicEntitiesById.get(iDynamicEntityId);
 	}
@@ -390,7 +390,7 @@ public class DatasourceCache {
 		List<DynamicTasklistVO> result = new ArrayList<DynamicTasklistVO>();
 
 		if (mpDynamicTasklistById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		result.addAll(mpDynamicTasklistById.values());
 
@@ -404,7 +404,7 @@ public class DatasourceCache {
 	 */
 	public DynamicTasklistVO getDynamicTasklist(Integer iDynamicTasklistId) {
 		if (mpDynamicTasklistById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		return mpDynamicTasklistById.get(iDynamicTasklistId);
 	}
@@ -417,7 +417,7 @@ public class DatasourceCache {
 		List<ChartVO>result = new ArrayList<ChartVO>();
 
 		if (mpChartById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		result.addAll(mpChartById.values());
 
@@ -431,7 +431,7 @@ public class DatasourceCache {
 	 */
 	public ChartVO getChart(Integer iChartId) {
 		if (mpChartById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		return mpChartById.get(iChartId);
 	}
@@ -444,7 +444,7 @@ public class DatasourceCache {
 	 */
 	public DatasourceVO get(Integer iDatasourceId) {
 		if (mpDatasourcesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		return mpDatasourcesById.get(iDatasourceId);
 	}
@@ -458,7 +458,7 @@ public class DatasourceCache {
 	 */
 	public DatasourceVO getDatasourcesById(Integer iDatasourceId, String sUserName) throws CommonPermissionException {
 		if (mpDatasourcesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		if (getPermission(iDatasourceId, sUserName) == DatasourceVO.PERMISSION_NONE) {
 			throw new CommonPermissionException("datasource.cach.missing.permission");//"Sie haben kein Recht die Datenquelle zu lesen.");
@@ -485,7 +485,7 @@ public class DatasourceCache {
 	 */
 	public DatasourceVO getDatasourceByName(String sDatasourceName) {
 		if (mpDatasourcesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		DatasourceVO result = null;
 		for(DatasourceVO dsvo : mpDatasourcesById.values()) {
@@ -505,7 +505,7 @@ public class DatasourceCache {
 	 */
 	public ValuelistProviderVO getValuelistProviderByName(String sValuelistProviderName) {
 		if (mpDatasourcesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		ValuelistProviderVO result = null;
 		for(ValuelistProviderVO vpvo : mpValuelistProviderById.values()) {
@@ -525,7 +525,7 @@ public class DatasourceCache {
 	 */
 	public RecordGrantVO getRecordGrantByName(String sRecordGrantName) {
 		if (mpRecordGrantById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		RecordGrantVO result = null;
 		for(RecordGrantVO vpvo : mpRecordGrantById.values()) {
@@ -545,7 +545,7 @@ public class DatasourceCache {
 	 */
 	public DynamicEntityVO getDynamicEntityByName(String sDynamicEntityName) {
 		if (mpDatasourcesById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		DynamicEntityVO result = null;
 		for(DynamicEntityVO devo : mpDynamicEntitiesById.values()) {
@@ -565,7 +565,7 @@ public class DatasourceCache {
 	 */
 	public ChartVO getChartByName(String sChartName) {
 		if (mpChartById.isEmpty())
-			findDatasourcesById();
+			;//findDatasourcesById();
 
 		ChartVO result = null;
 		for(ChartVO cvo : mpChartById.values()) {
