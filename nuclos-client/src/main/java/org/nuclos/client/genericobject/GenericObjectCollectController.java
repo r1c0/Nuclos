@@ -6451,7 +6451,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 		ResultActionCollection rac = new ResultActionCollection(SpringLocaleDelegate.getInstance().getMessage("ResultPanel.15","Statuswechsel"));
 		
-		// try to find single soruce state...
+		// try to find single source state...
 		StateVO statevoSource = getSingleSourceStateIfAny(selectedCollectablesFromResult);
 		
 		for (StateVO statevoTarget : getSubsequentStates(selectedCollectablesFromResult)) {
