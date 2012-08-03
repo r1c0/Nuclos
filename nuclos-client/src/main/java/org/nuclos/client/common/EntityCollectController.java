@@ -158,8 +158,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				btnPointer.setEnabled(btnPointer.getAction().isEnabled());
+				getResultPanel().btnPointer.setEnabled(getResultPanel().btnPointer.getAction().isEnabled());
 			}
 		});
+		btnPointer.setName("btnPointer");
 		btnPointer.addMouseListener(getPointerContextListener());
 	}
 
@@ -194,6 +196,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				btnPointer.setEnabled(btnPointer.getAction().isEnabled());
+				getResultPanel().btnPointer.setEnabled(getResultPanel().btnPointer.getAction().isEnabled());
 			}
 		});
 		btnPointer.setName("btnPointer");
@@ -292,6 +295,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				}
 			}
 		});
+		this.getResultPanel().btnPointer.setAction(getPointerAction());
+		this.getResultPanel().btnPointer.addMouseListener(getPointerContextListener());
 	}
 	
 	protected List<ResultActionCollection> getResultActionsMultiThreaded(Collection<Clct> selectedCollectablesFromResult) {
@@ -854,6 +859,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 			if (SwingUtilities.isRightMouseButton(e)) {
 				if (pointerException != null) {
+					final JButton btn = getCollectState().isDetailsMode()? btnPointer: getResultPanel().btnPointer;
 					final JPopupMenu menu = new JPopupMenu();
 					final String itemLabel = getSpringLocaleDelegate().getMessage("EntityCollectController.1", "Herkunft anzeigen") + "...";
 					final JMenuItem originItem = new JMenuItem(itemLabel, iconPointer);
@@ -864,7 +870,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						}
 					});
 					menu.add(originItem);
-					menu.show(btnPointer, 0, btnPointer.getPreferredSize().height);
+					menu.show(btn, 0, btn.getPreferredSize().height);
 				}
 			}
 		}
@@ -886,6 +892,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			final PointerCollection pc = EntityCollectController.this.pointerCollection;
 			if (pc != null) {
 				final JPopupMenu menu = new JPopupMenu();
+				final JButton btn = getCollectState().isDetailsMode()? btnPointer: getResultPanel().btnPointer;
 
 				if (pc.getMainPointer().message != null) {
 					final String itemLabel = getSpringLocaleDelegate().getMessage("EntityCollectController.2", "Hinweis");
@@ -893,7 +900,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					mainItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							showPointerBubble(btnPointer, pc.getLocalizedMainPointer());
+							showPointerBubble(btn, pc.getLocalizedMainPointer());
 						}
 					});
 					menu.add(mainItem);
@@ -918,7 +925,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							if (fieldNotFound) {
-								showPointerBubble(btnPointer, getHtmlList(pc.getLocalizedFieldPointers(field)));
+								showPointerBubble(btn, getHtmlList(pc.getLocalizedFieldPointers(field)));
 							} else {
 								boolean fieldNotInLayout = true;
 								for (final CollectableComponent clctcomp : getDetailCollectableComponentsFor(field)) {
@@ -934,7 +941,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 									}
 								}
 								if (fieldNotInLayout) {
-									showPointerBubble(btnPointer, getSpringLocaleDelegate().getMessage(
+									showPointerBubble(btn, getSpringLocaleDelegate().getMessage(
 											"EntityCollectController.4", "Attribut nicht im Layout gefunden!") +
 										"<br/>" + getHtmlList(pc.getLocalizedFieldPointers(field)));
 								}
@@ -950,7 +957,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						return o1.getText().compareToIgnoreCase(o2.getText());
 					}}))
 					menu.add(menuItem);
-				menu.show(btnPointer, 0, btnPointer.getPreferredSize().height);
+				menu.show(btn, 0, btn.getPreferredSize().height);
 			}
 		}
 
@@ -991,7 +998,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected void showPointers(final PointerCollection pc) {
 		if (pc != null) {
 			if (pc.getMainPointer().message != null) {
-				showPointerBubble(btnPointer, pc.getLocalizedMainPointer());
+				JButton btn = getCollectState().isDetailsMode()? btnPointer: getResultPanel().btnPointer;
+				showPointerBubble(btn, pc.getLocalizedMainPointer());
 			}
 			for (final String field : pc.getFields()) {
 				if (pc.hasFieldPointers(field)) {
@@ -1089,9 +1097,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * @return true if exception handled
 	 */
 	public boolean handlePointerException(Exception ex) {
-		if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_VIEW ||
-			getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
-			getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_NEW_CHANGED) {
+		if (getCollectState().isDetailsMode() || getCollectState().isResultMode()) {
+			
 			final PointerException pex = PointerException.extractPointerExceptionIfAny(ex);
 			final NuclosBusinessRuleException nbrex = NuclosBusinessRuleException.extractNuclosBusinessRuleExceptionIfAny(ex);
 			if (pex != null) {

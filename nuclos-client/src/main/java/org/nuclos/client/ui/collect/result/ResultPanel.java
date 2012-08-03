@@ -192,6 +192,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	
 	public final JButton btnResetMainFilter = new JButton();
 	
+	public final JButton btnPointer = new JButton();
+	
 	public final ToggleSelectionModeButton btnToggleSelectionMode = new ToggleSelectionModeButton(
 			Main.getInstance().isMacOSX()?"\uf8ff":localeDelegate.getMessage("ResultPanel.18","Strg"),
 			Icons.getInstance().getIconDeSelectAll12(), Icons.getInstance().getIconDeSelectAllHover12(),
@@ -394,6 +396,9 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		if (popbtnExtra.getComponentCount() > 0)
 			toolBar.add(popbtnExtra);
 
+		this.toolBar.add(this.btnPointer);
+		this.btnPointer.setName("btnPointer");
+		
 		this.popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {

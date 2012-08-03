@@ -256,6 +256,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.navigation.treenode.EntitySearchResultTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.resource.valueobject.ResourceVO;
+import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.MandatoryFieldVO;
@@ -5464,8 +5465,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			@Override
 			public String getExceptionMessage(CollectableGenericObjectWithDependants clctlo, Exception ex) {
+				String message = NuclosBusinessRuleException.extractOriginFromNuclosBusinessRuleExceptionIfAny(ex);
+				if (message == null) {
+					message = ex.getMessage();
+				}
 				return SpringLocaleDelegate.getInstance().getMessage(
-						"GenericObjectCollectController.89","Statuswechsel ist fehlgeschlagen f\u00fcr Datensatz {0}. {1}", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo), ex.getMessage());
+						"GenericObjectCollectController.89","Statuswechsel ist fehlgeschlagen f\u00fcr Datensatz {0}. {1}", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo), message);
 			}
 
 			@Override
