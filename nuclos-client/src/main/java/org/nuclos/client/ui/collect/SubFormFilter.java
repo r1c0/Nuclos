@@ -77,7 +77,6 @@ import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
 import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.ui.gc.ListenerUtil;
-import org.nuclos.common.CopyUtils;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
