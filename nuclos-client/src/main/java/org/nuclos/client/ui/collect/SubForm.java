@@ -295,7 +295,8 @@ public class SubForm extends JPanel
 				return ToolbarFunction.valueOf(actionCommand);
 			}
 			catch(Exception e) {
-				LOG.info("fromCommandString failed on " + actionCommand, e);
+				// ignore here. 
+				LOG.debug("fromCommandString failed on " + actionCommand);
 				return null;
 			}
 		}

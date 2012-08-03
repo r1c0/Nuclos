@@ -520,6 +520,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			for (CollectableEntityObject clctmd : lsclctmd) {
 				if (!clctmd.isMarkedRemoved()) {
 					CollectableEntityObject clone = new CollectableEntityObject(clctmd.getCollectableEntity(), clctmd.getEntityObjectVO().copy());
+					clone.setField(mdsfctl.getForeignKeyFieldName(), CollectableValueIdField.NULL); // reset referencing field.- @see NUCLOS-736
 					mdsfctl.insertNewRow(clone);
 					mdsfctl.cloneDependantData(clctmd, clone);
 				}

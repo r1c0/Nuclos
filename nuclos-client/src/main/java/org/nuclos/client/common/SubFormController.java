@@ -112,8 +112,6 @@ public abstract class SubFormController extends MainFrameTabController
 
 	private static final Logger LOG = Logger.getLogger(SubFormController.class);
 
-	private static final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
-
 	/**
 	 * this controller's subform
 	 */
