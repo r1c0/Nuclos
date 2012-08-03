@@ -437,6 +437,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		
 		if (popupContent != null) {
 			final Rectangle menuScreenBounds = popupContent.getBounds();
+			menuScreenBounds.height-=2;
 			try {
 				menuScreenBounds.setLocation(popupContent.getLocationOnScreen());
 			} catch (Exception e) {
