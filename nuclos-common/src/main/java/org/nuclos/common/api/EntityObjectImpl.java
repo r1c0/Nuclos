@@ -25,11 +25,11 @@ import org.nuclos.api.SystemAttribute;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 
-public class EntityObject implements org.nuclos.api.EntityObject {
+public class EntityObjectImpl implements org.nuclos.api.EntityObject {
 	
 	private final EntityObjectVO vo;
 
-	public EntityObject(EntityObjectVO vo) {
+	public EntityObjectImpl(EntityObjectVO vo) {
 		super();
 		if (vo == null) {
 			throw new IllegalArgumentException("vo must not be null");
@@ -111,7 +111,7 @@ public class EntityObject implements org.nuclos.api.EntityObject {
 			if (id == null) {
 				return null;
 			} else {
-				State result = new State();
+				StateImpl result = new StateImpl();
 				result.setId(id);
 				result.setName(vo.getField(NuclosEOField.STATE.getName(), String.class));
 				result.setNumeral(vo.getField(NuclosEOField.STATENUMBER.getName(), Integer.class));
@@ -123,7 +123,7 @@ public class EntityObject implements org.nuclos.api.EntityObject {
 			if (id == null) {
 				return null;
 			} else {
-				Process result = new Process();
+				ProcessImpl result = new ProcessImpl();
 				result.setId(id);
 				result.setName(vo.getField(NuclosEOField.PROCESS.getName(), String.class));
 				return (S) result;
@@ -138,7 +138,7 @@ public class EntityObject implements org.nuclos.api.EntityObject {
 	@Override
 	public <S> void setSystemValue(SystemAttribute<S> attribute, S value) {
 		if (attribute == SystemAttribute.PROCESS) {
-			Process process = (Process) value;
+			ProcessImpl process = (ProcessImpl) value;
 			vo.getFieldIds().put(NuclosEOField.PROCESS.getName(), process.getId());
 			vo.getFields().put(NuclosEOField.PROCESS.getName(), process.getName());
 			if (!vo.isFlagNew() && !vo.isFlagRemoved()) {
@@ -181,8 +181,8 @@ public class EntityObject implements org.nuclos.api.EntityObject {
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		} else if (obj instanceof EntityObject) {
-			return LangUtils.equals(vo.getId(), ((EntityObject) obj).getSystemValue(SystemAttribute.ID));
+		} else if (obj instanceof EntityObjectImpl) {
+			return LangUtils.equals(vo.getId(), ((EntityObjectImpl) obj).getSystemValue(SystemAttribute.ID));
 		}
 		return super.equals(obj);
 	}

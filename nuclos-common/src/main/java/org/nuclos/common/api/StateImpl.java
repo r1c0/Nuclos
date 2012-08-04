@@ -18,12 +18,13 @@ package org.nuclos.common.api;
 
 import org.apache.commons.httpclient.util.LangUtils;
 
-public class Process implements org.nuclos.api.Process {
+public class StateImpl implements org.nuclos.api.State {
 	
 	private Long id;
+	private Integer numeral;
 	private String name;
 	
-	public Process() {
+	public StateImpl() {
 		super();
 	}
 	
@@ -32,6 +33,12 @@ public class Process implements org.nuclos.api.Process {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public Integer getNumeral() {
+		return numeral;
+	}
+	public void setNumeral(Integer numeral) {
+		this.numeral = numeral;
 	}
 	public String getName() {
 		return name;
@@ -49,8 +56,8 @@ public class Process implements org.nuclos.api.Process {
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		} else if (obj instanceof Process) {
-			return LangUtils.equals(id, ((Process) obj).getId());
+		} else if (obj instanceof StateImpl) {
+			return LangUtils.equals(id, ((StateImpl) obj).getId());
 		}
 		return super.equals(obj);
 	}
