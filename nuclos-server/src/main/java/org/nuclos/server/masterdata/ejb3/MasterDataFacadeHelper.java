@@ -521,6 +521,15 @@ public class MasterDataFacadeHelper {
 
 		if (mdmetavo.isCacheable()) {
 			this.notifyClients(mdmetavo.getEntityName());
+		} else {
+			if (nuclosEntity == NuclosEntity.RULETRANSITION
+					|| nuclosEntity == NuclosEntity.RULEGENERATION
+					|| nuclosEntity == NuclosEntity.RULEUSAGE
+					|| nuclosEntity == NuclosEntity.RULE
+					|| nuclosEntity == NuclosEntity.CODE
+					|| nuclosEntity == NuclosEntity.TIMELIMITRULE)
+				this.notifyClients(mdmetavo.getEntityName());	
+
 		}
 	}
 

@@ -20,15 +20,13 @@ import java.awt.Cursor;
 import java.util.List;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.rule.admin.CollectableRule;
 import org.nuclos.client.rule.admin.RuleCollectController;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;
 
 public class RuleSearchStrategy extends CollectSearchStrategy<CollectableRule> {
-
-	private final RuleDelegate ruledelegate = RuleDelegate.getInstance();
 
 	public RuleSearchStrategy() {
 	}
@@ -39,7 +37,7 @@ public class RuleSearchStrategy extends CollectSearchStrategy<CollectableRule> {
 		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			List<CollectableRule> result = CollectionUtils.transform(this.ruledelegate.getAllRules(),
+			List<CollectableRule> result = CollectionUtils.transform(RuleCache.getInstance().getAllRules(),
 					new CollectableRule.MakeCollectable());
 			if (getCollectableIdListCondition() != null) {
 				result = CollectionUtils.applyFilter(result, new CollectableIdPredicate(getCollectableIdListCondition().getIds()));

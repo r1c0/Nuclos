@@ -109,7 +109,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleCondition;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleEventType;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
-import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.IdUtils;
@@ -865,7 +865,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			// is a execute rule action command
 			try {
 				String rule = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES).getValue();
-				RuleVO ruleVO = RuleDelegate.getInstance().get(rule);
+				RuleVO ruleVO = RuleCache.getInstance().get(rule);
 				WYSIYWYGProperty temp = new WYSIYWYGProperty();
 				temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("ruletoexecute", ruleVO.getRule() + ""));
 				block.append(getLayoutMLCollectableComponentProperty(temp, blockDeep + 1));

@@ -131,6 +131,7 @@ import org.nuclos.client.relation.EntityRelationShipCollectController;
 import org.nuclos.client.report.admin.ReportExecutionCollectController;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.security.NuclosRemoteServerSession;
@@ -413,11 +414,22 @@ public class MainController {
 
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_SEARCHFILTER);
 
+			Thread threadRuleCache = new Thread("MainController.readRules") {
+
+				@Override
+				public void run() {
+					LOG.debug(">>> read rules...");
+					RuleCache.getInstance();
+				}
+			};
+			
 			List<Thread> lstCacheThreads = new ArrayList<Thread>();
 			lstCacheThreads.add(threadGenericObjectMetaDataCache);
 			lstCacheThreads.add(threadSearchFilterCache);
+			lstCacheThreads.add(threadRuleCache);
 			threadGenericObjectMetaDataCache.start();
 			threadSearchFilterCache.start();
+			threadRuleCache.start();
 
 			for(Thread t : lstCacheThreads) {
 				try {

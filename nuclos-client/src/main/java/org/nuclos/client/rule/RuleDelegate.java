@@ -88,22 +88,7 @@ public class RuleDelegate {
 			throw new CommonFatalException(e.getMessage(), e);
 		}
 	}
-
-	/**
-	 * Get all object generations.
-	 * @throws NuclosFatalException
-	 */
-	public Collection<GeneratorActionVO> getAllAdGenerations() throws NuclosFatalException {
-		try {
-			return ruleEngineFacadeRemote.getAllGenerations();
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		} catch (CommonPermissionException e) {
-			throw new CommonFatalException(e.getMessage(), e);
-		}
-	}
-
+	
 	/**
 	 * Get all object generations that have a rule assigned.
 	 */
@@ -150,6 +135,21 @@ public class RuleDelegate {
 	 * Get all Rule Transition that have the given rule assigned.
 	 * @throws CommonPermissionException
 	 */
+	public Collection<RuleEngineTransitionVO> getAllRuleTransitions()  {
+		try {
+			return ruleEngineFacadeRemote.getAllRuleTransitions();
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		} catch (CommonPermissionException e) {
+			throw new CommonFatalException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Get all Rule Transition that have the given rule assigned.
+	 * @throws CommonPermissionException
+	 */
 	public Collection<RuleEngineTransitionVO> getAllRuleTransitionsForRuleId(Integer aRuleId)  {
 		try {
 			return ruleEngineFacadeRemote.getAllRuleTransitionsForRuleId(aRuleId);
@@ -167,6 +167,20 @@ public class RuleDelegate {
 	public Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(Integer aTransitionId) {
 		try {
 			return ruleEngineFacadeRemote.getAllRuleTransitionsForTransitionId(aTransitionId);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		} catch (CommonPermissionException e) {
+			throw new CommonFatalException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Get all RuleGeneration for the given generation.
+	 */
+	public Collection<RuleEngineGenerationVO> getAllRuleGenerations()  {
+		try {
+			return ruleEngineFacadeRemote.getAllRuleGenerations();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -202,22 +216,7 @@ public class RuleDelegate {
 			throw new CommonFatalException(e.getMessage(), e);
 		}
 	}
-
-	/**
-	 * Get a collection of rules by the eventname independent of the module.
-	 * @return Collection<RuleVO>
-	 */
-	public List<RuleVO> getByEventOrdered(String sEventName) {
-		try {
-			return ruleEngineFacadeRemote.getByEventOrdered(sEventName);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		} catch (CommonPermissionException e) {
-			throw new CommonFatalException(e.getMessage(), e);
-		}
-	}
-
+	
 	/**
 	 * Get a collection of rules by Eventname and entityId (ordered).
 	 * @return Collection<RuleVO>
@@ -271,21 +270,6 @@ public class RuleDelegate {
 	public Collection<String> getRuleUsageEntityNamesByEvent(String sEventName) {
 		try {
 			return ruleEngineFacadeRemote.getRuleUsageEntityNamesByEvent(sEventName);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		} catch (CommonPermissionException e) {
-			throw new CommonFatalException(e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Get all Rule engine Generations.
-	 * @return Collection<RuleVO>
-	 */
-	public Collection<RuleEngineGenerationVO> getAllRuleEngineGenerations() {
-		try {
-			return ruleEngineFacadeRemote.getAllRuleEngineGenerations();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

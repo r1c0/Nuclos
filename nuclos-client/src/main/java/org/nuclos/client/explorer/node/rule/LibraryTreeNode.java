@@ -16,9 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.rule;
 
+import java.util.Collection;
 import java.util.List;
 
-import org.nuclos.client.customcode.CodeDelegate;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.server.customcode.valueobject.CodeVO;
@@ -31,7 +32,7 @@ public class LibraryTreeNode extends AbstractRuleTreeNode {
 
 	@Override
 	public void refresh() {
-		setSubNodes(getTreeNodes(CodeDelegate.getInstance().getAll()));
+		setSubNodes(getTreeNodes(RuleCache.getInstance().getAllCodes()));
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class LibraryTreeNode extends AbstractRuleTreeNode {
 		return false;
 	}
 
-	private static List<CodeTreeNode> getTreeNodes(List<CodeVO> codes) {
+	private static List<CodeTreeNode> getTreeNodes(Collection<CodeVO> codes) {
 		return CollectionUtils.transform(codes, new Transformer<CodeVO, CodeTreeNode>() {
 			@Override
 			public CodeTreeNode transform(CodeVO i) {

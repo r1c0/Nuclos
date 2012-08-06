@@ -95,7 +95,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleEventType;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
 import org.nuclos.client.masterdata.MetaDataCache;
-import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosFatalException;
@@ -938,13 +938,13 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						RuleVO ruleToExecute = null;
 						try {
 							try {
-								ruleToExecute = RuleDelegate.getInstance().get(valueId);
+								ruleToExecute = RuleCache.getInstance().get(valueId);
 							} catch (Exception e) {
 								// do nothing.
 							}
 							if (ruleToExecute == null) {
 								try {
-									ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(valueId));
+									ruleToExecute = RuleCache.getInstance().get(Integer.parseInt(valueId));
 								} catch (Exception e) {
 									// do nothing.
 								}

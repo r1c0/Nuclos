@@ -26,12 +26,14 @@ import java.util.List;
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
@@ -179,7 +181,7 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 	 * Create all Nodes for the Object generation main node
 	 */
 	private List<RuleGenerationNode> createAllGenerateObjectRulesNode() {
-		final Collection<GeneratorActionVO> collAllAdGenerations = RuleDelegate.getInstance().getAllAdGenerationsWithRule();
+		final Collection<GeneratorActionVO> collAllAdGenerations = RuleCache.getInstance().getAllAdGenerationsWithRule();
 
 		final List<GeneratorActionVO> sortedGenerations = new ArrayList<GeneratorActionVO>(collAllAdGenerations);
 		Collections.sort(sortedGenerations, new Comparator<GeneratorActionVO>() {
@@ -217,7 +219,7 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 	}
 
 	private List<RuleNode> createAllRulesNode() {
-		final List<RuleVO> sortedRules = new ArrayList<RuleVO>(RuleDelegate.getInstance().getAllRules());
+		final List<RuleVO> sortedRules = new ArrayList<RuleVO>(RuleCache.getInstance().getAllRules());
 		Collections.sort(sortedRules, new Comparator<RuleVO>() {
 			@Override
 			public int compare(RuleVO o1, RuleVO o2) {
@@ -227,8 +229,9 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 
 		final List<RuleNode> result = new ArrayList<RuleNode>();
 
+		final Collection<CodeVO> codes = RuleCache.getInstance().getAllCodes();
 		for (RuleVO curRule : sortedRules) {
-			result.add(new RuleNode(curRule, true));
+			result.add(new RuleNode(curRule, true, (codes != null && codes.size() > 0)));
 		}
 
 		return result;

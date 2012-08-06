@@ -232,6 +232,14 @@
 	<bean id="userDelegate" class="org.nuclos.client.masterdata.user.UserDelegate">
 		<property name="userFacadeRemote" ref="userService"/>
 	</bean>	
+	<bean id="ruleCache" class="org.nuclos.client.rule.RuleCache" lazy-init="true"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.rule.RuleCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="ruleDelegate" ref="ruleDelegate"/>
+		<property name="codeDelegate" ref="codeDelegate"/>
+		<property name="timelimitRuleDelegate" ref="timelimitRuleDelegate"/>
+	</bean>
 	<bean id="webAccessPrefs" class="org.nuclos.client.common.prefs.WebAccessPrefs">
 		<property name="preferencesFacadeRemote" ref="preferencesService"/>
 	</bean>

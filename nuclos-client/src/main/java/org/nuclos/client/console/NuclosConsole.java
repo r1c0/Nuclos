@@ -40,6 +40,7 @@ import org.nuclos.client.layout.LayoutDelegate;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.nuclet.generator.NucletGenerator;
 import org.nuclos.client.report.ReportDelegate;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.rule.TimelimitRuleDelegate;
 import org.nuclos.client.security.NuclosRemoteServerSession;
@@ -365,7 +366,7 @@ public class NuclosConsole extends ConsoleConstants {
 		final File fileOutputDir = testForEmptyDirectory(sOutputDir);
 
 		try {
-			for (RuleVO rulevo : RuleDelegate.getInstance().getAllRules()) {
+			for (RuleVO rulevo : RuleCache.getInstance().getAllRules()) {
 				final String sFileName = rulevo.getRule() + ".txt";
 				IOUtils.writeToTextFile(new File(fileOutputDir, sFileName), rulevo.getSource(), "ISO-8859-1");
 			}

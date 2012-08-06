@@ -23,7 +23,7 @@ import java.util.Properties;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.masterdata.MasterDataCollectController;
-import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
@@ -75,13 +75,13 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 
 					RuleVO ruleToExecute = null;
 					try {
-						ruleToExecute = RuleDelegate.getInstance().get(sruleId);
+						ruleToExecute = RuleCache.getInstance().get(sruleId);
 					} catch (Exception e) {
 						// do nothing.
 					}	
 					if (ruleToExecute == null) {
 						try {
-							ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(sruleId));
+							ruleToExecute = RuleCache.getInstance().get(Integer.parseInt(sruleId));
 						} catch (Exception e) {
 							// do nothing.
 						}	
@@ -129,13 +129,13 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 
 		RuleVO ruleToExecute = null;
 		try {
-			ruleToExecute = RuleDelegate.getInstance().get(sruleId);
+			ruleToExecute = RuleCache.getInstance().get(sruleId);
 		} catch (Exception e) {
 			// do nothing.
 		}	
 		if (ruleToExecute == null) {
 			try {
-				ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(sruleId));
+				ruleToExecute = RuleCache.getInstance().get(Integer.parseInt(sruleId));
 			} catch (Exception e) {
 				// do nothing.
 			}	

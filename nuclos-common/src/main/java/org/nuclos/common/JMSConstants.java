@@ -63,6 +63,17 @@ public interface JMSConstants {
 	/**
 	 * name of the JMS topic for client notification of master data changes.
 	 * <dl>
+	 * 		<dt>Receiver</dt><dd>
+	 * 			Client: {@link org.nuclos.client.rule.RuleCache#messagelistener}</dd>
+	 * 		<dt>Action triggered</dt><dd>
+	 * 			{@link org.nuclos.client.rule.RuleCache#invalidate()}</dd>
+	 * </dl>
+	 */
+	public static final String TOPICNAME_RULECACHE = "topic.ruleCache";
+
+	/**
+	 * name of the JMS topic for client notification of master data changes.
+	 * <dl>
 	 * 		<dt>Sender</dt><dd>
 	 * 			Server: {@link org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper#notifyClients(String)}</dd>
 	 * 		<dt>Cause</dt><dd>

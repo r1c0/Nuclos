@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
-import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -206,7 +206,7 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	 * @return
 	 */
 	protected Map<Integer, RuleVO> getAllRuleId2RuleMap() {
-		final Collection<RuleVO> allRules = RuleDelegate.getInstance().getAllRules();
+		final Collection<RuleVO> allRules = RuleCache.getInstance().getAllRules();
 		final Map<Integer, RuleVO> result = new HashMap<Integer, RuleVO>(allRules.size() * 2);
 		for (RuleVO curRule : allRules) {
 			result.put(curRule.getId(), curRule);

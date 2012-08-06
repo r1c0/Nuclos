@@ -16,20 +16,30 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.rule;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import org.nuclos.client.rule.RuleCache;
+import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.statemodel.StateDelegate;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.client.rule.RuleDelegate;
-import org.nuclos.client.statemodel.StateDelegate;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import org.nuclos.server.statemodel.valueobject.*;
-import java.util.*;
+import org.nuclos.server.statemodel.valueobject.StateGraphVO;
+import org.nuclos.server.statemodel.valueobject.StateModelVO;
+import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
+import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**
  * Treenode representing an Statemodelnode or transition in the Ruletree
@@ -122,7 +132,7 @@ public class StateModelNode extends AbstractRuleTreeNode {
 
 					final Map<Integer, RuleVO> ruleId2RuleVo = getAllRuleId2RuleMap();
 
-					final Collection<RuleEngineTransitionVO> ruleTransColl = RuleDelegate.getInstance().getAllRuleTransitionsForTransitionId(transitionVo.getId());
+					final Collection<RuleEngineTransitionVO> ruleTransColl = RuleCache.getInstance().getAllRuleTransitionsForTransitionId(transitionVo.getId());
 					final List<RuleEngineTransitionVO> sortedTransList = new ArrayList<RuleEngineTransitionVO>(ruleTransColl);
 					Collections.sort(sortedTransList, new Comparator<RuleEngineTransitionVO>() {
 						@Override
@@ -133,7 +143,7 @@ public class StateModelNode extends AbstractRuleTreeNode {
 
 					final List<TreeNode> ruleSubNodeList = new ArrayList<TreeNode>();
 					for (RuleEngineTransitionVO curRuleTrans : sortedTransList) {
-						ruleSubNodeList.add(new RuleNode(ruleId2RuleVo.get(curRuleTrans.getRuleId()), false));
+						ruleSubNodeList.add(new RuleNode(ruleId2RuleVo.get(curRuleTrans.getRuleId()), false, false));
 					}
 					setSubNodes(ruleSubNodeList);
 				}
@@ -155,7 +165,7 @@ public class StateModelNode extends AbstractRuleTreeNode {
 					final StateGraphVO stateGraph = StateDelegate.getInstance().getStateGraph(stateModelVo.getId());
 
 					final Map<Integer, RuleEngineTransitionVO> transitionIdId2RuleTransitonVo = CollectionUtils.newHashMap();
-					for (RuleEngineTransitionVO generationVO : RuleDelegate.getInstance().getAllRuleTransitionsForRuleId(this.parentRuleVo.getId()))
+					for (RuleEngineTransitionVO generationVO : RuleCache.getInstance().getAllRuleTransitionsForRuleId(this.parentRuleVo.getId()))
 					{
 						transitionIdId2RuleTransitonVo.put(generationVO.getTransitionId(), generationVO);
 					}

@@ -16,11 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.rule;
 
-import org.nuclos.client.rule.RuleDelegate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineGenerationVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import java.util.*;
 
 /**
  * Treenode representing an Node in the Ruletree
@@ -48,7 +54,7 @@ public class RuleGenerationNode extends AbstractRuleTreeNode {
 		if (!this.isAllRuleSubnode) {
 			List<RuleNode> ruleSubNodeList = new ArrayList<RuleNode>();
 
-			Collection<RuleEngineGenerationVO> generationColl = (RuleDelegate.getInstance()).getAllRuleGenerationsForGenerationId(generationAd.getId());
+			Collection<RuleEngineGenerationVO> generationColl = (RuleCache.getInstance()).getAllRuleGenerationsForGenerationId(generationAd.getId());
 			List<RuleEngineGenerationVO> sortedGenerationList = new ArrayList<RuleEngineGenerationVO>(generationColl);
 			Collections.sort(sortedGenerationList, new Comparator<RuleEngineGenerationVO>() {
 				@Override

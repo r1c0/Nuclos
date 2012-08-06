@@ -24,16 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuclos.client.customcode.CodeDelegate;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageProcessNode;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -55,6 +54,8 @@ public class RuleNode extends AbstractRuleTreeNode {
 	private Integer processId = null;
 	private final boolean isAllRuleSubnode;
 	public final boolean isTimeLimitRule;
+	public boolean hasLibraryRules;
+	public boolean hasTimeLimitRules;
 
 	private RuleNode(RuleVO aRuleVo, Integer iId, String aLabel, String aDescription, ArrayList<? extends TreeNode> aSubNodeList
 			, RuleNodeType aNodeType, boolean aIsAllRuleSubnodeFlag, boolean isTimeLimitRule) {
@@ -63,10 +64,14 @@ public class RuleNode extends AbstractRuleTreeNode {
 		this.ruleVo = aRuleVo;
 		this.isAllRuleSubnode = aIsAllRuleSubnodeFlag;
 		this.isTimeLimitRule = isTimeLimitRule;
+		this.hasLibraryRules = false;
 	}
 
-	public RuleNode(RuleVO aRuleVo, boolean aIsAllRuleSubnodeFlag) {
+	public RuleNode(RuleVO aRuleVo, boolean aIsAllRuleSubnodeFlag, boolean hasLibraryRules) {
 		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule(), aRuleVo.getDescription(), null, RuleNodeType.RULE, aIsAllRuleSubnodeFlag, false);
+		if (aIsAllRuleSubnodeFlag) {
+			this.hasLibraryRules = hasLibraryRules;
+		}
 	}
 
 	public RuleNode(RuleVO aRuleVo, String aEventName, String aEntity, Integer processId, Integer statusId) {
@@ -85,6 +90,7 @@ public class RuleNode extends AbstractRuleTreeNode {
 	public RuleNode(RuleVO aRuleVo, RuleEngineGenerationVO generationVO, boolean aIsAllRuleSubnodeFlag) {
 		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule() // + " (" +generationVO.getOrder() + ")"
 				, aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, aIsAllRuleSubnodeFlag, false);
+	
 	}
 
 	public boolean isAllRuleSubnode() {
@@ -139,14 +145,16 @@ public class RuleNode extends AbstractRuleTreeNode {
 						getSpringLocaleDelegate().getMessage("RuleNode.2","Entit\u00e4ten in denen der Benutzer diese Regel manuell starten kann"), userEventEntityNodes, true));
 			}
 
-			final Collection<RuleEventUsageVO> collTimelimit = RuleDelegate.getInstance().getByEventAndRule(RuleTreeModel.FRIST_EVENT_NAME, this.ruleVo.getId());
-			if (collTimelimit != null && collTimelimit.size() > 0) {
+			//final Collection<RuleEventUsageVO> collTimelimit = RuleDelegate.getInstance().getByEventAndRule(RuleTreeModel.FRIST_EVENT_NAME, this.ruleVo.getId());
+			/*if (collTimelimit != null && collTimelimit.size() > 0) {
+			//if (hasTimeLimitRules) {
 				subNodeList.add(new TimelimitNode(getSpringLocaleDelegate().getMessage("RuleNode.3","Fristen"), 
 						getSpringLocaleDelegate().getMessage("RuleNode.8","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"), false));
-			}
+			}*/
 
-			final List<CodeVO> codes = CodeDelegate.getInstance().getAll();
-			if (codes != null && codes.size() > 0) {
+			//final List<CodeVO> codes = CodeDelegate.getInstance().getAll();
+			//if (codes != null && codes.size() > 0) {
+			if (hasLibraryRules) {
 				subNodeList.add(new LibraryTreeNode(getSpringLocaleDelegate().getText("treenode.rules.library.label"), 
 						getSpringLocaleDelegate().getText("treenode.rules.library.description")));
 			}
@@ -254,14 +262,14 @@ public class RuleNode extends AbstractRuleTreeNode {
 
 	private List<RuleGenerationNode> createGenerationNodes() {
 		final Map<Integer, RuleEngineGenerationVO> generationIdId2RuleGenerationVo = CollectionUtils.newHashMap();
-		for (RuleEngineGenerationVO generationVO : RuleDelegate.getInstance().getAllRuleGenerationsForRuleId(this.ruleVo.getId()))
+		for (RuleEngineGenerationVO generationVO : RuleCache.getInstance().getAllRuleGenerationsForRuleId(this.ruleVo.getId()))
 		{
 			generationIdId2RuleGenerationVo.put(generationVO.getGenerationId(), generationVO);
 		}
 
 		final List<RuleGenerationNode> result = new ArrayList<RuleGenerationNode>();
 
-		final Collection<GeneratorActionVO> collGeneration = RuleDelegate.getInstance().getAllAdGenerationsForRuleId(this.ruleVo.getId());
+		final Collection<GeneratorActionVO> collGeneration = RuleCache.getInstance().getAllAdGenerationsForRuleId(this.ruleVo.getId());
 		if (collGeneration != null && collGeneration.size() > 0) {
 			for (GeneratorActionVO generationVO : collGeneration) {
 				final RuleEngineGenerationVO ruleGeneration = generationIdId2RuleGenerationVo.get(generationVO.getId());
@@ -277,7 +285,7 @@ public class RuleNode extends AbstractRuleTreeNode {
 	private List<StateModelNode> createTransitionNodes() {
 		final List<StateModelNode> result = new ArrayList<StateModelNode>();
 
-		final Collection<StateModelVO> collModels = RuleDelegate.getInstance().getAllStateModelsForRuleId(this.ruleVo.getId());
+		final Collection<StateModelVO> collModels = RuleCache.getInstance().getAllStateModelsForRuleId(this.ruleVo.getId());
 		if (collModels != null && collModels.size() > 0) {
 			for (StateModelVO modelVO : collModels) {
 				result.add(new StateModelNode(modelVO, null, true, this.ruleVo));

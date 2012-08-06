@@ -744,6 +744,23 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	}
 
 	/**
+	 * Get all RuleGenerations
+	 * @return Collection<RuleEngineGenerationVO>
+	 * @throws CommonPermissionException
+	 */
+	public Collection<RuleEngineGenerationVO> getAllRuleGenerations() throws CommonPermissionException {
+		this.checkReadAllowed(NuclosEntity.RULE);
+		final Collection<RuleEngineGenerationVO> result = new HashSet<RuleEngineGenerationVO>();
+
+		Collection<MasterDataVO> mdVOList = getMasterDataFacade().getMasterData(NuclosEntity.RULEGENERATION.getEntityName(), null, true);
+
+		for (MasterDataVO mdVO : mdVOList)
+			result.add(MasterDataWrapper.getRuleEngineGenerationVO(mdVO));
+
+		return result;
+	}
+
+	/**
 	 * Get all RuleGeneration for the given generation.
 	 * @return Collection<RuleEngineGenerationVO>
 	 * @throws CommonPermissionException
@@ -760,6 +777,23 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			result.add(MasterDataWrapper.getRuleEngineGenerationVO(mdVO));
 
 		return CollectionUtils.sorted(result, new GeneratorByOrderComparator());
+	}
+
+	/**
+	 * Get all RuleTransitions
+	 * @return Collection<RuleEngineTransitionVO>
+	 * @throws CommonPermissionException
+	 */
+	public Collection<RuleEngineTransitionVO> getAllRuleTransitions() throws CommonPermissionException {
+		this.checkReadAllowed(NuclosEntity.RULE);
+		final Collection<RuleEngineTransitionVO> result = new HashSet<RuleEngineTransitionVO>();
+
+		Collection<MasterDataVO> mdVOList = getMasterDataFacade().getMasterData(NuclosEntity.RULETRANSITION.getEntityName(), null, true);
+
+		for (MasterDataVO mdVO : mdVOList)
+			result.add(MasterDataWrapper.getRuleEngineTransitionVO(mdVO));
+
+		return result;
 	}
 
 	/**

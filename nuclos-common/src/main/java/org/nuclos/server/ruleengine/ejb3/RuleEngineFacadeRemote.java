@@ -139,6 +139,13 @@ public interface RuleEngineFacadeRemote {
 	 */
 	Collection<GeneratorActionVO> getAllGenerationsForRuleId(
 		Integer iRuleId) throws CommonPermissionException;
+	/**
+	 * Get all RuleGenerations.
+	 * @return Collection<RuleEngineGenerationVO>
+	 * @throws CommonPermissionException
+	 */
+	Collection<RuleEngineGenerationVO> getAllRuleGenerations()
+			throws CommonPermissionException;
 
 	/**
 	 * Get all RuleGeneration for the given rule.
@@ -155,6 +162,15 @@ public interface RuleEngineFacadeRemote {
 	 */
 	Collection<RuleEngineGenerationVO> getAllRuleGenerationsForGenerationId(
 		Integer generationId) throws CommonPermissionException;
+
+
+	/**
+	 * Get all RuleTransitions.
+	 * @return Collection<RuleEngineTransitionVO>
+	 * @throws CommonPermissionException
+	 */
+	Collection<RuleEngineTransitionVO> getAllRuleTransitions()
+			throws CommonPermissionException;
 
 	/**
 	 * Get all RuleTransition that have the given rule assigned.
