@@ -64,6 +64,8 @@ import org.nuclos.common.collect.collectable.CollectableFieldComparatorFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
+import org.nuclos.common.collect.collectable.LocalizedCollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
@@ -431,9 +433,13 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 					Object value = clctf.getValue();
 					if (value instanceof String) {
 						value = value.toString().replaceAll("\\p{Cntrl}", "");
-						if (clctf instanceof CollectableValueField)
+						if (clctf instanceof LocalizedCollectableValueField)
+							clctf = new LocalizedCollectableValueField(value, ((LocalizedCollectableValueField)clctf).toLocalizedString());
+						else if (clctf instanceof CollectableValueField)
 							clctf = new CollectableValueField(value);
-						if (clctf instanceof CollectableValueIdField)
+						if (clctf instanceof LocalizedCollectableValueIdField)
+							clctf = new LocalizedCollectableValueIdField(IdUtils.unsafeToId(((CollectableValueIdField)clctf).getValueId()), value, ((LocalizedCollectableValueIdField)clctf).toLocalizedString());
+						else if (clctf instanceof CollectableValueIdField)
 							clctf = new CollectableValueIdField(((CollectableValueIdField)clctf).getValueId(), value);
 					}
 					model.addElement(clctf);
