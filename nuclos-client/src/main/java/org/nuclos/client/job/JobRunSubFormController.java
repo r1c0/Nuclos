@@ -19,11 +19,13 @@ package org.nuclos.client.job;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
+import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
@@ -38,6 +40,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.exception.CommonValidationException;
 
 /**
  * MasterDataSubFormController for jobrun.
@@ -75,7 +78,7 @@ public class JobRunSubFormController extends MasterDataSubFormController {
 	   for (CollectableEntityObject clct : lstclct) {
 		   clct.setField("startdate", new CollectableValueField(
 					getInternalTimestamp(clct.getField("startdate"))));
-			clct.setField("enddate", new CollectableValueField(
+		   clct.setField("enddate", new CollectableValueField(
 					getInternalTimestamp(clct.getField("enddate"))));
 		}
 		return super.newCollectableList(lstclct);
@@ -96,9 +99,25 @@ public class JobRunSubFormController extends MasterDataSubFormController {
 	   return result;
    }
    
+   @Override
+   public List<CollectableEntityObject> getAllCollectables(
+			Object oParentId,
+			Collection<DetailsSubFormController<CollectableEntityObject>> collSubForms,
+			boolean bSetParent, CollectableEntityObject clct)
+			throws CommonValidationException {
+	   	List<CollectableEntityObject> lstclct = super.getAllCollectables(oParentId, collSubForms, bSetParent, clct);
+		for (CollectableEntityObject clcteo : lstclct) {
+			clcteo.setField("startdate", new CollectableValueField(
+						getInternalTimestampAsString(clcteo.getField("startdate"))));
+			clcteo.setField("enddate", new CollectableValueField(
+					   getInternalTimestampAsString(clcteo.getField("enddate"))));
+		}
+		return lstclct;
+   }
+   
    public static final String DATE_FORMAT_STRING_EN = "MM/dd/yyyy HH:mm:ss";
    public static final String DATE_FORMAT_STRING_GER = "dd.MM.yyyy HH:mm:ss";
-	
+
    private Date getInternalTimestamp(CollectableField field) {
 	   CollectableFieldFormat format = CollectableFieldFormat.getInstance(Date.class);
 	   try {
@@ -106,6 +125,18 @@ public class JobRunSubFormController extends MasterDataSubFormController {
 	   } catch (Exception e) {
 		   try {
 			   return (Date)format.parse(DATE_FORMAT_STRING_GER, (String)field.getValue());
+		   } catch (Exception e1) {
+			   return null; //@todo other formats are not supported at the moment.
+		   }
+	   }
+   }
+   private String getInternalTimestampAsString(CollectableField field) {
+	   CollectableFieldFormat format = CollectableFieldFormat.getInstance(Date.class);
+	   try {
+		   return format.format(DATE_FORMAT_STRING_EN, (Date)field.getValue());
+	   } catch (Exception e) {
+		   try {
+			   return format.format(DATE_FORMAT_STRING_GER, (Date)field.getValue());
 		   } catch (Exception e1) {
 			   return null; //@todo other formats are not supported at the moment.
 		   }
