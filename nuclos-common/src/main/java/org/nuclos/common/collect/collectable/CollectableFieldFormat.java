@@ -21,7 +21,6 @@ package org.nuclos.common.collect.collectable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -685,83 +684,4 @@ public abstract class CollectableFieldFormat {
 		}
 	}
 	
-	public static void main(String[] args) {
-		try {
-			String deFORM = "#,##0.###";
-			String enFORM = "#,##0.###";
-
-			/*DecimalFormat enDF = (DecimalFormat)DecimalFormat.getNumberInstance(Locale.ENGLISH);
-			enDF.applyPattern(enFORM);
-			DecimalFormat deDF = (DecimalFormat)DecimalFormat.getNumberInstance(Locale.GERMAN);
-			deDF.applyPattern(deFORM);
-			
-			System.err.println("parsing enIN");
-			String enIN = "5,020,232.23";
-			
-			double endenIN = enDF.parse(enIN).doubleValue();
-			double dedenIN = deDF.parse(enIN).doubleValue();
-			
-			System.err.println("endenIN > dedenIN: " + endenIN + ">" + dedenIN + "=" + (endenIN>dedenIN));
-			
-			System.err.println("parsing deIN");
-			String deIN = "5.020.232,23";
-			
-			double enddeIN = enDF.parse(deIN).doubleValue();
-			double deddeIN = deDF.parse(deIN).doubleValue();
-			
-			System.err.println("enddeIN > deddeIN: " + enddeIN + ">" + deddeIN + "=" + (enddeIN>deddeIN));
-			*/
-			
-			/*CollectableDoubleFormat df = new CollectableDoubleFormat();
-			DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
-			otherSymbols.setDecimalSeparator('');
-			otherSymbols.setGroupingSeparator(','); 
-			DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance(Locale.GERMAN);
-			df.applyPattern("#,##0.###");
-
-			System.err.println("parsing enIN");
-			String enIN = "5,122,122.23";
-			//System.err.println(Double.parseDouble(enIN));
-			System.err.println(df.parse( enIN));
-			System.err.println(df.format(df.parse( enIN).doubleValue()));
-			if (df.format(df.parse(enIN).doubleValue()).equals(enIN))
-				System.err.println("must be right");
-			else
-				System.err.println("must not be right");
-			
-			System.err.println("parsing deIN");
-			String deIN = "5.122.122,23";
-			//System.err.println(Double.parseDouble(deIN));
-			System.err.println(df.parse(deIN));
-			System.err.println(df.format(df.parse(deIN).doubleValue()));
-			if (df.format(df.parse(deIN).doubleValue()).equals(deIN))
-				System.err.println("must be right");
-			else
-				System.err.println("must not be right");*/
-			CollectableDoubleFormat df = new CollectableDoubleFormat();
-			
-			System.err.println("parsing enIN");
-			String enIN = "5,122,122.23";
-			//System.err.println(Double.parseDouble(enIN));
-			System.err.println(df.parse("#,##0.###", enIN));
-			System.err.println(df.format("#,##0.###", df.parse("#,##0.###", enIN).doubleValue()));
-			if (df.format("#,##0.###", df.parse("#,##0.###", enIN).doubleValue()).equals(enIN))
-				System.err.println("must be right");
-			else
-				System.err.println("must not be right");
-			
-			System.err.println("parsing deIN");
-			String deIN = "5.122.122,23";
-			//System.err.println(Double.parseDouble(deIN));
-			System.err.println(df.parse("#,##0.###", deIN));
-			System.err.println(df.format("#,##0.###", df.parse("#,##0.###", deIN).doubleValue()));
-			if (df.format("#,##0.###", df.parse("#,##0.###", deIN).doubleValue()).equals(deIN))
-				System.err.println("must be right");
-			else
-				System.err.println("must not be right");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }	// class CollectableFieldFormat
