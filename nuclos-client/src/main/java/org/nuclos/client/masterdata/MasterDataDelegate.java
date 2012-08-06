@@ -94,7 +94,7 @@ public class MasterDataDelegate {
 	public static MasterDataDelegate getInstance() {
 		if (INSTANCE == null) {
 			// lazy support
-			SpringApplicationContextHolder.getBean(MasterDataDelegate.class);
+			INSTANCE = SpringApplicationContextHolder.getBean(MasterDataDelegate.class);
 		}
 		return INSTANCE;
 	}

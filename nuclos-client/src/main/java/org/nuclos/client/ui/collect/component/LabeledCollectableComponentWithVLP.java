@@ -68,4 +68,9 @@ public abstract class LabeledCollectableComponentWithVLP extends LabeledCollecta
     public void applyParameters() throws CommonBusinessException {
 		refreshValueList(false);
 	}
+
+	@Override
+    public void applyParameters(boolean async) throws CommonBusinessException {
+		refreshValueList(async);
+	}
 }

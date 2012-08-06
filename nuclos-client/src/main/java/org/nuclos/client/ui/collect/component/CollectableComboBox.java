@@ -297,9 +297,6 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 		UIUtils.setWaitCursor(getJComboBox());
 
-		LOG.debug("Refresh valuelist: " + getEntityField().getEntityName() + "." + getEntityField().getName() +
-				" " + getValueListProvider().toString() + " " + (async ? "(multithreaded)" : "") );
-
 		if (async) {
 			rvlr.execute();
 		} else {
@@ -311,7 +308,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 	private void releasePreviousRefreshs() {
 		synchronized(runningRefreshs) {
-			for (RefreshValueListWorker refresh : runningRefreshs) {
+			for (RefreshValueListWorker refresh : new HashSet<RefreshValueListWorker>(runningRefreshs)) {
 				refresh.ignoreResult();
 				if (!refresh.cancel(true)) {
 					LOG.debug("Failed to cancel refresh for " + getEntityField().getEntityName() + "." + getEntityField().getName());
@@ -349,6 +346,9 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		protected void done() {
 			try {
 				if (!isCancelled() && !ignoreResult) {
+					LOG.debug("Refresh valuelist: " + getEntityField().getEntityName() + "." + getEntityField().getName() +
+							" " + getValueListProvider().toString());
+
 					setComboBoxModel(get(), false);
 					getJComboBox().setCursor(null);
 					if (getField() == null || getField().isNull()) {

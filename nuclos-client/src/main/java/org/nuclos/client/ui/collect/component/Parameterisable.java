@@ -39,4 +39,9 @@ public interface Parameterisable {
 	 * Apply the parameters set so far (e.g. refresh a parameterised value list etc.).
 	 */
 	void applyParameters() throws CommonBusinessException;
+	
+	/**
+	 * Apply the parameters set so far (e.g. refresh a parameterised value list etc.).
+	 */
+	void applyParameters(boolean async) throws CommonBusinessException;
 }

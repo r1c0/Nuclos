@@ -418,7 +418,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private Collection<Long> iGenericObjectIdSources;
 
 	private final GenericObjectDelegate lodelegate = GenericObjectDelegate.getInstance();
-	private final GeneratorDelegate generatordelegate = GeneratorDelegate.getInstance();
+
 	//protected final JButton btnDeletePhysicallyInDetails = new JButton();
 	protected final JMenuItem btnDeletePhysicallyInDetails = new JMenuItem();
 	protected final JMenuItem btnDeletePhysicallyInResult = new JMenuItem();
@@ -495,6 +495,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	protected boolean bReloadLayout = true;
 
+	private boolean bInitialSearchLayout = false;
+	
 	/**
 	 * avoids recursively calling reloadLayout
 	 */
@@ -1810,12 +1812,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private void setupEditPanels() {
 		// get the layout for the Search and Details panels out of the Layout ML definition:
 		if(this.isSearchPanelAvailable())
-			setupEditPanelForSearchTab();
+			setupEditPanelForSearchTab(LayoutRoot.newEmptyLayoutRoot(true));
 		setupEditPanelForDetailsTab();
 	}
 
-	private void setupEditPanelForSearchTab() {
-		final LayoutRoot layoutrootSearch = getInitialLayoutMLDefinitionForSearchPanel();
+	private void setupEditPanelForSearchTab(LayoutRoot layoutrootSearch) {
 		layoutrootSearch.getRootComponent().setFocusCycleRoot(true);
 		getSearchPanel().setEditView(newSearchEditView(layoutrootSearch));
 		// create a controller for each subform:
@@ -1823,7 +1824,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		Map<String, SubForm> mpSubForm = layoutrootSearch.getMapOfSubForms();
 		mpsubformctlSearch = newSearchConditionSubFormControllers(mpSubForm);
 		getSearchPanel().getEditView().setComponentsEnabled(true);
-		this.addUsageCriteriaFieldListeners(true);
+		if (!getUsageCriteriaFieldListenersAdded(true))
+			this.addUsageCriteriaFieldListeners(true);
 		setupSubFormController(mpSubForm, mpsubformctlSearch);
 	}
 
@@ -1915,7 +1917,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	@Override
 	protected LayoutRoot getInitialLayoutMLDefinitionForSearchPanel() {
-		LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null, null),
+		final LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null, null),
 			new CollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED));
 		getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 		return layoutRoot;
@@ -2721,7 +2723,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		return sbResult.toString();
 	}
-	
+
 	private void loadLayoutForDetailsTab(CollectableGenericObject clct, CollectState collectstate, boolean getUsageCriteriaFromClctOnly) throws CommonBusinessException {
 		LOG.debug("loadLayoutForDetailsTab start");
 
@@ -5507,12 +5509,22 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private class GenericObjectCollectStateListener extends CollectStateAdapter {
 		@Override
 		public void searchModeEntered(CollectStateEvent ev) throws CommonBusinessException {
+			if (!bInitialSearchLayout) {
+				setupEditPanelForSearchTab(getInitialLayoutMLDefinitionForSearchPanel());
+				bInitialSearchLayout = true; // do not load layout for search anymore.
+			}
 			setInitialComponentFocusInSearchTab();
 			bGenerated = false;
 			iCurrentLayoutId = null;
 			setGenerationSource(null, null);
 		}
-
+		
+		@Override
+		public void searchModeLeft(CollectStateEvent ev)
+				throws CommonBusinessException {
+			iCurrentLayoutId = null;
+		}
+		
 		@Override
 		public void resultModeEntered(CollectStateEvent ev) throws NuclosBusinessException {
 			bGenerated = false;

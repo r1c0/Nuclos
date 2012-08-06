@@ -777,7 +777,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 				try {
 					log.debug("LayoutMLParser$BuildFormHandler$Rule.collectableFieldChangedInModel: refreshValueList()");
-					clctParameterisable.applyParameters();
+					clctParameterisable.applyParameters(clctcompmodelParent.isInitializing());
 				}
 				catch (CommonBusinessException ex) {
 					// If this happens, there is nothing we can do about it:
