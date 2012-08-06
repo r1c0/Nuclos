@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
@@ -88,7 +89,7 @@ public class DependantsCollectableFieldsProvider implements CollectableFieldsPro
 		}
 		
 		if (this.iRelatedEntityId == null) {
-			for (MasterDataVO mdVO : MasterDataDelegate.getInstance().getMasterData(this.sEntity)) {
+			for (MasterDataVO mdVO : MasterDataCache.getInstance().get(this.sEntity)) {
 				result.add(new CollectableValueIdField(mdVO.getId(), mdVO.getField(this.sEntityField)));
 			}
 		}

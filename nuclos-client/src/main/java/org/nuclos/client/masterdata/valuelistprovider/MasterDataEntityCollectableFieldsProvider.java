@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
@@ -62,7 +62,7 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
 		log.debug("getCollectableFields");
 		Set<MasterDataMetaVO> colmdmVO_menupath = new HashSet<MasterDataMetaVO>();
-		Collection<MasterDataMetaVO> colmdmVO = MasterDataDelegate.getInstance().getMetaData();
+		Collection<MasterDataMetaVO> colmdmVO = MetaDataCache.getInstance().getMetaData();
 
 		// get and add entities with menupath
 		for(MasterDataMetaVO mdmVO : colmdmVO) {
@@ -78,19 +78,19 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 			}
 		}
 
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.USER));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.ROLE));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.SEARCHFILTER));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.JOBCONTROLLER));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.PARAMETER));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.LDAPSERVER));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.WEBSERVICE));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.LAYOUT));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.STATEMODEL));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.GENERATION));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.GENERATIONSUBENTITY));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.REPORT));
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.NUCLET));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.USER));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.ROLE));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.SEARCHFILTER));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.JOBCONTROLLER));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.PARAMETER));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.LDAPSERVER));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.WEBSERVICE));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.LAYOUT));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.STATEMODEL));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.GENERATION));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.GENERATIONSUBENTITY));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.REPORT));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.NUCLET));
 		
 		final List<CollectableField> result = CollectionUtils.transform(colmdmVO_menupath, new Transformer<MasterDataMetaVO, CollectableField>() {
 			@Override

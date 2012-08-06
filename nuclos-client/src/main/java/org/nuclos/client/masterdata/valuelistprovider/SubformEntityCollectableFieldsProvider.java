@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueField;
@@ -72,7 +73,7 @@ public class SubformEntityCollectableFieldsProvider implements CollectableFields
 		if (module == null) {
 			for(String sSubform : GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(null)) {
 				try {
-					collmdmetavo.add(MasterDataDelegate.getInstance().getMetaData(sSubform));
+					collmdmetavo.add(MetaDataCache.getInstance().getMetaData(sSubform));
 				} catch (Exception e) {
 					// ignore! Subform does not exists any more...
 				}

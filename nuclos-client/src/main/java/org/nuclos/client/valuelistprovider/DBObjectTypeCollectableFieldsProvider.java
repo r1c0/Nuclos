@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
@@ -53,7 +53,7 @@ public class DBObjectTypeCollectableFieldsProvider implements CollectableFieldsP
 		
 		List<CollectableField> result = new ArrayList<CollectableField>();
 		
-		for (MasterDataVO dbobjecttype : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.DBOBJECTTYPE.getEntityName())) {
+		for (MasterDataVO dbobjecttype : MasterDataCache.getInstance().get(NuclosEntity.DBOBJECTTYPE.getEntityName())) {
 			result.add(new CollectableValueField(dbobjecttype.getField("name")));
 		}
 

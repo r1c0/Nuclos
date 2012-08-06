@@ -32,6 +32,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
@@ -54,7 +55,7 @@ public class MasterDataEntityFieldsCollectableFieldsProvider implements Collecta
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
 		log.debug("getCollectableFields");
 		Collection<MasterDataMetaVO> colmdmVO_menupath = new ArrayList<MasterDataMetaVO>();
-		Collection<MasterDataMetaVO> colmdmVO = MasterDataDelegate.getInstance().getMetaData();
+		Collection<MasterDataMetaVO> colmdmVO = MetaDataCache.getInstance().getMetaData();
 		
 		// get and add entities with menupath
 		for(MasterDataMetaVO mdmVO : colmdmVO) {
@@ -63,7 +64,7 @@ public class MasterDataEntityFieldsCollectableFieldsProvider implements Collecta
 			}
 		}
 
-		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.GENERATIONSUBENTITY));
+		colmdmVO_menupath.add(MetaDataCache.getInstance().getMetaData(NuclosEntity.GENERATIONSUBENTITY));
 		
 		final List<CollectableField> result = CollectionUtils.transform(colmdmVO_menupath, new Transformer<MasterDataMetaVO, CollectableField>() {
 			@Override

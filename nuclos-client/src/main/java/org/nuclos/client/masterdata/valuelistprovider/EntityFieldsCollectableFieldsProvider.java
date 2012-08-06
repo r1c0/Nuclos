@@ -22,7 +22,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
+import org.nuclos.client.attribute.AttributeCache;
+import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
+import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -30,11 +33,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.client.attribute.AttributeCache;
-import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
-import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
@@ -96,7 +94,7 @@ public class EntityFieldsCollectableFieldsProvider implements CollectableFieldsP
 			result = Collections.emptyList();
 		}
 		else {
-				result = CollectionUtils.transform(MasterDataDelegate.getInstance().getMetaData(iEntityId).getFields(),
+				result = CollectionUtils.transform(MetaDataCache.getInstance().getMetaDataById(iEntityId).getFields(),
 						new Transformer<MasterDataMetaFieldVO, CollectableField>() {
 					@Override
 					public CollectableField transform(MasterDataMetaFieldVO mdcvo) {
@@ -108,7 +106,7 @@ public class EntityFieldsCollectableFieldsProvider implements CollectableFieldsP
 				  
 				if(result.isEmpty())
 				{
-					MasterDataMetaVO mdmvo = MasterDataDelegate.getInstance().getMetaData(iEntityId);
+					MasterDataMetaVO mdmvo = MetaDataCache.getInstance().getMetaDataById(iEntityId);
 					
 					if(Modules.getInstance().isModuleEntity(mdmvo.getEntityName()))
 					{
