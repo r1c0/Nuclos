@@ -1,5 +1,7 @@
 package org.nuclos.server.eventsupport.valueobject;
 
+import java.util.Date;
+
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -10,13 +12,17 @@ public class EventSupportVO extends NuclosValueObject {
 	private String sDescription;
 	private String sClassname;
 	private String sInterface;
+	private String sPackage;
+	private Date   dDateOfCompilation;
 	
-	public EventSupportVO(String sName, String sDescription, String sClassname, String sInterface) {
+	public EventSupportVO(String sName, String sDescription, String sClassname, String sInterface, String sPackage, Date dDateOfCompilation) {
 		super();
 		this.sName = sName;
 		this.sDescription = sDescription;
 		this.sClassname = sClassname;
 		this.sInterface = sInterface;
+		this.sPackage = sPackage;
+		this.dDateOfCompilation = dDateOfCompilation;
 	}
 	
 	public String getName() {
@@ -49,6 +55,23 @@ public class EventSupportVO extends NuclosValueObject {
 		return this.getClassname();
 	}
 	
+	public String getPackage() {
+		return sPackage;
+	}
+
+	public void setPackage(String sPackage) {
+		this.sPackage = sPackage;
+	}
+
+	
+	public Date getDateOfCompilation() {
+		return dDateOfCompilation;
+	}
+
+	public void setDateOfCompilation(Date dDateOfCompilation) {
+		this.dDateOfCompilation = dDateOfCompilation;
+	}
+
 	/**
 	 * validity checker
 	 */

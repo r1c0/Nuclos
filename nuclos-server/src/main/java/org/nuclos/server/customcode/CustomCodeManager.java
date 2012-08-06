@@ -34,11 +34,23 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.nuclos.api.annotation.Function;
-import org.nuclos.api.event.AfterDeleteEvent;
-import org.nuclos.api.event.AfterSaveEvent;
-import org.nuclos.api.event.DeleteEvent;
-import org.nuclos.api.event.SaveEvent;
-import org.nuclos.api.event.StateChangeEvent;
+import org.nuclos.api.eventsupport.CustomEventObject;
+import org.nuclos.api.eventsupport.CustomSupport;
+import org.nuclos.api.eventsupport.DeleteEventObject;
+import org.nuclos.api.eventsupport.DeleteFinalSupport;
+import org.nuclos.api.eventsupport.DeleteSupport;
+import org.nuclos.api.eventsupport.GenerateEventObject;
+import org.nuclos.api.eventsupport.GenerateFinalSupport;
+import org.nuclos.api.eventsupport.GenerateSupport;
+import org.nuclos.api.eventsupport.InsertEventObject;
+import org.nuclos.api.eventsupport.InsertFinalSupport;
+import org.nuclos.api.eventsupport.InsertSupport;
+import org.nuclos.api.eventsupport.StateChangeEventObject;
+import org.nuclos.api.eventsupport.StateChangeFinalSupport;
+import org.nuclos.api.eventsupport.StateChangeSupport;
+import org.nuclos.api.eventsupport.UpdateEventObject;
+import org.nuclos.api.eventsupport.UpdateFinalSupport;
+import org.nuclos.api.eventsupport.UpdateSupport;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -84,7 +96,13 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 	private Map<String, BeanFunction> functions = new HashMap<String, BeanFunction>();
 
-	private final Class[] registeredEvenTypes = new Class[] {StateChangeEvent.class, DeleteEvent.class, AfterDeleteEvent.class, SaveEvent.class, AfterSaveEvent.class};
+	private final Class[] registeredEvenTypes = new Class[] {
+			CustomSupport.class, 
+			DeleteFinalSupport.class, DeleteSupport.class,
+			GenerateFinalSupport.class, GenerateSupport.class, 
+			InsertFinalSupport.class, InsertSupport.class, 
+			StateChangeFinalSupport.class, StateChangeSupport.class,
+			UpdateFinalSupport.class, UpdateSupport.class};
 	
 	@Autowired
 	private ServletContext servletContext;

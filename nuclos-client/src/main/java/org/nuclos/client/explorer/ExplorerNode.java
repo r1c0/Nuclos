@@ -441,6 +441,16 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	}
 
 	/**
+	 * Action that is performed when the user makes a simple mouse click on a tree element
+	 * This method can be not overridden by subclasses, but its typically not used in most of the TreeViews.
+	 * @param tree
+	 * @return null
+	 */
+	public Action getTreeNodeActionOnMouseClick(JTree tree) {
+		return null;
+	}
+	
+	/**
 	 * finds the default action for this node by searching the tree node actions
 	 * (as specified in <code>getTreeNodeActions()</code>) for an enabled tree node action with the default tree node action
 	 * command (as specified in <code>getDefaultTreeNodeActionCommand()</code>). Note that this method

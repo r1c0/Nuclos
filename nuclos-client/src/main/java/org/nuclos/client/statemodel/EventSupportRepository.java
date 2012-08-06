@@ -8,12 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeRemote;
+import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -23,6 +25,8 @@ public class EventSupportRepository implements InitializingBean {
 	
 	// Spring injection
 	private final Map<String, List<EventSupportVO>> mpEventSupportsByType = CollectionUtils.newHashMap();
+	private final Map<String, EventSupportVO> mpEventSupportsByClass = CollectionUtils.newHashMap();
+	
 	private final List<EventSupportVO> lstEventSupportTypes = new ArrayList<EventSupportVO>();
 	
 	
@@ -54,18 +58,21 @@ public class EventSupportRepository implements InitializingBean {
 	{
 		mpEventSupportsByType.clear();
 		lstEventSupportTypes.clear();
-	
+		mpEventSupportsByClass.clear();
+		
 		try {
 			// Cache all useable EventSupport ordered by type
 			Collection<EventSupportVO> allEventSupports = eventSupportFacadeRemote.getAllEventSupports();
 			for (EventSupportVO esVO : allEventSupports)
 			{
+				mpEventSupportsByClass.put(esVO.getClassname(), esVO);
+				
 				if (!mpEventSupportsByType.containsKey(esVO.getInterface()))
 				{
 					mpEventSupportsByType.put(esVO.getInterface(), new ArrayList<EventSupportVO>());
 				}
 				mpEventSupportsByType.get(esVO.getInterface()).add(
-						new EventSupportVO(esVO.getName(),esVO.getDescription(),esVO.getClassname(), esVO.getInterface()));
+						new EventSupportVO(esVO.getName(),esVO.getDescription(),esVO.getClassname(), esVO.getInterface(), esVO.getPackage(), esVO.getCreatedAt()));
 			}
 			 
 			// Cache all registered EventSupport Types
@@ -147,4 +154,34 @@ public class EventSupportRepository implements InitializingBean {
 		return mpEventSupportsByType.containsKey(typename) ? mpEventSupportsByType.get(typename) : new ArrayList<EventSupportVO>();
 	}
 	
+	public EventSupportVO getEventSupportByClassname(String classname)
+	{
+		EventSupportVO retVal = null;
+		if (classname != null && mpEventSupportsByClass.containsKey(classname))
+		{
+			retVal = mpEventSupportsByClass.get(classname);
+		}
+		return retVal;
+	}
+	
+	public EventSupportVO getEventSupportTypeByName(String classname)
+	{
+		EventSupportVO retVal = null;
+		
+		for (EventSupportVO esvo : lstEventSupportTypes)
+		{
+			if (esvo.getClassname().equals(classname))
+			{
+				retVal = esvo;
+				break;
+			}
+		}
+		
+		return retVal;
+	}
+	
+	public Collection<EventSupportEventVO> getEventSupportsForEntity(String entityname, String eventType) throws CommonPermissionException
+	{
+		return eventSupportFacadeRemote.getAllEventSupportsForEntity(entityname, eventType);
+	}
 }

@@ -1,11 +1,17 @@
 package org.nuclos.client.eventsupport;
 
 import java.rmi.RemoteException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
+import org.nuclos.client.eventsupport.model.EventSupportEntityPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportStatePropertiesTableModel;
+import org.nuclos.client.eventsupport.panel.EventSupportManagementView;
 import org.nuclos.client.explorer.EventSupportManagementExplorerView;
 import org.nuclos.client.explorer.ExplorerViewFactory;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetTreeNode;
@@ -20,30 +26,22 @@ import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
-import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class EventSupportManagementController extends Controller<MainFrameTabbedPane> {
 
 	private static final Logger LOG = Logger.getLogger(EventSupportManagementController.class);	
 	
 	private EventSupportManagementView viewEventSupportManagement;
-	
-	private TreeNodeFacadeRemote treeNodeFacadeRemote;
-	
-	@Autowired
-	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
-		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
-	}
 	
 	public EventSupportManagementController(MainFrameTabbedPane parent) {
 		super(parent);
@@ -70,22 +68,126 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		
 	}
 
+	public void showSupportProperties(EventSupportTreeNode node)
+	{
+		EventSupportPropertiesTableModel propertyModel = viewEventSupportManagement.getPropertyModel();
+		try {
+			propertyModel.clear();
+			EventSupportVO eventSupportByClassname;
+			switch (node.getTreeNodeType())
+			{
+				case EVENTSUPPORT:
+					eventSupportByClassname = EventSupportRepository.getInstance().getEventSupportByClassname(node.getEntityName());
+					break;
+				case EVENTSUPPORT_TYPE:
+					eventSupportByClassname = EventSupportRepository.getInstance().getEventSupportTypeByName(node.getEntityName());
+					break;
+				default:
+					eventSupportByClassname = null;
+			}
+			
+			if (eventSupportByClassname != null)
+			{
+				DateFormat dateInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				
+				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_NAME, eventSupportByClassname.getName());
+				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_DESCRIPTION, eventSupportByClassname.getDescription());
+				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_TYPE, eventSupportByClassname.getInterface());
+				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_NUCLET, "<todo>");
+				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_PATH, eventSupportByClassname.getPackage());
+				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_CREATION_DATE, 
+						eventSupportByClassname.getDateOfCompilation() != null ? dateInstance.format(eventSupportByClassname.getDateOfCompilation()) : null);
+				
+			}
+			
+		} catch (RemoteException e) {
+			LOG.error(e.getMessage(), e);
+		}	
+	}
+	
+	public void showTargetSupportProperties(EventSupportTreeNode node) {
+		
+		
+		try {
+				switch (node.getTreeNodeType()) {
+				case EVENTSUPPORT_TYPE:
+					EventSupportEntityPropertiesTableModel targetEntityModel = viewEventSupportManagement.getTargetEntityModel();
+					targetEntityModel.clear();
+					if (node.getParentNode().getTreeNodeType().equals(EventSupportTargetType.ENTITY))
+					{	
+						Collection<EventSupportEventVO> eventSupportsForEntity = EventSupportRepository.getInstance().getEventSupportsForEntity(node.getParentNode().getEntityName(), node.getEntityName());
+					
+						for (EventSupportEventVO esevo : eventSupportsForEntity)
+						{
+							targetEntityModel.addEntry(esevo.getOrder(), esevo.getStateId().toString(), esevo.getProcessId().toString());
+						}
+						// show Property Panel for this supporttype
+						viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(targetEntityModel);
+					}
+					break;
+				case STATE_TRANSITION:
+					EventSupportStatePropertiesTableModel targetStateModel = viewEventSupportManagement.getTargetStateModel();
+					MasterDataVO masterDataVO = MasterDataDelegate.getInstance().get(NuclosEntity.STATETRANSITION.getEntityName(), node.getId());
+					
+					Integer state1 = masterDataVO.getField("state1Id") != null ? Integer.parseInt(masterDataVO.getField("state1Id").toString()) : null;
+					Integer state2 = masterDataVO.getField("state2Id") != null ? Integer.parseInt(masterDataVO.getField("state2Id").toString()) : null;
+
+					if (node.getParentNode() != null && node.getParentNode().getId() != null)
+					{
+						Integer litFrom = null;
+						String nameFrom = null;
+						Integer litTo = null;
+						String nameTo = null;
+						
+						if (state1 != null) {
+							
+							MasterDataVO mdVo = MasterDataDelegate.getInstance().get(NuclosEntity.STATE.getEntityName(), state1, true);
+							litFrom = Integer.parseInt(mdVo.getField("numeral").toString());
+							nameFrom = mdVo.getField("name").toString();
+						}
+						if (state2 != null) {
+							MasterDataVO mdVo = MasterDataDelegate.getInstance().get(NuclosEntity.STATE.getEntityName(), state2, true);
+							litTo = Integer.parseInt(mdVo.getField("numeral").toString());
+							nameTo = mdVo.getField("name").toString();
+						}
+						
+						targetStateModel.clear();
+						targetStateModel.addEntry(litFrom, nameFrom, litTo, nameTo);
+
+					}
+					viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(targetStateModel);
+					
+					break;
+				default:
+					break;
+				}
+			
+			
+		} catch (RemoteException e) {
+			LOG.error(e.getMessage(), e);
+		} catch (CommonPermissionException e) {
+			LOG.error(e.getMessage(), e);
+		} catch (CommonFinderException e) {
+			LOG.error(e.getMessage(), e);
+		}	
+	}
+	
 	public void showManagementPane(MainFrameTabbedPane desktopPane)
 	{
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		// Explorer Panel including Toolbar and tree for eventsupports
-		final EventSupportTreeNode treenodeRoot = new EventSupportTreeNode(null, null,
+		final EventSupportTreeNode treenodeRoot = new EventSupportTreeNode(this, null, null,
 				localeDelegate.getMessage("ExplorerController.24","Regelverwendungen"),
 				localeDelegate.getMessage("ExplorerController.24","Regelverwendungen"),
 				localeDelegate.getMessage("ExplorerController.24","Regelverwendungen"),
 				EventSupportTargetType.ROOT, true);
 		
-		final EventSupportTargetTreeNode treenodeRootTargets = 
-				new EventSupportTargetTreeNode(this, null,  
-						getSpringLocaleDelegate().getMessage("ExplorerController.32","Regelzuweisung"),
-						getSpringLocaleDelegate().getMessage("ExplorerController.32","Regelzuweisung"), 
-						getSpringLocaleDelegate().getMessage("ExplorerController.32","Regelzuweisung"), EventSupportTargetType.ROOT, false);
+		final EventSupportTargetTreeNode treenodeRootTargets = new EventSupportTargetTreeNode(this, null, null, 
+				getSpringLocaleDelegate().getMessage("ExplorerController.32","Regelzuweisung"),
+				getSpringLocaleDelegate().getMessage("ExplorerController.32","Regelzuweisung"), 
+				getSpringLocaleDelegate().getMessage("ExplorerController.32","Regelzuweisung"), 
+				EventSupportTargetType.ROOT, false);
 		
 		
 		if (viewEventSupportManagement == null) {
@@ -94,23 +196,79 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		
 		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, 
 				localeDelegate.getMessage("nuclos.entity.eventsupportmangagement.label", "Nucleus Entit\u00e4tenwizard <Neue Entit\u00e4t>"));
-		
-		EventSupportManagementExplorerView newExplorerView = 
-				(EventSupportManagementExplorerView) ExplorerViewFactory.getInstance().newExplorerView(treenodeRoot);
-		
+	
 		ifrm.add(viewEventSupportManagement);
 		
 		ifrm.setTabIconFromSystem("getIconTree16");
 		ifrm.setTitle(localeDelegate.getMessage("nuclos.entity.eventsupportmangagement.label", "Nucleus Entit\u00e4tenwizard <Neue Entit\u00e4t>"));
-		ifrm.setLayeredComponent(newExplorerView.getViewComponent());
-	//	ifrm.setTabStoreController(new ExplorerTabStoreController(treenodeRoot, newExplorerView));
 		
 		desktopPane.add(ifrm);
 		ifrm.setVisible(true);
 	}
 
-	public List<EventSupportTargetTreeNode> createSubNodesByTargetType(EventSupportTreeNode node)
+	public List<EventSupportTreeNode> createSubNodesByType(EventSupportTreeNode esNode)
 	{
+		List<EventSupportTreeNode> retVal = new ArrayList<EventSupportTreeNode>();
+		
+		try {
+			List<EventSupportVO> eventSupportTypes;
+			
+			switch (esNode.getTreeNodeType()) 
+			{
+				case ROOT:
+					Collection<MasterDataVO> masterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.NUCLET.getEntityName());
+					
+					retVal.add(new EventSupportTreeNode(this, esNode, null, "<Default>", "<Default>", "Alle nicht zugewiesenen Elemente", EventSupportTargetType.NUCLET, false));
+					for (MasterDataVO msvo : masterData)
+					{
+						retVal.add(new EventSupportTreeNode(this, esNode, msvo.getId(), msvo.getField("package").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.NUCLET, false));
+					}
+					break;
+				case EVENTSUPPORT_TYPE:
+					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportsByType(esNode.getEntityName());
+					masterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.NUCLET.getEntityName());
+					
+					for (EventSupportVO s : eventSupportTypes)
+					{
+						boolean isNucletEventSupport = false;
+						for (MasterDataVO msvo : masterData)
+						{
+							if (msvo.getField("package").equals(s.getPackage()))
+							{
+								isNucletEventSupport = true;
+								break;
+							}
+						}
+						
+						if (esNode.getEntityName() != null && (esNode.getParentNode().getEntityName().equals(s.getPackage()) || (!isNucletEventSupport && esNode.getParentNode().getEntityName().equals("<Default>"))))
+						{
+							EventSupportTreeNode eventSupportTreeNode = new EventSupportTreeNode(this, esNode, null, s.getClassname(), s.getName(), s.getDescription(), EventSupportTargetType.EVENTSUPPORT, false);
+							retVal.add(eventSupportTreeNode); 								
+						}
+					}	
+					break;
+				case NUCLET:
+					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportTypes();
+					for (EventSupportVO s : eventSupportTypes)
+					{
+						EventSupportTreeNode eventSupportTreeNode = new EventSupportTreeNode(this, esNode, null, s.getClassname(), s.getName(), s.getDescription(), EventSupportTargetType.EVENTSUPPORT_TYPE, false);
+						retVal.add(eventSupportTreeNode);
+					}
+					break;
+				default:
+					break;
+			}
+			
+		} catch (RemoteException e) {
+			Log.error(e.getMessage(), e);
+		}
+		
+		return retVal;
+	}
+	
+	public List<EventSupportTargetTreeNode> createTargetSubNodesByType(EventSupportTreeNode esNode)
+	{
+		EventSupportTargetTreeNode node = (EventSupportTargetTreeNode) esNode;
 		List<EventSupportTargetTreeNode> lstSubNodes = new ArrayList<EventSupportTargetTreeNode> ();
 		Collection<MasterDataVO> masterData = null;
 		EventSupportTargetType type = node.getTreeNodeType();
@@ -120,10 +278,10 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 			case ROOT:
 				masterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.NUCLET.getEntityName());
 				
-				lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this, null, "<Default>", "<Default>", "Alle nicht zugewiesenen Elemente", EventSupportTargetType.NUCLET, false));
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node, null, "<Default>", "<Default>", "Alle nicht zugewiesenen Elemente", EventSupportTargetType.NUCLET, false));
 				for (MasterDataVO msvo : masterData)
 				{
-					lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this,msvo.getId(), msvo.getField("name").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.NUCLET, false));
+					lstSubNodes.add(new EventSupportTargetTreeNode(this, node, msvo.getId(), msvo.getField("name").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.NUCLET, false));
 				}
 				break;
 			case ENTITY_CATEGORIE:
@@ -132,7 +290,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					Collection<EntityObjectVO> dependantMasterData = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.ENTITY.getEntityName(), "nuclet", nodeId);					
 					for (EntityObjectVO eoVO :dependantMasterData)
 					{
-						lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this,eoVO.getId(), eoVO.getField("entity").toString(), eoVO.getField("entity").toString(), eoVO.getField("entity").toString(), EventSupportTargetType.ENTITY, false));
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, eoVO.getId(), eoVO.getField("entity").toString(), eoVO.getField("entity").toString(), eoVO.getField("entity").toString(), EventSupportTargetType.ENTITY, false));
 					}
 				}
 				else
@@ -142,14 +300,14 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					
 					for (MasterDataVO msvo : masterData)
 					{
-						lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this,msvo.getId(), msvo.getField("entity").toString(), msvo.getField("entity").toString(), msvo.getField("entity").toString(), EventSupportTargetType.ENTITY, false));
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node ,msvo.getId(), msvo.getField("entity").toString(), msvo.getField("entity").toString(), msvo.getField("entity").toString(), EventSupportTargetType.ENTITY, false));
 					}
 				}
 				
 				break;
-			case NUCLET:
-				lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this, nodeId, "Entitäten", "Entitäten",  "Entitäten des aktuellen Nuclets", EventSupportTargetType.ENTITY_CATEGORIE, false));
-				lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this, nodeId, "Statusmodelle", "Statusmodelle",  "Statusmodelle des aktuellen Nuclets", EventSupportTargetType.STATEMODEL_CATEGORIE, false));
+			case NUCLET: 
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node, nodeId, "Entitäten", "Entitäten",  "Entitäten des aktuellen Nuclets", EventSupportTargetType.ENTITY_CATEGORIE, false));
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node,nodeId, "Statusmodelle", "Statusmodelle",  "Statusmodelle des aktuellen Nuclets", EventSupportTargetType.STATEMODEL_CATEGORIE, false));
 				break;
 			case STATEMODEL_CATEGORIE:
 				if (nodeId != null)
@@ -157,7 +315,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					Collection<EntityObjectVO> dependantMasterData = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.STATEMODEL.getEntityName(), "nuclet", nodeId);					
 					for (EntityObjectVO eoVO :dependantMasterData)
 					{
-						lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this,eoVO.getId(), eoVO.getField("name").toString(), eoVO.getField("name").toString(), eoVO.getField("description").toString(), EventSupportTargetType.STATE_TRANSITION, false));
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node,eoVO.getId(), eoVO.getField("name").toString(), eoVO.getField("name").toString(), eoVO.getField("description").toString(), EventSupportTargetType.STATEMODEL, false));
 					}
 				}
 				else
@@ -167,11 +325,11 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					
 					for (MasterDataVO msvo : masterData)
 					{
-						lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this,msvo.getId(), msvo.getField("name").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.STATE_TRANSITION, false));
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node ,msvo.getId(), msvo.getField("name").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.STATEMODEL, false));
 					}
 				}
 				break;
-			case STATE_TRANSITION:
+			case STATEMODEL:
 				
 				Collection<StateVO> statesByModel = StateDelegate.getInstance().getStatesByModel((Integer)nodeId);
 				for (StateVO svo : statesByModel)
@@ -181,7 +339,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					if (stVO != null)
 					{
 						String transitionLabel =  " -> " +  svo.getNumeral();
-						lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this,stVO.getId(), transitionLabel, transitionLabel, transitionLabel, null, false));						
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node ,stVO.getId(), transitionLabel, transitionLabel, transitionLabel, EventSupportTargetType.STATE_TRANSITION, false));						
 					}
 				}
 				StateVO[] array = statesByModel.toArray(new StateVO[statesByModel.size()]);
@@ -191,7 +349,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					if (stVO != null)
 					{
 						String transitionLabel =  array[0].getNumeral() + " -> " + array[1].getNumeral();
-						lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this,stVO.getId(), transitionLabel, transitionLabel, transitionLabel, null, false));
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node ,stVO.getId(), transitionLabel, transitionLabel, transitionLabel, EventSupportTargetType.STATE_TRANSITION, false));
 					}
 				}				
 				break;
@@ -201,11 +359,13 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportTypes();
 					for (EventSupportVO s : eventSupportTypes)
 					{
-						lstSubNodes.add(new EventSupportTargetTreeNode(EventSupportManagementController.this, nodeId, s.getName(), s.getName(),  s.getDescription(), EventSupportTargetType.EVENTSUPPORT_TYPE, false));					
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, nodeId, s.getClassname(), s.getName(),  s.getDescription(), EventSupportTargetType.EVENTSUPPORT_TYPE, false));					
 					}
 				} catch (RemoteException e) {
 					LOG.error(e.getMessage(),e);
 				}
+				break;
+			case STATE_TRANSITION:
 				break;
 		default:
 			break;

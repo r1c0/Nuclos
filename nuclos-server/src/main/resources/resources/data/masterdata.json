@@ -2786,7 +2786,7 @@
   },
    {
     "name": "Zuweisung von EventSupports an Entitaetenereignisse",
-    "entity": "nuclos_eventsupport_event",
+    "entity": "nuclos_eventsupportevent",
     "searchable": true,
     "editable": true,
     "cacheable": false,

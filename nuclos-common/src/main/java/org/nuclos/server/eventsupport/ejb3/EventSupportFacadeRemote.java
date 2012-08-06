@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 
 /**
@@ -30,4 +31,5 @@ public interface EventSupportFacadeRemote
 	public Collection<EventSupportVO> getEventSupportsByClasstype(List<Class<?>> listOfinterfaces)
 			throws CommonPermissionException;
 
+	public Collection<EventSupportEventVO> getAllEventSupportsForEntity(String entityname, String eventtype) throws CommonPermissionException;
 }

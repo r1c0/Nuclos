@@ -22110,6 +22110,141 @@
     "text": "Boolean"
   },
    {
+    "resourceID": "EventSupportEntityPropertyModelColumn.1",
+    "locale": "i-default",
+    "text": "Order"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.1",
+    "locale": "en",
+    "text": "Order"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.1",
+    "locale": "de",
+    "text": "Reihenfolge"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.2",
+    "locale": "i-default",
+    "text": "Status"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.2",
+    "locale": "en",
+    "text": "Status"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.2",
+    "locale": "de",
+    "text": "Status"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.3",
+    "locale": "i-default",
+    "text": "Process"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.3",
+    "locale": "en",
+    "text": "Process"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.3",
+    "locale": "de",
+    "text": "Aktion"
+  },
+   {
+    "resourceID": "EventSupportTableModelColumn.1",
+    "locale": "i-default",
+    "text": "Property"
+  },
+  {
+    "resourceID": "EventSupportTableModelColumn.1",
+    "locale": "en",
+    "text": "Property"
+  },
+  {
+    "resourceID": "EventSupportTableModelColumn.1",
+    "locale": "de",
+    "text": "Eigenschaft"
+  },
+    {
+    "resourceID": "EventSupportTableModelColumn.2",
+    "locale": "i-default",
+    "text": "Value"
+  },
+  {
+    "resourceID": "EventSupportTableModelColumn.2",
+    "locale": "en",
+    "text": "Value"
+  },
+  {
+    "resourceID": "EventSupportTableModelColumn.2",
+    "locale": "de",
+    "text": "Wert"
+  },
+   {
+    "resourceID": "EventSupportStatePropertyModelColumn.1",
+    "locale": "i-default",
+    "text": "Literal Quelle"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.1",
+    "locale": "en",
+    "text": "Literal Source"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.1",
+    "locale": "de",
+    "text": "Literal Quelle"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.2",
+    "locale": "i-default",
+    "text": "Status Quelle"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.2",
+    "locale": "en",
+    "text": "State Source"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.2",
+    "locale": "de",
+    "text": "Status Quelle"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.3",
+    "locale": "i-default",
+    "text": "Literale Target"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.3",
+    "locale": "en",
+    "text": "Literale Target"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.3",
+    "locale": "de",
+    "text": "Literal Ziel"
+  },
+   {
+    "resourceID": "EventSupportStatePropertyModelColumn.4",
+    "locale": "i-default",
+    "text": "State Target"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.4",
+    "locale": "en",
+    "text": "State Target"
+  },
+  {
+    "resourceID": "EventSupportStatePropertyModelColumn.4",
+    "locale": "de",
+    "text": "Literal Ziel"
+  },
+   {
     "resourceID": "EventSupportTableModel.1",
     "locale": "i-default",
     "text": "Name"
@@ -22182,9 +22317,23 @@
   {
     "resourceID": "EventSupportTableModel.5",
     "locale": "de",
-    "text": "Erstell am"
+    "text": "Erstellt am"
   },
-  
+     {
+    "resourceID": "EventSupportTableModel.6",
+    "locale": "i-default",
+    "text": "Description"
+  },
+  {
+    "resourceID": "EventSupportTableModel.6",
+    "locale": "en",
+    "text": "Description"
+  },
+  {
+    "resourceID": "EventSupportTableModel.6",
+    "locale": "de",
+    "text": "Beschreibung"
+  }, 
   {
     "resourceID": "MasterDataModuleController.2",
     "locale": "i-default",

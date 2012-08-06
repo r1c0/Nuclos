@@ -25,6 +25,7 @@ import org.nuclos.client.explorer.node.DatasourceDirectoryExplorerNode;
 import org.nuclos.client.explorer.node.DatasourceExplorerNode;
 import org.nuclos.client.explorer.node.DatasourceReportExplorerNode;
 import org.nuclos.client.explorer.node.EventSupportExplorerNode;
+import org.nuclos.client.explorer.node.EventSupportTargetExplorerNode;
 import org.nuclos.client.explorer.node.GenericObjectExplorerNode;
 import org.nuclos.client.explorer.node.GenericObjectSearchResultExplorerNode;
 import org.nuclos.client.explorer.node.GroupExplorerNode;
@@ -140,7 +141,7 @@ public class ExplorerNodeFactory {
 		this.putConstructor(EntityRuleNode.EntityRuleUsageStatusNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(EntityRuleNode.EntityRuleUsageProcessNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(EventSupportTreeNode.class, EventSupportExplorerNode.class);
-		this.putConstructor(EventSupportTargetTreeNode.class, EventSupportExplorerNode.class);
+		this.putConstructor(EventSupportTargetTreeNode.class, EventSupportTargetExplorerNode.class);
 		this.putConstructor(TimelimitNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(DirectoryRuleNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(CodeTreeNode.class, CodeExplorerNode.class);

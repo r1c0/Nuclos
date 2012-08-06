@@ -22,7 +22,7 @@ public class EventSupportManagementExplorerView extends DefaultExplorerView
 	
 	public EventSupportManagementExplorerView(TreeNode tn)
 	{
-		super(tn);
+		super(tn);		
 	}
 	
 	protected List<JComponent> getToolBarComponents() {
@@ -58,4 +58,11 @@ public class EventSupportManagementExplorerView extends DefaultExplorerView
 	
 		return components;
 	}
+
+
+	@Override
+	public JComponent getViewComponent() {
+		return this;
+	}
+	
 }

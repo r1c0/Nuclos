@@ -45,7 +45,6 @@ public enum NuclosEntity {
 	CHART("chart"),
 	CHARTUSAGE("chartUsage"),
 	ENTITY("entity"),
-	
 	ENTITYFIELD("entityfield"),
 	ENTITYFIELDGROUP("entityfieldgroup"),
 	ENTITYMENU("entitymenu"),

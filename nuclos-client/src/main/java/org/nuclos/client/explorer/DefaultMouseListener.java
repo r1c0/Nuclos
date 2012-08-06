@@ -132,6 +132,14 @@ public class DefaultMouseListener extends MouseAdapter {
 						actDefault.actionPerformed(null);
 					}
 				}
+				else if(ev.getClickCount() == 1)
+				{
+					// performs the defined action attached to a simple mouse click; typically null
+					final Action actDefault = node.getTreeNodeActionOnMouseClick(tree);
+					if (actDefault != null) {
+						actDefault.actionPerformed(null);
+					}
+				}
 			}
 		}
 	}

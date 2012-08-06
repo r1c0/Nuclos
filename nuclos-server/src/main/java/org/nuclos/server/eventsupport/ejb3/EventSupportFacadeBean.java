@@ -1,11 +1,20 @@
 package org.nuclos.server.eventsupport.ejb3;
 
+import java.io.File;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.api.annotation.NuclosEventType;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -15,25 +24,25 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.EventSupportCache;
-import org.nuclos.server.common.RuleCache;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.CustomCodeManager;
+import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
-import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,6 +168,28 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 		return this.ccm.getExecutableEventSupportFiles();
 	}
 	
+	public Collection<EventSupportEventVO> getAllEventSupportsForEntity(String entityname, String eventtype) throws CommonPermissionException {
+		final Collection<EventSupportEventVO> results = new HashSet<EventSupportEventVO>();
+		
+		CollectableSearchCondition condEventEQUAL = SearchConditionUtils.newEOComparison(NuclosEntity.EVENTSUPPORTEVENT.getEntityName(), "entity", ComparisonOperator.EQUAL, eventtype, MetaDataServerProvider.getInstance());
+		List<EntityObjectVO> dependantMasterData = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.EVENTSUPPORTEVENT.getEntityName()).getBySearchExpression(new CollectableSearchExpression(condEventEQUAL));
+	
+		for (EntityObjectVO mdvo : dependantMasterData)
+		{
+			if (eventtype == null || eventtype.trim().length() == 0 || eventtype.equals(mdvo.getField("eventsupportclass")))
+			{
+				String classname = (String) mdvo.getField("STREVENTSUPPORTCLASS");
+				Integer processId = mdvo.getField("process") != null ? (Integer) mdvo.getField("process") : null;
+				Integer stateId = mdvo.getField("state") != null ? (Integer) mdvo.getField("state") : null;
+				Integer order = mdvo.getField("order") != null ? (Integer) mdvo.getField("order") : null;
+				
+				results.add(new EventSupportEventVO(classname,entityname,processId,stateId,order));							
+			}
+		}
+		
+		return results;
+	}
+	
 	public Collection<EventSupportVO> getEventSupportsByClasstype(List<Class<?>> listOfinterfaces)
 			throws CommonPermissionException {
 		
@@ -176,7 +207,17 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 		
 		for (Class<?> c : registeredSupportEventTypes)
 		{
-			retVal.add(new EventSupportVO(c.getSimpleName(), c.getSimpleName(), c.getName(), c.getSimpleName()));
+			String sName = c.getSimpleName();
+			String sBeschreibung = c.getSimpleName();
+			
+			Annotation[] annotations = c.getAnnotations();
+			if (annotations.length > 0 && annotations[0].annotationType().equals(NuclosEventType.class))
+			{ 
+				sBeschreibung = c.getAnnotation(NuclosEventType.class).description();
+				sName = c.getAnnotation(NuclosEventType.class).name();
+			}
+			String pkgName = c.getPackage() != null ? c.getPackage().getName() : null;
+			retVal.add(new EventSupportVO(sName, sBeschreibung, c.getName(), c.getSimpleName(), pkgName, null));
 		}
 		return retVal;
 	}

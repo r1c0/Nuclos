@@ -17,16 +17,11 @@
 
 package org.nuclos.client.explorer.node.eventsupport;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.jfree.util.Log;
 import org.nuclos.client.eventsupport.EventSupportManagementController;
-import org.nuclos.client.statemodel.EventSupportRepository;
 import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
 public class EventSupportTreeNode implements TreeNode {
@@ -38,10 +33,11 @@ public class EventSupportTreeNode implements TreeNode {
 	private List<? extends TreeNode> lstSubNodes;
 	private EventSupportTargetType esTargetType;
 	private boolean bIsRoot;
-	private EventSupportManagementController controller;
 	private boolean isLeaf = false;
-	
-	public EventSupportTreeNode(EventSupportManagementController ctrl, Object id, String name, String label, String description, EventSupportTargetType type, boolean isRoot) {
+	private EventSupportTreeNode parentNode;
+	private EventSupportManagementController controller;
+
+	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type, boolean isRoot) {
 		super();
 		this.oId = id;		
 		this.sLabel = label;
@@ -49,14 +45,15 @@ public class EventSupportTreeNode implements TreeNode {
 		this.sDescription = description;
 		this.esTargetType = type;		
 		this.bIsRoot = isRoot;
-		this.controller = ctrl;
+		this.parentNode = parentNode;
+		this.controller = controller;
 		
 		if (this.esTargetType == null)
 			this.isLeaf = true;
 	}
 	
-	public EventSupportTreeNode(EventSupportManagementController ctrl, Object id, String name, String label, String description, EventSupportTargetType type) {
-		this(ctrl, id, name, label, description, type, false);
+	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type) {
+		this(controller, parentNode, id, name, label, description, type, false);
 	}
 
 	@Override
@@ -111,46 +108,8 @@ public class EventSupportTreeNode implements TreeNode {
 
 	@Override
 	public void refresh() {
-		
-		if (!this.isLeaf() && this.lstSubNodes == null) {
-			List<EventSupportTreeNode> retVal = new ArrayList<EventSupportTreeNode>();
-			if (this.oId == null)
-			{
-				if (this.bIsRoot)
-				{
-					try {
-						List<EventSupportVO> eventSupportTypes = EventSupportRepository.getInstance().getEventSupportTypes();
-						for (EventSupportVO s : eventSupportTypes)
-						{
-							EventSupportTreeNode eventSupportTreeNode = new EventSupportTreeNode(this.controller, null, s.getClassname(), s.getName(), s.getDescription(), EventSupportTargetType.EVENTSUPPORT_TYPE, false);
-							retVal.add(eventSupportTreeNode);
-						}									
-						this.lstSubNodes = retVal;
-					} catch (RemoteException e) {
-						Log.error(e.getMessage(), e);
-					}
-				}
-				else
-				{
-					if (this.esTargetType.equals(EventSupportTargetType.EVENTSUPPORT_TYPE))
-					{
-						try {
-							List<EventSupportVO> eventSupportTypes = EventSupportRepository.getInstance().getEventSupportsByType(this.sName);
-							for (EventSupportVO s : eventSupportTypes)
-							{
-								EventSupportTreeNode eventSupportTreeNode = new EventSupportTreeNode(this.controller, null, s.getInterface(), s.getName(), s.getDescription(), EventSupportTargetType.EVENTSUPPORT, false);
-								retVal.add(eventSupportTreeNode); 
-							}	
-							this.lstSubNodes = retVal;
-						} catch (RemoteException e) {
-							Log.error(e.getMessage(), e);
-						}
-					}
-					
-				}
-			}
-		}
-		
+		if (!isLeaf())
+			setLstSubNodes(getController().createSubNodesByType(this));
 	}
 
 	@Override
@@ -176,10 +135,6 @@ public class EventSupportTreeNode implements TreeNode {
 		this.esTargetType = sTreeNodeType;
 	}
 
-	public EventSupportManagementController getController() {
-		return controller;
-	}
-
 	public void setLstSubNodes(List<? extends TreeNode> lstSubNodes) {
 		this.lstSubNodes = lstSubNodes;
 	}
@@ -192,5 +147,16 @@ public class EventSupportTreeNode implements TreeNode {
 		this.isLeaf = isLeaf;
 	}
 
+	public EventSupportManagementController getController() {
+		return this.controller;
+	}
+
+	public EventSupportTreeNode getParentNode() {
+		return parentNode;
+	}
+
+	public void setParentNode(EventSupportTreeNode parentNode) {
+		this.parentNode = parentNode;
+	}
 	
 }

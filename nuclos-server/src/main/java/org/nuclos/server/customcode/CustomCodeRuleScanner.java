@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,11 +16,6 @@ import java.util.jar.JarFile;
 import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.event.AfterDeleteEvent;
-import org.nuclos.api.event.AfterSaveEvent;
-import org.nuclos.api.event.DeleteEvent;
-import org.nuclos.api.event.SaveEvent;
-import org.nuclos.api.event.StateChangeEvent;
 import org.nuclos.server.customcode.codegenerator.RuleClassLoader;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.springframework.core.env.Environment;
@@ -138,6 +134,11 @@ public class CustomCodeRuleScanner
 									String ruleName = resource.getFilename();
 									String ruleDescription = classMetadata.getClassName();
 									String ruleClassName = classMetadata.getClassName();
+									Date ruleClassCompilationDate = new Date(resource.lastModified());
+									
+									String rulePackagePath = ClassUtils.convertResourcePathToClassName(env.resolveRequiredPlaceholders(env.resolveRequiredPlaceholders(pfad)));
+									if (rulePackagePath.lastIndexOf(".") == rulePackagePath.length() - 1)
+										rulePackagePath = rulePackagePath.substring(0, rulePackagePath.length()-1);
 									
 									if (anmeta.hasAnnotation("org.nuclos.api.annotation.NuclosEvent"))
 									{
@@ -151,7 +152,7 @@ public class CustomCodeRuleScanner
 											ruleDescription = (String) annotationAttributes.get("description");
 										}										
 									}
-									EventSupportVO newRule = new EventSupportVO(ruleName, ruleDescription, ruleClassName, inter.getName());
+									EventSupportVO newRule = new EventSupportVO(ruleName, ruleDescription, ruleClassName, inter.getName(), rulePackagePath, ruleClassCompilationDate);
 									
 									execRuleClasses.get(inter).add(newRule);
 								}	
