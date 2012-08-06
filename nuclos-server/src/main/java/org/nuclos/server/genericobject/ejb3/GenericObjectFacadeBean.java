@@ -1078,6 +1078,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			final UsageCriteria usage = gowdvo.getUsageCriteria(getAttributeCache());
 			DalCallResult dalResult;
 			if (bDeletePhysically) {
+				//@see  	NUCLOS-708. clear dependants map first.
+				for (String sDependantEntityName : gowdvo.getDependants().getEntityNames()) {
+					gowdvo.getDependants().setData(sDependantEntityName, new ArrayList<EntityObjectVO>(0));
+				}
 				_fillDependants(gowdvo, usage, new HashSet<String>());
 
 				for (EntityAndFieldName eafn : collSubEntities.keySet()) {

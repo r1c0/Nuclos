@@ -313,8 +313,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					@Override
 					public void run() {
 						try {
-							assert getCollectStateModel().getOuterState() == CollectStateConstants.OUTERSTATE_DETAILS;
-
+							//assert getCollectStateModel().getOuterState() == CollectStateConstants.OUTERSTATE_DETAILS;
+							if (getCollectStateModel().getOuterState() != CollectStateConstants.OUTERSTATE_DETAILS)
+								return; // @see  	NUCLOS-708 assertation error on delete object physically. invoke later...
+							
 							GenericObjectCollectController.this.stopEditingInDetails();
 
 							CollectableGenericObjectWithDependants selectedCollectable = GenericObjectCollectController.this.getSelectedCollectable();
