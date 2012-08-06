@@ -5507,6 +5507,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		public void searchModeEntered(CollectStateEvent ev) throws CommonBusinessException {
 			setInitialComponentFocusInSearchTab();
 			bGenerated = false;
+			iCurrentLayoutId = null;
 			setGenerationSource(null, null);
 		}
 
