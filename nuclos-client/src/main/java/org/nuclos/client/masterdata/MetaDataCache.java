@@ -151,8 +151,10 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 	public MasterDataMetaVO getMetaData(String sEntity) {
 		LOG.debug("Metadata cache hit");		
 		MasterDataMetaVO result = mp.get(sEntity);
-		if(result == null)
-			return masterDataDelegate.getMetaData(sEntity);
+		if(result == null) {
+			result = masterDataDelegate.getMetaData(sEntity);
+			mp.put(sEntity, result);
+		}
 		
 		return result;
 	}
@@ -168,7 +170,10 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 				return result;
 			}
 		}
-		return null;
+		MasterDataMetaVO result = masterDataDelegate.getMetaData(iId);
+		if (result != null)
+			mp.put(result.getEntityName(), result);
+		return result;
 	}
 	
 	public synchronized void invalidate() {
