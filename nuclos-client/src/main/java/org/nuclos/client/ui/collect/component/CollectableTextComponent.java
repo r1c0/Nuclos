@@ -92,6 +92,12 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 	protected void setupJPopupMenuListener(JPopupMenuListener popupmenulistener) {
 		this.getJTextComponent().addMouseListener(popupmenulistener);
 	}
+	
+	@Override
+	public void setMnemonic(char cMnemonic) {
+		super.setMnemonic(cMnemonic);
+		getJTextComponent().setFocusAccelerator(cMnemonic);
+	}
 
 	@Override
 	protected ComparisonOperator[] getSupportedComparisonOperators() {

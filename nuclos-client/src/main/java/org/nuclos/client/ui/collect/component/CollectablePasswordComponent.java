@@ -52,6 +52,12 @@ public abstract class CollectablePasswordComponent extends LabeledCollectableCom
 	protected JTextComponent getJTextComponent() {
 		return this.getLabeledTextComponent().getJTextComponent();
 	}
+	
+	@Override
+	public void setMnemonic(char cMnemonic) {
+		super.setMnemonic(cMnemonic);
+		getJTextComponent().setFocusAccelerator(cMnemonic);
+	}
 
 	@Override
 	public boolean hasComparisonOperator() {

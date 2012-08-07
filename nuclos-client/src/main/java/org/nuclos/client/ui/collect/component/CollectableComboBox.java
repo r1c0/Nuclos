@@ -281,6 +281,18 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	private DefaultComboBoxModel getDefaultComboBoxModel() {
 		return (DefaultComboBoxModel) getJComboBox().getModel();
 	}
+	
+	@Override
+	public void setMnemonic(char cMnemonic) {
+		super.setMnemonic(cMnemonic);
+		final ComboBoxEditor editor = getJComboBox().getEditor();
+		if (editor != null) {
+			final Component comp = editor.getEditorComponent();
+			if (comp instanceof JTextComponent) {
+				((JTextComponent) comp).setFocusAccelerator(cMnemonic);
+			}
+		}
+	}
 
 	/**
 	 * refreshes the list of values by asking the value list provider.

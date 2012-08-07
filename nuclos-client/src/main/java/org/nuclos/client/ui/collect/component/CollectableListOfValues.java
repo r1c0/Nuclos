@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -25,12 +26,14 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
+import javax.swing.ComboBoxEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
@@ -365,6 +368,12 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	@Override
 	public JComponent getFocusableComponent() {
 		return this.getJTextField();
+	}
+	
+	@Override
+	public void setMnemonic(char cMnemonic) {
+		super.setMnemonic(cMnemonic);
+		getJTextField().setFocusAccelerator(cMnemonic);
 	}
 
 	/**
