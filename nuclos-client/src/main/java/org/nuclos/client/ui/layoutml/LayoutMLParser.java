@@ -1563,7 +1563,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				// Only add the listener to the subform if there is no previous
 				// subform in this tab.
 				if (previousTab != tabs) {
-					previousSubForm = null;
+					previousSubForm = subform;
 					previousTab = tabs;
 					subform.setSizeKnownListener(new SizeKnownListener(tbdpn));
 				}
@@ -1572,6 +1572,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				else if (previousSubForm != null) {
 					previousSubForm.setSizeKnownListener(null);
 					previousSubForm = null;
+					subform.setSizeKnownListener(new SizeKnownListener(tbdpn));
 				}
 			}
 
