@@ -5034,7 +5034,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			/** @todo this occurs when the user changes a usagecriteria field in the search panel and pushes the Search button
 			 * "too quickly". Must be deferred to Elisa 1.1 as changing the reloading behaviour
 			 * (runCommand instead of runCommandLater) is too dangerous now. 7.9.2004 */
-			throw new IllegalStateException("collectstate: " + collectstate);
+			// above comment is an old comment from elisa. we do not have problems here anymore.
+			// except switching workspaces with open resultcontroller and a search criteria with a usagecriteria field.
+			// switching workspace back will produces that collectstate. but we can ignore it here. all panels are loaded correctly.
+			return;//throw new IllegalStateException("collectstate: " + collectstate);
 
 		for (CollectableComponent clctcomp : collclctcomp) {
 			final Permission permission = getLeastCommonPermission(clctcomp, collStateIds);
