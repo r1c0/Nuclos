@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -70,11 +71,20 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 				if (Modules.getInstance().isModuleEntity(mdmVO.getEntityName())) {
 					if (Modules.getInstance().getModuleByEntityName(mdmVO.getEntityName()).getField("menupath") != null) {
 						colmdmVO_menupath.add(mdmVO);
+					} else {
+						// add entites without an menupath too if not a system entity
+						if (!mdmVO.isSystemEntity() && !MasterDataDelegate.getInstance().isSubformEntity(mdmVO.getEntityName()))
+							colmdmVO_menupath.add(mdmVO);
 					}
 				}
-			}
-			if (mdmVO.getResourceSIdForMenuPath() != null) {
-				colmdmVO_menupath.add(mdmVO);
+			} else {
+				if (mdmVO.getResourceSIdForMenuPath() != null) {
+					colmdmVO_menupath.add(mdmVO);
+				} else {
+					// add entites without an menupath too if not a system entity
+					if (!mdmVO.isSystemEntity() && !MasterDataDelegate.getInstance().isSubformEntity(mdmVO.getEntityName()))
+						colmdmVO_menupath.add(mdmVO);
+				}
 			}
 		}
 
