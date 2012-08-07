@@ -57,7 +57,7 @@ import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.nuclos.common.MarshalledValue;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -72,6 +72,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MasterDataMetaCache;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -98,6 +99,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configurable
 public class JasperExport implements Export {
+
+	private static final Logger LOG = Logger.getLogger(JasperExport.class);
 
 	private DataSource dataSource;
 
@@ -237,7 +240,7 @@ public class JasperExport implements Export {
 							conn.close();
 						}
 					} catch (Exception ex) {
-						Log.error(ex.getMessage(), ex);
+						LOG.error(ex.getMessage(), ex);
 					}
 				}
 			}
