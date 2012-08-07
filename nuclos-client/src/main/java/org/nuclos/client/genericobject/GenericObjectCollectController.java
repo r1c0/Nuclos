@@ -1920,6 +1920,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null, null),
 			new CollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED));
 		getLayoutMLButtonsActionListener().setComponentsEnabled(false);
+		
+		// adjustTabbedPanes - remove empty tabs.
+		JComponent jcomp = layoutRoot.getRootComponent();
+		List<JTabbedPane> lst = new ArrayList<JTabbedPane>();
+
+		searchTabbedPanes(jcomp, lst);
+
+		adjustTabbedPanes(lst);
 		return layoutRoot;
 	}
 
@@ -2416,8 +2424,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					tabPane.setSelectedIndex(i);
 					break;
 				}
-
 		
+		adjustTabbedPanes(lst);
+	}
+
+	private void adjustTabbedPanes(List<JTabbedPane> lst) {		
 		for(JTabbedPane tabPane : lst) {
 			List<Component> lstTabToRemove = new ArrayList<Component>(tabPane.getTabCount());
 			for(int i = 0; i < tabPane.getTabCount(); i++) {
@@ -2455,7 +2466,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 	}
-
+	
 	private void searchTabbedPanes(JComponent comp, List<JTabbedPane> lst) {
 		if(comp instanceof JTabbedPane)
 			lst.add((JTabbedPane)comp);

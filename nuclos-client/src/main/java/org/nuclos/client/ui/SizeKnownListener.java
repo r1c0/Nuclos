@@ -18,6 +18,8 @@ package org.nuclos.client.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A Listener to a certain tab of a JInfoTabbedPane.
@@ -29,20 +31,29 @@ import java.awt.event.ActionListener;
 public class SizeKnownListener implements ActionListener {
 
 	private final JInfoTabbedPane	pane;
-
-	private final int				tab;
-
-	public SizeKnownListener(JInfoTabbedPane pane, int tab) {
+	
+	public SizeKnownListener(JInfoTabbedPane pane) {
 		this.pane = pane;
-		this.tab = tab;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e instanceof SizeKnownEvent) {
 			final SizeKnownEvent ske = (SizeKnownEvent) e;
-			pane.setTabInfoAt(tab, ske.getSize());
-			pane.setDisplayTabInfoAt(tab, true);
+			int tab = -1;
+			for (int i = 0; i < pane.getTabCount(); i++) {
+				Collection coll = UIUtils.findAllInstancesOf(pane.getComponentAt(i), (Class)ske.getSource().getClass());
+				for (Object object : coll) {
+					if (object == ske.getSource()) {
+						tab = i;
+						break;
+					}	
+				}
+			}
+			if (tab != -1) {
+				pane.setTabInfoAt(tab, ske.getSize());
+				pane.setDisplayTabInfoAt(tab, true);
+			}
 		}
 	}
 

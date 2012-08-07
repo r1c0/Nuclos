@@ -95,6 +95,35 @@ public class JInfoTabbedPane extends JTabbedPane {
 		super.insertTab(title, icon, component, tip, index);
 		setTabComponent(title, index);
 	}
+	
+	@Override
+	public void removeAll() {
+		super.removeAll();
+		
+		tabTitles.clear();
+		tabInfo.clear();
+		displayTabInfo.clear();
+	}
+	
+	@Override
+	public void remove(int index) {
+		super.remove(index);
+		
+		tabTitles.remove(index);
+		tabInfo.remove(index);
+		displayTabInfo.remove(index);
+	}
+	
+	@Override
+	public void remove(Component component) {
+		int idx = indexOfComponent(component);
+		super.remove(component);
+		if (idx != -1) {
+			tabTitles.remove(idx);
+			tabInfo.remove(idx);
+			displayTabInfo.remove(idx);
+		}
+	}
 
 	@Override
 	public void setTitleAt(int index, String title) {
