@@ -1269,13 +1269,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						//NUCLEUSINT-1137
 						// does this entity still exist?
 
-						boolean found = false;
-						for (MasterDataMetaVO subformEntity : MetaDataCache.getInstance().getMetaData()) {
-							if (entity.equals(subformEntity.getEntityName())) {
-								found = true;
-								break;
-							}
-						}
+						boolean found = MetaDataCache.getInstance().getMetaData(entity) != null;
 						if (found) {
 							setPropertiesFromAttributes(subform, atts);
 							stack.push(subform);
@@ -1379,13 +1373,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						//NUCLEUSINT-1137
 						// does this entity still exist?
 
-					boolean found = false;
-					for (MasterDataMetaVO chartEntity : MetaDataCache.getInstance().getMetaData()) {
-						if (entity.equals(chartEntity.getEntityName())) {
-							found = true;
-							break;
-						}
-					}
+					boolean found = MetaDataCache.getInstance().getMetaData(entity) != null;
 					if (found) {
 						setPropertiesFromAttributes(chart, atts);
 						stack.push(chart);
