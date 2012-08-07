@@ -31,8 +31,11 @@ import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
 import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
+import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
@@ -61,11 +64,13 @@ public class WYSIWYGStaticComboBox extends JComboBox implements WYSIWYGComponent
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
 	public static final String PROPERTY_EDITABLE = PROPERTY_LABELS.EDITABLE;
 	public static String PROPERTY_BORDER = PROPERTY_LABELS.BORDER;
+	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
 
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{
 		{PROPERTY_NAME, ATTRIBUTE_NAME}, 
 		{PROPERTY_ENABLED, ATTRIBUTE_ENABLED}, 
-		{PROPERTY_EDITABLE, ATTRIBUTE_EDITABLE}
+		{PROPERTY_EDITABLE, ATTRIBUTE_EDITABLE},
+	    {PROPERTY_NEXTFOCUSCOMPONENT, ATTRIBUTE_NEXTFOCUSCOMPONENT}
 		};
 
 	private static String[] PROPERTY_NAMES = new String[]{
@@ -75,7 +80,9 @@ public class WYSIWYGStaticComboBox extends JComboBox implements WYSIWYGComponent
 		PROPERTY_FONT,
 		PROPERTY_BORDER,
 		PROPERTY_DESCRIPTION,
-		PROPERTY_PREFFEREDSIZE};
+		PROPERTY_PREFFEREDSIZE,
+		PROPERTY_NEXTFOCUSCOMPONENT
+	};
 
 	private static PropertyClass[] PROPERTY_CLASSES = new PropertyClass[]{
 		new PropertyClass(PROPERTY_BORDER, Border.class),
@@ -84,7 +91,9 @@ public class WYSIWYGStaticComboBox extends JComboBox implements WYSIWYGComponent
 		new PropertyClass(PROPERTY_EDITABLE, boolean.class),
 		new PropertyClass(PROPERTY_FONT, Font.class),
 		new PropertyClass(PROPERTY_DESCRIPTION, String.class), 
-		new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class)};
+		new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class),
+		new PropertyClass(PROPERTY_NEXTFOCUSCOMPONENT, String.class)
+	};
 
 	private static PropertySetMethod[] PROPERTY_SETMETHODS = new PropertySetMethod[]{
 		new PropertySetMethod(PROPERTY_NAME, "setName"), 
@@ -104,7 +113,12 @@ public class WYSIWYGStaticComboBox extends JComboBox implements WYSIWYGComponent
 		new PropertyFilter(PROPERTY_EDITABLE, ENABLED),
 		new PropertyFilter(PROPERTY_FONT, ENABLED),
 		new PropertyFilter(PROPERTY_DESCRIPTION, ENABLED), 
-		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED)
+		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),
+		new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, ENABLED)
+	};
+	
+	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][] {
+		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES}
 	};
 	
 	/**
@@ -215,7 +229,7 @@ public class WYSIWYGStaticComboBox extends JComboBox implements WYSIWYGComponent
 	 */
 	@Override
 	public String[][] getPropertyValuesFromMetaInformation() {
-		return null;
+		return PROPERTY_VALUES_FROM_METAINFORMATION;
 	}
 
 	/*

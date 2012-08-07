@@ -32,6 +32,8 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueKeyStroke;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
@@ -73,7 +75,9 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
 	public static final String PROPERTY_ICON = PROPERTY_LABELS.ICON;
 	public static final String PROPERTY_ACTIONKEYSTROKE = PROPERTY_LABELS.ACTIONKEYSTROKE;
-
+	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
+	public static final String PROPERTY_NEXTFOCUSONACTION = PROPERTY_LABELS.NEXTFOCUSONACTION;
+	
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{
 		{PROPERTY_NAME, ATTRIBUTE_NAME},
 		{PROPERTY_ACTIONCOMMAND, ATTRIBUTE_ACTIONCOMMAND},
@@ -81,8 +85,10 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		{PROPERTY_LABEL, ATTRIBUTE_LABEL},
 		{PROPERTY_TOOLTIP, ATTRIBUTE_TOOLTIP},
 		{PROPERTY_ENABLED, ATTRIBUTE_ENABLED},
-		{PROPERTY_ICON, ATTRIBUTE_ICON}
-		};
+		{PROPERTY_ICON, ATTRIBUTE_ICON},
+	    {PROPERTY_NEXTFOCUSCOMPONENT, ATTRIBUTE_NEXTFOCUSCOMPONENT},
+	    {PROPERTY_NEXTFOCUSONACTION, ATTRIBUTE_NEXTFOCUSONACTION}
+	};
 
 	private static String[] PROPERTY_NAMES = new String[]{
 		PROPERTY_NAME,
@@ -99,7 +105,9 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		//NUCLEUSINT-1159
 		PROPERTY_PROPERTIES	,
 		PROPERTY_ACTIONCOMMAND_PROPERTIES,
-		PROPERTY_ICON
+		PROPERTY_ICON,
+		PROPERTY_NEXTFOCUSCOMPONENT,
+		PROPERTY_NEXTFOCUSONACTION
 	};
 
 	private static PropertyClass[] PROPERTY_CLASSES = new PropertyClass[]{
@@ -117,8 +125,10 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		//NUCLEUSINT-1159
 		new PropertyClass(PROPERTY_PROPERTIES, WYSIYWYGProperty.class),
 		new PropertyClass(PROPERTY_ACTIONCOMMAND_PROPERTIES, String.class),
-		new PropertyClass(PROPERTY_ICON, String.class)
-		};
+		new PropertyClass(PROPERTY_ICON, String.class),
+		new PropertyClass(PROPERTY_NEXTFOCUSCOMPONENT, String.class),
+		new PropertyClass(PROPERTY_NEXTFOCUSONACTION, boolean.class)
+	};
 
 	private static PropertySetMethod[] PROPERTY_SETMETHODS = new PropertySetMethod[]{
 		new PropertySetMethod(PROPERTY_NAME, "setName"),
@@ -147,7 +157,9 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		//NUCLEUSINT-1159
 		new PropertyFilter(PROPERTY_PROPERTIES, ENABLED),
 		new PropertyFilter(PROPERTY_ACTIONCOMMAND_PROPERTIES, ENABLED),
-		new PropertyFilter(PROPERTY_ICON, ENABLED)
+		new PropertyFilter(PROPERTY_ICON, ENABLED),
+		new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, ENABLED),
+		new PropertyFilter(PROPERTY_NEXTFOCUSONACTION, ENABLED)
 	};
 
 	//NUCLEUSINT-1159
@@ -158,7 +170,8 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
     ////NUCLOSINT-743 get the Business Rules for the entity
 	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][] {
 		{PROPERTY_ACTIONCOMMAND_PROPERTIES, WYSIWYGMetaInformation.META_ACTIONCOMMAND_PROPERTIES},
-		{PROPERTY_ICON, WYSIWYGMetaInformation.META_ICONS}
+		{PROPERTY_ICON, WYSIWYGMetaInformation.META_ICONS},
+		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES}
 	};
 
 	/**

@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,8 +46,12 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableDateChooser;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableListOfValues;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticButton;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticComboBox;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticTextarea;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticTextfield;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubForm;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubFormColumn;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGTabbedPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGUniversalComponent;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertiesPanel;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
@@ -58,6 +63,7 @@ import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.ResourceIdMapper;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosImage;
@@ -295,6 +301,20 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 								result.add(new StringResourceIdPair(subformEntry.getKey() + "." + pair.getX(), null));
 							}
 						}
+					}
+					
+					// get static components.
+					for (WYSIWYGStaticButton wysiwygStaticComponent : UIUtils.findAllInstancesOf(c.getParentEditor(), WYSIWYGStaticButton.class)) {
+						result.add(new StringResourceIdPair(wysiwygStaticComponent.getName(), null));
+					}
+					for (WYSIWYGStaticComboBox wysiwygStaticComponent : UIUtils.findAllInstancesOf(c.getParentEditor(), WYSIWYGStaticComboBox.class)) {
+						result.add(new StringResourceIdPair(wysiwygStaticComponent.getName(), null));
+					}
+					for (WYSIWYGStaticTextarea wysiwygStaticComponent : UIUtils.findAllInstancesOf(c.getParentEditor(), WYSIWYGStaticTextarea.class)) {
+						result.add(new StringResourceIdPair(wysiwygStaticComponent.getName(), null));
+					}
+					for (WYSIWYGStaticTextfield wysiwygStaticComponent : UIUtils.findAllInstancesOf(c.getParentEditor(), WYSIWYGStaticTextfield.class)) {
+						result.add(new StringResourceIdPair(wysiwygStaticComponent.getName(), null));
 					}
 				}
 				//should be possible to unset the next focus component

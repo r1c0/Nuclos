@@ -28,10 +28,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import java.util.NoSuchElementException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -2598,6 +2601,12 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					bEnabled = sEnabled.equals(ATTRIBUTEVALUE_YES);
 				}
 				tf.setEnabled(bEnabled);
+				
+				// next focus component
+				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
+				if(sNextFocusComponent != null) {
+					tf.putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
+				}
 
 				// editable:
 				boolean bEditable = true;
@@ -2659,6 +2668,12 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 				ta.setEnabled(bEnabled);
 
+				// next focus component
+				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
+				if(sNextFocusComponent != null) {
+					ta.putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
+				}
+
 				// editable:
 				boolean bEditable = true;
 				final String sEditable = attributes.getValue(ATTRIBUTE_EDITABLE);
@@ -2704,6 +2719,12 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final boolean bEnabled = sEnabled != null && sEnabled.equals("yes");
 				cmbbx.setEnabled(bEnabled);
 
+				// next focus component
+				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
+				if(sNextFocusComponent != null) {
+					cmbbx.putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
+				}
+
 				stack.addComponent(cmbbx);
 			}
 		}	// inner class ComboBoxElementProcessor
@@ -2713,6 +2734,16 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			private String sActionkey;
 			
 			private LayoutMLButton() {
+				setModel(new DefaultButtonModel() {
+					@Override
+					protected void fireActionPerformed(ActionEvent e) {
+						super.fireActionPerformed(e);
+						if (getClientProperty(ATTRIBUTE_NEXTFOCUSONACTION) != null 
+								&& getClientProperty(ATTRIBUTE_NEXTFOCUSONACTION).equals(Boolean.TRUE)) {
+							KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
+						}
+					}
+				});
 			}
 			
 			public void setActionKey(String sActionkey) {
@@ -2808,6 +2839,18 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				btn.setToolTipText(sToolTip);
 
 				btn.setActionCommand(sActionCommand);
+
+				// next focus component
+				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
+				if(sNextFocusComponent != null) {
+					btn.putClientProperty(ATTRIBUTE_NEXTFOCUSCOMPONENT, sNextFocusComponent);
+				}
+				
+				// next focus on action
+				final String sNextFocusOnAction = attributes.getValue(ATTRIBUTE_NEXTFOCUSONACTION);
+				if(sNextFocusOnAction != null) {
+					btn.putClientProperty(ATTRIBUTE_NEXTFOCUSONACTION, sNextFocusOnAction.equals("yes") ? Boolean.TRUE : Boolean.FALSE);
+				}
 				
 				final String sActionkey = attributes.getValue(ATTRIBUTE_ACTIONKEYSTROKE);
 				btn.setActionKey(sActionkey);

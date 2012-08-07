@@ -983,6 +983,8 @@ public class WYSIWYGStringsAndLabels {
 		public static final String TRANSLATIONS = "\u00dcbersetzungen";
 		/** */
 		public static final String NEXTFOCUSCOMPONENT = "N\u00e4chstes Feld (Tabulator-Taste)";
+		/** */
+		public static final String NEXTFOCUSONACTION = "N\u00e4chstes Feld bei Ausführung";
 
 		/** titled separator */
 		public static final String SEPERATOR_TITLE = "Titel";

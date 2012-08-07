@@ -824,6 +824,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
 			properties.setProperty(WYSIWYGStaticButton.PROPERTY_NAME, new PropertyValueString(COMPONENT_PROCESSOR.LABEL_DEFAULTNAME_BUTTON+ iNumber), String.class);
 			properties.setProperty(WYSIWYGStaticButton.PROPERTY_LABEL, new PropertyValueString(COMPONENT_PROCESSOR.LABEL_DEFAULTNAME_BUTTON + iNumber), String.class);
+			properties.setProperty(WYSIWYGStaticButton.PROPERTY_NEXTFOCUSONACTION, new PropertyValueBoolean(Boolean.FALSE), Boolean.class);
 			element.setProperties(properties);
 			
 			((Component)element).setMinimumSize(DEFAULTVALUE_BUTTON_MINIMUMSIZE);

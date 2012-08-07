@@ -25,8 +25,11 @@ import java.util.Map;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
+import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
@@ -59,13 +62,15 @@ public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGCom
 
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_EDITABLE = PROPERTY_LABELS.EDITABLE;
+	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
 	
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][] {
 		{PROPERTY_ENABLED, ATTRIBUTE_ENABLED},
 		{PROPERTY_NAME, ATTRIBUTE_NAME},
 		{PROPERTY_EDITABLE, ATTRIBUTE_EDITABLE},
 		{PROPERTY_COLUMNS, ATTRIBUTE_COLUMNS},
-		{PROPERTY_ROWS, ATTRIBUTE_ROWS}
+		{PROPERTY_ROWS, ATTRIBUTE_ROWS},
+	    {PROPERTY_NEXTFOCUSCOMPONENT, ATTRIBUTE_NEXTFOCUSCOMPONENT}
 	};
 
 	private static String[] PROPERTY_NAMES = new String[] {
@@ -77,7 +82,8 @@ public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGCom
 		PROPERTY_FONT,
 		PROPERTY_BORDER,
 		PROPERTY_DESCRIPTION,
-		PROPERTY_PREFFEREDSIZE
+		PROPERTY_PREFFEREDSIZE,
+		PROPERTY_NEXTFOCUSCOMPONENT
 	};
 	
 	private static PropertyClass[] PROPERTY_CLASSES = new PropertyClass[] {
@@ -89,7 +95,8 @@ public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGCom
 		new PropertyClass(PROPERTY_ROWS, int.class),
 		new PropertyClass(PROPERTY_BORDER, Border.class),
 		new PropertyClass(PROPERTY_DESCRIPTION, String.class),
-		new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class)
+		new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class),
+		new PropertyClass(PROPERTY_NEXTFOCUSCOMPONENT, String.class)
 	};
 	
 	private static PropertySetMethod[] PROPERTY_SETMETHODS = new PropertySetMethod[]{
@@ -114,7 +121,12 @@ public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGCom
 		new PropertyFilter(PROPERTY_ROWS, ENABLED),
 		new PropertyFilter(PROPERTY_BORDER, ENABLED),
 		new PropertyFilter(PROPERTY_DESCRIPTION, ENABLED),
-		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED)
+		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),
+		new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, ENABLED)
+	};
+	
+	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][] {
+		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES}
 	};
 	
 	/**
@@ -215,7 +227,7 @@ public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGCom
 	 */
 	@Override
 	public String[][] getPropertyValuesFromMetaInformation() {
-		return null;
+		return PROPERTY_VALUES_FROM_METAINFORMATION;
 	}
 
 	/*

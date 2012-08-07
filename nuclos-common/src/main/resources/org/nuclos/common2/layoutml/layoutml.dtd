@@ -180,6 +180,7 @@ name CDATA #IMPLIED
 enabled (%boolean;) #IMPLIED
 editable (%boolean;) #IMPLIED
 columns CDATA #IMPLIED
+nextfocuscomponent CDATA #IMPLIED
 >
 
 <!ELEMENT image ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
@@ -197,6 +198,7 @@ enabled (%boolean;) #IMPLIED
 editable (%boolean;) #IMPLIED
 rows CDATA #IMPLIED
 columns CDATA #IMPLIED
+nextfocuscomponent CDATA #IMPLIED
 >
 
 <!ELEMENT combobox ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
@@ -204,6 +206,7 @@ columns CDATA #IMPLIED
 name CDATA #IMPLIED
 enabled (%boolean;) #IMPLIED
 editable (%boolean;) #REQUIRED
+nextfocuscomponent CDATA #IMPLIED
 >
 
 <!ELEMENT button ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?,property*,translations?)>
@@ -216,6 +219,8 @@ tooltip CDATA #IMPLIED
 enabled (%boolean;) #IMPLIED
 resourceId CDATA #IMPLIED
 icon CDATA #IMPLIED
+nextfocuscomponent CDATA #IMPLIED
+nextfocusonaction CDATA #IMPLIED
 >
 
 <!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?,enabled?)>

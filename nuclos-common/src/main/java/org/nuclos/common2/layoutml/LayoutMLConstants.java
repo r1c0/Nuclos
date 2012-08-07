@@ -221,6 +221,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_INTERNALNAME = "internalname";
 	public static final String ATTRIBUTE_COLUMNWIDTH = "width";
 	public static final String ATTRIBUTE_NEXTFOCUSCOMPONENT = "nextfocuscomponent";
+	public static final String ATTRIBUTE_NEXTFOCUSONACTION = "nextfocusonaction";
 	public static final String ATTRIBUTE_ICON = "icon";
 	public static final String ATTRIBUTE_LANGUAGE = "language";
 	public static final String ATTRIBUTE_CLASS = "class";

@@ -28,8 +28,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
@@ -56,12 +59,14 @@ public class WYSIWYGStaticTextfield extends JTextField implements WYSIWYGCompone
 
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_EDITABLE = PROPERTY_LABELS.EDITABLE;
+	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
 
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{
 		{PROPERTY_NAME, ATTRIBUTE_NAME}, 
 		{PROPERTY_ENABLED, ATTRIBUTE_ENABLED}, 
 		{PROPERTY_EDITABLE, ATTRIBUTE_EDITABLE},
-		{PROPERTY_COLUMNS, ATTRIBUTE_COLUMNS}
+		{PROPERTY_COLUMNS, ATTRIBUTE_COLUMNS},
+	    {PROPERTY_NEXTFOCUSCOMPONENT, ATTRIBUTE_NEXTFOCUSCOMPONENT}
 	};
 
 	private static String[] PROPERTY_NAMES = new String[]{
@@ -72,7 +77,8 @@ public class WYSIWYGStaticTextfield extends JTextField implements WYSIWYGCompone
 		PROPERTY_BORDER,
 		PROPERTY_FONT,
 		PROPERTY_DESCRIPTION,
-		PROPERTY_PREFFEREDSIZE
+		PROPERTY_PREFFEREDSIZE,
+		PROPERTY_NEXTFOCUSCOMPONENT
 	};
 
 	private static PropertyClass[] PROPERTY_CLASSES = new PropertyClass[]{
@@ -84,7 +90,9 @@ public class WYSIWYGStaticTextfield extends JTextField implements WYSIWYGCompone
 		new PropertyClass(PROPERTY_FONT, Font.class),
 		new PropertyClass(PROPERTY_DESCRIPTION, String.class), 
 		new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class),
-		new PropertyClass(PROPERTY_COLUMNS, int.class)
+		new PropertyClass(PROPERTY_COLUMNS, int.class),
+		new PropertyClass(PROPERTY_NEXTFOCUSCOMPONENT, String.class)
+
 	};
 
 	private static PropertySetMethod[] PROPERTY_SETMETHODS = new PropertySetMethod[]{
@@ -108,8 +116,14 @@ public class WYSIWYGStaticTextfield extends JTextField implements WYSIWYGCompone
 		new PropertyFilter(PROPERTY_FONT, ENABLED),
 		new PropertyFilter(PROPERTY_DESCRIPTION, ENABLED), 
 		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),
-		new PropertyFilter(PROPERTY_COLUMNS, ENABLED)
+		new PropertyFilter(PROPERTY_COLUMNS, ENABLED),
+		new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, ENABLED)
 	};
+	
+	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][] {
+		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES}
+	};
+	
 	/**
 	 * <!ELEMENT textfield
 	 * ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
@@ -207,7 +221,7 @@ public class WYSIWYGStaticTextfield extends JTextField implements WYSIWYGCompone
 	 */
 	@Override
 	public String[][] getPropertyValuesFromMetaInformation() {
-		return null;
+		return PROPERTY_VALUES_FROM_METAINFORMATION;
 	}
 
 	/*
