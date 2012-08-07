@@ -23,8 +23,8 @@ import java.util.NoSuchElementException;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataLayoutHelper;
+import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.rule.admin.CollectableRule;
 import org.nuclos.client.rule.admin.CollectableRuleEventUsage;
 import org.nuclos.client.statemodel.admin.CollectableStateModel;
@@ -117,7 +117,7 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 				else {
 					// 3. MasterData entities:
 					final MasterDataMetaVO mdmetavo;
-					mdmetavo = MasterDataDelegate.getInstance().getMetaData(sEntityName);
+					mdmetavo = MetaDataCache.getInstance().getMetaData(sEntityName);
 
 					result = new CollectableMasterDataEntity(mdmetavo);
 				
