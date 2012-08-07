@@ -75,6 +75,7 @@ public class RestoreUtils {
 
 	private static final String THREAD_NAME = "RestoreUtils.workspaceRestore.";
 	private static final List<Thread> threadList = new ArrayList<Thread>();
+	private static final List<MainFrameTabbedPane> finishInitialisationTabbedPanes = new ArrayList<MainFrameTabbedPane>();
 	
 	private static RestoreUtils INSTANCE;
 	
@@ -241,6 +242,14 @@ public class RestoreUtils {
 		wsFrame.setFrameContent(cr.getEmptyContent());
 
 		cr.restoreContent();
+		
+		frame.invalidate();
+		frame.validate();
+		frame.repaint();
+		
+		for (MainFrameTabbedPane mfTabbed : finishInitialisationTabbedPanes) {
+			mfTabbed.finishInitiating();
+		}
 
 		MainFrame.updateTabbedPaneActions(frame);
 
@@ -376,6 +385,7 @@ public class RestoreUtils {
 		preferencesMigration.migrateEntityAndSubFormColumnPreferences();
 
 		threadList.clear();
+		finishInitialisationTabbedPanes.clear();
 
 		MainFrame.resetExternalFrameNumber();
 		for (WorkspaceDescription.Frame wdFrame : CollectionUtils.sorted(wd.getFrames(), new Comparator<WorkspaceDescription.Frame>() {
@@ -877,11 +887,12 @@ public class RestoreUtils {
 			}
 			
 			final MainFrameTab selectLater = toSelect;
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
+//			SwingUtilities.invokeLater(new Runnable() {
+//				@Override
+//				public void run() {
 					try {
-						result.finishInitiating();
+						finishInitialisationTabbedPanes.add(result);
+//						result.finishInitiating();
 						if (selectLater != null && wdTabbed.getSelected() >= 0) {
 							result.setSelectedComponent(selectLater);
 						}
@@ -889,8 +900,8 @@ public class RestoreUtils {
 						// may be not all tabs are restoredaubspl
 						LOG.info("restoreContent: " + e);
 					}
-				}
-			});
+//				}
+//			});
 		}
 	}
 
