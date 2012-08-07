@@ -18,6 +18,7 @@ package org.nuclos.client.rule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -325,8 +326,12 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 			for (GeneratorActionVO generatorActionVO : ruleDelegate.getAllAdGenerationsWithRule()) {
 				mpAllAdGenerations.add(generatorActionVO);
 			}
+			
 			mpAllAdGenerationsByRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
-		
+			/*for (Integer aRuleId : mpAllRules.keySet()) {
+				getAllAdGenerationsForRuleId(aRuleId);
+			}*/
+			
 			mpAllRuleGenerationsForRuleId.clear();
 			mpAllRuleGenerationsForGenerationId.clear();
 			for (RuleEngineGenerationVO ruleGenerationVO : ruleDelegate.getAllRuleGenerations()) {
@@ -348,6 +353,9 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 		
 		if (sEntity == null || sEntity.equals(NuclosEntity.RULETRANSITION.getEntityName())) {
 			mpAllStateModelsForRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
+			/*for (Integer aRuleId : mpAllRules.keySet()) {
+				getAllStateModelsForRuleId(aRuleId);
+			}*/
 		}
 	}
 }	// class RuleCache
