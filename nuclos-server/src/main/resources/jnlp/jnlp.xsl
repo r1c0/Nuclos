@@ -14,7 +14,7 @@
 
 	<xsl:template match="/">
 		<!-- JNLP File for webstart client -->
-		<jnlp spec="1.0+" codebase="{$codebase}">
+		<jnlp spec="6.0.18+" codebase="{$codebase}">
 			<information>
 				<title>Nuclos</title>
 				<vendor>Novabit Informationssysteme GmbH</vendor>
@@ -22,10 +22,16 @@
 				<description>Nuclos Webstart Client</description>
 				<icon href="customer-icon.gif" />
 				<icon href="splash-screen.gif" kind="splash" />
+				<!-- 
+					Don't enable offline allowed. As with java 1.6.0_33, it seems that there is no 
+					caching update even with <update/>. (tp)
+				-->
+				<!-- offline-allowed/ -->
 			</information>
 			<security>
 				<all-permissions />
 			</security>
+			<update check="background" policy="prompt-run"/>
 			<resources>
 				<!--
 					-XX:+HeapDumpOnOutOfMemoryError
@@ -35,7 +41,7 @@
 					See also:
 					http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6664424
 				-->
-				<j2se version="1.6+" initial-heap-size="256m" max-heap-size="512m" java-vm-args="-XX:+HeapDumpOnOutOfMemoryError -verbose:gc -ea"/>
+				<java version="1.6+ 1.7+" initial-heap-size="256m" max-heap-size="512m" java-vm-args="-XX:+HeapDumpOnOutOfMemoryError -XX:+UseThreadPriorities -verbose:gc -ea"/>
 				<jar href="nuclos-client-{$nuclos.version}.jar" main="true" />
 				<xsl:for-each select="jnlp/jars/jar">
 					<jar href="{text()}" download="{@download}" />
