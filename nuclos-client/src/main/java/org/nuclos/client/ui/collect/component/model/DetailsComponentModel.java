@@ -18,7 +18,6 @@ package org.nuclos.client.ui.collect.component.model;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
-
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -70,7 +69,8 @@ public class DetailsComponentModel extends CollectableComponentModel {
 			public void run() {
 				try {
 					DetailsComponentModel.this.setField(clctfValue, true);
-					assert getField().equals(clctfValue) : "field=" + getField() + " value is " + clctfValue;
+					if (!getField().equals(clctfValue, true))
+						LOG.warn("setField failed: field=" + getField() + " value is " + clctfValue);
 				}
 				catch (Exception e) {
 					LOG.error("setField failed: " + e, e);

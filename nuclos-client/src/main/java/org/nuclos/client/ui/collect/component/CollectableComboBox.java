@@ -357,7 +357,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 						if (!isSearchComponent() && getValueListProvider() instanceof DefaultValueProvider) {
 							final CollectableField cf = ((DefaultValueProvider) getValueListProvider()).getDefaultValue();
 							if (cf != null && getField() != null && getField().isNull()) {
-								setField(cf);
+								getModel().setFieldInitial(cf, false);
 							}
 						}
 					}
