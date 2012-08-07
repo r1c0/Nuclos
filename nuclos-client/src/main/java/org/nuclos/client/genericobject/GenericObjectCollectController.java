@@ -5523,13 +5523,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private class GenericObjectCollectStateListener extends CollectStateAdapter {
 		@Override
 		public void searchModeEntered(CollectStateEvent ev) throws CommonBusinessException {
+			iCurrentLayoutId = null;
 			if (!bInitialSearchLayout) {
 				setupEditPanelForSearchTab(getInitialLayoutMLDefinitionForSearchPanel());
 				bInitialSearchLayout = true; // do not load layout for search anymore.
 			}
 			setInitialComponentFocusInSearchTab();
 			bGenerated = false;
-			iCurrentLayoutId = null;
 			setGenerationSource(null, null);
 		}
 		
