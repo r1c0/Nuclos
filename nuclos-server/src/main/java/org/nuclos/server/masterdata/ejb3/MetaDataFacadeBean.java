@@ -1236,8 +1236,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		List<MasterDataVO> lstFields = new ArrayList<MasterDataVO>();
 
+		Connection connect = null;
 		try {
-			Connection connect = DriverManager.getConnection(url, user, password);
+			connect = DriverManager.getConnection(url, user, password);
 			DatabaseMetaData dbmeta = connect.getMetaData();
 			ResultSet rsCols = dbmeta.getColumns(null, schema.toUpperCase(), table, "%");
 			while(rsCols.next()) {
@@ -1278,6 +1279,16 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		catch(Exception e) {
 			LOG.info("transformTable: " + e, e);
+		}
+		finally {
+			try {
+				if (connect != null) {
+					connect.close();
+				}
+			}
+			catch(Exception e) {
+				LOG.info("transformTable: " + e, e);
+			}
 		}
 		return lstFields;
 	}

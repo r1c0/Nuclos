@@ -191,14 +191,14 @@ public class StartUp  {
 		// setup client side logging:
 		setupClientLogging();
 		
-//		final NuclosCriticalErrorHandler criticalErrorHandler = new NuclosCriticalErrorHandler(false);
-//		if (Boolean.getBoolean("nuclos.client.webstart")) {
-//			/*
-//			final Thread thread = new Thread(jvc, "JnlpVersionChecker");
-//			thread.start();
-//			 */
-//			final JnlpVersionChecker jvc = new JnlpVersionChecker();
-//		}
+		final NuclosCriticalErrorHandler criticalErrorHandler = new NuclosCriticalErrorHandler(false);
+		if (Boolean.getBoolean("nuclos.client.webstart")) {
+			/*
+			final Thread thread = new Thread(jvc, "JnlpVersionChecker");
+			thread.start();
+			 */
+			final JnlpVersionChecker jvc = new JnlpVersionChecker();
+		}
 		
 		final ClassLoader cl = this.getClass().getClassLoader();
 
@@ -209,10 +209,10 @@ public class StartUp  {
 		startupContext.refresh();
 		startupContext.registerShutdownHook();
 		
-//		final Runnable run1 = new Runnable() {
+		final Runnable run1 = new Runnable() {
 
-//			@Override
-//			public void run() {
+			@Override
+			public void run() {
 				try {
 					// Time zone stuff
 			        final ServerMetaFacadeRemote sm = startupContext.getBean(ServerMetaFacadeRemote.class);
@@ -233,7 +233,7 @@ public class StartUp  {
 					clientContext.addApplicationListener(clientListener);
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 					clientContext.setClassLoader(cl);
-//					Thread.yield();					
+					Thread.yield();					
 					clientContext.refresh();
 					clientContext.registerShutdownHook();
 					
@@ -242,7 +242,7 @@ public class StartUp  {
 					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
 					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
 					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
-//					Thread.yield();
+					Thread.yield();
 					
 					for (Resource r : themes) {
 						if (!r.exists()) {
@@ -287,7 +287,7 @@ public class StartUp  {
 						log.info("no extension contexts found, all spring contexts refreshed");
 					}
 					else {
-//						Thread.yield();
+						Thread.yield();
 						for (int i = 0; i < size; ++i) {
 							final Resource r = extensions[i];
 							final boolean last = (i + 1 == size);
@@ -328,11 +328,11 @@ public class StartUp  {
 				catch (IOException e1) {
 					log.error(e1.getMessage(), e1);
 				}
-//			}
-//		};
-//		final Thread thread1 = new Thread(run1, "Startup.init.run1");
-//		thread1.setPriority(Thread.NORM_PRIORITY - 1);
-//		thread1.start();
+			}
+		};
+		final Thread thread1 = new Thread(run1, "Startup.init.run1");
+		thread1.setPriority(Thread.NORM_PRIORITY - 1);
+		thread1.start();
 		
 		// set the default locale:
 		// this makes sure the client is independent of the host's locale.
@@ -345,7 +345,7 @@ public class StartUp  {
 		Errors.getInstance().setAppName(ApplicationProperties.getInstance().getName());
 		// first, set the non-strict version of the critical error handler to avoid locking-out on initialization errors.
 		// on successful initialization, the strict version of the critical error handler will be set.
-		Errors.getInstance().setCriticalErrorHandler(new NuclosCriticalErrorHandler(false));
+		Errors.getInstance().setCriticalErrorHandler(criticalErrorHandler);
 
 		// from here, we can issue error messages using the Errors class.
 

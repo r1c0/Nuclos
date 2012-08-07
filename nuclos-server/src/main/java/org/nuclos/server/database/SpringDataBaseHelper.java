@@ -248,11 +248,22 @@ public class SpringDataBaseHelper {
 		if (dataSource == null) {
 			throw new NullArgumentException("datasource");
 		}
+		Connection conn = null;
 		try {
-			return dataSource.getConnection().toString() + " @schema=" + getDbAccess().getSchemaName();
+			conn = dataSource.getConnection();
+			return conn.toString() + " @schema=" + getDbAccess().getSchemaName();
 		}
 		catch (SQLException ex) {
 			throw new CommonFatalException("Connection to datasource could not be initialized.", ex);
+		}
+		finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception ex) {
+				LOG.error(ex.getMessage(), ex);
+			}
 		}
 	}
 

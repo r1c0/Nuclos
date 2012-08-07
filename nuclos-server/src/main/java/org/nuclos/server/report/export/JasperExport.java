@@ -57,6 +57,7 @@ import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
+import org.jfree.util.Log;
 import org.nuclos.common.MarshalledValue;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -229,6 +230,15 @@ public class JasperExport implements Export {
 				}
 				catch (CommonPermissionException ex) {
 					throw new NuclosReportException(ex);
+				}
+				finally {
+					try {
+						if (conn != null) {
+							conn.close();
+						}
+					} catch (Exception ex) {
+						Log.error(ex.getMessage(), ex);
+					}
 				}
 			}
 			else {
