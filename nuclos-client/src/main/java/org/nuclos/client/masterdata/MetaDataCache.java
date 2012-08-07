@@ -138,9 +138,13 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 	 */
 	public Collection<MasterDataMetaVO> getMetaData() {
 		Collection<MasterDataMetaVO> coll = mp.values();
-		if(coll == null || coll.isEmpty())
-			return masterDataDelegate.getMetaData();
-		
+		if(coll == null || coll.isEmpty()) {
+			mp = new ConcurrentHashMap<String, MasterDataMetaVO>();
+			for (MasterDataMetaVO mdmetavo : masterDataDelegate.getMetaData()) {
+				mp.put(mdmetavo.getEntityName(), mdmetavo);
+			}
+			coll = mp.values();
+		}
 		return coll;
 	}
 
@@ -178,8 +182,12 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 	
 	public synchronized void invalidate() {
 		LOG.info("Invalidating meta data cache.");
-		mp.clear();
 		masterDataDelegate.invalidateCaches();
+		final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
+		mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
+		for (MasterDataMetaVO mdmetavo : coll) {
+			mp.put(mdmetavo.getEntityName(), mdmetavo);
+		}
 	}
 		
 } // class MetaDataCache
