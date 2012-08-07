@@ -899,6 +899,23 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		return rules;
 	}
+	
+	/**
+	 * Get all rule usages
+	 * @throws CommonPermissionException
+	 */
+	public Collection<RuleEventUsageVO> getAllRuleEventUsage()
+			throws CommonPermissionException {
+		this.checkReadAllowed(NuclosEntity.RULE);
+		final Collection<RuleEventUsageVO> result = new HashSet<RuleEventUsageVO>();
+
+		Collection<MasterDataVO> mdVOList = getMasterDataFacade().getMasterData(NuclosEntity.RULEUSAGE.getEntityName(), null, true);
+
+		for (MasterDataVO vo : mdVOList)
+			result.add(MasterDataWrapper.getREUsageVO(vo));
+
+		return result;
+	}
 
 	/**
 	 * Get all rule usages of a rule for a certain event.

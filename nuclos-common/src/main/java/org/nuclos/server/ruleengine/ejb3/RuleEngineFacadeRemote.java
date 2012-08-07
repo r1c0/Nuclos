@@ -205,6 +205,13 @@ public interface RuleEngineFacadeRemote {
 		throws CommonPermissionException;
 
 	/**
+	 * Get all rule usages
+	 * @throws CommonPermissionException
+	 */
+	Collection<RuleEventUsageVO> getAllRuleEventUsage()
+			throws CommonPermissionException;
+
+	/**
 	 * Get all rule usages of a rule for a certain event.
 	 * @return collection of state model vo
 	 * @throws CommonPermissionException

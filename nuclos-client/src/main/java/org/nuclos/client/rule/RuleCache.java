@@ -42,6 +42,7 @@ import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineGenerationVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
+import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.springframework.beans.factory.InitializingBean;
@@ -78,6 +79,8 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 	private final Map<Integer, Collection<RuleEngineGenerationVO>> mpAllRuleGenerationsForGenerationId = new ConcurrentHashMap<Integer, Collection<RuleEngineGenerationVO>>();
 	private final Map<Integer, Collection<RuleEngineTransitionVO>> mpAllRuleTransitionsForRuleId = new ConcurrentHashMap<Integer, Collection<RuleEngineTransitionVO>>();
 	private final Map<Integer, Collection<RuleEngineTransitionVO>> mpAllRuleTransitionsForTransitionId = new ConcurrentHashMap<Integer, Collection<RuleEngineTransitionVO>>();
+
+	private final Map<Integer, Collection<RuleEventUsageVO>> mpAllRuleEventByRuleId = new ConcurrentHashMap<Integer, Collection<RuleEventUsageVO>>();
 
 	private final Map<Integer, Collection<StateModelVO>> mpAllStateModelsForRuleId = new ConcurrentHashMap<Integer, Collection<StateModelVO>>();
 
@@ -208,8 +211,8 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 	 * Get all Rule Transition that have the given transition assigned.
 	 */
 	public Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(Integer aTransitionId) {
-		if (!mpAllRuleTransitionsForRuleId.containsKey(aTransitionId))
-			mpAllRuleTransitionsForRuleId.put(aTransitionId, RuleDelegate.getInstance().getAllRuleTransitionsForTransitionId(aTransitionId));
+		if (!mpAllRuleTransitionsForTransitionId.containsKey(aTransitionId))
+			mpAllRuleTransitionsForTransitionId.put(aTransitionId, RuleDelegate.getInstance().getAllRuleTransitionsForTransitionId(aTransitionId));
 		return mpAllRuleTransitionsForTransitionId.get(aTransitionId);
 	}
 
@@ -256,6 +259,30 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 			throw new CommonFatalException(ex);
 		}
 	}
+	
+	/**
+	 * Get all rule usages of a rule for a certain event.
+	 * @return Collection<RuleVO>
+	 */
+	public Collection<RuleEventUsageVO> getByEventAndRule(String sEventName, Integer iRuleId) {
+		if (!mpAllRuleEventByRuleId.containsKey(iRuleId)) {
+			Collection<RuleEventUsageVO> lstAllRuleEventByRuleId = mpAllRuleEventByRuleId.get(iRuleId);
+			if (lstAllRuleEventByRuleId == null) {
+				lstAllRuleEventByRuleId = new ArrayList<RuleEventUsageVO>();
+			}
+			lstAllRuleEventByRuleId.addAll(ruleDelegate.getByEventAndRule(sEventName, iRuleId));
+			mpAllRuleEventByRuleId.put(iRuleId, lstAllRuleEventByRuleId);
+		}
+
+		Collection<RuleEventUsageVO> result = new ArrayList<RuleEventUsageVO>();
+		// filter event.
+		Collection<RuleEventUsageVO> lstAllRuleEventByRuleId = mpAllRuleEventByRuleId.get(iRuleId);
+		for (RuleEventUsageVO reEventUsageVO : lstAllRuleEventByRuleId) {
+			if (reEventUsageVO.getEvent().equals(sEventName))
+				result.add(reEventUsageVO);
+		}
+		return result;
+	}
 
 	/**
 	 * invalidates the cache
@@ -278,6 +305,18 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 			mpAllTimelimitRules.clear();
 			for (RuleVO ruleVO : timelimitRuleDelegate.getAllTimelimitRules()) {
 				mpAllTimelimitRules.put(ruleVO.getId(), ruleVO);
+			}
+		}
+		
+		if (sEntity == null || sEntity.equals(NuclosEntity.RULEUSAGE.getEntityName())) {
+			mpAllRuleEventByRuleId.clear();
+			for (RuleEventUsageVO ruleEventUsageVO : ruleDelegate.getAllRuleEventUsage()) {
+				Collection<RuleEventUsageVO> lstAllRuleEventByRuleId = mpAllRuleEventByRuleId.get(ruleEventUsageVO.getRuleId());
+				if (lstAllRuleEventByRuleId == null) {
+					lstAllRuleEventByRuleId = new ArrayList<RuleEventUsageVO>();
+				}
+				lstAllRuleEventByRuleId.add(ruleEventUsageVO);
+				mpAllRuleEventByRuleId.put(ruleEventUsageVO.getRuleId(), lstAllRuleEventByRuleId);
 			}
 		}
 		

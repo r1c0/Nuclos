@@ -79,7 +79,8 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	
 	//
 	
-	private Map<Integer, StatemodelClosure> mp;
+	private Map<Integer, StateGraphVO> mpStateGraphVO;
+	private Map<Integer, StatemodelClosure> mpStatemodelClosure;
 	
 	// Spring injection
 	
@@ -112,9 +113,17 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	}
 	
 	private void invalidate() {
-		mp = new ConcurrentHashMap<Integer, StatemodelClosure>();
+		mpStateGraphVO = new ConcurrentHashMap<Integer, StateGraphVO>();
+		for (StateModelVO smvo : stateFacadeRemote.getStateModels()) {
+			try {
+				mpStateGraphVO.put(smvo.getId(), getStateGraph(smvo.getId()));				
+			} catch (Exception e) {
+				// ignore here.
+			}
+		}
+		mpStatemodelClosure = new ConcurrentHashMap<Integer, StatemodelClosure>();
 		for (MasterDataVO mdvo : Modules.getInstance().getModules()) {
-			mp.put(mdvo.getIntId(), stateFacadeRemote.getStatemodelClosureForModule(mdvo.getIntId()));
+			mpStatemodelClosure.put(mdvo.getIntId(), stateFacadeRemote.getStatemodelClosureForModule(mdvo.getIntId()));
 		}
 	}
 	
@@ -296,19 +305,21 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 
 	public StateGraphVO getStateGraph(int iModelId) throws CommonFinderException, CommonBusinessException {
 		try {
-			final StateGraphVO result = stateFacadeRemote.getStateGraph(iModelId);
-
-			// moved from StateGraphVO: NUCLOSINT-844 (b) correct the wrong StateModel-Layouts (after migration due MigrationVm2m5.java)
-			final StateModelLayout layoutinfo = result.getStateModel().getLayout();
-			for (StateTransitionVO statetransitionvo : result.getTransitions()) {
-				if(layoutinfo.getTransitionLayout(statetransitionvo.getId()) == null){
-					//insert default layout
-					layoutinfo.insertTransitionLayout(statetransitionvo.getId(),
-						new TransitionLayout(statetransitionvo.getId(), AbstractShape.CONNECTION_NE, AbstractShape.CONNECTION_N));
+			if (!mpStateGraphVO.containsKey(iModelId)) {
+				final StateGraphVO stateGraphVO = stateFacadeRemote.getStateGraph(iModelId);
+	
+				// moved from StateGraphVO: NUCLOSINT-844 (b) correct the wrong StateModel-Layouts (after migration due MigrationVm2m5.java)
+				final StateModelLayout layoutinfo = stateGraphVO.getStateModel().getLayout();
+				for (StateTransitionVO statetransitionvo : stateGraphVO.getTransitions()) {
+					if(layoutinfo.getTransitionLayout(statetransitionvo.getId()) == null){
+						//insert default layout
+						layoutinfo.insertTransitionLayout(statetransitionvo.getId(),
+							new TransitionLayout(statetransitionvo.getId(), AbstractShape.CONNECTION_NE, AbstractShape.CONNECTION_N));
+					}
 				}
+				mpStateGraphVO.put(iModelId, stateGraphVO);
 			}
-
-			return result;
+			return mpStateGraphVO.get(iModelId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -378,9 +389,9 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	}
 
 	public StatemodelClosure getStatemodelClosure(Integer moduleId) {
-		if (!mp.containsKey(moduleId))
-			mp.put(moduleId, stateFacadeRemote.getStatemodelClosureForModule(moduleId));
-		return mp.get(moduleId);
+		if (!mpStatemodelClosure.containsKey(moduleId))
+			mpStatemodelClosure.put(moduleId, stateFacadeRemote.getStatemodelClosureForModule(moduleId));
+		return mpStatemodelClosure.get(moduleId);
 	}
 
 	public Statemodel getStatemodel(UsageCriteria ucrit) {

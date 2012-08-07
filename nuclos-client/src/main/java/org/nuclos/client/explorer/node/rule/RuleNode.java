@@ -167,7 +167,7 @@ public class RuleNode extends AbstractRuleTreeNode {
 
 		final Map<String, Map<Integer, List<EntityRuleUsageStatusNode>>> entityRuleNodeMap = new HashMap<String, Map<Integer,List<EntityRuleUsageStatusNode>>>();
 
-		final Collection<RuleEventUsageVO> collSaveEvent = RuleDelegate.getInstance().getByEventAndRule(sEventName, this.ruleVo.getId());
+		final Collection<RuleEventUsageVO> collSaveEvent = RuleCache.getInstance().getByEventAndRule(sEventName, this.ruleVo.getId());
 		if (collSaveEvent != null && collSaveEvent.size() > 0) {
 			for (RuleEventUsageVO usageVO : collSaveEvent) {
 				Map<Integer, List<EntityRuleUsageStatusNode>> ruleUsageProcessMap = entityRuleNodeMap.get(usageVO.getEntity());

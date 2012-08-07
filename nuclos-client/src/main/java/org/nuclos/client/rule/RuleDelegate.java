@@ -233,6 +233,21 @@ public class RuleDelegate {
 	}
 
 	/**
+	 * Get all rule usages
+	 * @throws CommonPermissionException
+	 */
+	public Collection<RuleEventUsageVO> getAllRuleEventUsage()  {
+		try {
+			return ruleEngineFacadeRemote.getAllRuleEventUsage();
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		} catch (CommonPermissionException e) {
+			throw new CommonFatalException(e.getMessage(), e);
+		}
+	}
+
+	/**
 	 * Get all rule usages of a rule for a certain event.
 	 * @return Collection<RuleVO>
 	 */

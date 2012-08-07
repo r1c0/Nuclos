@@ -27,6 +27,7 @@ import java.util.Map;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
+import org.nuclos.client.rule.RuleCache;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.LangUtils;
@@ -193,7 +194,7 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 
 			Map<Integer, EntityRuleUsageProcessNode> ruleUsageProcessMap = new HashMap<Integer, EntityRuleUsageProcessNode>();
 			for (RuleVO ruleVO : RuleDelegate.getInstance().getByEventAndEntityOrdered(eventName, entity)) {
-				final Collection<RuleEventUsageVO> collSaveEvent = RuleDelegate.getInstance().getByEventAndRule(eventName, ruleVO.getId());
+				final Collection<RuleEventUsageVO> collSaveEvent = RuleCache.getInstance().getByEventAndRule(eventName, ruleVO.getId());
 				if (collSaveEvent != null && collSaveEvent.size() > 0) {
 					for (RuleEventUsageVO ruleEventUsageVO : collSaveEvent) {
 						if (!ruleEventUsageVO.getEntity().equals(entity) || !ruleEventUsageVO.getEvent().equals(eventName))
