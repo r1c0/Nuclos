@@ -89,6 +89,7 @@ public enum NuclosEntity {
 	LDAPMAPPING("ldapmapping"),
 	LDAPSERVER("ldapserver"),
 	LOCALE("locale"),
+	LOCALECACHES("localecaches"),
 	LOCALERESOURCE("localeresource"),
 	MASTERDATA("masterdata"),
 	MODULE("module"),
