@@ -76,6 +76,12 @@ public class TopicNotificationReceiver implements InitializingBean {
 	private ShutdownActions shutdownActions;
 	
 	// end of Spring injection
+	
+	/*
+	 * Use this object for synchronization.
+	 * Otherwise deadlock with DefaultSingletonBeanRegistry... synchronized (this.singletonObjects)
+	 */
+	private final Object lock = "lock";
 
 	/**
 	 * list that holds all registered listeners for this topic receiver
@@ -161,7 +167,7 @@ public class TopicNotificationReceiver implements InitializingBean {
 		if (messagelistener == null) {
 			throw new NullPointerException("No MessageListener");
 		}
-		synchronized (this) {
+		synchronized (lock) {
 			infos.add(new TopicInfo(sTopicName, correlationId, messagelistener));
 			if (!deferredSubscribe) {
 				realSubscribe();
@@ -169,38 +175,40 @@ public class TopicNotificationReceiver implements InitializingBean {
 		}
 	}
 	
-	public synchronized final void realSubscribe() {
-		if (infos.isEmpty()) return;
-		
-		final List<TopicInfo> copy = new ArrayList<TopicInfo>(infos);
-		infos.clear();
-		assert deferredSubscribe || infos.isEmpty();
-		if (copy.size() < 3) {
-			for (TopicInfo i : copy) {
-				WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
-				weakrefmsglistener.subscribe();
-				weakmessagelistener.add(weakrefmsglistener);
-			}
-			deferredSubscribe = false;
-		}
-		else {
-			final Runnable run = new Runnable() {
-
-				@Override
-				public void run() {
-					synchronized (TopicNotificationReceiver.this) {
-						for (TopicInfo i : copy) {
-							WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
-							weakrefmsglistener.subscribe();
-							weakmessagelistener.add(weakrefmsglistener);
-						}
-						deferredSubscribe = false;
-					}
+	public final void realSubscribe() {
+		synchronized (lock) {
+			if (infos.isEmpty()) return;
+			
+			final List<TopicInfo> copy = new ArrayList<TopicInfo>(infos);
+			infos.clear();
+			assert deferredSubscribe || infos.isEmpty();
+			if (copy.size() < 3) {
+				for (TopicInfo i : copy) {
+					WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+					weakrefmsglistener.subscribe();
+					weakmessagelistener.add(weakrefmsglistener);
 				}
-			};
-			new Thread(run, "TopicNotificationReceiver.realSubscribe").start();
+				deferredSubscribe = false;
+			}
+			else {
+				final Runnable run = new Runnable() {
+
+					@Override
+					public void run() {
+						synchronized (TopicNotificationReceiver.this.lock) {
+							for (TopicInfo i : copy) {
+								WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+								weakrefmsglistener.subscribe();
+								weakmessagelistener.add(weakrefmsglistener);
+							}
+							deferredSubscribe = false;
+						}
+					}
+				};
+				new Thread(run, "TopicNotificationReceiver.realSubscribe").start();
+			}
+			assert deferredSubscribe || infos.isEmpty();
 		}
-		assert deferredSubscribe || infos.isEmpty();
 	}
 
 	/**
@@ -216,26 +224,30 @@ public class TopicNotificationReceiver implements InitializingBean {
 	 * unsubscribes all registered JMS topics
 	 */
 	@PreDestroy
-	synchronized void unsubscribeAll() {
-		List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
-		for (WeakReferenceMessageListener ref : tmp) {
-			unsubscribe(ref.getReference().get());
+	void unsubscribeAll() {
+		synchronized (lock) {
+			List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
+			for (WeakReferenceMessageListener ref : tmp) {
+				unsubscribe(ref.getReference().get());
+			}
+			weakmessagelistener.clear();
 		}
-		weakmessagelistener.clear();
 	}
 
 	/**
 	 * unsubscribes the given <code>MessageListener<code> from the topic receiver
 	 * @param messagelistener
 	 */
-	public synchronized void unsubscribe(MessageListener messagelistener) {
-		List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
-		for (WeakReferenceMessageListener ref : tmp) {
-			if (ref.getReference().get() == messagelistener) {
-				ref.unsubscribe();
-				weakmessagelistener.remove(ref);
-				ref = null;
-				break;
+	public void unsubscribe(MessageListener messagelistener) {
+		synchronized (lock) {
+			List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
+			for (WeakReferenceMessageListener ref : tmp) {
+				if (ref.getReference().get() == messagelistener) {
+					ref.unsubscribe();
+					weakmessagelistener.remove(ref);
+					ref = null;
+					break;
+				}
 			}
 		}
 	}
