@@ -72,7 +72,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MasterDataMetaCache;
-import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -227,21 +226,24 @@ public class JasperExport implements Export {
 					catch (RuntimeException e) {
 						throw new NuclosReportException(e.getMessage());
 					}
+					finally {
+						//@see NUCLOSINT-1648.
+						// we re-use the current open connection from the remote spring call.
+						// the connection will be commited / closed by spring at the end of the transaction.
+						/*try {
+							if (conn != null) {
+								conn.close();
+							}
+						} catch (Exception ex) {
+							LOG.error(ex.getMessage(), ex);
+						}*/
+					}
 				}
 				catch (CommonFinderException ex) {
 					throw new NuclosFatalException(ex);
 				}
 				catch (CommonPermissionException ex) {
 					throw new NuclosReportException(ex);
-				}
-				finally {
-					try {
-						if (conn != null) {
-							conn.close();
-						}
-					} catch (Exception ex) {
-						LOG.error(ex.getMessage(), ex);
-					}
 				}
 			}
 			else {
