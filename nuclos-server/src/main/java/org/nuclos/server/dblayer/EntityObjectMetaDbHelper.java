@@ -42,6 +42,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
@@ -233,19 +234,21 @@ public class EntityObjectMetaDbHelper {
 		}
 
 		// View
-		String viewName = getViewName(entityMeta);
-		if (viewName != null) {
-
-			DbObjectHelper dbObjectHelper = new DbObjectHelper(dbAccess);
-			if (!dbObjectHelper.hasUserdefinedEntityView(entityMeta)) {
-
-				List<DbSimpleViewColumn> dbViewColumns = CollectionUtils.transform(dbColumns.values(), new Transformer<DbColumn, DbSimpleViewColumn>() {
-					@Override
-					public DbSimpleViewColumn transform(DbColumn c) { return new DbSimpleViewColumn(c.getColumnName()); }
-				});
-				dbViewColumns.addAll(dbExtraViewColumns);
-
-				tableArtifacts.add(new DbSimpleView(dbTableName, generateDbName(viewName), dbViewColumns));
+		if (!(entityMeta instanceof SystemEntityMetaDataVO)) {
+			String viewName = getViewName(entityMeta);
+			if (viewName != null) {
+	
+				DbObjectHelper dbObjectHelper = new DbObjectHelper(dbAccess);
+				if (!dbObjectHelper.hasUserdefinedEntityView(entityMeta)) {
+	
+					List<DbSimpleViewColumn> dbViewColumns = CollectionUtils.transform(dbColumns.values(), new Transformer<DbColumn, DbSimpleViewColumn>() {
+						@Override
+						public DbSimpleViewColumn transform(DbColumn c) { return new DbSimpleViewColumn(c.getColumnName()); }
+					});
+					dbViewColumns.addAll(dbExtraViewColumns);
+	
+					tableArtifacts.add(new DbSimpleView(dbTableName, generateDbName(viewName), dbViewColumns));
+				}
 			}
 		}
 
