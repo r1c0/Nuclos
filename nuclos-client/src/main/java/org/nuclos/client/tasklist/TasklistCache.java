@@ -66,6 +66,8 @@ public class TasklistCache extends AbstractLocalUserCache implements Initializin
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if (!wasDeserialized() || !isValid())
+			revalidate();
 		messageListener = new MessageListener() {
 			@Override
 			public void onMessage(Message msg) {
@@ -96,8 +98,6 @@ public class TasklistCache extends AbstractLocalUserCache implements Initializin
 			}
 		};
 		tnr.subscribe(getCachingTopic(), messageListener);
-		if (!wasDeserialized() || !isValid())
-			revalidate();
 	}
 	
 	@Override

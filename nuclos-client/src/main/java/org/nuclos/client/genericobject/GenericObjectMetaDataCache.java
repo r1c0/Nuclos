@@ -42,6 +42,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Client side leased object meta data cache (singleton).
@@ -53,7 +54,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
  * @version 01.00.00
  */
 // @Component
-public class GenericObjectMetaDataCache extends AbstractLocalUserCache implements GenericObjectMetaDataProvider {
+public class GenericObjectMetaDataCache extends AbstractLocalUserCache implements GenericObjectMetaDataProvider, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectMetaDataCache.class);
 	
@@ -73,25 +74,24 @@ public class GenericObjectMetaDataCache extends AbstractLocalUserCache implement
 	private GenericObjectMetaDataCache() {
 		INSTANCE = this;
 	}
-	
-	@PostConstruct
-	final void init() {
-		final Runnable run = new Runnable() {
+
+	public void afterPropertiesSet() throws Exception {
+		if (!wasDeserialized() || !isValid())
+			setup();
+	}
+
+	public final void initMessageListener() {
+		if (messageListener != null)
+			return;
+		
+		messageListener = new MessageListener() {
 			@Override
-			public void run() {
-				if (!wasDeserialized() || !isValid())
-					setup();
-				messageListener = new MessageListener() {
-					@Override
-					public void onMessage(Message msg) {
-						LOG.info("onMessage: Received notification from server: meta data changed, revalidate...");
-						GenericObjectMetaDataCache.this.revalidate();
-					}
-				};
-				tnr.subscribe(getCachingTopic(), messageListener);
+			public void onMessage(Message msg) {
+				LOG.info("onMessage: Received notification from server: meta data changed, revalidate...");
+				GenericObjectMetaDataCache.this.revalidate();
 			}
 		};
-		new Thread(run, "GenericObjectMetaDataCache.init").start();
+		tnr.subscribe(getCachingTopic(), messageListener);
 	}
 
 	// @Autowired

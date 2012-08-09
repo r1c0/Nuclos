@@ -79,43 +79,36 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 	
 	// @PostConstruct
 	public final void afterPropertiesSet() {
-		final Runnable run = new Runnable() {
+		if (!wasDeserialized() || !isValid()) {
+			LOG.debug("Initializing metadata cache");
+			final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
+			mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
+			for (MasterDataMetaVO mdmetavo : coll) {
+				mp.put(mdmetavo.getEntityName(), mdmetavo);
+			}
+		}
+		messageListener = new MessageListener() {
 			@Override
-			public void run() {
-				if (!wasDeserialized() || !isValid()) {
-					LOG.debug("Initializing metadata cache");
-					final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
-					mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
-					for (MasterDataMetaVO mdmetavo : coll) {
-						mp.put(mdmetavo.getEntityName(), mdmetavo);
+			public void onMessage(Message msg) {
+				LOG.info("onMessage: Received notification from server: meta data changed.");
+				MetaDataCache.this.invalidate();
+				if (msg instanceof TextMessage) {
+					try {
+						NuclosEntity entity = NuclosEntity.getByName(((TextMessage)msg).getText());
+						if (!(entity == NuclosEntity.DYNAMICENTITY || entity == NuclosEntity.LAYOUT)) {
+							Main.getInstance().getMainController().refreshMenusLater();
+						}
+					}
+					catch (JMSException ex) {
+						LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
 					}
 				}
-				messageListener = new MessageListener() {
-					@Override
-					public void onMessage(Message msg) {
-						LOG.info("onMessage: Received notification from server: meta data changed.");
-						MetaDataCache.this.invalidate();
-						if (msg instanceof TextMessage) {
-							try {
-								NuclosEntity entity = NuclosEntity.getByName(((TextMessage)msg).getText());
-								if (!(entity == NuclosEntity.DYNAMICENTITY || entity == NuclosEntity.LAYOUT)) {
-									Main.getInstance().getMainController().refreshMenusLater();
-								}
-							}
-							catch (JMSException ex) {
-								LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
-							}
-						}
-						else {
-							LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
-						}			
-					}
-				};
-				tnr.subscribe(getCachingTopic(), messageListener);
+				else {
+					LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				}			
 			}
 		};
-		// new Thread(run, "MetaDataCache.init").start();
-		run.run();
+		tnr.subscribe(getCachingTopic(), messageListener);
 	}
 	
 	// @Autowired

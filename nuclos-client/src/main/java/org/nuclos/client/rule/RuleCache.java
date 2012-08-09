@@ -112,6 +112,12 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 	public final void afterPropertiesSet() {
 		if (!wasDeserialized() || !isValid())
 			invalidate(null);
+	}
+	
+	public final void initMessageListener() {
+		if (messageListener != null)
+			return;
+
 		messageListener = new MessageListener() {
 			@Override
 			public void onMessage(Message msg) {

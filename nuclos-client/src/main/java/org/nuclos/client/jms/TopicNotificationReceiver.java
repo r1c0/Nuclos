@@ -19,8 +19,6 @@ package org.nuclos.client.jms;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
@@ -156,7 +154,7 @@ public class TopicNotificationReceiver implements InitializingBean {
 	 * @param messageSelector
 	 * @param messagelistener
 	 */
-	public synchronized void subscribe(String sTopicName, String correlationId, MessageListener messagelistener) {
+	public void subscribe(String sTopicName, String correlationId, MessageListener messagelistener) {
 		if (sTopicName == null) {
 			throw new NullPointerException("No topic name");
 		}
@@ -164,7 +162,7 @@ public class TopicNotificationReceiver implements InitializingBean {
 			throw new NullPointerException("No MessageListener");
 		}
 		
-		//synchronized (this)
+		synchronized (this)
 		{
 			infos.add(new TopicInfo(sTopicName, correlationId, messagelistener));
 			if (!deferredSubscribe) {
@@ -172,8 +170,6 @@ public class TopicNotificationReceiver implements InitializingBean {
 			}
 		}
 	}
-	
-	final Lock lock = new ReentrantLock();
 	
 	public synchronized final void realSubscribe() {
 		if (infos.isEmpty()) return;
@@ -194,16 +190,14 @@ public class TopicNotificationReceiver implements InitializingBean {
 
 				@Override
 				public void run() {
-					lock.lock();
-					try {
+					// @todo !!! sometimes we hat a deadlock situation here.
+					synchronized (TopicNotificationReceiver.this) {
 						for (TopicInfo i : copy) {
 							WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
 							weakrefmsglistener.subscribe();
 							weakmessagelistener.add(weakrefmsglistener);
 						}
 						deferredSubscribe = false;
-					} finally {
-						lock.unlock();
 					}
 				}
 			};

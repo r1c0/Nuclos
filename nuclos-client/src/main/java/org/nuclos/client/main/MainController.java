@@ -422,6 +422,8 @@ public class MainController {
 					RuleCache.getInstance();
 				}
 			};
+
+			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_RULES);
 			
 			List<Thread> lstCacheThreads = new ArrayList<Thread>();
 			lstCacheThreads.add(threadGenericObjectMetaDataCache);
@@ -440,7 +442,14 @@ public class MainController {
 					LOG.warn("MainController: " + e);
 				}
 			}
+			
+			// !!! init messagelisteners here.
+			// initialzing chaches in these threads will cause an deadlock situation at realSubscribe in TopicNotificationReceiver. 
+			GenericObjectMetaDataCache.getInstance().initMessageListener();
+			SearchFilterCache.getInstance().initMessageListener();
+			RuleCache.getInstance().initMessageListener();
 
+			
 			LOG.debug(">>> create mainframe...");
 			// this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
 

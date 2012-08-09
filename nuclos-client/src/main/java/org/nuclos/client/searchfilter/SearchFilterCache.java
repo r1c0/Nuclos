@@ -79,6 +79,12 @@ public class SearchFilterCache extends AbstractLocalUserCache implements Initial
 	public void afterPropertiesSet() throws Exception {
 		if (!wasDeserialized() || !isValid())
 			loadSearchFilters();	
+	}
+	
+	public final void initMessageListener() {
+		if (messageListener != null)
+			return;
+
 		messageListener = new MessageListener() {
 			@Override
 	        public void onMessage(Message msg) {

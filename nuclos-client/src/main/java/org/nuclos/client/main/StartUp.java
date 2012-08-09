@@ -103,7 +103,8 @@ public class StartUp  {
 	static final int PROGRESS_READ_ATTRIBUTES = 8;
 	static final int PROGRESS_READ_LOMETA = 5;
 	static final int PROGRESS_READ_SEARCHFILTER = 5;
-	static final int PROGRESS_CREATE_MAINFRAME = 28;
+	static final int PROGRESS_READ_RULES = 5;
+	static final int PROGRESS_CREATE_MAINFRAME = 23;
 	static final int PROGRESS_INIT_ONLINEHELP = 4;
 	static final int PROGRESS_CREATE_MAINMENU = 6;
 	static final int PROGRESS_RESTORE_WORKSPACE = 29;
