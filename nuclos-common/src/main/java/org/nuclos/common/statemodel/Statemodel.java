@@ -53,7 +53,7 @@ public class Statemodel implements Serializable {
 	private Map<Integer, Collection<StateTransitionVO>>	stateTransitions;
 	private Map<Integer, String>	                    labelResourceSIDs;
 	private Map<Integer, String>	                    desriptionResourceSIDs;
-	private Set<Integer>	                            userTransitionIDs;
+	private Set<Integer>              			        userTransitionIDs;
 
 	private Map<Integer, StateVO>	                    _stateLookup;
 
@@ -117,10 +117,6 @@ public class Statemodel implements Serializable {
 
 	public Map<Integer, String> getDesriptionResourceSIDs() {
     	return desriptionResourceSIDs;
-    }
-
-	public Set<Integer> getUserTransitionIDs() {
-        return userTransitionIDs;
     }
 
     public void setUserTransitionIDs(Collection<Integer> userTransitionIDs) {
@@ -241,7 +237,7 @@ public class Statemodel implements Serializable {
     	if (!statesDefaultPath.contains(stateToReach)) {
     		return result;
     	}
-    	
+
     	List<StateTransitionVO> transitionVOs = new LinkedList<StateTransitionVO>();
 		for (Collection<StateTransitionVO> transitions : stateTransitions.values()) {
 			transitionVOs.addAll(transitions);
@@ -267,7 +263,8 @@ public class Statemodel implements Serializable {
 
 		List<Integer> checkedStateNumerals = new LinkedList<Integer>();
 		Integer iSubsequentState = startTransition.getStateTarget();
-		if (!startTransition.isAutomatic() && !result.contains(iSubsequentState)) {
+		if (!startTransition.isAutomatic() && !result.contains(iSubsequentState)
+				&& userTransitionIDs.contains(startTransition.getId())) {
 			result.add(iSubsequentState);
 		}
 		while (iSubsequentState != null) {			
@@ -285,7 +282,8 @@ public class Statemodel implements Serializable {
 			}
 			
 			// add path.
-			if (!subsequentTransition.isAutomatic() && !result.contains(iSubsequentState)) {
+			if (!subsequentTransition.isAutomatic() && !result.contains(iSubsequentState)
+					&& userTransitionIDs.contains(subsequentTransition.getId())) {
 				result.add(iSubsequentState);
 			}
 			
@@ -301,7 +299,8 @@ public class Statemodel implements Serializable {
 			checkedStateNumerals.add(subsequentTransition.getId());
 			iSubsequentState = subsequentTransition.getStateTarget();
 			if (iSubsequentState.equals(stateToReach.getId())) {
-				if (!result.contains(iSubsequentState))
+				if (!result.contains(iSubsequentState)
+						&& userTransitionIDs.contains(subsequentTransition.getId()))
 					result.add(iSubsequentState);
 				return result;
 			}

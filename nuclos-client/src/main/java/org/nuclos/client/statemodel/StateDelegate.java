@@ -80,7 +80,7 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	//
 	
 	private Map<Integer, StateGraphVO> mpStateGraphVO;
-	private Map<Integer, StatemodelClosure> mpStatemodelClosure;
+	private transient Map<Integer, StatemodelClosure> mpStatemodelClosure;
 	
 	// Spring injection
 	
@@ -107,8 +107,23 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 
 	@Override
 	public void afterPropertiesSet() {
-		if (!wasDeserialized() || !isValid())
-			invalidate();
+		if (!wasDeserialized() || !isValid()) {
+			// we could not do a complete invalidation here.
+			// statemodels needs the current user name to get allowed transition.
+			// so we can not remember statemodels and transitions here. this depends on user. load it lazy as it was bevor. 
+			//invalidate(); 
+			
+			mpStatemodelClosure = new ConcurrentHashMap<Integer, StatemodelClosure>();
+			
+			mpStateGraphVO = new ConcurrentHashMap<Integer, StateGraphVO>();
+			for (StateModelVO smvo : stateFacadeRemote.getStateModels()) {
+				try {
+					mpStateGraphVO.put(smvo.getId(), getStateGraph(smvo.getId()));				
+				} catch (Exception e) {
+					// ignore here.
+				}
+			}
+		}
 		tnr.subscribe(getCachingTopic(), this);
 	}
 	
