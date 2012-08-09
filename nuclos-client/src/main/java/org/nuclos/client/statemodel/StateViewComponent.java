@@ -257,7 +257,18 @@ public class StateViewComponent extends JPanel {
 	
 	public void setSelectedItem(StateWrapper item) {
 		this.selectedItem = item;
-		enableStateLabels();
+		
+		for (Iterator<StateWrapper> iterator = items.iterator(); iterator.hasNext();) {
+			StateWrapper it = iterator.next();
+			StateWrapperLabel label = findComponent(it);
+			label.setSelected(false);
+		}
+
+		if (item != null) {
+			StateWrapperLabel label = findComponent(item);
+			if (label != null)
+				label.setSelected(true);
+		}	
 	}
 	
 	public void removeAllItems() {

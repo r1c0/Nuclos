@@ -2296,7 +2296,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		this.unsafeFillDetailsPanel(clct, getCollectState().isDetailsModeNew() /*&& getProcess() != null*/); //@see NUCLOS-656 respecting getProcess is not needed here. if process is not null, it will set via newCollectableWithDefaultValues
 	}
 
-
 	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct, boolean getUsageCriteriaFromClctOnly) throws CommonBusinessException {
 		LOG.debug("GenericObjectCollectController.unsafeFillDetailsPanel start");
 
@@ -3042,7 +3041,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert result != null;
 		assert getSearchStrategy().isCollectableComplete(result);
 		setSubsequentStatesVisible(false, false);
-		setStatesDefaultPathVisible(true, false);
+		setStatesDefaultPathVisible(true, false);;
 		return result;
 	}
 
@@ -3566,6 +3565,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		// initialize:
 		cmpStateStandardView.removeAllItems();
+		cmpStateStandardView.setSelectedItem(null);
 
 		if (!bVisible)
 			cmpStateStandardView.setVisible(false);
@@ -3598,13 +3598,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 							StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
 							statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.getColor(), statevo.getButtonIcon(), statevo.isFromAutomatic(),
-							getSelectedCollectable() == null ? Collections.EMPTY_LIST : 
-								!StateDelegate.getInstance().checkTargetState(getModuleId(), getSelectedCollectable().getId(), statevo.getId()) ? Collections.EMPTY_LIST :
 									getSelectedCollectable() != null ?
 											StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getId(), statevo)
 											: StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPathByNumeral(stateCurrent.getNumeral(), statevo)));
 
-			cmpStateStandardView.setSelectedItem(stateCurrent);
+			cmpStateStandardView.setSelectedItem(
+					getSelectedCollectable() == null || getSelectedCollectable().getId() == null ? null : stateCurrent);
 			cmpStateStandardView.addItems(lstDefaultPathEntries);
 
 			for (Iterator<StateWrapper> iterator = lstDefaultPathEntries.iterator(); iterator.hasNext();) {
@@ -5593,6 +5592,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// deselect potentially previously selected entry
 				getResultTable().clearSelection();
 				getLayoutMLButtonsActionListener().setComponentsEnabled(false);
+				cmpStateStandardView.setSelectedItem(null);
 				break;
 			case CollectState.DETAILSMODE_NEW_SEARCHVALUE:
 				// deselect potentially previously selected entry
@@ -5625,8 +5625,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				setSubsequentStatesVisible(false, false);
 				if (iDetailsMode != CollectState.DETAILSMODE_NEW_CHANGED)
 					setStatesDefaultPathVisible(false, false);
-				else
+				else {
 					setStatesDefaultPathVisible(true, false);
+					cmpStateStandardView.setSelectedItem(null);
+				}
 			}	// switch
 
 			if (iDetailsMode != CollectState.DETAILSMODE_NEW_CHANGED
