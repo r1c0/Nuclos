@@ -4744,8 +4744,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			/** @todo maybe factor this out in a protected method and override in GeneralSearchCollectController */
 			final org.nuclos.common.collect.collectable.CollectableEntity clcte = bSearchMode ? getCollectableEntity() : CollectableGenericObjectEntity.getByModuleId(usagecriteria.getModuleId());
 			final Integer iLayout = GenericObjectLayoutCache.getInstance().getLayoutId(clcte, usagecriteria, bSearchMode);
-			if (LangUtils.equals(iCurrentLayoutId, iLayout))
+			if (LangUtils.equals(iCurrentLayoutId, iLayout)) {
+				getLayoutMLButtonsActionListener().clearInputMapForParentPanel(getCollectPanel());
+
+				setupShortcutsForTabs(getTab());
+				
+				if (collectstate.isDetailsMode()) {
+					getLayoutMLButtonsActionListener().setInputMapForParentPanel(getCollectPanel(), getCollectPanel().getDetailsPanel().getEditComponent());
+				}
+
 				return;
+			}
 			
 			iCurrentLayoutId = iLayout;
 
@@ -4951,6 +4960,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	protected final LayoutRoot getLayoutFromCache(UsageCriteria usagecriteria, CollectState collectstate) {
 		final boolean bSearchMode = collectstate.isSearchMode();
+		
+		resetLayoutMLButtonsActionListener();
+
 		/** @todo maybe factor this out in a protected method and override in GeneralSearchCollectController */
 		final org.nuclos.common.collect.collectable.CollectableEntity clcte = bSearchMode ? getCollectableEntity() : CollectableGenericObjectEntity.getByModuleId(usagecriteria.getModuleId());
 		final LayoutRoot result = GenericObjectLayoutCache.getInstance().getLayout(clcte, usagecriteria, bSearchMode, getLayoutMLButtonsActionListener(), valueListProviderCache);
@@ -4989,7 +5001,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 		// iterate through the component tree and clear the keymaps of all JSplitPanes
 		UIUtils.clearJComponentKeymap(layoutroot.getRootComponent(), JSplitPane.class);
+		getLayoutMLButtonsActionListener().clearInputMapForParentPanel(getCollectPanel());
+		getLayoutMLButtonsActionListener().clearInputMapForParentPanel(layoutroot.getRootComponent());
 		
+		setupShortcutsForTabs(getTab());
+
 		if (collectstate.isDetailsMode()) {
 			getLayoutMLButtonsActionListener().setInputMapForParentPanel(getCollectPanel(), layoutroot.getRootComponent());
 		}
@@ -5684,6 +5700,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				LOG.debug("removeUsageCriteriaFieldListeners");
 				removeUsageCriteriaFieldListeners(false);
 			}
+			getLayoutMLButtonsActionListener().clearInputMapForParentPanel(getCollectPanel());
+			setupShortcutsForTabs(getTab()); // reset all actions here.
 		}
 	}	// inner class GenericObjectCollectStateListener
 

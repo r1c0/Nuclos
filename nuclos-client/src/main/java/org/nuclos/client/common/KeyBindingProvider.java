@@ -120,6 +120,7 @@ public class KeyBindingProvider {
 	 * @param component JComponent The component on wich the action is performed
 	 */
 	public static void bindActionToComponent(KeyBinding keybinding, Action action, JComponent component) {
+		removeActionFromComponent(keybinding, component);// remove first
 		component.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		component.getInputMap(JComponent.WHEN_FOCUSED).put(keybinding.getKeystroke(), keybinding.getKey());
 		component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keybinding.getKeystroke(), keybinding.getKey());

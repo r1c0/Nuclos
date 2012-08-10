@@ -329,8 +329,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		KeyBinding keybinding = KeyBindingProvider.REFRESH;
 
 		// the refresh action
+		KeyBindingProvider.removeActionFromComponent(keybinding, pnlDetails);
 		pnlDetails.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		pnlDetails.getActionMap().put(keybinding.getKey(), this.getRefreshCurrentCollectableAction());
+		KeyBindingProvider.removeActionFromComponent(keybinding, getResultPanel());
 		getResultPanel().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		getResultPanel().getActionMap().put(keybinding.getKey(), getResultPanel().btnRefresh.getAction());
 
@@ -956,6 +958,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			alLayoutMLButtons = new MyLayoutMLButtonActionListener<Clct>(NuclosCollectController.this);
 		}
 		return alLayoutMLButtons;
+	}
+	protected void resetLayoutMLButtonsActionListener() {
+		alLayoutMLButtons = null;
 	}
 
 

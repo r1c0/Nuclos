@@ -70,6 +70,20 @@ public abstract class LayoutMLButtonActionListener implements ActionListener {
 			}
 		}
 	}
+
+	public void clearInputMapForParentPanel(JComponent parentPanel) {
+		for (final JComponent parent : this.mpParentComps.keySet()) {
+			final String sActionKey = ((LayoutMLButton)parent).getActionKey();
+			if (!StringUtils.isNullOrEmpty(sActionKey)) {
+				final String sActionCommand = ((LayoutMLButton)parent).getActionCommand();
+				
+				KeyBinding keybinding = new KeyBinding(sActionCommand);
+				keybinding.setKeystroke(KeyStroke.getKeyStroke(sActionKey));
+
+				KeyBindingProvider.removeActionFromComponents(keybinding, parentPanel);
+			}
+		}
+	}
 	
 	public void setComponentsEnabled(boolean enabled) {
 		for (JComponent parent : this.mpParentComps.keySet()) {
