@@ -59,17 +59,16 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 		if (treeNodeType == null)
 			 return null;
 		
-		
 		switch (treeNodeType) 
 		{
 		case EVENTSUPPORT:
 			result = Icons.getInstance().getIconRuleUsage16();
 			break;
 		case STATE_TRANSITION:
-			result = Icons.getInstance().getIconState();
+			result = Icons.getInstance().getIconStateTransition();
 			break;
 		case ENTITY:
-			result = Icons.getInstance().getIconGenericObject16();
+			result = Icons.getInstance().getIconModule();
 			break;
 		default:
 			break;

@@ -25,7 +25,9 @@ public class EventSupportTargetTreeNode extends EventSupportTreeNode {
 	}
 	
 	public boolean isLeaf() {
-		return false;
+		boolean retVal = EventSupportTargetType.EVENTSUPPORT_TYPE.equals(getTreeNodeType()) || 
+						 EventSupportTargetType.STATE_TRANSITION.equals(getTreeNodeType());
+		return retVal;
 	}
 	
 }
