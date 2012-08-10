@@ -107,13 +107,13 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 
 	@Override
 	public void afterPropertiesSet() {
+		mpStatemodelClosure = new ConcurrentHashMap<Integer, StatemodelClosure>();
+		
 		if (!wasDeserialized() || !isValid()) {
 			// we could not do a complete invalidation here.
 			// statemodels needs the current user name to get allowed transition.
 			// so we can not remember statemodels and transitions here. this depends on user. load it lazy as it was bevor. 
 			//invalidate(); 
-			
-			mpStatemodelClosure = new ConcurrentHashMap<Integer, StatemodelClosure>();
 			
 			mpStateGraphVO = new ConcurrentHashMap<Integer, StateGraphVO>();
 			for (StateModelVO smvo : stateFacadeRemote.getStateModels()) {
