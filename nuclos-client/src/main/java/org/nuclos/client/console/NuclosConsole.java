@@ -105,7 +105,8 @@ public class NuclosConsole extends ConsoleConstants {
 			CMD_CHECKMASTERDATAVALUES, CMD_COMPILEDBOBJECTS,
 			CMD_SENDMESSAGE, CMD_KILLSESSION,
 			CMD_IMPORTTIMELIMITRULES, CMD_EXPORTTIMELIMITRULES, CMD_EXECUTE_TIMELIMITRULE_NOW,
-			CMD_NUCLET_GENERATION_FROM_XLSX, CMD_NUCLET_GENERATION_CREATE_EMPTY_XLSX_FILE
+			CMD_NUCLET_GENERATION_FROM_XLSX, CMD_NUCLET_GENERATION_CREATE_EMPTY_XLSX_FILE,
+			CMD_REBUILD_CONSTRAINTS
 	);
 
 	private static NuclosConsole INSTANCE;
@@ -628,6 +629,8 @@ public class NuclosConsole extends ConsoleConstants {
 		sb.append("\t\t\tkill the client of the specified user (or all users if no one is specified).\n");
 		sb.append("\t-invalidatAllCaches\n");
 		sb.append("\t\t\tinvalide all server side caches.\n");
+		sb.append("\t-rebuildConstraints\n");
+		sb.append("\t\t\rebuilds all unique and foreign constraints.\n");
 
 		return sb.toString();
 	}
@@ -776,6 +779,9 @@ public class NuclosConsole extends ConsoleConstants {
 		else if (sCommandLowerCase.equals(CMD_COMPILEDBOBJECTS)) {
 			compileDBObjects();
 		}
+		else if (sCommandLowerCase.equals(CMD_REBUILD_CONSTRAINTS.toLowerCase())) {
+			rebuildConstraints();
+		}
 		else if (sCommandLowerCase.equals(CMD_SENDMESSAGE)) {
 			String sMessage = null;
 			String sUser = null;
@@ -888,6 +894,15 @@ public class NuclosConsole extends ConsoleConstants {
 
 	private void compileDBObjects() throws RemoteException, SQLException {
 		consoleFacadeRemote.compileInvalidDbObjects();
+	}
+	
+	private void rebuildConstraints() {
+		String[] result = consoleFacadeRemote.rebuildConstraints(); 
+		if (result != null) {
+			for (String s : result) {
+				System.out.println(s);
+			}
+		}
 	}
 
 	/**

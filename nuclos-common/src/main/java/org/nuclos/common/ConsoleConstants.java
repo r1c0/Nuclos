@@ -49,4 +49,5 @@ public class ConsoleConstants {
 	public static final String CMD_VALIDATE_SCHEMA = "-validateSchema";
 	public static final String CMD_NUCLET_GENERATION_FROM_XLSX = "-nucletGeneration_fromXLSX";
 	public static final String CMD_NUCLET_GENERATION_CREATE_EMPTY_XLSX_FILE = "-nucletGeneration_createEmptyXLSXFile";
+	public static final String CMD_REBUILD_CONSTRAINTS = "-rebuildConstraints";
 }
