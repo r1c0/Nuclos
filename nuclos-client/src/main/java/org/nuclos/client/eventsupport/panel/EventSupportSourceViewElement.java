@@ -11,16 +11,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
+import org.nuclos.client.explorer.EventSupportManagementExplorerView;
 import org.nuclos.client.explorer.ExplorerView;
 import org.nuclos.client.explorer.ExplorerViewFactory;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
 public class EventSupportSourceViewElement extends JPanel {
+	
 	private TreeNode treenode;
 	private AbstractTableModel model;
+	EventSupportManagementExplorerView newExplorerView;
 	
 	public EventSupportSourceViewElement(EventSupportManagementView view, Border b)
 	{
@@ -28,8 +32,8 @@ public class EventSupportSourceViewElement extends JPanel {
 		
 		this.treenode = view.getTreeEventSupports();
 		this.model = view.getPropertyModel();
-		
-		ExplorerView newExplorerView = ExplorerViewFactory.getInstance().newExplorerView(this.treenode);
+
+		newExplorerView = new EventSupportManagementExplorerView(this.treenode, true);
 		
 		final JSplitPane splitpn = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
@@ -44,6 +48,11 @@ public class EventSupportSourceViewElement extends JPanel {
 		
 		this.add(splitpn, BorderLayout.CENTER);
 		
+	}
+	
+	public JTree getTree()
+	{
+		return this.newExplorerView.getJTree();
 	}
 	
 	protected JPanel createPropertiesPanel(Border b) {

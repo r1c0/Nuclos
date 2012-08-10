@@ -1541,4 +1541,40 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		}
 		return res;
 	}
+	
+	public List<StateTransitionVO> getOrderedStateTransitionsByStatemodel(Integer moduleId)
+	{
+		List<StateTransitionVO> retVal = new ArrayList<StateTransitionVO>();
+		
+		StateTransitionVO initialTransistionByModel = stateCache.getInitialTransistionByModel(moduleId);
+		retVal.add(initialTransistionByModel);
+		
+		Integer curTransStateInChain = initialTransistionByModel.getStateTarget();
+		boolean completeTransitionChain = false;
+		
+		while (!completeTransitionChain)
+		{
+			CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(
+		      	MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.STATETRANSITION),"state1", curTransStateInChain);
+			Collection<MasterDataVO> mdList = getMasterDataFacade().getMasterData(NuclosEntity.STATETRANSITION.getEntityName(), cond, true);
+
+			if (mdList.isEmpty())
+			{
+				completeTransitionChain = true;
+			}
+			else
+			{
+				for (MasterDataVO mdVO : mdList) {
+					try {
+						StateTransitionVO newStateTrans = MasterDataWrapper.getStateTransitionVOWithoutDependants(mdVO);
+						retVal.add(newStateTrans);
+						curTransStateInChain = newStateTrans.getStateTarget();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return retVal;
+	}
 }

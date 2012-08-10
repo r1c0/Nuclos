@@ -148,14 +148,18 @@ public class MasterDataWrapper {
 
 		// Mandatory fields that cannot be null
 		String eseSupClass = mdVO.getField("eventsupportclass").toString();
-		String eseEntity = mdVO.getField("entity").toString();
+		String eseSupType = mdVO.getField("eventsupporttype").toString();
 		Integer eseOrder = Integer.parseInt(mdVO.getField("order").toString());
+		Integer eseEntity = Integer.parseInt(mdVO.getField("entityId").toString());
 		
 		// Fields that can be null
-		Integer eseState = mdVO.getField("state") != null ? Integer.parseInt(mdVO.getField("state").toString()) : null;
-		Integer eseProcess = mdVO.getField("process") != null ? Integer.parseInt(mdVO.getField("process").toString()) : null;
+		Integer eseState = mdVO.getField("stateId") != null ? Integer.parseInt(mdVO.getField("stateId").toString()) : null;
+		Integer eseProcess = mdVO.getField("processId") != null ? Integer.parseInt(mdVO.getField("processId").toString()) : null;
+		String  eseEntityName = mdVO.getField("entity") != null ? mdVO.getField("entity").toString() : null;
+		String  eseProcessName = mdVO.getField("process") != null ? mdVO.getField("process").toString() : null;
+		String  eseStateName = mdVO.getField("state") != null ? mdVO.getField("state").toString() : null;
 		
-		EventSupportEventVO esevo = new EventSupportEventVO(eseSupClass,eseEntity,eseProcess,eseState,eseOrder);
+		EventSupportEventVO esevo = new EventSupportEventVO(eseSupClass,eseSupType,eseEntity,eseProcess,eseState,eseOrder,eseEntityName,eseProcessName,eseStateName);
 		
 		return esevo;
 	}
@@ -308,13 +312,14 @@ public class MasterDataWrapper {
 	}
 	
 	public static MasterDataVO wrapEventSupportEventVO(EventSupportEventVO vo) {
-		Map<String, Object> mpFields = new HashMap<String,Object>();
+		Map<String, Object> mpFields = new HashMap<String,Object>();		
 		
-		mpFields.put("state", vo.getStateId());
-		mpFields.put("entity", vo.getEntity());
+		mpFields.put("stateId", vo.getStateId());
+		mpFields.put("entityId", vo.getEntity());
 		mpFields.put("order", vo.getOrder());
-		mpFields.put("process", vo.getProcessId());
+		mpFields.put("processId", vo.getProcessId());
 		mpFields.put("eventsupportclass", vo.getEventSupportClass());
+		mpFields.put("eventsupporttype", vo.getEventSupportType());
 		
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}

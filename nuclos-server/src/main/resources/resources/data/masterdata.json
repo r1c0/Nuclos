@@ -2797,14 +2797,16 @@
     "uniquefields": [
       [
         "eventsupportclass",
-        "entity",
-        "order"
+        "state",
+        "eventsupporttype",
+        "process",    
+        "entity"    
       ]
     ],
     "nuclos_entityfield": [
       {
         "name": "state",
-        "dbfield": "INTID_T_MD_STATE",
+        "dbfield": "STRVALUE_T_MD_STATE",
         "label": "Status",
         "description": "Status",
         "foreignentity": "nuclos_state",
@@ -2819,19 +2821,35 @@
       },
       {
         "name": "process",
-        "dbfield": "INTID_T_MD_PROCESS",
+        "dbfield": "STRVALUE_T_MD_PROCESS",
         "label": "Process",
         "description": "Process",
         "foreignentity": "nuclos_process",
         "datatype": "java.lang.String",
         "datascale": 255,
         "nullable": true,
-        "searchable": true,
+        "searchable": false,
         "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.eventsupportevent.process.label",
         "descriptionres": "nuclos.entityfield.eventsupportevent.process.description"
       },
+      {
+        "name": "entity",
+        "dbfield": "STRVALUE_T_MD_ENTITY",
+        "label": "Entität",
+        "foreignentity": "nuclos_entity",
+        "foreignentityfield": "entity",
+        "description": "Entität",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,     
+        "labelres": "nuclos.entityfield.ruleUsage.entity.label",
+        "descriptionres": "nuclos.entityfield.ruleUsage.entity.description"
+      },    
        {
         "name": "eventsupportclass",
         "dbfield": "STREVENTSUPPORTCLASS",
@@ -2843,8 +2861,22 @@
         "searchable": false,
         "logbook": false,
         "unique": true,
-        "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
-        "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
+        "labelres": "nuclos.entityfield.eventsupportevent.supportclass.label",
+        "descriptionres": "nuclos.entityfield.eventsupportevent.supportclass.description"
+      },
+        {
+        "name": "eventsupporttype",
+        "dbfield": "STREVENTSUPPORTTYPE",
+        "label": "Klasse fuer EventSupportType",
+        "description": "Klasse fuer EventSupportType",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupportevent.supportclasstype.label",
+        "descriptionres": "nuclos.entityfield.eventsupportevent.supportclasstype.description"
       },
       {
         "name": "order",
@@ -2859,19 +2891,6 @@
         "unique": false,
         "labelres": "nuclos.entityfield.rulegeneration.order.label",
         "descriptionres": "nuclos.entityfield.rulegeneration.order.description"
-      },
-     {
-        "name": "entity",
-        "dbfield": "STRMASTERDATA",
-        "label": "Entität",
-        "description": "Entität",
-        "datatype": "java.lang.String",
-        "datascale": 255,
-        "nullable": false,
-        "searchable": false,
-        "logbook": false,
-        "labelres": "nuclos.entityfield.ruleUsage.entity.label",
-        "descriptionres": "nuclos.entityfield.ruleUsage.entity.description"
       }
     ]
   },
@@ -7318,7 +7337,6 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.ruleUsage.order.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.order.description"
       }
       {

@@ -225,6 +225,32 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	}
 
 	/**
+	 *
+	 * @param iModuleId
+	 * @return Collection<StateVO> of all states in all state models for the given module
+	 */
+	public StateVO getStatesByModel(Integer iStateModelId, Integer iStateId) {
+		StateVO retVal = null;
+		
+		try {
+			for(StateVO sVO : stateFacadeRemote.getStatesByModel(iStateModelId))
+			{
+				if (sVO.getId().equals(iStateId))
+				{
+					retVal = sVO;
+					break;
+				}
+			}
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+		
+		return retVal;
+	}
+
+	
+	/**
 	 * @param targetStateId
 	 * @return
 	 */
@@ -416,6 +442,10 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	@Override
 	public synchronized void destroy() {
 		tnr.unsubscribe(this);
+	}
+	
+	public List<StateTransitionVO> getOrderedStateTransitionsByStatemodel(Integer moduleId) {
+		return stateFacadeRemote.getOrderedStateTransitionsByStatemodel(moduleId);
 	}
 
 }	// class StateDelegate

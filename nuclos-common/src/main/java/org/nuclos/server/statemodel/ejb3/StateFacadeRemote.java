@@ -17,6 +17,7 @@
 package org.nuclos.server.statemodel.ejb3;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
@@ -183,4 +184,6 @@ public interface StateFacadeRemote {
 	
 	StateTransitionVO findStateTransitionBySourceAndTargetState(Integer sourceStateId, Integer targetStateId);
 	
+	List<StateTransitionVO> getOrderedStateTransitionsByStatemodel(Integer moduleId);
+		
 }

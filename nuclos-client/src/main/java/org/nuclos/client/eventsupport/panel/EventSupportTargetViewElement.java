@@ -5,34 +5,25 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.TransferHandler;
+import javax.swing.JTree;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.client.eventsupport.model.EventSupportEntityPropertiesTableModel;
 import org.nuclos.client.eventsupport.model.EventSupportStatePropertiesTableModel;
+import org.nuclos.client.explorer.EventSupportManagementExplorerView;
 import org.nuclos.client.explorer.ExplorerView;
-import org.nuclos.client.explorer.ExplorerViewFactory;
-import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
-import org.nuclos.client.masterdata.datatransfer.RuleCVOTransferable;
-import org.nuclos.client.rule.admin.CollectableRule;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
 public class EventSupportTargetViewElement extends JPanel {
@@ -41,6 +32,7 @@ public class EventSupportTargetViewElement extends JPanel {
 	EventSupportStatePropertiesTableModel stateModel;	
 	TreeNode treenode;
 	JSplitPane splitPanelEventSupport;
+	EventSupportManagementExplorerView explorerView;
 	
 	JPanel entityPropertiesPanel;
 	JPanel statePropertiesPanel;
@@ -53,18 +45,23 @@ public class EventSupportTargetViewElement extends JPanel {
 		this.entModel = view.getTargetEntityModel();
 		this.stateModel = view.getTargetStateModel();
 		
-		ExplorerView newExplorerView = ExplorerViewFactory.getInstance().newExplorerView(this.treenode);
+		explorerView = new EventSupportManagementExplorerView(this.treenode, false);
 		
 		splitPanelEventSupport = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
 		// Tree		
-		splitPanelEventSupport.setTopComponent(createTreePanel(newExplorerView, b));
+		splitPanelEventSupport.setTopComponent(createTreePanel(explorerView, b));
 		// Properties
 		splitPanelEventSupport.setBottomComponent(getTargetPropertyByType(entModel));
 		
 		splitPanelEventSupport.setResizeWeight(1d);
 		
 		this.add(splitPanelEventSupport, BorderLayout.CENTER);
+	}
+	
+	public JTree getTree()
+	{
+		return this.explorerView.getJTree();
 	}
 	
 	public void loadPropertyPanelByModelType(AbstractTableModel model)
@@ -75,6 +72,7 @@ public class EventSupportTargetViewElement extends JPanel {
 		
 		// ...and load the new according to the given modeltype
 		splitPanelEventSupport.setBottomComponent(getTargetPropertyByType(model));
+		splitPanelEventSupport.repaint();
 
 	}
 	

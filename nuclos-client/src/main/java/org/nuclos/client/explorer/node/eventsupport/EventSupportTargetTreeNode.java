@@ -7,14 +7,14 @@ public class EventSupportTargetTreeNode extends EventSupportTreeNode {
 
 	public EventSupportTargetTreeNode(EventSupportManagementController ctrl,EventSupportTargetTreeNode parent, 
 			Object id, String name, String label, String description,
-			EventSupportTargetType type, boolean isRoot) {
+			EventSupportTargetType type, boolean isRoot, boolean isLeaf) {
 		super(ctrl, parent, id, name, label, description, type, isRoot);
 		
 	}
 
 	public EventSupportTargetTreeNode(EventSupportManagementController ctrl,EventSupportTargetTreeNode parent, 
 			Object id, String name, String label, String description,
-			EventSupportTargetType type) {
+			EventSupportTargetType type, boolean isLeaf) {
 		super(ctrl, parent, id, name, label, description, type, false);
 	}
 	
@@ -23,4 +23,9 @@ public class EventSupportTargetTreeNode extends EventSupportTreeNode {
 		if (!isLeaf())
 			setLstSubNodes(getController().createTargetSubNodesByType(this));
 	}
+	
+	public boolean isLeaf() {
+		return false;
+	}
+	
 }

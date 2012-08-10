@@ -1,17 +1,14 @@
-package org.nuclos.client.statemodel;
+package org.nuclos.client.eventsupport;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.nuclos.common.NuclosEntity;
+import org.jfree.util.Log;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeRemote;
@@ -26,7 +23,7 @@ public class EventSupportRepository implements InitializingBean {
 	// Spring injection
 	private final Map<String, List<EventSupportVO>> mpEventSupportsByType = CollectionUtils.newHashMap();
 	private final Map<String, EventSupportVO> mpEventSupportsByClass = CollectionUtils.newHashMap();
-	
+	private final Map<Integer, List<EventSupportEventVO>> mpEventSupportsByEntity = CollectionUtils.newHashMap();
 	private final List<EventSupportVO> lstEventSupportTypes = new ArrayList<EventSupportVO>();
 	
 	
@@ -59,6 +56,7 @@ public class EventSupportRepository implements InitializingBean {
 		mpEventSupportsByType.clear();
 		lstEventSupportTypes.clear();
 		mpEventSupportsByClass.clear();
+		mpEventSupportsByEntity.clear();
 		
 		try {
 			// Cache all useable EventSupport ordered by type
@@ -86,64 +84,12 @@ public class EventSupportRepository implements InitializingBean {
 		}
 	}
 	
-	public List<SortedRuleVO> selectEventSupportById(List<Pair<String, Boolean>> eventsupportsWithRunAfterwards) {
-		List<String> classnames = new ArrayList<String>();
-		List<String> withRunAfterwards = new ArrayList<String>();
-		for (Pair<String, Boolean> rule : eventsupportsWithRunAfterwards) {
-			classnames.add(rule.x);
-			if (rule.y != null && rule.y)
-				withRunAfterwards.add(rule.x);
-		}
-		return selectEventSupportById(classnames, withRunAfterwards);
-	}
+	
 	
 	public List<EventSupportVO> selectEventSupportsById(String EventSupportType) {
 		return mpEventSupportsByType.get(EventSupportType);
 	}
-	
-	/**
-	 * @param filterID
-	 */
-	public List<SortedRuleVO> selectEventSupportById(Collection<String> filterID, Collection<String> rulesRunAfterwards) {
-		final List<SortedRuleVO> result = new LinkedList<SortedRuleVO>();
-
-		int iCount = 1;
-		for (Iterator<String> i = filterID.iterator(); i.hasNext(); iCount++) {
-			final String iId = i.next();
-			
-			for (List<EventSupportVO> stateModelRuleVO : mpEventSupportsByType.values()) {
-				for (EventSupportVO esvo : stateModelRuleVO) {					
-					if (esvo.getName() != null && iId.equals(esvo.getName())) {
-						SortedRuleVO sortedRuleVO = new SortedRuleVO(esvo);
-						result.add(sortedRuleVO);
-					}									
-				}
-			}			
-		}
-		return result;
-	}
-	
-	/**
-	 * @param collsortedrulevoFilter
-	 */
-	public List<SortedRuleVO> filterEventSupportByVO(Collection<SortedRuleVO> collsortedrulevoFilter) {
-		final List<SortedRuleVO> result = new LinkedList<SortedRuleVO>();
-
-		final Map<String, SortedRuleVO> filterMap = CollectionUtils.newHashMap();
-		for (SortedRuleVO sortedrulevo : collsortedrulevoFilter) {
-			filterMap.put(sortedrulevo.getName(), sortedrulevo);
-		}
-
-		for (List<EventSupportVO> stateModelRuleVO : mpEventSupportsByType.values()) {
-			for (EventSupportVO esvo : stateModelRuleVO) {
-				if (!filterMap.containsKey(esvo.getName())) {
-					result.add(new SortedRuleVO(esvo));
-				}				
-			}
-		}
-		return result;
-	}
-	
+		
 	public List<EventSupportVO> getEventSupportTypes()
 	{
 		return lstEventSupportTypes;
@@ -152,6 +98,11 @@ public class EventSupportRepository implements InitializingBean {
 	public List<EventSupportVO> getEventSupportsByType(String typename)
 	{
 		return mpEventSupportsByType.containsKey(typename) ? mpEventSupportsByType.get(typename) : new ArrayList<EventSupportVO>();
+	}
+	
+	public Map<String, List<EventSupportVO>> getEventSupportsByType()
+	{
+		return mpEventSupportsByType;
 	}
 	
 	public EventSupportVO getEventSupportByClassname(String classname)
@@ -180,8 +131,22 @@ public class EventSupportRepository implements InitializingBean {
 		return retVal;
 	}
 	
-	public Collection<EventSupportEventVO> getEventSupportsForEntity(String entityname, String eventType) throws CommonPermissionException
+	public Collection<EventSupportEventVO> getEventSupportsForEntity(Integer entityId)
 	{
-		return eventSupportFacadeRemote.getAllEventSupportsForEntity(entityname, eventType);
+		Collection<EventSupportEventVO> retVal = null;
+		if (mpEventSupportsByEntity.containsValue(entityId))
+		{
+			retVal = mpEventSupportsByEntity.get(entityId);
+		}
+		else
+		{
+			try {
+				retVal = eventSupportFacadeRemote.getAllEventSupportsForEntity(entityId);
+				mpEventSupportsByEntity.put(entityId, new ArrayList(retVal));				
+			} catch (CommonPermissionException e) { 
+				Log.error(e.getMessage(), e);
+			}
+		}
+		return retVal;
 	}
 }

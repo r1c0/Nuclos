@@ -66,9 +66,6 @@ public class ExplorerViewFactory {
 		if (treenode instanceof NucletTreeNode) {
 			result = new NucletExplorerView((NucletTreeNode) treenode);
 		}
-		else if (treenode instanceof EventSupportTreeNode || treenode instanceof EventSupportTargetTreeNode)	{
-			result = new EventSupportManagementExplorerView(treenode);
-		}
 		else {
 			result = new DefaultExplorerView(treenode);
 		}

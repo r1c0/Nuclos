@@ -5459,6 +5459,37 @@
     "locale": "de",
     "text": "Event mit EventSupport"
   },
+   {
+    "resourceID": " nuclos.entityfield.eventsupportevent.supportclass.label",
+    "locale": "i-default",
+    "text": "EventSupport class"
+  },
+  {
+    "resourceID": " nuclos.entityfield.eventsupportevent.supportclass.label",
+    "locale": "en",
+    "text": "EventSupport Class"
+  },
+  {
+    "resourceID": " nuclos.entityfield.eventsupportevent.supportclass.label",
+    "locale": "de",
+    "text": "EventSupport Klasse"
+  },
+  
+   {
+    "resourceID": " nuclos.entityfield.eventsupportevent.supportclasstype.label",
+    "locale": "i-default",
+    "text": "EventSupport Type"
+  },
+  {
+    "resourceID": " nuclos.entityfield.eventsupportevent.supportclasstype.label",
+    "locale": "en",
+    "text": "EventSupport Type"
+  },
+  {
+    "resourceID": " nuclos.entityfield.eventsupportevent.supportclasstype.label",
+    "locale": "de",
+    "text": "EventSupport Typ"
+  },
   {
     "resourceID": "nuclos.entityfield.ruletransition.order.label",
     "locale": "i-default",
@@ -7105,7 +7136,7 @@
     "text": "Specifies the class that is executed if the binded event happens"
   },
   {
-    "resourceID": "nuclos.entityfield.eventsupporte.eventsupportclass.description",
+    "resourceID": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description",
     "locale": "de",
     "text": "Spezifiziert welche Klasse ausgeführt werden soll, wenn ein bestimmter Event stattfindet"
   },
@@ -7123,6 +7154,36 @@
     "resourceID": "nuclos.entityfield.eventsupportevent.process.description",
     "locale": "de",
     "text": "Spezifiziert das Event einer verbundenen Entität, das zur Ausführung einer bestimmten Regel führt"
+  },
+   {
+    "resourceID": "nuclos.entityfield.eventsupportevent.supportclass.description",
+    "locale": "i-default",
+    "text": "Specifies the event of an entitiy that will trigger the execution of an eventsupport"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupportevent.supportclass.description",
+    "locale": "en",
+    "text": "Specifies the event of an entitiy that will trigger the execution of an eventsupport"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupportevent.supportclass.description",
+    "locale": "de",
+    "text": "Spezifiziert das Event einer verbundenen Entität, das zur Ausführung einer bestimmten Regel führt"
+  },
+   {
+    "resourceID": "nuclos.entityfield.eventsupportevent.supportclasstype.description",
+    "locale": "i-default",
+    "text": "Specifies the eventtype"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupportevent.supportclasstype.description",
+    "locale": "en",
+    "text": "Specifies the eventtype"
+  },
+  {
+    "resourceID": "nuclos.entityfield.eventsupportevent.supportclasstype.description",
+    "locale": "de",
+    "text": "Spezifiziert den Eventtyp"
   },
   {
     "resourceID": "R00012170",
@@ -22153,6 +22214,21 @@
     "resourceID": "EventSupportEntityPropertyModelColumn.3",
     "locale": "de",
     "text": "Aktion"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.4",
+    "locale": "i-default",
+    "text": "EventSupport"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.4",
+    "locale": "en",
+    "text": "EventSupport"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.4",
+    "locale": "de",
+    "text": "EventSupport"
   },
    {
     "resourceID": "EventSupportTableModelColumn.1",

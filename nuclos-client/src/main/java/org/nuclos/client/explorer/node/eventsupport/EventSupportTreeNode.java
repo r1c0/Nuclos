@@ -47,15 +47,12 @@ public class EventSupportTreeNode implements TreeNode {
 		this.bIsRoot = isRoot;
 		this.parentNode = parentNode;
 		this.controller = controller;
-		
-		if (this.esTargetType == null)
-			this.isLeaf = true;
 	}
 	
 	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type) {
 		this(controller, parentNode, id, name, label, description, type, false);
 	}
-
+	
 	@Override
 	public Object getId() {
 		return this.oId;
@@ -98,7 +95,12 @@ public class EventSupportTreeNode implements TreeNode {
 	
 	@Override
 	public Boolean hasSubNodes() {
-		return Boolean.valueOf(!this.isLeaf);
+		boolean retVal = false;
+		
+		if (this.lstSubNodes != null && !this.lstSubNodes.isEmpty())
+			retVal = true;
+		
+		return retVal;
 	}
 
 	@Override
@@ -108,8 +110,7 @@ public class EventSupportTreeNode implements TreeNode {
 
 	@Override
 	public void refresh() {
-		if (!isLeaf())
-			setLstSubNodes(getController().createSubNodesByType(this));
+		setLstSubNodes(getController().createSubNodesByType(this));
 	}
 
 	@Override
@@ -140,7 +141,7 @@ public class EventSupportTreeNode implements TreeNode {
 	}
 
 	public boolean isLeaf() {
-		return isLeaf;
+		return EventSupportTargetType.EVENTSUPPORT.equals(this.esTargetType);
 	}
 
 	public void setLeaf(boolean isLeaf) {

@@ -40,14 +40,11 @@ public class EventSupportExplorerNode extends ExplorerNode<EventSupportTreeNode>
 	
 	@Override
 	public boolean isLeaf() {
-		if (getTreeNode() instanceof EventSupportTreeNode)
-			return ((EventSupportTreeNode)getTreeNode()).isLeaf();
-		return super.isLeaf();
-	}
-	@Override
-	public Transferable createTransferable(JTree tree) {
-		final EventSupportTreeNode ruleNode = (EventSupportTreeNode) this.getTreeNode();
-		return new EventSupportTransferable(ruleNode);
+		boolean retVal = false;
+		
+		retVal = EventSupportTargetType.EVENTSUPPORT.equals(((EventSupportTreeNode)getTreeNode()).getTreeNodeType());
+		
+		return retVal;
 	}
 	
 	@Override
@@ -56,6 +53,11 @@ public class EventSupportExplorerNode extends ExplorerNode<EventSupportTreeNode>
 		return DnDConstants.ACTION_COPY_OR_MOVE;
 	}
 	
+	
+	@Override
+	public boolean getAllowsChildren() {
+		return isLeaf() ? false : super.getAllowsChildren();
+	}
 	
 	@Override
 	public Icon getIcon() {

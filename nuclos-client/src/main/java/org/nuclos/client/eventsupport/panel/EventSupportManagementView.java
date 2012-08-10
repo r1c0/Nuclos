@@ -24,6 +24,8 @@ public class EventSupportManagementView extends JPanel {
 	EventSupportEntityPropertiesTableModel targetEntityModel;
 	EventSupportStatePropertiesTableModel targetStateModel;
 	
+	EventSupportSourceViewElement sourceView;
+	
 	final JSplitPane splitpn;
 	
 	public EventSupportManagementView(EventSupportTreeNode pTreeEventSupports, EventSupportTargetTreeNode pTreeEventSupportTargets)
@@ -54,6 +56,11 @@ public class EventSupportManagementView extends JPanel {
 		splitpn.setDividerSize(5);
 		this.add(splitpn, BorderLayout.CENTER);
 		
+	}
+	
+	public EventSupportSourceViewElement getSourceViewPanel()
+	{
+		return (EventSupportSourceViewElement) splitpn.getTopComponent();
 	}
 	
 	public EventSupportTargetViewElement getTargetViewPanel()

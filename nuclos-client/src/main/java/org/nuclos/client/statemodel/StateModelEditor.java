@@ -58,6 +58,8 @@ import javax.swing.event.ListDataListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.eventsupport.EventSupportDelegate;
+import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.gef.AbstractShapeController;
 import org.nuclos.client.gef.DefaultShapeViewer;
 import org.nuclos.client.gef.Shape;
@@ -726,7 +728,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 						RuleRepository.getInstance().selectRulesById(((StateTransition) shape).getRuleIdsWithRunAfterwards());
 				
 				selectedRules.addAll(0,
-						EventSupportRepository.getInstance().selectEventSupportById(((StateTransition) shape).getEventSupportsWithRunAfterwards()));
+						EventSupportDelegate.getInstance().selectEventSupportById(((StateTransition) shape).getEventSupportsWithRunAfterwards()));
 				
 				pnlProperties.getTransitionRulePanel().getModel().setRules(selectedRules);
 				
@@ -934,7 +936,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			else
 			{
 				((StateTransition) shapeSelected).removeEventSupport(vo.getClassname());
-				pnlProperties.getTransitionRulePanel().getModel().setRules(EventSupportRepository.getInstance().selectEventSupportById(((StateTransition) shapeSelected).getEventSupportsWithRunAfterwards()));
+				pnlProperties.getTransitionRulePanel().getModel().setRules(EventSupportDelegate.getInstance().selectEventSupportById(((StateTransition) shapeSelected).getEventSupportsWithRunAfterwards()));
 				
 			}
 			pnlShapeViewer.getModel().fireModelChanged();
@@ -953,7 +955,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			else
 			{
 				((StateTransition) shapeSelected).addRule(vo.getClassname(), vo.isRunAfterwards());
-				pnlProperties.getTransitionRulePanel().getModel().setRules(EventSupportRepository.getInstance().selectEventSupportById(((StateTransition) shapeSelected).getEventSupportsWithRunAfterwards()));
+				pnlProperties.getTransitionRulePanel().getModel().setRules(EventSupportDelegate.getInstance().selectEventSupportById(((StateTransition) shapeSelected).getEventSupportsWithRunAfterwards()));
 			}
 			pnlShapeViewer.getModel().fireModelChanged();
 			pnlShapeViewer.repaint();

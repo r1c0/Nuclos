@@ -9,11 +9,12 @@ import org.nuclos.common2.SpringLocaleDelegate;
 
 public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	
+	static final String COL_EVENTSUPPORT = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.4","EventSupport");
 	static final String COL_ORDER = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.1","Reihenfolge");
 	static final String COL_STATUS = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.2","Status");
 	static final String COL_PROCESS = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.3","Aktion");
 	
-	static final String[] COLUMNS = new String[] {COL_ORDER, COL_STATUS, COL_PROCESS};
+	static final String[] COLUMNS = new String[] {COL_EVENTSUPPORT, COL_ORDER, COL_STATUS, COL_PROCESS};
 	
 	List<EventSupportEntityPropertiesTableEntry> entries = new ArrayList<EventSupportEntityPropertiesTableEntry>();
 	
@@ -31,9 +32,9 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	public String getColumnName(int column) {
 		return COLUMNS[column];
 	}
-	public void addEntry (Integer order, String status, String process)
+	public void addEntry (String eventsupport, Integer order, String status, String process)
 	{
-		entries.add(new EventSupportEntityPropertiesTableEntry(order, status, process));
+		entries.add(new EventSupportEntityPropertiesTableEntry(eventsupport, order, status, process));
 		fireTableRowsInserted(entries.size(), entries.size());
 	}
 	
@@ -45,12 +46,15 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 		
 		switch (columnIndex) {
 		case 0:
-			retVal = esepe.getOrder();
+			retVal = esepe.getEventSupport();
 			break;
 		case 1:
-			retVal = esepe.getStatus();
+			retVal = esepe.getOrder();
 			break;
 		case 2:
+			retVal = esepe.getStatus();
+			break;
+		case 3:
 			retVal = esepe.getProcess();
 			break;
 		default:
@@ -71,13 +75,15 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	
 	class EventSupportEntityPropertiesTableEntry {
 		
+		private String  sEventSupport;
 		private Integer iOrder;
 		private String  sStatus;
 		private String  sProcess;
 		
-		public EventSupportEntityPropertiesTableEntry(Integer iOrder,
+		public EventSupportEntityPropertiesTableEntry(String sEventSupport, Integer iOrder,
 				String sStatus, String sProcess) {
 			super();
+			this.sEventSupport = sEventSupport;
 			this.iOrder = iOrder;
 			this.sStatus = sStatus;
 			this.sProcess = sProcess;
@@ -100,6 +106,14 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 		}
 		public void setProcess(String sProcess) {
 			this.sProcess = sProcess;
+		}
+
+		public String getEventSupport() {
+			return sEventSupport;
+		}
+
+		public void setEventSupport(String sEventSupport) {
+			this.sEventSupport = sEventSupport;
 		}
 		
 	}

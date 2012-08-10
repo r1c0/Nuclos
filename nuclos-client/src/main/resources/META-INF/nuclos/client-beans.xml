@@ -204,7 +204,10 @@
 	<bean id="ruleRepository" class="org.nuclos.client.statemodel.RuleRepository" lazy-init="true">
 		<property name="ruleEngineFacadeRemote" ref="ruleEngineService"/>
 	</bean>
-	<bean id="eventSupportRepository" class="org.nuclos.client.statemodel.EventSupportRepository" lazy-init="true">
+	<bean id="eventSupportRepository" class="org.nuclos.client.eventsupport.EventSupportRepository" lazy-init="true">
+		<property name="eventSupportFacadeRemote" ref="eventSupportService"/>
+	</bean>
+	<bean id="eventSupportDelegate" class="org.nuclos.client.eventsupport.EventSupportDelegate" lazy-init="true">
 		<property name="eventSupportFacadeRemote" ref="eventSupportService"/>
 	</bean>
 	<bean id="searchFilterDelegate" class="org.nuclos.client.searchfilter.SearchFilterDelegate">

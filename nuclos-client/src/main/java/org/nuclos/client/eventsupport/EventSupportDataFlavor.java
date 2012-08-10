@@ -2,17 +2,26 @@ package org.nuclos.client.eventsupport;
 
 import java.awt.datatransfer.DataFlavor;
 
+import org.nuclos.common2.LangUtils;
+
 public class EventSupportDataFlavor extends DataFlavor {
 
+	public static final String dataFlavorPresentableName = "EventSupportDataFlavor";
+	
+	public EventSupportDataFlavor()
+	{
+		super(EventSupportTransferable.class, dataFlavorPresentableName);
+	}
+	
 	public boolean equals(DataFlavor o) {
 		
-		boolean retVal = false;
-		
-		if (o instanceof EventSupportDataFlavor)
-		{
-			retVal = super.equals((EventSupportDataFlavor) o);
+		final boolean result;
+		if (!super.equals(o)) {
+			result = false;
 		}
-		
-		return retVal;
+		else {
+			result = LangUtils.equals(this.getHumanPresentableName(), o.getHumanPresentableName());
+		}
+		return result;
 	}
 }

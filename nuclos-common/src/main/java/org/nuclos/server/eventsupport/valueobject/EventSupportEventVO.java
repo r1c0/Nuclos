@@ -6,35 +6,90 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 public class EventSupportEventVO extends NuclosValueObject
 {
-	private String  sEventSupportClass;
-	private String  sEntity;
+	// Foreing keys
+	private Integer iEntity;
 	private Integer iProcessId;
 	private Integer iStateId;
+	// Attributes
+	private String  sEventSupportClass;
+	private	String  sEventSupportType;
 	private Integer iOrder;
+	private String  sEntityName;
+	private String  sStateName;
+	private String  sProcessName;
 	
-	
-	public EventSupportEventVO(String sEventSupportClass, String sEntity,
-			Integer iProcessId, Integer iStateId, Integer iOrder) {
+	public EventSupportEventVO(String sEventSupportClass, String sEventSupportType, Integer iEntity,
+			Integer iProcessId, Integer iStateId, Integer iOrder,String pEntityName,String pStateName, String pProcessName) {
 		super();
 		this.sEventSupportClass = sEventSupportClass;
-		this.sEntity = sEntity;
+		this.sEventSupportType = sEventSupportType;
+		this.iEntity = iEntity;
 		this.iProcessId = iProcessId;
 		this.iStateId = iStateId;
 		this.iOrder = iOrder;
+		this.sProcessName = pProcessName;
+		this.sStateName = pStateName;
+		this.sEntityName = pEntityName;
 	}
 	
 	
+	
+	public String getEntityName() {
+		return sEntityName;
+	}
+
+
+
+	public void setEntityName(String sEntityName) {
+		this.sEntityName = sEntityName;
+	}
+
+
+
+	public String getStateName() {
+		return sStateName;
+	}
+
+
+
+	public void setStateName(String sStateName) {
+		this.sStateName = sStateName;
+	}
+
+
+
+	public String getProcessName() {
+		return sProcessName;
+	}
+
+
+
+	public void setProcessName(String sProcessName) {
+		this.sProcessName = sProcessName;
+	}
+
+
+
+	public String getEventSupportType() {
+		return sEventSupportType;
+	}
+
+
+	public void setEventSupportType(String sEventSupportType) {
+		this.sEventSupportType = sEventSupportType;
+	}
+
 	public String getEventSupportClass() {
 		return sEventSupportClass;
 	}
 	public void setEventSupportClass(String sEventSupportClass) {
 		this.sEventSupportClass = sEventSupportClass;
 	}
-	public String getEntity() {
-		return sEntity;
+	public Integer getEntity() {
+		return iEntity;
 	}
-	public void setEntity(String sEntity) {
-		this.sEntity = sEntity;
+	public void setEntity(Integer iEntity) {
+		this.iEntity = iEntity;
 	}
 	public Integer getProcessId() {
 		return iProcessId;
@@ -60,7 +115,8 @@ public class EventSupportEventVO extends NuclosValueObject
 	 */
 	@Override
 	public void validate() throws CommonValidationException {
-		if (StringUtils.isNullOrEmpty(getEntity())) {
+		
+		if (getEntity() == null || getEntity().intValue() == 0) {
 			throw new CommonValidationException("ruleengine.error.validation.rule.name");
 		}
 		if (StringUtils.isNullOrEmpty(this.getEventSupportClass())) {

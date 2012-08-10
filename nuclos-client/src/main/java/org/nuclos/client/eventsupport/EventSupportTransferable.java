@@ -5,15 +5,14 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
+import org.nuclos.client.explorer.node.EventSupportExplorerNode;
 
 public class EventSupportTransferable implements Transferable {
 
-	DataFlavor[] dataFlavs = new DataFlavor[] {new EventSupportDataFlavor(), DataFlavor.stringFlavor};
-	EventSupportTreeNode element;
-	String value;
+	DataFlavor[] dataFlavs = new DataFlavor[] {new EventSupportDataFlavor()};
+	EventSupportExplorerNode element;
 	
-	public EventSupportTransferable(EventSupportTreeNode curNodeElement)
+	public EventSupportTransferable(EventSupportExplorerNode curNodeElement)
 	{
 		this.element = curNodeElement;
 	}
@@ -49,10 +48,6 @@ public class EventSupportTransferable implements Transferable {
 			if (flavor instanceof EventSupportDataFlavor)
 			{
 				retVal = this.element;
-			}
-			else if(flavor.equals(DataFlavor.stringFlavor))
-			{
-				retVal = value;
 			}
 			else
 			{

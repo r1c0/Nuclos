@@ -16,14 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel.models;
 
-import groovyjarjarantlr.debug.Event;
-
 import java.rmi.RemoteException;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.client.statemodel.EventSupportRepository;
+import org.nuclos.client.eventsupport.EventSupportDelegate;
+import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.statemodel.RuleRepository;
 import org.nuclos.client.statemodel.SortedRuleVO;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -85,7 +84,7 @@ public class SelectRuleTableModel extends AbstractTableModel {
 
 	public void setExcludeRules(List<SortedRuleVO> lstExcludeRules) throws RemoteException {
 		this.lstRules = RuleRepository.getInstance().filterRulesByVO(lstExcludeRules);
-		this.lstRules.addAll(0,EventSupportRepository.getInstance().filterEventSupportByVO(lstExcludeRules));
+		this.lstRules.addAll(0,EventSupportDelegate.getInstance().filterEventSupportByVO(lstExcludeRules));
 	}
 
 	public List<SortedRuleVO> getRules() {
