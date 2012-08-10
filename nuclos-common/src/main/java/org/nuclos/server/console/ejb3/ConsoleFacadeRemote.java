@@ -65,5 +65,7 @@ public interface ConsoleFacadeRemote {
 	 * @throws CommonBusinessException
 	 */
 	void executeCommand(String sCommand) throws CommonBusinessException;
+	
+	String[] rebuildConstraints();
 
 }

@@ -17,6 +17,8 @@
 package org.nuclos.server.console.ejb3;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +30,7 @@ import org.nuclos.common.ConsoleConstants;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.autosync.SchemaValidator;
 import org.nuclos.server.common.AttributeCache;
@@ -41,10 +44,13 @@ import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.StateCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
+import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.impl.SchemaUtils;
 import org.nuclos.server.dblayer.statements.DbStructureChange;
+import org.nuclos.server.dblayer.statements.DbStructureChange.Type;
 import org.nuclos.server.dblayer.structure.DbArtifact;
+import org.nuclos.server.dblayer.structure.DbConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbForeignKeyConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 import org.nuclos.server.dblayer.structure.DbSimpleView;
@@ -263,5 +269,44 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 		else {
 			throw new CommonBusinessException("Unknown command: " + sCommand + "\n");
 		}
+	}
+
+	@Override
+	public String[] rebuildConstraints() {
+		DbAccess dbAccess = dataBaseHelper.getDbAccess();
+		List<String> result = new ArrayList<String>();
+		for (DbConstraint c : getConstraints()) {
+			String name = c.getConstraintName();
+			String details = c.toString();
+			try {
+				dbAccess.execute(new DbStructureChange(Type.DROP, c));
+				LOG.info(name + " successfully dropped.");
+				result.add(name + " successfully dropped.");
+			} catch (Exception ex) {
+				LOG.error(name + " not dropped! " + details, ex);
+				result.add(name + " not dropped! " + details + " (" + ex.getMessage() + ")");
+			}
+			try {
+				dbAccess.execute(new DbStructureChange(Type.CREATE, c));
+				LOG.info(name + " successfully created.");
+				result.add(name + " successfully created.");
+			} catch (Exception ex) {
+				LOG.error(name + " not created! " + details, ex);
+				result.add(name + " not created! " + details + " (" + ex.getMessage() + ")");
+			}
+		}
+		return result.toArray(new String[]{});
+	}
+	
+	private List<DbConstraint> getConstraints() {
+		DbAccess dbAccess = dataBaseHelper.getDbAccess();
+		EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance());
+		
+		List<DbConstraint> result = new ArrayList<DbConstraint>();
+		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
+			result.addAll(helper.getDbTable(eMeta).getTableArtifacts(DbForeignKeyConstraint.class));
+			result.addAll(helper.getDbTable(eMeta).getTableArtifacts(DbUniqueConstraint.class));
+		}
+		return result;
 	}
 }
