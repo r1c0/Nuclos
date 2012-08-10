@@ -86,7 +86,7 @@ public class GenericObjectDelegate {
 	public static GenericObjectDelegate getInstance() {
 		if (INSTANCE == null) {
 			// lazy support
-			SpringApplicationContextHolder.getBean(GenericObjectDelegate.class);			
+			INSTANCE = SpringApplicationContextHolder.getBean(GenericObjectDelegate.class);			
 		}
 		return INSTANCE;
 	}

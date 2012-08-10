@@ -40,7 +40,7 @@ public class CollectableEOEntityClientProvider extends CollectableEOEntityProvid
 	public static CollectableEOEntityProvider getInstance() {
 		if (INSTANCE == null) {
 			// lazy support
-			SpringApplicationContextHolder.getBean(CollectableEOEntityClientProvider.class);
+			INSTANCE = SpringApplicationContextHolder.getBean(CollectableEOEntityClientProvider.class);
 		}
 		return INSTANCE;
 	}
