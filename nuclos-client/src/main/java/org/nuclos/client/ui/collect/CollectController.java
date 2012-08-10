@@ -4567,15 +4567,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 			CollectController.this.ctlDetails.displayCurrentRecordNumberInDetailsPanelStatusBar();
 
-//			SwingUtilities.invokeLater(new Runnable() {
-//
-//				public void run() {
-//					// Workaround for ELISA-6851
-//					if (CollectController.this.getDetailsPanel() != null) {
-//						CollectController.this.getDetailsPanel().requestFocusInWindow();
-//					}
-//				}
-//			});
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					// @see NUCLOS-747
+					if (CollectController.this.getDetailsPanel() != null) {
+						CollectController.this.getDetailsPanel().requestFocusInWindow();
+					}
+				}
+			});
 
 		}
 

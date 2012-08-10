@@ -4991,7 +4991,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		UIUtils.clearJComponentKeymap(layoutroot.getRootComponent(), JSplitPane.class);
 		
 		if (collectstate.isDetailsMode()) {
-			getLayoutMLButtonsActionListener().setInputMapForParentPanel(layoutroot.getRootComponent());
+			getLayoutMLButtonsActionListener().setInputMapForParentPanel(getCollectPanel(), layoutroot.getRootComponent());
 		}
 	}
 

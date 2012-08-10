@@ -151,9 +151,11 @@ public class KeyBindingProvider {
 				((JComboBox)c).addAncestorListener(new AncestorListener() {
 					@Override
 					public void ancestorAdded(AncestorEvent event) {
-						clearInputMap(((JComponent)((JComboBox)c).getEditor().getEditorComponent()));
-						// better remove only the keybinding. but behavior is okay if we clear all here.
-						//removeActionFromComponent(keybinding, ((JComponent)((JComboBox)c).getEditor().getEditorComponent()));
+						if (keybinding.getKeystroke().equals(KeyStroke.getKeyStroke("ctrl pressed F1"))) {
+							clearInputMap(((JComponent)((JComboBox)c).getEditor().getEditorComponent()));
+							// better remove only the keybinding. but behavior is okay if we clear all here.
+							//removeActionFromComponent(keybinding, ((JComponent)((JComboBox)c).getEditor().getEditorComponent()));
+						}
 
 						((JComboBox)c).removeAncestorListener(this);
 					}
