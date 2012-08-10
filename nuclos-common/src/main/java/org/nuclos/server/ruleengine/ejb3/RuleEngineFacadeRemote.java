@@ -329,4 +329,13 @@ public interface RuleEngineFacadeRemote {
    public Collection<RuleVO> findRulesByUsageAndEvent(String sEventName, UsageCriteria usagecriteria);
 
 
+    /**
+     * Extracts all rules of a special type that are attached to to given nuclet
+     * 
+     * @param sEventName
+     * @param nucletId
+     * @return
+     */
+    public List<RuleVO> getByNucletEventsOrdered(String sEventName, Integer nucletId);
+	
 }

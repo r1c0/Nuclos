@@ -278,6 +278,18 @@ public class RuleDelegate {
    }
 
    /**
+    *  Method returns all Rules of the given eventtype, eg. user, delete, insert
+	 * @param sEventName
+	 * @return
+	 */
+	public List<RuleVO> getByEventOrdered(String sEventName) throws CommonPermissionException{
+	   List<RuleVO> retVal = null;
+	   
+	   retVal = ruleEngineFacadeRemote.getByEventOrdered(sEventName);
+		
+	   return retVal;
+   }
+   /**
     * Get all referenced entity names for a certain rule event.
     * @return collection of entity names
     * @throws CommonFatalException, CommonFatalException
@@ -438,5 +450,10 @@ public class RuleDelegate {
 			throw new NuclosFatalException(e);
 		}
 	}
+	
+	public List<RuleVO> getByNucletEventsOrdered(String sEventName, Integer nucletId) {
+		return ruleEngineFacadeRemote.getByNucletEventsOrdered(sEventName, nucletId);
+	}
+	
 
 }	// class RuleDelegate

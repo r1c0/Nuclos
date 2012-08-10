@@ -4,13 +4,13 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.eventsupport.model.EventSupportEntityPropertiesTableModel;
 import org.nuclos.client.eventsupport.model.EventSupportPropertiesTableModel;
 import org.nuclos.client.eventsupport.model.EventSupportStatePropertiesTableModel;
@@ -22,6 +22,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.common.NuclosEntity;
@@ -29,13 +30,13 @@ import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.nuclos.server.statemodel.valueobject.StateGraphVO;
+import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
@@ -47,6 +48,20 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 	
 	public EventSupportManagementController(MainFrameTabbedPane parent) {
 		super(parent);
+	}
+	
+	public static final Map<String, String> MAP_EVENTTYPES = new HashMap<String, String>();
+	
+	static {
+		MAP_EVENTTYPES.put("CustomSupport", "User");
+		MAP_EVENTTYPES.put("InsertSupport", "Insert");
+		MAP_EVENTTYPES.put("InsertFinalSupport", "Insert.after");
+		MAP_EVENTTYPES.put("UpdateSupport", "Update");
+		MAP_EVENTTYPES.put("UpdateFinalSupport", "Update.after");
+		MAP_EVENTTYPES.put("DeleteSupport", "Delete");
+		MAP_EVENTTYPES.put("DeleteFinalSupport", "DeleteAfter");
+		MAP_EVENTTYPES.put("GenerateSupport", "User");
+		MAP_EVENTTYPES.put("GenerateFinalSupport", "User");
 	}
 	
 	public static class NuclosESMRunnable implements Runnable {
@@ -223,12 +238,22 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 			switch (esNode.getTreeNodeType()) 
 			{
 				case ROOT:
-					Collection<MasterDataVO> masterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.NUCLET.getEntityName());
-					
+					// Default Node for all nuclos elements that are not attached to a nuclet
 					retVal.add(new EventSupportTreeNode(this, esNode, null, "<Default>", "<Default>", "Alle nicht zugewiesenen Elemente", EventSupportTargetType.NUCLET, false));
+					// Nuclet Nodes
+					Collection<MasterDataVO> masterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.NUCLET.getEntityName());
 					for (MasterDataVO msvo : masterData)
 					{
 						retVal.add(new EventSupportTreeNode(this, esNode, msvo.getId(), msvo.getField("package").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.NUCLET, false));
+					}
+					break;
+				case NUCLET:
+					// EventSupportTypes
+					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportTypes();
+					for (EventSupportVO s : eventSupportTypes)
+					{
+						EventSupportTreeNode eventSupportTreeNode = new EventSupportTreeNode(this, esNode, null, s.getClassname(), s.getName(), s.getDescription(), EventSupportTargetType.EVENTSUPPORT_TYPE, false);
+						retVal.add(eventSupportTreeNode);
 					}
 					break;
 				case EVENTSUPPORT_TYPE:
@@ -253,14 +278,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 							retVal.add(eventSupportTreeNode); 								
 						}
 					}	
-					break;
-				case NUCLET:
-					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportTypes();
-					for (EventSupportVO s : eventSupportTypes)
-					{
-						EventSupportTreeNode eventSupportTreeNode = new EventSupportTreeNode(this, esNode, null, s.getClassname(), s.getName(), s.getDescription(), EventSupportTargetType.EVENTSUPPORT_TYPE, false);
-						retVal.add(eventSupportTreeNode);
-					}
+					
 					break;
 				default:
 					break;
@@ -282,14 +300,23 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 			String sEventSupportClassname = sourceNode.getEntityName();
 			String sEventSupportClassType = sourceNode.getParentNode().getEntityName();
 			
+			int idx = 0;
+			Collection<EventSupportEventVO> eventSupportsForEntity = EventSupportDelegate.getInstance().getEventSupportsForEntity(((Long) targetNode.getId()).intValue());
+			for (EventSupportEventVO eseVO : eventSupportsForEntity) {
+				if (sourceNode.getParentNode().getEntityName().equals(eseVO.getEventSupportType()))
+						idx++;
+			}
+			
 			Integer entId = Integer.parseInt(targetNode.getId().toString());
 			EventSupportEventVO eseVO = 
 					new EventSupportEventVO(sEventSupportClassname,
 											sEventSupportClassType,
 											entId,
-											null, null, new Integer(1),
+											null, null, ++idx,
 											null, null, null);
-											
+						
+			
+			// attach eventsupport to entity
 			EventSupportEventVO savedESEntity = EventSupportDelegate.getInstance().create(eseVO);
 			
 			if (savedESEntity != null) {

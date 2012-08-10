@@ -18,6 +18,7 @@ package org.nuclos.server.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +32,13 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.database.SpringDataBaseHelper;
+import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -264,6 +267,60 @@ public class RuleCache implements RuleCacheMBean {
 		return mpRulesByEvent.get(sEventName);
 	}
 
+	public List<RuleVO> getByNucletEventsOrdered(String sEventName, Integer nucletId) {
+
+		List<RuleVO> retVal = new ArrayList<RuleVO>();
+		
+		LOG.debug("Initializing RuleCache for " + nucletId);
+		try {
+			
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQuery<DbTuple> query = builder.createTupleQuery();
+			DbFrom r = query.from("V_MD_RULE").alias("t1");
+			DbFrom t = r.join("V_MD_RULE_EVENT", JoinType.INNER).alias("t2").on("INTID", "INTID_T_MD_RULE", Integer.class);
+			query.multiselect(r.baseColumn("INTID", Integer.class),
+					r.baseColumn("INTID_T_MD_NUCLET", Integer.class), 
+					r.baseColumn("strdescription", String.class), 
+					r.baseColumn("strrule", String.class), 
+					r.baseColumn("datcreated", Date.class),
+					t.baseColumn("strevent", String.class),
+					t.baseColumn("strmasterdata", String.class),
+					r.baseColumn("blnactive", Boolean.class));
+			if (nucletId != null)
+			{
+				query.where(builder.and(
+						builder.equal(r.baseColumn("INTID_T_MD_NUCLET", Long.class), nucletId),
+						builder.equal(t.baseColumn("STREVENT", String.class), sEventName )));				
+			}
+			else
+			{
+				query.where(builder.equal(t.baseColumn("STREVENT", String.class), sEventName ));	
+			}
+			query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
+			
+			List<DbTuple> executeQuery = dataBaseHelper.getDbAccess().executeQuery(query);
+			for (DbTuple dbt : executeQuery)
+			{
+				Integer iRuleId = (Integer) dbt.get(0);
+				Integer iNucletId = (Integer) dbt.get(1);
+				String sDescription = (String) dbt.get(2);
+				String sRule = (String) dbt.get(3);
+				Date dCreation = (Date) dbt.get(4);
+				String sEvent = (String) dbt.get(5);
+				String masterdata = (String) dbt.get(6);
+				Boolean isActive = (Boolean) dbt.get(7);
+				
+				retVal.add(new RuleVO(iRuleId, iNucletId, 0, sRule, sDescription, null, isActive));
+			}
+			
+			LOG.debug("FINISHED initializing RuleCache for " + sEventName);
+		}
+		catch (Exception e) {
+			throw new NuclosFatalException(e);
+		}
+		return retVal;
+	}
+	
 	/**
 	 * get a collection of all rules
 	 * @return Collection<RuleVO> of all rules

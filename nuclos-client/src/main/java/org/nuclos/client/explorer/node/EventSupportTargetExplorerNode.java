@@ -38,9 +38,13 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 		
 	@Override
 	public boolean isLeaf() {
-		if (getTreeNode() instanceof EventSupportTargetTreeNode)
-			return ((EventSupportTargetTreeNode)getTreeNode()).isLeaf();
-		return super.isLeaf();
+		boolean retVal = false;
+		if (EventSupportTargetType.EVENTSUPPORT_TYPE.equals(((EventSupportTreeNode)getTreeNode()).getTreeNodeType()) || 
+			EventSupportTargetType.STATE_TRANSITION.equals(((EventSupportTreeNode)getTreeNode()).getTreeNodeType()) ||
+				((EventSupportTreeNode)getTreeNode()).getSubNodes().isEmpty())
+				retVal = true;
+			
+		return retVal;
 	}
 	
 	@Override
@@ -75,6 +79,11 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 		}
 
 		return result;
+	}
+	
+	@Override
+	public boolean getAllowsChildren() {
+		return isLeaf() ? false : super.getAllowsChildren();
 	}
 	
 	@Override

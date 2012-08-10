@@ -284,6 +284,17 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	}
 
 	/**
+	 * Extract all rules of an special type that are attached to a given nuclet
+	 * 
+	 * @param sEventName
+	 * @param nucletId
+	 * @return
+	 */
+	public List<RuleVO> getByNucletEventsOrdered(String sEventName, Integer nucletId) {
+		return RuleCache.getInstance().getByNucletEventsOrdered(sEventName, nucletId);
+	}
+	
+	/**
 	 * executes active rules in the given lstRules of business rules.
 	 * @param lstRules List<RuleEngineRuleLocal>
 	 * @param loccvoSourceObject source leased object as parameter for generation rules

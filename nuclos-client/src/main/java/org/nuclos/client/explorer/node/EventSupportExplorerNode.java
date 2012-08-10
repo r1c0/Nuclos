@@ -40,11 +40,7 @@ public class EventSupportExplorerNode extends ExplorerNode<EventSupportTreeNode>
 	
 	@Override
 	public boolean isLeaf() {
-		boolean retVal = false;
-		
-		retVal = EventSupportTargetType.EVENTSUPPORT.equals(((EventSupportTreeNode)getTreeNode()).getTreeNodeType());
-		
-		return retVal;
+		return ((EventSupportTreeNode)getTreeNode()).getSubNodes().isEmpty();
 	}
 	
 	@Override
@@ -73,6 +69,9 @@ public class EventSupportExplorerNode extends ExplorerNode<EventSupportTreeNode>
 		switch (treeNodeType) 
 		{
 		case EVENTSUPPORT:
+			result = Icons.getInstance().getIconRuleUsage16();
+			break;
+		case RULE:
 			result = Icons.getInstance().getIconRuleUsage16();
 			break;
 		case STATE_TRANSITION:

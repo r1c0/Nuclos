@@ -1,5 +1,6 @@
 package org.nuclos.client.eventsupport;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,6 +35,7 @@ public class EventSupportDelegate {
 	public final void setEventSupportFacadeRemote(EventSupportFacadeRemote eventSupportFacadeRemote) {
 		this.eventSupportFacadeRemote = eventSupportFacadeRemote;
 	}
+	
 	public List<SortedRuleVO> selectEventSupportById(List<Pair<String, Boolean>> eventsupportsWithRunAfterwards) {
 		List<String> classnames = new ArrayList<String>();
 		List<String> withRunAfterwards = new ArrayList<String>();
@@ -100,7 +102,7 @@ public class EventSupportDelegate {
 	public EventSupportEventVO create(EventSupportEventVO eseVOToInsert)
 	{
 		EventSupportEventVO retVal = null;
-		
+	
 		try {
 			retVal = eventSupportFacadeRemote.create(eseVOToInsert);
 			
@@ -109,4 +111,19 @@ public class EventSupportDelegate {
 		}
 		return retVal;
 	}
+	
+	public Collection<EventSupportEventVO> getEventSupportsForEntity(Integer entityId)
+	{
+		Collection<EventSupportEventVO> retVal = null;
+		
+		try {
+			retVal = EventSupportRepository.getInstance().getEventSupportsForEntity(entityId);
+			
+		} catch (RemoteException e) {
+			Log.error(e.getMessage(), e);
+		}
+		
+		return retVal;
+	}
+	
 }
