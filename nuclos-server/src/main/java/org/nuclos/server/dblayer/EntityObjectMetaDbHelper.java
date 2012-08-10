@@ -234,21 +234,24 @@ public class EntityObjectMetaDbHelper {
 		}
 
 		// View
-		if (!(entityMeta instanceof SystemEntityMetaDataVO)) {
-			String viewName = getViewName(entityMeta);
-			if (viewName != null) {
-	
-				DbObjectHelper dbObjectHelper = new DbObjectHelper(dbAccess);
-				if (!dbObjectHelper.hasUserdefinedEntityView(entityMeta)) {
-	
-					List<DbSimpleViewColumn> dbViewColumns = CollectionUtils.transform(dbColumns.values(), new Transformer<DbColumn, DbSimpleViewColumn>() {
-						@Override
-						public DbSimpleViewColumn transform(DbColumn c) { return new DbSimpleViewColumn(c.getColumnName()); }
-					});
-					dbViewColumns.addAll(dbExtraViewColumns);
-	
-					tableArtifacts.add(new DbSimpleView(dbTableName, generateDbName(viewName), dbViewColumns));
-				}
+		String viewName = getViewName(entityMeta);
+		if (viewName != null) {
+
+			boolean createView = false;
+			if (entityMeta instanceof SystemEntityMetaDataVO) {
+				createView = true;
+			} else if (!new DbObjectHelper(dbAccess).hasUserdefinedEntityView(entityMeta)) {
+				createView = true;
+			}
+			
+			if (createView) {
+				List<DbSimpleViewColumn> dbViewColumns = CollectionUtils.transform(dbColumns.values(), new Transformer<DbColumn, DbSimpleViewColumn>() {
+					@Override
+					public DbSimpleViewColumn transform(DbColumn c) { return new DbSimpleViewColumn(c.getColumnName()); }
+				});
+				dbViewColumns.addAll(dbExtraViewColumns);
+
+				tableArtifacts.add(new DbSimpleView(dbTableName, generateDbName(viewName), dbViewColumns));
 			}
 		}
 
