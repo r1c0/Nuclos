@@ -20,9 +20,17 @@
  */
 package org.nuclos.client.common;
 
-import javax.swing.*;
+import java.awt.Component;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
+import javax.swing.Action;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
  * This class is responsible for setting the functionkeys for the accelerators
@@ -129,6 +137,36 @@ public class KeyBindingProvider {
 		component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).remove(keybinding.getKeystroke());
 		component.getActionMap().remove(keybinding.getKey());
 	}
+	
+	public static void removeActionFromComponents(final KeyBinding keybinding, JComponent component) {
+		removeActionFromComponent(keybinding, component);
+
+		Component[] components = component.getComponents();
+		for (int i = 0; i < components.length; i++) {
+			final Component c = components[i];
+			if (c instanceof JComponent)
+				removeActionFromComponents(keybinding, ((JComponent)c));
+			if (c instanceof JComboBox) {
+				removeActionFromComponents(keybinding, ((JComponent)((JComboBox)c).getEditor().getEditorComponent()));
+				((JComboBox)c).addAncestorListener(new AncestorListener() {
+					@Override
+					public void ancestorAdded(AncestorEvent event) {
+						clearInputMap(((JComponent)((JComboBox)c).getEditor().getEditorComponent()));
+						// better remove only the keybinding. but behavior is okay if we clear all here.
+						//removeActionFromComponent(keybinding, ((JComponent)((JComboBox)c).getEditor().getEditorComponent()));
+
+						((JComboBox)c).removeAncestorListener(this);
+					}
+					@Override
+					public void ancestorMoved(AncestorEvent event) {
+					}
+					@Override
+					public void ancestorRemoved(AncestorEvent event) {
+					}
+				});
+			}
+		}
+	}
 
 	/**
 	 * Convenience method to clear the inputmap of a component.
@@ -141,5 +179,4 @@ public class KeyBindingProvider {
 		SwingUtilities.replaceUIInputMap(component, JComponent.WHEN_IN_FOCUSED_WINDOW, null);
 		SwingUtilities.replaceUIInputMap(component, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
 	}
-
 }
