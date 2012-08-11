@@ -45,6 +45,7 @@ import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 
 public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
@@ -90,8 +91,16 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 		return null;
 	}
 	
+	private Component componentAfter;
 	@Override
 	public Component getComponentAfter(Container aContainer, Component aComponent) {
+		// @see  	NUCLOS-1018 - prevent a stack overflow 
+		Component c =  _getComponentAfter(aContainer, aComponent);
+		componentAfter = null; // reset component after.
+		
+		return c;
+	}
+	public Component _getComponentAfter(Container aContainer, Component aComponent) {
 		if(aComponent instanceof JComponent) {
 			JComponent jComponent = (JComponent)aComponent;
 			if (UIUtils.findFirstParentJComponent(jComponent, SubFormTable.class) != null)
@@ -158,8 +167,18 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 		}
 		if(UIUtils.isEditable(comp))
 			return comp;
-		else
-			return getComponentAfter(aContainer, comp);
+		else {
+			// @see  	NUCLOS-1018 - we need an exit criteria to prevent a stack overflow 
+			if (LangUtils.equals(comp, componentAfter)) {
+				componentAfter = null;
+				return null;
+			}
+			else {
+				if (componentAfter == null)
+					componentAfter = comp;
+				return _getComponentAfter(aContainer, comp);
+			}			
+		}			
 	}
 	
 	private void getFocusableSubFormComponent(String value) {
@@ -215,8 +234,16 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 		return bt;
 	}
 
+	private Component componentBefore;
 	@Override
 	public Component getComponentBefore(Container aContainer, Component aComponent) {
+		// @see  	NUCLOS-1018 - prevent a stack overflow 
+		Component c =  _getComponentAfter(aContainer, aComponent);
+		componentBefore = null; // reset component before.
+		
+		return c;
+	}
+	public Component _getComponentBefore(Container aContainer, Component aComponent) {
 		boolean bOption = false;
 		if (aComponent.getParent() instanceof OptionGroup) {
 			Enumeration elements = ((OptionGroup)aComponent.getParent()).getButtonGroup().getElements();
@@ -253,8 +280,18 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 		Component comp = super.getComponentBefore(aContainer, aComponent);
 		if(UIUtils.isEditable(comp))
 			return comp;
-		else
-			return getComponentBefore(aContainer, comp);
+		else{
+			// @see  	NUCLOS-1018 - we need an exit criteria to prevent a stack overflow 
+			if (LangUtils.equals(comp, componentBefore)) {
+				componentBefore = null;
+				return null;
+			}
+			else {
+				if (componentBefore == null)
+					componentBefore = comp;
+				return _getComponentBefore(aContainer, comp);
+			}			
+		}	
 	}
 
 	@Override
