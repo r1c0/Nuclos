@@ -313,6 +313,14 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		});
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
 			@Override
+			public void detailsModeLeft(CollectStateEvent ev)
+					throws CommonBusinessException {
+				getLayoutMLButtonsActionListener().clearInputMapForParentPanel(getCollectPanel());
+				getLayoutMLButtonsActionListener().clearInputMapForParentPanel(getDetailsPanel().getLayoutRoot().getRootComponent());
+				
+				setupShortcutsForTabs(getTab());
+			}
+			@Override
 			public void detailsModeEntered(CollectStateEvent ev) {
 				int iDetailsMode = ev.getNewCollectState().getInnerState();
 				final boolean bViewingExistingRecord = (iDetailsMode == CollectState.DETAILSMODE_VIEW);
@@ -348,6 +356,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 				respectRights(getDetailsPanel().getEditView().getCollectableComponents(), collsubform, ev.getNewCollectState());
 
+				getLayoutMLButtonsActionListener().clearInputMapForParentPanel(getCollectPanel());
+				getLayoutMLButtonsActionListener().clearInputMapForParentPanel(getDetailsPanel().getLayoutRoot().getRootComponent());
+				
+				getLayoutMLButtonsActionListener().setInputMapForParentPanel(getCollectPanel(), getDetailsPanel().getLayoutRoot().getRootComponent());
+				
 				showCustomActions(iDetailsMode);
 			}
 		});
