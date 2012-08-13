@@ -2184,41 +2184,49 @@ public class MainController {
 		controller.runViewResults(ids);
 	}
 
-//	public void showDetails(String entity, List<Object> ids) throws CommonBusinessException {
-//		showDetails(entity, ids, false);
-//	}
-//
-//	public void showDetails(final String entity, final List<Object> ids, boolean newTab) throws CommonBusinessException {
-//		CollectController<?> ctl = null;
-//		
-//		boolean askAndWait = false;
-//		if (!newTab) {
-//			ctl = this.findCollectControllerDisplayingDetails(entity);
-//			if (ctl != null) {
-//				askAndWait = true;
-//				final CollectController<?> ctlFinal = ctl;
-//				ctl.askAndSaveIfNecessary(new ResultListener<Boolean>() {
-//					@Override
-//					public void done(Boolean result) {
-//						if (Boolean.TRUE.equals(result)) {
-//							CollectController<?> ctl2 = ctlFinal;
-//							if (ctl2 == null) {
-//								ctl2 = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
-//							}
-//							ctl2.runViewMultipleCollectablesWithIds(ids);
-//						}
-//					}
-//				});
-//			}
-//		}
-//		
-//		if (!askAndWait) {
-//			if (ctl == null) {
-//				ctl = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
-//			}
-//			ctl.runViewMultipleCollectablesWithIds(ids);
-//		}
-//	}
+	public void showDetails(String entity, List<Object> ids) {
+		showDetails(entity, ids, false);
+	}
+
+	public void showDetails(final String entity, final List<Object> ids, boolean newTab) {
+		CollectController<?> ctl = null;
+		
+		boolean askAndWait = false;
+		try {
+			if (!newTab) {
+				ctl = this.findCollectControllerDisplayingDetails(entity);
+				if (ctl != null) {
+					askAndWait = true;
+					final CollectController<?> ctlFinal = ctl;
+					ctl.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {
+							if (Boolean.TRUE.equals(result)) {
+								CollectController<?> ctl2 = ctlFinal;
+								try {
+									if (ctl2 == null) {
+										ctl2 = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+									}
+									ctl2.runViewMultipleCollectablesWithIds(ids);
+								} catch (Exception ex) {
+									Errors.getInstance().showExceptionDialog(getFrame(), ex);
+								}
+							}
+						}
+					});
+				}
+			}
+			
+			if (!askAndWait) {
+				if (ctl == null) {
+					ctl = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+				}
+				ctl.runViewMultipleCollectablesWithIds(ids);
+			}
+		} catch (Exception ex) {
+			Errors.getInstance().showExceptionDialog(getFrame(), ex);
+		}
+	}
 
 	/**
 	 * Open a new embedded (not in separate tab) dialog to create a new collectable.
