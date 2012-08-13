@@ -76,7 +76,7 @@ public interface ReportFacadeLocal {
 		throws CommonFinderException, NuclosReportException,
 		CommonPermissionException;
 
-	public NuclosReportRemotePrintService lookupDefaultPrintService();
+	public NuclosReportRemotePrintService lookupDefaultPrintService() throws NuclosReportException;
 
 	public NuclosReportRemotePrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException;
 

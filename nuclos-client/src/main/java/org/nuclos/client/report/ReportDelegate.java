@@ -253,7 +253,7 @@ public class ReportDelegate {
 		}
 	}
 	
-	public PrintService lookupDefaultPrintService() {
+	public PrintService lookupDefaultPrintService() throws NuclosReportException {
 	 	return reportFacadeRemote.lookupDefaultPrintService();
 	}
 	

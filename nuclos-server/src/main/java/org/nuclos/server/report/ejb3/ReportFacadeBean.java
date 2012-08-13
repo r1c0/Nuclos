@@ -733,8 +733,9 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 		return sb.toString();
 	}
 
-	public NuclosReportRemotePrintService lookupDefaultPrintService() {
+	public NuclosReportRemotePrintService lookupDefaultPrintService() throws NuclosReportException {
 		PrintService ps = PrintServiceLookup.lookupDefaultPrintService();
+		if (ps == null) throw new NuclosReportException("Es ist kein passender Default Print-Service installiert."); // @todo
 		return new NuclosReportRemotePrintService(ps);
 	}
 
