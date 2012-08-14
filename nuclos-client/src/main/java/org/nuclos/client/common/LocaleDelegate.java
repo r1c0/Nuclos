@@ -386,7 +386,7 @@ public class LocaleDelegate extends AbstractLocalUserCache implements SpringLoca
 			return key;
 		}
 		if (!rb.containsKey(key)) {
-			if (DATE != null && DATE.before(getLastChange())) {
+			if (DATE != null && getLastChange() != null && DATE.before(getLastChange())) {
 				flush();
 			}
 		}

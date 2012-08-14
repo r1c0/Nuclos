@@ -23,6 +23,15 @@ public class EventSupportTransitionVO extends NuclosValueObject
 		this.bRunAfterwards = bRunAfterwards;
 	}
 
+	public EventSupportTransitionVO(String sEventSupportClass,
+			Integer iTransitionId, Integer iOrder, Boolean bRunAfterwards) {
+		this.sEventSupportClass = sEventSupportClass;
+		this.iTransitionId = iTransitionId;
+		this.iOrder = iOrder;
+		this.bRunAfterwards = bRunAfterwards;
+	}
+
+	
 
 	@Override
 	public String toString() {

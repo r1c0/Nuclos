@@ -6,6 +6,9 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.ProcessVO;
+import org.nuclos.server.statemodel.valueobject.StateVO;
 
 public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	
@@ -14,15 +17,38 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	static final String COL_STATUS = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.2","Status");
 	static final String COL_PROCESS = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.3","Aktion");
 	
-	static final String[] COLUMNS = new String[] {COL_EVENTSUPPORT, COL_ORDER, COL_STATUS, COL_PROCESS};
+	static final String[] COLUMNS = new String[] {COL_ORDER, COL_EVENTSUPPORT, COL_STATUS, COL_PROCESS};
 	
-	List<EventSupportEntityPropertiesTableEntry> entries = new ArrayList<EventSupportEntityPropertiesTableEntry>();
+	final List<StateVO> status = new ArrayList<StateVO> ();
+	final List<ProcessVO> process = new ArrayList<ProcessVO> ();
+	
+	List<EventSupportEventVO> entries = new ArrayList<EventSupportEventVO>();
 	
 	@Override
 	public int getRowCount() {
 		return entries.size();
+	
 	}
-
+	
+	public EventSupportEventVO getEntryByRowIndex(int id) {
+		EventSupportEventVO retVal = null;
+		if (id < entries.size())
+			retVal = entries.get(id);
+		
+		return retVal;
+	}
+	
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if (columnIndex == 2 || columnIndex == 3)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	@Override
 	public int getColumnCount() {
 		return COLUMNS.length;
@@ -32,30 +58,61 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	public String getColumnName(int column) {
 		return COLUMNS[column];
 	}
-	public void addEntry (String eventsupport, Integer order, String status, String process)
+	public void addEntry (EventSupportEventVO eseVO)
 	{
-		entries.add(new EventSupportEntityPropertiesTableEntry(eventsupport, order, status, process));
+		entries.add(eseVO);
 		fireTableRowsInserted(entries.size(), entries.size());
 	}
+	
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		if (aValue != null) 
+		{
+			 String value = (String) aValue;
+			 if (columnIndex == 2)
+			 {
+				 for (StateVO svo : status)
+				 {
+					 if (svo.getDescription().equals(value))
+					 {
+						 entries.get(rowIndex).setStateId(svo.getId());
+						 entries.get(rowIndex).setStateName(svo.getDescription());
+						 break;
+					 }
+				 }				 
+			 }			
+			 else if (columnIndex == 3)
+			 {
+				for (ProcessVO pvo : process) {
+					if (pvo.getDescription().equals(value)) {
+						 entries.get(rowIndex).setProcessId(pvo.getId());
+						 entries.get(rowIndex).setProcessName(pvo.getDescription());
+						 break;
+					}
+				}
+		 	 }		
+		}
+    }
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object retVal = null;
-		
-		EventSupportEntityPropertiesTableEntry esepe = entries.get(rowIndex);
+	
+		EventSupportEventVO esepe = entries.get(rowIndex);
 		
 		switch (columnIndex) {
 		case 0:
-			retVal = esepe.getEventSupport();
-			break;
-		case 1:
 			retVal = esepe.getOrder();
 			break;
+		case 1:
+			retVal = esepe.getEventSupportClass();
+			break;
 		case 2:
-			retVal = esepe.getStatus();
+			if ( esepe.getStateName() != null)
+				retVal = esepe.getStateName();
 			break;
 		case 3:
-			retVal = esepe.getProcess();
+			if ( esepe.getProcessName() != null)
+				retVal = esepe.getProcessName();
 			break;
 		default:
 			break;
@@ -73,48 +130,39 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 		}
 	}
 	
-	class EventSupportEntityPropertiesTableEntry {
-		
-		private String  sEventSupport;
-		private Integer iOrder;
-		private String  sStatus;
-		private String  sProcess;
-		
-		public EventSupportEntityPropertiesTableEntry(String sEventSupport, Integer iOrder,
-				String sStatus, String sProcess) {
-			super();
-			this.sEventSupport = sEventSupport;
-			this.iOrder = iOrder;
-			this.sStatus = sStatus;
-			this.sProcess = sProcess;
+	public String[] getStatusAsArray() {
+		String[] vals = new String[status.size()];
+		int  idx = 0;
+		for (StateVO svo : status) {
+			vals[idx++] = svo.getDescription();
 		}
-		
-		public Integer getOrder() {
-			return iOrder;
-		}
-		public void setOrder(Integer iOrder) {
-			this.iOrder = iOrder;
-		}
-		public String getStatus() {
-			return sStatus;
-		}
-		public void setStatus(String sStatus) {
-			this.sStatus = sStatus;
-		}
-		public String getProcess() {
-			return sProcess;
-		}
-		public void setProcess(String sProcess) {
-			this.sProcess = sProcess;
-		}
+		return vals;
+	}
+	
+	public List<StateVO> getStatus()
+	{
+		return this.status;
+	}
 
-		public String getEventSupport() {
-			return sEventSupport;
+	public List<ProcessVO> getProcess()
+	{
+		return this.process;
+	}
+	
+	public String[] getProcessAsArray() {
+		String[] vals = new String[process.size()];
+		int  idx = 0;
+		for (ProcessVO svo : process) {
+			vals[idx++] = svo.getDescription();
 		}
+		return vals;
+	}
+	
+	public void addStatus(StateVO newStatus) {
+		status.add(newStatus);
+	}
 
-		public void setEventSupport(String sEventSupport) {
-			this.sEventSupport = sEventSupport;
-		}
-		
+	public void addProcess(ProcessVO newProcess) {
+		process.add(newProcess);
 	}
 }

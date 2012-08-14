@@ -13,27 +13,31 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.border.Border;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.client.explorer.EventSupportManagementExplorerView;
+import org.nuclos.client.explorer.EventSupportExplorerView;
+import org.nuclos.client.explorer.EventSupportTargetExplorerView;
 import org.nuclos.client.explorer.ExplorerView;
 import org.nuclos.client.explorer.ExplorerViewFactory;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
-public class EventSupportSourceViewElement extends JPanel {
+public class EventSupportSourceView extends JPanel {
 	
 	private TreeNode treenode;
 	private AbstractTableModel model;
-	EventSupportManagementExplorerView newExplorerView;
+	private EventSupportExplorerView newExplorerView;
+	private JTable propTable;
 	
-	public EventSupportSourceViewElement(EventSupportManagementView view, Border b)
+	public EventSupportSourceView(EventSupportView view, Border b)
 	{
 		super(new BorderLayout());
 		
 		this.treenode = view.getTreeEventSupports();
 		this.model = view.getPropertyModel();
-
-		newExplorerView = new EventSupportManagementExplorerView(this.treenode, true);
+		
+		newExplorerView = new EventSupportExplorerView(this.treenode, view.getActionsMap());
 		
 		final JSplitPane splitpn = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
@@ -50,11 +54,19 @@ public class EventSupportSourceViewElement extends JPanel {
 		
 	}
 	
+	public ExplorerView getExplorerView() {
+		return this.newExplorerView;
+	}
+	
 	public JTree getTree()
 	{
 		return this.newExplorerView.getJTree();
 	}
 	
+	public JTable getPropertyTable(){
+		return this.propTable;
+	}
+
 	protected JPanel createPropertiesPanel(Border b) {
 		
 		JPanel pnlPropertiers = new JPanel();
@@ -65,8 +77,8 @@ public class EventSupportSourceViewElement extends JPanel {
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
-						
-		JTable propTable = new JTable(model);
+	
+		propTable = new JTable(model);
 					
 		propTable.setFillsViewportHeight(true);
 		propTable.setRowSelectionAllowed(false);

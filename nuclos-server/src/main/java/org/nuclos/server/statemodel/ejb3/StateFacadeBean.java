@@ -1076,6 +1076,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a StateTransitionVO for the given transitionId
 	 */
+	@Deprecated
     public StateTransitionVO findStateTransitionById(Integer transitionId)
 	{
 		CollectableComparison cond = SearchConditionUtils.newMDComparison(

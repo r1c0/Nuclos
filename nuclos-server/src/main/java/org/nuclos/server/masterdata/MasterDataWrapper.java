@@ -46,6 +46,7 @@ import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
+import org.nuclos.server.eventsupport.valueobject.ProcessVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorUsageVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectRelationVO;
@@ -144,6 +145,37 @@ public class MasterDataWrapper {
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
+	public static ProcessVO getProcessVO(MasterDataVO mdVO) {
+		
+		// Foreiggn Keys
+		Integer pvoNucletId = mdVO.getField("nucletId") != null ? Integer.parseInt(mdVO.getField("nucletId").toString()) : null;
+		Integer pvoModuleId = mdVO.getField("moduleId") != null ? Integer.parseInt(mdVO.getField("moduleId").toString()) : null;
+		
+		// Dates
+		Date pvoDateValidFrom = mdVO.getField("validFrom") != null ? new Date( ((java.sql.Date)mdVO.getField("validFrom")).getTime() ) : null;
+		Date pvoDateValidUntil = mdVO.getField("validUntil") != null ? new Date( ((java.sql.Date)mdVO.getField("validUntil")).getTime() ) : null;
+		
+		String sDescription =  	mdVO.getField("description") != null ? mdVO.getField("description").toString(): null;
+		String sName =  	mdVO.getField("name") != null ? mdVO.getField("name").toString(): null;
+		
+		ProcessVO pvo = new ProcessVO(new NuclosValueObject(mdVO.getIntId(), mdVO.getCreatedAt(), mdVO.getCreatedBy(), mdVO.getChangedAt(), mdVO.getChangedBy(), mdVO.getVersion()),
+				pvoNucletId, pvoModuleId, pvoDateValidUntil, pvoDateValidFrom,sDescription,sName);
+		
+		return pvo;
+	}
+	
+	public static EventSupportTransitionVO getEventSupportTransitionVO(MasterDataVO mdVO) {
+		
+		Integer iTransId = mdVO.getField("transitionId") != null ? Integer.parseInt(mdVO.getField("transitionId").toString()) : null;;
+		String  sSupportClass = mdVO.getField("eventsupportclass").toString();
+		Integer iOrder = Integer.parseInt(mdVO.getField("order").toString());
+		Boolean bRunAfterwards = 
+				mdVO.getField("runafterwards") != null ? Boolean.parseBoolean(mdVO.getField("runafterwards").toString()) : null;
+		
+		return new EventSupportTransitionVO(new NuclosValueObject(mdVO.getIntId(), mdVO.getCreatedAt(), mdVO.getCreatedBy(), mdVO.getChangedAt(), mdVO.getChangedBy(), mdVO.getVersion()),
+				sSupportClass, iTransId, iOrder, bRunAfterwards);
+	}
+	
 	public static EventSupportEventVO getEventSupportEventVO(MasterDataVO mdVO) {
 
 		// Mandatory fields that cannot be null
@@ -159,7 +191,8 @@ public class MasterDataWrapper {
 		String  eseProcessName = mdVO.getField("process") != null ? mdVO.getField("process").toString() : null;
 		String  eseStateName = mdVO.getField("state") != null ? mdVO.getField("state").toString() : null;
 		
-		EventSupportEventVO esevo = new EventSupportEventVO(eseSupClass,eseSupType,eseEntity,eseProcess,eseState,eseOrder,eseEntityName,eseProcessName,eseStateName);
+		EventSupportEventVO esevo = new EventSupportEventVO(new NuclosValueObject(mdVO.getIntId(), mdVO.getCreatedAt(), mdVO.getCreatedBy(), mdVO.getChangedAt(), mdVO.getChangedBy(), mdVO.getVersion()),
+												eseSupClass,eseSupType,eseEntity,eseProcess,eseState,eseOrder,eseEntityName,eseProcessName,eseStateName);
 		
 		return esevo;
 	}

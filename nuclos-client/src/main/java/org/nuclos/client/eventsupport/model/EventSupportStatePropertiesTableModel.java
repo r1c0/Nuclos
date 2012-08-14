@@ -6,23 +6,22 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 
 public class EventSupportStatePropertiesTableModel extends AbstractTableModel {
 
-	public static final String COL_SOURCE_LITERAL = SpringLocaleDelegate.getInstance().getMessage("EventSupportStatePropertyModelColumn.1","Literal");
-	public static final String COL_SOURCE_STATE = SpringLocaleDelegate.getInstance().getMessage("EventSupportStatePropertyModelColumn.2","Literal");
-	public static final String COL_DEST_LITERAL = SpringLocaleDelegate.getInstance().getMessage("EventSupportStatePropertyModelColumn.3","Literal");
-	public static final String COL_DEST_STATE = SpringLocaleDelegate.getInstance().getMessage("EventSupportStatePropertyModelColumn.4","Literal");
+	static final String COL_EVENTSUPPORT = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.4","EventSupport");
+	static final String COL_ORDER = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.1","Reihenfolge");
 	
-	final static String[] COLUMNS = new String[] {COL_SOURCE_LITERAL, COL_SOURCE_STATE, COL_DEST_LITERAL, COL_DEST_STATE};
+	static final String[] COLUMNS = new String[] {COL_ORDER, COL_EVENTSUPPORT};
 	
-	final List<EventSupportStatePropertiesTableEntry> entries = new ArrayList<EventSupportStatePropertiesTableEntry>();
+	final List<EventSupportTransitionVO> entries = new ArrayList<EventSupportTransitionVO>();
 	
 			
-	public void addEntry(Integer litSource, String nameSource, Integer litTarget, String nameTarget)
+	public void addEntry(EventSupportTransitionVO eseVO)
 	{
-		entries.add(new EventSupportStatePropertiesTableEntry(litSource,nameSource,litTarget, nameTarget));
-		
+		entries.add(eseVO);
 		fireTableRowsInserted(entries.size(), entries.size());
 	}
 	
@@ -53,68 +52,18 @@ public class EventSupportStatePropertiesTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object retVal = null;
-		EventSupportStatePropertiesTableEntry eventSupportStatePropertiesTableEntry = entries.get(rowIndex);
+		EventSupportTransitionVO eseVO = entries.get(rowIndex);
 		
 		switch (columnIndex) {
 		case 0:
-			retVal = eventSupportStatePropertiesTableEntry.getLitSource();
+			retVal = eseVO.getOrder();
 			break;
 		case 1:
-			retVal = eventSupportStatePropertiesTableEntry.getStateSource();
-			break;
-		case 2:
-			retVal = eventSupportStatePropertiesTableEntry.getLitDest();
-			break;
-		case 3:
-			retVal = eventSupportStatePropertiesTableEntry.getStateDest();
+			retVal = eseVO.getEventSupportClass();
 			break;
 		default:
 			break;
 		}
 		return retVal;
-	}
-
-	class EventSupportStatePropertiesTableEntry
-	{
-		Integer iLitSource;
-		String  sStateSource;
-		Integer iLitDest;
-		String  sStateDest;
-		
-		public EventSupportStatePropertiesTableEntry(Integer iLitSource,
-				String sStateSource, Integer iLitDest, String sStateDest) {
-			super();
-			this.iLitSource = iLitSource;
-			this.sStateSource = sStateSource;
-			this.iLitDest = iLitDest;
-			this.sStateDest = sStateDest;
-		}
-		
-		public Integer getLitSource() {
-			return iLitSource;
-		}
-		public void setLitSource(Integer iLitSource) {
-			this.iLitSource = iLitSource;
-		}
-		public String getStateSource() {
-			return sStateSource;
-		}
-		public void setStateSource(String sStateSource) {
-			this.sStateSource = sStateSource;
-		}
-		public Integer getLitDest() {
-			return iLitDest;
-		}
-		public void setLitDest(Integer iLitDest) {
-			this.iLitDest = iLitDest;
-		}
-		public String getStateDest() {
-			return sStateDest;
-		}
-		public void setStateDest(String sStateDest) {
-			this.sStateDest = sStateDest;
-		}
-		
-		
 	}
 }

@@ -22,6 +22,7 @@ import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.EventSupportExplorerNode;
 import org.nuclos.client.explorer.node.EventSupportTargetExplorerNode;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 
 public class EventSupportDropListener implements DropTargetListener {
 
@@ -119,19 +120,27 @@ public class EventSupportDropListener implements DropTargetListener {
 			// Get dragged Node
 			EventSupportExplorerNode esenSource = (EventSupportExplorerNode) 
 					dtde.getTransferable().getTransferData(new EventSupportDataFlavor());
-			// and attach it to the target entity
-			EventSupportEventVO addedEseVO = esenSource.getTreeNode().getController().addEventSupportToEntity(esenSource.getTreeNode(), esenTarget.getTreeNode());
 			
-			success = addedEseVO != null;
-			
+			if (esenTarget.getTreeNode().getTreeNodeType().equals(EventSupportTargetType.ENTITY)) {
+				// and attach it to the target entity
+				EventSupportEventVO addedEseVO = esenSource.getTreeNode().getController().addEventSupportToEntity(esenSource.getTreeNode(), esenTarget.getTreeNode());				
+				success = addedEseVO != null;
+			}
+			else if(esenTarget.getTreeNode().getTreeNodeType().equals(EventSupportTargetType.STATE_TRANSITION)) {
+				// and attach it to the selected statetransition
+				EventSupportTransitionVO addedEstVO = esenSource.getTreeNode().getController().addEventSupportToStateTransition(esenSource.getTreeNode(), esenTarget.getTreeNode());
+				success = addedEstVO != null;
+			}
+						
 			if (success)
 			{
 				EventSupportRepository.getInstance().updateEventSupports();
-			
+				
 				EventSupportTargetTreeNode treeNode = (EventSupportTargetTreeNode) esenTarget.getTreeNode();
 				treeNode.setLstSubNodes(treeNode.getController().createTargetSubNodesByType(treeNode));
 				esenTarget.refresh((JTree) targetNode.getComponent(), true);
 			}
+			
 			
 			dtde.dropComplete(success);
 		

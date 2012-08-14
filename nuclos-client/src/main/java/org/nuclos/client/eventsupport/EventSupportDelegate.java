@@ -12,9 +12,15 @@ import org.nuclos.client.statemodel.SortedRuleVO;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common2.exception.CommonCreateException;
+import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeRemote;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.eventsupport.valueobject.ProcessVO;
+import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 public class EventSupportDelegate {
 
@@ -99,12 +105,69 @@ public class EventSupportDelegate {
 		return result;
 	}
 	
-	public EventSupportEventVO create(EventSupportEventVO eseVOToInsert)
+	public EventSupportTransitionVO createEventSupportTransition(EventSupportTransitionVO eseVOToInsert) {
+		EventSupportTransitionVO retVal = null;
+		
+		try {
+			retVal = eventSupportFacadeRemote.createEventSupportTransition(eseVOToInsert);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return retVal;
+	}
+	
+	public EventSupportEventVO createEventSupportEvent(EventSupportEventVO eseVOToInsert) throws NuclosBusinessRuleException, CommonPermissionException, CommonValidationException, CommonCreateException
 	{
 		EventSupportEventVO retVal = null;
 	
+		retVal = eventSupportFacadeRemote.createEventSupportEvent(eseVOToInsert);
+	
+		return retVal;
+	}
+	
+	public void deleteEventSupportTransition(EventSupportTransitionVO eseVOToUpdate) {
+		
 		try {
-			retVal = eventSupportFacadeRemote.create(eseVOToInsert);
+			eventSupportFacadeRemote.deleteEventSupportTransition(eseVOToUpdate);
+			EventSupportRepository.getInstance().updateEventSupports();
+			
+		} catch (Exception e) {
+			Log.error(e.getMessage(), e);
+		}
+		
+	}
+	
+	public void deleteEventSupportEvent(EventSupportEventVO eseVOToUpdate) {
+		
+		try {
+			eventSupportFacadeRemote.deleteEventSupportEvent(eseVOToUpdate);
+			EventSupportRepository.getInstance().updateEventSupports();
+			
+		} catch (Exception e) {
+			Log.error(e.getMessage(), e);
+		}
+		
+	}
+
+	public EventSupportEventVO modifyEventSupportEvent(EventSupportEventVO eseVOToUpdate) {
+		EventSupportEventVO retVal = null;
+		
+		try {
+			retVal = eventSupportFacadeRemote.modifyEventSupportEvent(eseVOToUpdate);
+			EventSupportRepository.getInstance().updateEventSupports();
+			
+		} catch (Exception e) {
+			Log.error(e.getMessage(), e);
+		}
+		return retVal;
+	}
+	
+	public EventSupportTransitionVO modifyEventSupportTransition(EventSupportTransitionVO eseVOToUpdate) {
+		EventSupportTransitionVO retVal = null;
+		
+		try {
+			retVal = eventSupportFacadeRemote.modifyEventSupportTransition(eseVOToUpdate);
+			EventSupportRepository.getInstance().updateEventSupports();
 			
 		} catch (Exception e) {
 			Log.error(e.getMessage(), e);
@@ -126,4 +189,19 @@ public class EventSupportDelegate {
 		return retVal;
 	}
 	
+	public Collection<ProcessVO> getProcessesByModuleId(Integer entityId)
+	{
+		Collection<ProcessVO> retVal = null;
+		
+		try {
+			retVal = EventSupportRepository.getInstance().getProcessesByModuleId(entityId);
+			
+		} catch (RemoteException e) {
+			Log.error(e.getMessage(), e);
+		}
+		
+		return retVal;
+	}
+	
+
 }

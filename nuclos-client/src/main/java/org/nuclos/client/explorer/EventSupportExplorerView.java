@@ -12,6 +12,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -23,6 +24,7 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 
+import org.nuclos.client.eventsupport.EventSupportManagementController.ACTIONS;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportDragListener;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportDropListener;
 import org.nuclos.client.explorer.ui.ExplorerNodeRenderer;
@@ -36,14 +38,14 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
-public class EventSupportManagementExplorerView extends JPanel implements ExplorerView 
+public class EventSupportExplorerView extends JPanel implements ExplorerView 
 {
 	public static final int FADE = 2;
 	private final JToolBar toolBar = UIUtils.createNonFloatableToolBar();
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTree tree;
-	private List<JComponent> additionalToolBarContents;
-
+	Map<ACTIONS, AbstractAction> actions;
+	
 	private final JPanel content = new JPanel(new BorderLayout()) {
 
 		@Override
@@ -56,12 +58,14 @@ public class EventSupportManagementExplorerView extends JPanel implements Explor
 		}
 	};
 	
-	public EventSupportManagementExplorerView(TreeNode tn, boolean isSourceTree)
+	public EventSupportExplorerView(TreeNode tn, Map<ACTIONS, AbstractAction> actions)
 	{
 		super(new BorderLayout());
 		this.setOpaque(false);
 		this.setBorder(BorderFactory.createEmptyBorder());
 
+		this.actions = actions;
+		
 		this.scrlpn.setBorder(BorderFactory.createEmptyBorder());
 		this.scrlpn.setOpaque(false);
 		this.scrlpn.getViewport().setOpaque(false);
@@ -71,6 +75,8 @@ public class EventSupportManagementExplorerView extends JPanel implements Explor
 		this.content.setBorder(BorderFactory.createEmptyBorder(FADE, 0, 0, 0));
 		this.content.add(this.scrlpn, BorderLayout.CENTER);
 
+		addToolBarComponents(this.toolBar);
+		
 		this.add(this.toolBar, BorderLayout.NORTH);
 		this.add(this.content, BorderLayout.CENTER);
 
@@ -83,15 +89,8 @@ public class EventSupportManagementExplorerView extends JPanel implements Explor
 		this.tree.setRootVisible(true);
 		this.tree.setShowsRootHandles(true);
 
-		if (isSourceTree)
-		{
-			initDragFunctionality(this.tree);			
-		}
-		else
-		{
-			initDropFunctionality(this.tree);
-		}
-
+		addDNDFunctionality(this.tree);
+		
 		// don't expand on double click:
 		this.tree.setToggleClickCount(0);
 
@@ -103,60 +102,30 @@ public class EventSupportManagementExplorerView extends JPanel implements Explor
 
 		this.tree.setCellRenderer(new ExplorerNodeRenderer());
 		this.tree.addTreeWillExpandListener(new DefaultTreeWillExpandListener(tree));
-
-		this.scrlpn.getViewport().add(tree, null);	
-	}
-	
-	private void initDropFunctionality(JTree pTree) {
-		EventSupportDropListener dndListener = new EventSupportDropListener();
-		DropTarget drpTaget = new DropTarget(pTree, 
-		        DnDConstants.ACTION_MOVE, dndListener);
+		
+		this.scrlpn.getViewport().add(tree, null);
 		
 	}
+	
+	
+	protected void addToolBarComponents(JToolBar toolbar) {
+		if (getActions().containsKey(ACTIONS.ACTION_REFRESH_SOURCETREE))
+			toolBar.add(new JButton(getActions().get(ACTIONS.ACTION_REFRESH_SOURCETREE)));
+	}
 
-	private void initDragFunctionality(JTree pTree) {
+	
+	public Map<ACTIONS, AbstractAction> getActions() {
+		return actions;
+	}
+
+	protected void addDNDFunctionality(JTree pTree) {
 		EventSupportDragListener dndListener = new EventSupportDragListener();
 		DragSource src = new DragSource();
 		DragGestureRecognizer gestRec = src.
                 createDefaultDragGestureRecognizer(pTree, 
-                DnDConstants.ACTION_MOVE, dndListener);
+                DnDConstants.ACTION_MOVE, dndListener);	
 	}
-
-	protected List<JComponent> getToolBarComponents() {
-		List<JComponent> components = new ArrayList<JComponent>();
-		components.add(new JButton(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				UIUtils.runCommand(EventSupportManagementExplorerView.this.getParent(), new CommonRunnable() {
-					@Override
-		            public void run() throws CommonFinderException {
-						Main.getInstance().getMainController().getExplorerController().refreshTab(EventSupportManagementExplorerView.this);
-					}
-				});
-			}
-		}));
-		
-		components.add(new JButton(new AbstractAction("", Icons.getInstance().getIconNew16()) {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				UIUtils.runCommand(EventSupportManagementExplorerView.this.getParent(), new CommonRunnable() {
-					@Override
-		            public void run() throws CommonFinderException {
-						Main.getInstance().getMainController().getExplorerController().refreshTab(EventSupportManagementExplorerView.this);
-					}
-				});
-			}
-		}));
-		
-		components.add(new PopupButton(SpringLocaleDelegate.getInstance().getMessage("PopupButton.Extras","Extras")));
 	
-	
-		return components;
-	}
-
-
 	@Override
 	public JComponent getViewComponent() {
 		return this;

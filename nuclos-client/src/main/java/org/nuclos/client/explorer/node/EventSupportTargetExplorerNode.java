@@ -116,19 +116,14 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 	 * @throws CommonFinderException if the object presented by this node no longer exists.
 	 */
 	public void refresh(final JTree tree, boolean fullRefreshCurrent) throws CommonFinderException {
-		List<String> lstExpandedPathsResult = new ArrayList<String>();
-	//	ExplorerNode.createExpandendPathsForTree(new TreePath(tree.getModel().getRoot()), tree, lstExpandedPathsResult);
-
-		final TreePath selected = tree.getSelectionPath();
+	
 		DefaultTreeModel dtm = (DefaultTreeModel) tree.getModel();
 		unloadChildren();
 
 		this.getTreeNode().refresh();
-//		treenode.removeSubNodes();
 		loadChildren(true);
 		dtm.nodeStructureChanged(this);
-
-		//ExplorerNode.expandTreeAsync(lstExpandedPathsResult, tree);		
+		
 	}
 
 }

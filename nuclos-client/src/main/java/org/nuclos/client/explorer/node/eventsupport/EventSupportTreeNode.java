@@ -110,7 +110,8 @@ public class EventSupportTreeNode implements TreeNode {
 
 	@Override
 	public void refresh() {
-		setLstSubNodes(getController().createSubNodesByType(this));
+		if (!isLeaf())
+			setLstSubNodes(getController().createSubNodesByType(this));
 	}
 
 	@Override

@@ -18,9 +18,10 @@ public class EventSupportEventVO extends NuclosValueObject
 	private String  sStateName;
 	private String  sProcessName;
 	
-	public EventSupportEventVO(String sEventSupportClass, String sEventSupportType, Integer iEntity,
+	public EventSupportEventVO(NuclosValueObject nvo, String sEventSupportClass, String sEventSupportType, Integer iEntity,
 			Integer iProcessId, Integer iStateId, Integer iOrder,String pEntityName,String pStateName, String pProcessName) {
-		super();
+		super(nvo);
+		
 		this.sEventSupportClass = sEventSupportClass;
 		this.sEventSupportType = sEventSupportType;
 		this.iEntity = iEntity;
@@ -32,8 +33,21 @@ public class EventSupportEventVO extends NuclosValueObject
 		this.sEntityName = pEntityName;
 	}
 	
+	public EventSupportEventVO(String sEventSupportClass, String sEventSupportType, Integer iEntity,
+			Integer iProcessId, Integer iStateId, Integer iOrder,String pEntityName,String pStateName, String pProcessName) {
+		
+		this.sEventSupportClass = sEventSupportClass;
+		this.sEventSupportType = sEventSupportType;
+		this.iEntity = iEntity;
+		this.iProcessId = iProcessId;
+		this.iStateId = iStateId;
+		this.iOrder = iOrder;
+		this.sProcessName = pProcessName;
+		this.sStateName = pStateName;
+		this.sEntityName = pEntityName;
+	}
 	
-	
+
 	public String getEntityName() {
 		return sEntityName;
 	}

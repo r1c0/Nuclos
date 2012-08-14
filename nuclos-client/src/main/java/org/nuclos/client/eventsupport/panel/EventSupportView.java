@@ -2,20 +2,22 @@ package org.nuclos.client.eventsupport.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
+import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.Border;
 
+import org.nuclos.client.eventsupport.EventSupportManagementController.ACTIONS;
 import org.nuclos.client.eventsupport.model.EventSupportEntityPropertiesTableModel;
 import org.nuclos.client.eventsupport.model.EventSupportPropertiesTableModel;
 import org.nuclos.client.eventsupport.model.EventSupportStatePropertiesTableModel;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetTreeNode;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
 
-public class EventSupportManagementView extends JPanel {
+public class EventSupportView extends JPanel {
 
 	EventSupportTreeNode treeEventSupports;
 	EventSupportTargetTreeNode treeEventSupportTargets;
@@ -24,11 +26,13 @@ public class EventSupportManagementView extends JPanel {
 	EventSupportEntityPropertiesTableModel targetEntityModel;
 	EventSupportStatePropertiesTableModel targetStateModel;
 	
-	EventSupportSourceViewElement sourceView;
+	EventSupportSourceView sourceView;
 	
-	final JSplitPane splitpn;
+	Map<ACTIONS, AbstractAction> actionMap;
 	
-	public EventSupportManagementView(EventSupportTreeNode pTreeEventSupports, EventSupportTargetTreeNode pTreeEventSupportTargets)
+	JSplitPane splitpn;
+	
+	public EventSupportView(EventSupportTreeNode pTreeEventSupports, EventSupportTargetTreeNode pTreeEventSupportTargets)
 	{
 		super(new BorderLayout());
 		
@@ -41,31 +45,41 @@ public class EventSupportManagementView extends JPanel {
 			this.targetEntityModel = new EventSupportEntityPropertiesTableModel();
 		if (this.targetStateModel == null)
 			this.targetStateModel = new EventSupportStatePropertiesTableModel();
-			
+	}
+
+	public void setActionMap(Map<ACTIONS, AbstractAction> acts) {
+		this.actionMap = acts;
+	}
+	
+	public Map<ACTIONS, AbstractAction> getActionsMap() {
+		return actionMap;
+	}
+
+	public void showGui() {
+		
 		splitpn = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	
 		Border b1 = BorderFactory.createMatteBorder(0, 0, 1, 1, Color.LIGHT_GRAY);
 		Border b2 = BorderFactory.createMatteBorder(0, 1, 1, 0, Color.LIGHT_GRAY);
 		
 		splitpn.setTopComponent(
-				new EventSupportSourceViewElement(this, b1));
+				new EventSupportSourceView(this, b1));
 		splitpn.setBottomComponent(
-				new EventSupportTargetViewElement(this, b2));
+				new EventSupportTargetView(this, b2));
 		
 		splitpn.setResizeWeight(0.5d);
 		splitpn.setDividerSize(5);
 		this.add(splitpn, BorderLayout.CENTER);
-		
 	}
 	
-	public EventSupportSourceViewElement getSourceViewPanel()
+	public EventSupportSourceView getSourceViewPanel()
 	{
-		return (EventSupportSourceViewElement) splitpn.getTopComponent();
+		return (EventSupportSourceView) splitpn.getTopComponent();
 	}
 	
-	public EventSupportTargetViewElement getTargetViewPanel()
+	public EventSupportTargetView getTargetViewPanel()
 	{
-		return (EventSupportTargetViewElement) splitpn.getBottomComponent();
+		return (EventSupportTargetView) splitpn.getBottomComponent();
 	}
 	
 	public EventSupportTreeNode getTreeEventSupports() {
