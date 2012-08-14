@@ -114,10 +114,10 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 			
 			EventSupportVO eventSupport = 
 					EventSupportCache.getInstance().getEventSupport(res.get(1, String.class));
-			
+	
 			evtSupps.add(new EventSupportTransitionVO(
 					new NuclosValueObject(strans.getId(),strans.getCreatedAt(),strans.getCreatedBy(),strans.getChangedAt(),strans.getChangedBy(), strans.getVersion()),
-					res.get(1, String.class),
+					eventSupport.getName(),
 					transId, 
 					res.get(0, Integer.class), 
 					res.get(2, Boolean.class)));
@@ -187,37 +187,39 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 		
 		List<EventSupportEventVO> result = new ArrayList<EventSupportEventVO>();
 		
-		CollectableComparison newEOidComparison = SearchConditionUtils.newEOidComparison(NuclosEntity.EVENTSUPPORTEVENT.getEntityName(), "entity", 
-					ComparisonOperator.EQUAL, Long.valueOf(entityId.longValue()), MetaDataServerProvider.getInstance());
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQuery<DbTuple> query = builder.createTupleQuery();
+		DbFrom t = query.from("V_MD_EVENTSUPPORT_EVENT").alias(SystemFields.BASE_ALIAS);
+		query.multiselect(t.baseColumn("INTID", Integer.class),
+				t.baseColumn("INTORDER", Integer.class),
+				t.baseColumn("STREVENTSUPPORTTYPE", String.class),
+				t.baseColumn("STREVENTSUPPORTCLASS", String.class),
+				t.baseColumn("INTID_T_MD_ENTITY", Integer.class),
+				t.baseColumn("INTID_T_MD_PROCESS", Integer.class),
+				t.baseColumn("INTID_T_MD_STATE", Integer.class),
+				t.baseColumn("STRVALUE_T_MD_ENTITY", String.class),
+				t.baseColumn("STRVALUE_T_MD_PROCESS", String.class),
+				t.baseColumn("STRVALUE_T_MD_STATE", String.class));
+		query.where(builder.equal(t.baseColumn("INTID_T_MD_ENTITY", Integer.class), entityId));
+		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 		
-		JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.EVENTSUPPORTEVENT.getEntityName());
-		List<EntityObjectVO> dependantMasterData = eop.getBySearchExpression(new CollectableSearchExpression(newEOidComparison), true);
-		
-		for (EntityObjectVO mdvo : dependantMasterData)
-		{
-			Integer processId = mdvo.getFieldId("process") != null ? mdvo.getFieldId("process").intValue() : null;
-			Integer stateId = mdvo.getFieldId("state") != null ? mdvo.getFieldId("state").intValue() : null;
+		for (DbTuple res : dataBaseHelper.getDbAccess().executeQuery(query)) {
+			Integer id = res.get(0, Integer.class);
+			Integer order = res.get(1, Integer.class);
+			String esType = res.get(2, String.class);
+			String esClass = EventSupportCache.getInstance().getEventSupport(res.get(3, String.class)).getName();
+			Integer process = res.get(5, Integer.class);
+			Integer state = res.get(6, Integer.class);
+			String strEntity = res.get(7, String.class);
+			String strProcess = res.get(8, String.class);
+			String strState= res.get(9, String.class);
 			
-			String  classname = mdvo.getField("eventsupportclass") != null ? (String) mdvo.getField("eventsupportclass") : null;
-			String  classtype = mdvo.getField("eventsupporttype") != null ? (String) mdvo.getField("eventsupporttype") : null;
-			Integer order = mdvo.getField("order") != null ? (Integer) mdvo.getField("order") : null;
-			
-			String  sEntityName =  mdvo.getField("entity") != null ? mdvo.getField("entity").toString() : null;
-			String  sProcessName =  mdvo.getField("process") != null ? mdvo.getField("process").toString() : null;
-			String  sStateName =  mdvo.getField("state") != null ? mdvo.getField("state").toString() : null;
-			
-			EventSupportVO foundSupportFile = getEventSupportByClassname(classname);
-			if (foundSupportFile != null)
-			{
-				classname = foundSupportFile.getName();
-			}
 			EventSupportEventVO retVal = new EventSupportEventVO(
-					new NuclosValueObject(mdvo.getId().intValue(), mdvo.getCreatedAt(), mdvo.getCreatedBy(), mdvo.getChangedAt(), mdvo.getChangedBy(), mdvo.getVersion()), 
-					classname,classtype, entityId,processId,stateId,order,sEntityName,sStateName,sProcessName);
-		
-			result.add(retVal);							
-		}
-	
+					new NuclosValueObject(id, null,null,null,null,null), 
+					esClass,esType, entityId ,process,state,order,strEntity, strState,strProcess);  
+	     
+			result.add(retVal);	
+	    }
 		return result;
 	}
 	    
