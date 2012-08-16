@@ -295,73 +295,77 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 	 * invalidates the cache
 	 */
 	public void invalidate(String sEntity) {
-		if (sEntity == null || sEntity.equals(NuclosEntity.CODE.getEntityName())) {
-			mpAllCodes.clear();
-			for (CodeVO codeVO : codeDelegate.getAll()) {
-				mpAllCodes.put(codeVO.getId(), codeVO);
-			}
-		}
-
-		if (sEntity == null || sEntity.equals(NuclosEntity.RULE.getEntityName())) {
-			mpAllRules.clear();
-			mpAllRulesByName.clear();
-			for (RuleVO ruleVO : ruleDelegate.getAllRules()) {
-				mpAllRules.put(ruleVO.getId(), ruleVO);
-				mpAllRulesByName.put(ruleVO.getRule(), ruleVO);
-			}
-			mpAllTimelimitRules.clear();
-			for (RuleVO ruleVO : timelimitRuleDelegate.getAllTimelimitRules()) {
-				mpAllTimelimitRules.put(ruleVO.getId(), ruleVO);
-			}
-		}
-		
-		if (sEntity == null || sEntity.equals(NuclosEntity.RULEUSAGE.getEntityName())) {
-			mpAllRuleEventByRuleId.clear();
-			for (RuleEventUsageVO ruleEventUsageVO : ruleDelegate.getAllRuleEventUsage()) {
-				Collection<RuleEventUsageVO> lstAllRuleEventByRuleId = mpAllRuleEventByRuleId.get(ruleEventUsageVO.getRuleId());
-				if (lstAllRuleEventByRuleId == null) {
-					lstAllRuleEventByRuleId = new ArrayList<RuleEventUsageVO>();
+		try {
+			if (sEntity == null || sEntity.equals(NuclosEntity.CODE.getEntityName())) {
+				mpAllCodes.clear();
+				for (CodeVO codeVO : codeDelegate.getAll()) {
+					mpAllCodes.put(codeVO.getId(), codeVO);
 				}
-				lstAllRuleEventByRuleId.add(ruleEventUsageVO);
-				mpAllRuleEventByRuleId.put(ruleEventUsageVO.getRuleId(), lstAllRuleEventByRuleId);
 			}
-		}
-		
-		if (sEntity == null || sEntity.equals(NuclosEntity.RULEGENERATION.getEntityName())) {
-			mpAllAdGenerations.clear();
-			for (GeneratorActionVO generatorActionVO : ruleDelegate.getAllAdGenerationsWithRule()) {
-				mpAllAdGenerations.add(generatorActionVO);
-			}
-			
-			mpAllAdGenerationsByRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
-			/*for (Integer aRuleId : mpAllRules.keySet()) {
-				getAllAdGenerationsForRuleId(aRuleId);
-			}*/
-			
-			mpAllRuleGenerationsForRuleId.clear();
-			mpAllRuleGenerationsForGenerationId.clear();
-			for (RuleEngineGenerationVO ruleGenerationVO : ruleDelegate.getAllRuleGenerations()) {
-				Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForRuleId = mpAllRuleGenerationsForRuleId.get(ruleGenerationVO.getRuleId());
-				if (lstAllRuleGenerationsForRuleId == null) {
-					lstAllRuleGenerationsForRuleId = new ArrayList<RuleEngineGenerationVO>();
-				}
-				lstAllRuleGenerationsForRuleId.add(ruleGenerationVO);
-				mpAllRuleGenerationsForRuleId.put(ruleGenerationVO.getRuleId(), lstAllRuleGenerationsForRuleId);
 	
-				Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForGenerationId = mpAllRuleGenerationsForGenerationId.get(ruleGenerationVO.getGenerationId());
-				if (lstAllRuleGenerationsForGenerationId == null) {
-					lstAllRuleGenerationsForGenerationId = new ArrayList<RuleEngineGenerationVO>();
+			if (sEntity == null || sEntity.equals(NuclosEntity.RULE.getEntityName())) {
+				mpAllRules.clear();
+				mpAllRulesByName.clear();
+				for (RuleVO ruleVO : ruleDelegate.getAllRules()) {
+					mpAllRules.put(ruleVO.getId(), ruleVO);
+					mpAllRulesByName.put(ruleVO.getRule(), ruleVO);
 				}
-				lstAllRuleGenerationsForGenerationId.add(ruleGenerationVO);
-				mpAllRuleGenerationsForGenerationId.put(ruleGenerationVO.getGenerationId(), lstAllRuleGenerationsForGenerationId);
+				mpAllTimelimitRules.clear();
+				for (RuleVO ruleVO : timelimitRuleDelegate.getAllTimelimitRules()) {
+					mpAllTimelimitRules.put(ruleVO.getId(), ruleVO);
+				}
 			}
-		}
+			
+			if (sEntity == null || sEntity.equals(NuclosEntity.RULEUSAGE.getEntityName())) {
+				mpAllRuleEventByRuleId.clear();
+				for (RuleEventUsageVO ruleEventUsageVO : ruleDelegate.getAllRuleEventUsage()) {
+					Collection<RuleEventUsageVO> lstAllRuleEventByRuleId = mpAllRuleEventByRuleId.get(ruleEventUsageVO.getRuleId());
+					if (lstAllRuleEventByRuleId == null) {
+						lstAllRuleEventByRuleId = new ArrayList<RuleEventUsageVO>();
+					}
+					lstAllRuleEventByRuleId.add(ruleEventUsageVO);
+					mpAllRuleEventByRuleId.put(ruleEventUsageVO.getRuleId(), lstAllRuleEventByRuleId);
+				}
+			}
+			
+			if (sEntity == null || sEntity.equals(NuclosEntity.RULEGENERATION.getEntityName())) {
+				mpAllAdGenerations.clear();
+				for (GeneratorActionVO generatorActionVO : ruleDelegate.getAllAdGenerationsWithRule()) {
+					mpAllAdGenerations.add(generatorActionVO);
+				}
+				
+				mpAllAdGenerationsByRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
+				/*for (Integer aRuleId : mpAllRules.keySet()) {
+					getAllAdGenerationsForRuleId(aRuleId);
+				}*/
+				
+				mpAllRuleGenerationsForRuleId.clear();
+				mpAllRuleGenerationsForGenerationId.clear();
+				for (RuleEngineGenerationVO ruleGenerationVO : ruleDelegate.getAllRuleGenerations()) {
+					Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForRuleId = mpAllRuleGenerationsForRuleId.get(ruleGenerationVO.getRuleId());
+					if (lstAllRuleGenerationsForRuleId == null) {
+						lstAllRuleGenerationsForRuleId = new ArrayList<RuleEngineGenerationVO>();
+					}
+					lstAllRuleGenerationsForRuleId.add(ruleGenerationVO);
+					mpAllRuleGenerationsForRuleId.put(ruleGenerationVO.getRuleId(), lstAllRuleGenerationsForRuleId);
 		
-		if (sEntity == null || sEntity.equals(NuclosEntity.RULETRANSITION.getEntityName())) {
-			mpAllStateModelsForRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
-			/*for (Integer aRuleId : mpAllRules.keySet()) {
-				getAllStateModelsForRuleId(aRuleId);
-			}*/
+					Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForGenerationId = mpAllRuleGenerationsForGenerationId.get(ruleGenerationVO.getGenerationId());
+					if (lstAllRuleGenerationsForGenerationId == null) {
+						lstAllRuleGenerationsForGenerationId = new ArrayList<RuleEngineGenerationVO>();
+					}
+					lstAllRuleGenerationsForGenerationId.add(ruleGenerationVO);
+					mpAllRuleGenerationsForGenerationId.put(ruleGenerationVO.getGenerationId(), lstAllRuleGenerationsForGenerationId);
+				}
+			}
+			
+			if (sEntity == null || sEntity.equals(NuclosEntity.RULETRANSITION.getEntityName())) {
+				mpAllStateModelsForRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
+				/*for (Integer aRuleId : mpAllRules.keySet()) {
+					getAllStateModelsForRuleId(aRuleId);
+				}*/
+			}
+		} catch (Exception e) {
+			LOG.info("error initializing rule cache. " + e.getMessage());
 		}
 	}
 }	// class RuleCache
