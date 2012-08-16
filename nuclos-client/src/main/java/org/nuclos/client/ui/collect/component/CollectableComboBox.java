@@ -324,8 +324,13 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		synchronized(runningRefreshs) {
 			for (RefreshValueListWorker refresh : new HashSet<RefreshValueListWorker>(runningRefreshs)) {
 				refresh.ignoreResult();
-				if (!refresh.cancel(true)) {
-					LOG.debug("Failed to cancel refresh for " + getEntityField().getEntityName() + "." + getEntityField().getName());
+				if (refresh.isDone())
+					continue;
+				
+				if (!refresh.isCancelled()) {
+					if (!refresh.cancel(true)) {
+						LOG.debug("Failed to cancel refresh for " + getEntityField().getEntityName() + "." + getEntityField().getName());
+					}
 				}
 			}
 		}
@@ -348,6 +353,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 				if (getValueListProvider() == null) {
 					return Collections.<CollectableField>emptyList();
 				}
+				
 				return getValueListProvider().getCollectableFields();
 			}
 			catch (Exception ex) {
