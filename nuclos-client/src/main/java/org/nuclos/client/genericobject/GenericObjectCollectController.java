@@ -68,6 +68,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
@@ -144,6 +145,8 @@ import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.SubForm.ParameterChangeListener;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
 import org.nuclos.client.ui.collect.UserCancelledException;
@@ -4237,7 +4240,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		CommonMultiThreader.getInstance().execute(new ChangeStatesWorker4(
 				GenericObjectCollectController.this));
 	}
-
+	
+	@Override
+	public void enableToolbarButtonsForDetailsMode(final int iDetailsMode) {
+		super.enableToolbarButtonsForDetailsMode(iDetailsMode);
+		if (iDetailsMode == CollectState.DETAILSMODE_VIEW) {
+			setInitialComponentFocusInDetailsTab(); // @see NUCLOS-1027
+		}
+	}
 
 	private void changeStateForMultipleObjects(final StateWrapper stateNew) throws CommonBusinessException {
 		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<Integer>(Collections.singleton(stateNew.getId()))).run(getMultiActionProgressPanel(getSelectedCollectables().size()));

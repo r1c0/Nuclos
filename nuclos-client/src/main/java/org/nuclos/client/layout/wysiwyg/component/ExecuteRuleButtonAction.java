@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.layout.wysiwyg.component;
 
+import java.awt.EventQueue;
 import java.awt.KeyboardFocusManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,17 +117,23 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 										
 										@Override
 										public void run() {
-											if (btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION) != null 
-													&& btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION).equals(Boolean.TRUE)) {
-												KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(btn);
-											}
+											// Must be invoked later, else focus is not set with compound components like LOVs
+											EventQueue.invokeLater(new Runnable() {
+												@Override
+									            public void run() {
+													if (btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION) != null 
+															&& btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION).equals(Boolean.TRUE)) {
+														KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(btn);
+													}
+												}
+											});
 										}
 									});
 								}
 								controller.removeCollectableEventListener(this);
 							}
 						});
-						controller.refreshCurrentCollectable();
+						controller.refreshCurrentCollectable(false);
 					}
 				}
 				catch (UserCancelledException e) {

@@ -18,6 +18,7 @@ package org.nuclos.client.masterdata;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,6 +45,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollBar;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 
@@ -84,9 +86,12 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
+import org.nuclos.client.ui.collect.CollectStateListener;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.EditView;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.SubForm.ParameterChangeListener;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
@@ -1765,7 +1770,15 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			}
 		}
 	}
-
+	
+	@Override
+	public void enableToolbarButtonsForDetailsMode(final int iDetailsMode) {
+		super.enableToolbarButtonsForDetailsMode(iDetailsMode);
+		if (iDetailsMode == CollectState.DETAILSMODE_VIEW) {
+			setInitialComponentFocusInDetailsTab(); // @see NUCLOS-1027
+		}
+	}
+	
 	@Override
 	protected LayoutRoot getInitialLayoutMLDefinitionForSearchPanel() {
 		LayoutRoot layoutRoot = newLayoutRoot(true);
