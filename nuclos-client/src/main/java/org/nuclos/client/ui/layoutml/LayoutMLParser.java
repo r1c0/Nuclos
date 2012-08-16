@@ -2738,10 +2738,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					@Override
 					protected void fireActionPerformed(ActionEvent e) {
 						super.fireActionPerformed(e);
-						if (getClientProperty(ATTRIBUTE_NEXTFOCUSONACTION) != null 
-								&& getClientProperty(ATTRIBUTE_NEXTFOCUSONACTION).equals(Boolean.TRUE)) {
-							KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent();
-						}
 					}
 				});
 			}

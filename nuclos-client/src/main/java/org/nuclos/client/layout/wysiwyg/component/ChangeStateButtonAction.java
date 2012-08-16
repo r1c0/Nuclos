@@ -16,10 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.layout.wysiwyg.component;
 
+import java.awt.KeyboardFocusManager;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
+import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.Modules;
@@ -29,9 +33,13 @@ import org.nuclos.client.statemodel.StateWrapper;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
+import org.nuclos.client.ui.layoutml.LayoutMLParser;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
@@ -49,63 +57,92 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
 public class ChangeStateButtonAction<Clct extends Collectable> implements CollectActionAdapter<Clct> {
 
 	@Override
-	public void run(CollectController<Clct> controller, Properties probs) {
-		if(controller instanceof GenericObjectCollectController) {
-			GenericObjectCollectController gController = (GenericObjectCollectController) controller;
-			
-			if (!controller.getDetailsPanel().isVisible()) {
-				// is not in details view, is in search or elsewhere
-				return;
-			}
-			
-			String sTargetState = probs.getProperty("targetState");
-			Integer targetState = null;
-			try {
-				 targetState = Integer.parseInt(sTargetState);
-			} catch (NumberFormatException e) {
-				return;
-			}
-			
-			String entityName = gController.getEntityName();
-			Integer moduleId = Modules.getInstance().getModuleIdByEntityName(entityName);
-
-			Collection<StateVO> possibleStates = StateDelegate.getInstance().getStatesByModule(moduleId);
-			String stateName = null;
-			Integer stateID = null;
-			Integer stateNumeral = null;
-			String stateDescription = null;
-			NuclosImage stateIcon = null;
-			String stateColor = null;
-			ResourceVO stateButtonIcon = null;
-			for(StateVO possibleState : possibleStates) {
-				if(possibleState.getId().equals(targetState)) {
-					stateName = possibleState.getStatename();
-					stateID = possibleState.getId();
-					stateNumeral = possibleState.getNumeral();
-					stateIcon = possibleState.getIcon();
-					stateDescription = possibleState.getDescription();
-					stateColor = possibleState.getColor();
-					stateButtonIcon = possibleState.getButtonIcon();
-					break;
+	public void run(final JButton btn, final CollectController<Clct> controller, Properties probs) {
+		try {
+			if(controller instanceof GenericObjectCollectController) {
+				GenericObjectCollectController gController = (GenericObjectCollectController) controller;
+				
+				if (!controller.getDetailsPanel().isVisible()) {
+					// is not in details view, is in search or elsewhere
+					return;
 				}
-				// for compatibility to old fashioned way to set target state via other properties.
-				if(possibleState.getNumeral().equals(targetState)) {
-					stateName = possibleState.getStatename();
-					stateID = possibleState.getId();
-					stateNumeral = possibleState.getNumeral();
-					stateIcon = possibleState.getIcon();
-					stateDescription = possibleState.getDescription();
-					stateColor = possibleState.getColor();
-					stateButtonIcon = possibleState.getButtonIcon();
-					break;
+				
+				String sTargetState = probs.getProperty("targetState");
+				Integer targetState = null;
+				try {
+					 targetState = Integer.parseInt(sTargetState);
+				} catch (NumberFormatException e) {
+					return;
 				}
+				
+				String entityName = gController.getEntityName();
+				Integer moduleId = Modules.getInstance().getModuleIdByEntityName(entityName);
+	
+				Collection<StateVO> possibleStates = StateDelegate.getInstance().getStatesByModule(moduleId);
+				String stateName = null;
+				Integer stateID = null;
+				Integer stateNumeral = null;
+				String stateDescription = null;
+				NuclosImage stateIcon = null;
+				String stateColor = null;
+				ResourceVO stateButtonIcon = null;
+				for(StateVO possibleState : possibleStates) {
+					if(possibleState.getId().equals(targetState)) {
+						stateName = possibleState.getStatename();
+						stateID = possibleState.getId();
+						stateNumeral = possibleState.getNumeral();
+						stateIcon = possibleState.getIcon();
+						stateDescription = possibleState.getDescription();
+						stateColor = possibleState.getColor();
+						stateButtonIcon = possibleState.getButtonIcon();
+						break;
+					}
+					// for compatibility to old fashioned way to set target state via other properties.
+					if(possibleState.getNumeral().equals(targetState)) {
+						stateName = possibleState.getStatename();
+						stateID = possibleState.getId();
+						stateNumeral = possibleState.getNumeral();
+						stateIcon = possibleState.getIcon();
+						stateDescription = possibleState.getDescription();
+						stateColor = possibleState.getColor();
+						stateButtonIcon = possibleState.getButtonIcon();
+						break;
+					}
+				}
+				
+				StateWrapper newState = new StateWrapper(stateID, stateNumeral, stateName, stateIcon, stateDescription, stateColor, stateButtonIcon);
+				gController.cmdChangeState(newState);
+				
+				//@todo refactor to LayoutMLButton.
+				controller.addCollectableEventListener(new CollectableEventListener() {
+					@Override
+					public void handleCollectableEvent(
+							Collectable collectable,
+							MessageType messageType) {
+						if (messageType.equals(MessageType.REFRESH_DONE)
+								|| messageType.equals(MessageType.REFRESH_DONE_DIRECTLY)) {
+							SwingUtilities.invokeLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									if (btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION) != null 
+											&& btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION).equals(Boolean.TRUE)) {
+										KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(btn);
+									}
+								}
+							});
+						}
+						controller.removeCollectableEventListener(this);
+					}
+				});
+				controller.refreshCurrentCollectable();
 			}
-			
-			StateWrapper newState = new StateWrapper(stateID, stateNumeral, stateName, stateIcon, stateDescription, stateColor, stateButtonIcon);
-			gController.cmdChangeState(newState);
+			else {
+				Errors.getInstance().showExceptionDialog(controller.getCollectPanel(),new NuclosBusinessException(CHANGESTATEACTIONLISTENER.NO_GENERICOBJECT));
+			}
 		}
-		else {
-			Errors.getInstance().showExceptionDialog(controller.getCollectPanel(),new NuclosBusinessException(CHANGESTATEACTIONLISTENER.NO_GENERICOBJECT));
+		catch (CommonBusinessException e) {
+			Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
 		}
 	}
 

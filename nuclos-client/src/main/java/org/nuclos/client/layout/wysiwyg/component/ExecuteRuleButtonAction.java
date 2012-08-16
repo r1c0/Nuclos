@@ -16,9 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.layout.wysiwyg.component;
 
+import java.awt.KeyboardFocusManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -28,8 +32,11 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.UserCancelledException;
+import org.nuclos.client.ui.layoutml.LayoutMLParser;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -51,7 +58,7 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 	/**
 	 */
 	@Override
-	public void run(final CollectController<Clct> controller, final Properties probs) {
+	public void run(final JButton btn, final CollectController<Clct> controller, final Properties probs) {
 		if (!controller.getDetailsPanel().isVisible()) {
 			return;
 		}
@@ -96,6 +103,29 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 						else if (controller instanceof GenericObjectCollectController) {
 							((GenericObjectCollectController)controller).executeBusinessRules(rule, true);
 						}
+						
+						//@todo refactor to LayoutMLButton.
+						controller.addCollectableEventListener(new CollectableEventListener() {
+							@Override
+							public void handleCollectableEvent(
+									Collectable collectable,
+									MessageType messageType) {
+								if (messageType.equals(MessageType.REFRESH_DONE)
+										|| messageType.equals(MessageType.REFRESH_DONE_DIRECTLY)) {
+									SwingUtilities.invokeLater(new Runnable() {
+										
+										@Override
+										public void run() {
+											if (btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION) != null 
+													&& btn.getClientProperty(LayoutMLParser.ATTRIBUTE_NEXTFOCUSONACTION).equals(Boolean.TRUE)) {
+												KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(btn);
+											}
+										}
+									});
+								}
+								controller.removeCollectableEventListener(this);
+							}
+						});
 						controller.refreshCurrentCollectable();
 					}
 				}

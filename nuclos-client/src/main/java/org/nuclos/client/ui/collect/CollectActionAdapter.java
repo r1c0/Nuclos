@@ -18,6 +18,8 @@ package org.nuclos.client.ui.collect;
 
 import java.util.Properties;
 
+import javax.swing.JButton;
+
 import org.nuclos.common.collect.collectable.Collectable;
 
 /**
@@ -30,6 +32,6 @@ import org.nuclos.common.collect.collectable.Collectable;
  * @version	01.00.00
  */
 public interface CollectActionAdapter<Clct extends Collectable> {
-	public void run(CollectController<Clct> controller, Properties probs);
+	public void run(JButton btn, CollectController<Clct> controller, Properties probs);
 	public boolean isRunnable(CollectController<Clct> controller, Properties probs);
 }

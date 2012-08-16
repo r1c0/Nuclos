@@ -875,19 +875,19 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					Properties stateProperties = new Properties();
 					String state = sActionCommand.substring(sActionCommand.indexOf(targetState) + targetState.length(), sActionCommand.length());
 					stateProperties.put("targetState", state);
-					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.STATE_CHANGE_ACTION).newInstance()).run(cc, stateProperties);
+					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.STATE_CHANGE_ACTION).newInstance()).run((JButton)ev.getSource(), cc, stateProperties);
 				} else if (sActionCommand.contains(STATIC_BUTTON.EXECUTE_RULE_ACTION + ruletoexecute)) {
 					Properties ruleProperties = new Properties();
 					String ruleId = sActionCommand.substring(sActionCommand.indexOf(ruletoexecute) + ruletoexecute.length(), sActionCommand.length());
 					ruleProperties.put("ruletoexecute", ruleId);
-					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.EXECUTE_RULE_ACTION).newInstance()).run(cc, ruleProperties);
+					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.EXECUTE_RULE_ACTION).newInstance()).run((JButton)ev.getSource(), cc, ruleProperties);
 				} else if (sActionCommand.contains(STATIC_BUTTON.GENERATOR_ACTION + generatortoexecute)) {
 					Properties generatorProperties = new Properties();
 					String generatorId = sActionCommand.substring(sActionCommand.indexOf(generatortoexecute) + generatortoexecute.length(), sActionCommand.length());
 					generatorProperties.put("generatortoexecute", generatorId);
-					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.GENERATOR_ACTION).newInstance()).run(cc, generatorProperties);
+					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.GENERATOR_ACTION).newInstance()).run((JButton)ev.getSource(), cc, generatorProperties);
 				} else {
-					((CollectActionAdapter<Clct>) Class.forName(sActionCommand).newInstance()).run(cc, new Properties());
+					((CollectActionAdapter<Clct>) Class.forName(sActionCommand).newInstance()).run((JButton)ev.getSource(), cc, new Properties());
 				}
 
 			}
