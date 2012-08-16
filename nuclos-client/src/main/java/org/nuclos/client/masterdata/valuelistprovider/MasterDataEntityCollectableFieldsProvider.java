@@ -77,14 +77,13 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 							colmdmVO_menupath.add(mdmVO);
 					}
 				}
+			}
+			if (mdmVO.getResourceSIdForMenuPath() != null) {
+				colmdmVO_menupath.add(mdmVO);
 			} else {
-				if (mdmVO.getResourceSIdForMenuPath() != null) {
+				// add entites without an menupath too if not a system entity
+				if (!mdmVO.isSystemEntity() && !MasterDataDelegate.getInstance().isSubformEntity(mdmVO.getEntityName()))
 					colmdmVO_menupath.add(mdmVO);
-				} else {
-					// add entites without an menupath too if not a system entity
-					if (!mdmVO.isSystemEntity() && !MasterDataDelegate.getInstance().isSubformEntity(mdmVO.getEntityName()))
-						colmdmVO_menupath.add(mdmVO);
-				}
 			}
 		}
 
