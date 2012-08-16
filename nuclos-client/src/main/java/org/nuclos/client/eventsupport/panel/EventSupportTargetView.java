@@ -40,7 +40,8 @@ public class EventSupportTargetView extends JPanel {
 	EventSupportExplorerView explorerView;
 	EventSupportView esView;
 
-	JTable propTable;
+	JTable propTableEntites;
+	JTable propTableStateModels;
 	
 	JPanel entityPropertiesPanel;
 	JPanel statePropertiesPanel;
@@ -67,8 +68,11 @@ public class EventSupportTargetView extends JPanel {
 		return this.explorerView;
 	}
 	
-	public JTable getPropertyTable(){
-		return this.propTable;
+	public JTable getPropertyTableEntites(){
+		return this.propTableEntites;
+	}
+	public JTable getPropertyTableStatemodels(){
+		return this.propTableStateModels;
 	}
 	
 	public JTree getTree()
@@ -122,15 +126,15 @@ public class EventSupportTargetView extends JPanel {
 			statePropertiesPanel = new JPanel();
 			statePropertiesPanel.setLayout(new BorderLayout());
 			
-			propTable = new JTable(this.esView.getTargetStateModel());
-			propTable.setFillsViewportHeight(true);
-			propTable.setRowSelectionAllowed(true);
+			propTableStateModels = new JTable(this.esView.getTargetStateModel());
+			propTableStateModels.setFillsViewportHeight(true);
+			propTableStateModels.setRowSelectionAllowed(true);
 			
-			propTable.getColumnModel().getColumn(0).setMaxWidth(120);
-			propTable.getColumnModel().getColumn(0).setMinWidth(20);
-			propTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+			propTableStateModels.getColumnModel().getColumn(0).setMaxWidth(120);
+			propTableStateModels.getColumnModel().getColumn(0).setMinWidth(20);
+			propTableStateModels.getColumnModel().getColumn(0).setPreferredWidth(100);
 			
-			JScrollPane scrollPane = new JScrollPane(propTable);
+			JScrollPane scrollPane = new JScrollPane(propTableStateModels);
 			
 			JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
 			
@@ -168,24 +172,24 @@ public class EventSupportTargetView extends JPanel {
 			this.entityPropertiesPanel = new JPanel();
 			entityPropertiesPanel.setLayout(new BorderLayout());
 			
-			propTable = new JTable(this.esView.getTargetEntityModel());
+			propTableEntites = new JTable(this.esView.getTargetEntityModel());
 			
-			propTable.setFillsViewportHeight(true);
-			propTable.setRowSelectionAllowed(true);
-			propTable.addMouseMotionListener(new StatusModelMouseEventAdapter());
+			propTableEntites.setFillsViewportHeight(true);
+			propTableEntites.setRowSelectionAllowed(true);
+			propTableEntites.addMouseMotionListener(new StatusModelMouseEventAdapter());
 			
-			propTable.getColumnModel().getColumn(0).setMaxWidth(120);
-			propTable.getColumnModel().getColumn(0).setMinWidth(20);
-			propTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+			propTableEntites.getColumnModel().getColumn(0).setMaxWidth(120);
+			propTableEntites.getColumnModel().getColumn(0).setMinWidth(20);
+			propTableEntites.getColumnModel().getColumn(0).setPreferredWidth(100);
 			
-			propTable.getColumnModel().getColumn(1).setMaxWidth(220);
-			propTable.getColumnModel().getColumn(1).setMinWidth(20);
-			propTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+			propTableEntites.getColumnModel().getColumn(1).setMaxWidth(220);
+			propTableEntites.getColumnModel().getColumn(1).setMinWidth(20);
+			propTableEntites.getColumnModel().getColumn(1).setPreferredWidth(200);
 			
-			propTable.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
-			propTable.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
+			propTableEntites.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
+			propTableEntites.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
 			
-			JScrollPane scrollPane = new JScrollPane(propTable);
+			JScrollPane scrollPane = new JScrollPane(propTableEntites);
 			
 			JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
 			
@@ -214,8 +218,8 @@ public class EventSupportTargetView extends JPanel {
 		}
 		else
 		{
-			propTable.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
-			propTable.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
+			propTableEntites.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
+			propTableEntites.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
 		}
 		
 		return entityPropertiesPanel;	
