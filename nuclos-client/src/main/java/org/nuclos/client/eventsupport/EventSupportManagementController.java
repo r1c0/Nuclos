@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
@@ -19,16 +20,20 @@ import org.nuclos.client.eventsupport.model.EventSupportStatePropertiesTableMode
 import org.nuclos.client.eventsupport.panel.EventSupportSourceView;
 import org.nuclos.client.eventsupport.panel.EventSupportView;
 import org.nuclos.client.eventsupport.panel.EventSupportTargetView;
+import org.nuclos.client.explorer.node.EventSupportTargetExplorerNode;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetTreeNode;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetType;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.OvOpAdapter;
+import org.nuclos.client.ui.OverlayOptionPane;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
@@ -50,9 +55,20 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
 public class EventSupportManagementController extends Controller<MainFrameTabbedPane> {
 
 	private static final Logger LOG = Logger.getLogger(EventSupportManagementController.class);	
+	MainFrameTab ifrm;
 	
 	public enum ACTIONS {
-		ACTION_SAVE, ACTION_DELETE, ACTION_MOVE_UP, ACTION_MOVE_DOWN, ACTION_REFRESH_TARGETTREE, ACTION_REFRESH_SOURCETREE};
+		ACTION_SAVE_EVENT, 
+		ACTION_SAVE_ALL_EVENTS, 
+		ACTION_DELETE_EVENT, 
+		ACTION_MOVE_UP_EVENT, 
+		ACTION_MOVE_DOWN_EVENT,
+		ACTION_SAVE_ALL_STATETRANSITION,
+		ACTION_DELETE_STATETRANSITION, 
+		ACTION_MOVE_UP_STATETRANSITION, 
+		ACTION_MOVE_DOWN_STATETRANSITION,
+		ACTION_REFRESH_TARGETTREE, 
+		ACTION_REFRESH_SOURCETREE};
 		
 	public static final Map<String, String> MAP_EVENTTYPES = new HashMap<String, String>();
 	
@@ -72,33 +88,161 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 	private EventSupportView viewEventSupportManagement;
 	public final Map<ACTIONS, AbstractAction> MAP_ACTIONS = new HashMap<ACTIONS, AbstractAction>();
 	
-	public EventSupportManagementController(MainFrameTabbedPane parent) {
-		super(parent);
+	public EventSupportManagementController(MainFrameTabbedPane pParent) {
+		super(pParent);
+	
 		loadActions();
 	}
 	
 	private void loadActions() {
-		MAP_ACTIONS.put(ACTIONS.ACTION_SAVE, 
+		MAP_ACTIONS.put(ACTIONS.ACTION_SAVE_EVENT, 
 				new AbstractAction("", Icons.getInstance().getIconSaveS16()) {
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent actEvent) {
 						EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
 						if (estvElement != null)
 						{
 							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
 									estvElement.getPropertyTable().getModel();
-							EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(estvElement.getPropertyTable().getSelectedRow());
+							int selectedRow = estvElement.getPropertyTable().getSelectedRow();
 							
-							// Update entry
+							EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
+								
+							// Modify entry
 							if (entryByRowIndex.getId() != null) {
-								EventSupportDelegate.getInstance().modifyEventSupportEvent(entryByRowIndex);
+								try {
+									EventSupportDelegate.getInstance().modifyEventSupportEvent(entryByRowIndex);
+									
+								} catch (Exception e) {
+									LOG.error(e.getMessage(), e);
+								}
 							}
-							tblModel.fireTableRowsUpdated(estvElement.getPropertyTable().getSelectedRow(), estvElement.getPropertyTable().getSelectedRow());
+							tblModel.setModelModified(false);
 						}
 					}
 				});
-	
-		MAP_ACTIONS.put(ACTIONS.ACTION_DELETE, 
+		MAP_ACTIONS.put(ACTIONS.ACTION_SAVE_ALL_EVENTS, 
+				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
+			@Override
+			public void actionPerformed(ActionEvent actEv) {
+				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
+				if (estvElement != null)
+				{
+					EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
+							estvElement.getPropertyTable().getModel();
+
+					for(int selectedRow = 0; selectedRow < tblModel.getRowCount(); selectedRow++){
+						
+						EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
+						
+						// Modify entry
+						if (entryByRowIndex.getId() != null) {
+							try {
+								EventSupportDelegate.getInstance().modifyEventSupportEvent(entryByRowIndex);
+								
+							} catch (Exception e) {
+								LOG.error(e.getMessage(), e);
+							}
+						}
+					}
+				
+					tblModel.setModelModified(false);
+				}
+			}
+		});
+		MAP_ACTIONS.put(ACTIONS.ACTION_SAVE_ALL_STATETRANSITION, 
+				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
+			@Override
+			public void actionPerformed(ActionEvent actEv) {
+				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
+				if (estvElement != null)
+				{
+					EventSupportStatePropertiesTableModel  tblModel = (EventSupportStatePropertiesTableModel) 
+							estvElement.getPropertyTable().getModel();
+					
+					for(int selectedRow = 0; selectedRow < tblModel.getRowCount(); selectedRow++){
+						
+						EventSupportTransitionVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
+						
+						// Modify entry
+						if (entryByRowIndex.getId() != null) {
+							try {
+								EventSupportDelegate.getInstance().modifyEventSupportTransition(entryByRowIndex);
+								
+							} catch (Exception e) {
+								LOG.error(e.getMessage(), e);
+							}
+						}
+					}
+
+					tblModel.setModelModified(false);
+				}
+			}
+		});
+		MAP_ACTIONS.put(ACTIONS.ACTION_DELETE_STATETRANSITION, 
+				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
+			@Override
+			public void actionPerformed(ActionEvent actEv) {
+				EventSupportTargetView  estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
+				if (estvElement != null)
+				{
+					EventSupportStatePropertiesTableModel tblModel = (EventSupportStatePropertiesTableModel)	 
+							estvElement.getPropertyTable().getModel();
+					
+					int selectedRow = estvElement.getPropertyTable().getSelectedRow();
+					EventSupportTransitionVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
+					
+					// Delete element
+					if (entryByRowIndex.getId() != null) {
+						EventSupportDelegate.getInstance().deleteEventSupportTransition(entryByRowIndex);
+					}
+					
+					// remove it from tablemodel
+					tblModel.removeEntry(selectedRow);
+					
+					// and refresh new order and store it in db
+					for (int idx = selectedRow; idx < tblModel.getRowCount(); idx++) {
+						EventSupportDelegate.getInstance().modifyEventSupportTransition(tblModel.getEntryByRowIndex(idx));
+					}
+					
+					estvElement.getPropertyTable().repaint();
+					estvElement.getPropertyTable().revalidate();
+				}
+			}
+		});
+		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_DOWN_STATETRANSITION, 
+				new AbstractAction("", Icons.getInstance().getIconDown16()) {
+			@Override
+			public void actionPerformed(ActionEvent actEv) {
+				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
+				if (estvElement != null)
+				{
+					EventSupportStatePropertiesTableModel tblModel = (EventSupportStatePropertiesTableModel) 
+							estvElement.getPropertyTable().getModel();
+					
+					int selectedRow = estvElement.getPropertyTable().getSelectedRow();
+					tblModel.moveDown(selectedRow);
+				}
+			}
+		});
+		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_UP_STATETRANSITION, 
+				new AbstractAction("", Icons.getInstance().getIconUp16()) {
+			@Override
+			public void actionPerformed(ActionEvent actEv) {
+				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
+				if (estvElement != null)
+				{
+					EventSupportStatePropertiesTableModel tblModel = (EventSupportStatePropertiesTableModel) 
+							estvElement.getPropertyTable().getModel();
+					
+					int selectedRow = estvElement.getPropertyTable().getSelectedRow();
+					tblModel.moveUp(selectedRow);
+					estvElement.getPropertyTable().repaint();
+					estvElement.getPropertyTable().revalidate();
+				}
+			}
+		});
+		MAP_ACTIONS.put(ACTIONS.ACTION_DELETE_EVENT, 
 				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -107,17 +251,29 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 						{
 							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel)	 
 									estvElement.getPropertyTable().getModel();
-							EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(estvElement.getPropertyTable().getSelectedRow());
-			
-				
+							
+							int selectedRow = estvElement.getPropertyTable().getSelectedRow();
+							EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
+							
+							// Delete element
 							if (entryByRowIndex.getId() != null) {
 								EventSupportDelegate.getInstance().deleteEventSupportEvent(entryByRowIndex);
 							}
-							tblModel.fireTableRowsDeleted(estvElement.getPropertyTable().getSelectedRow(), estvElement.getPropertyTable().getSelectedRow());
+							
+							// remove it from tablemodel
+							tblModel.removeEntry(selectedRow);
+							
+							// and refresh new order and store it in db
+							for (int idx = selectedRow; idx < tblModel.getRowCount(); idx++) {
+								EventSupportDelegate.getInstance().modifyEventSupportEvent(tblModel.getEntryByRowIndex(idx));
+							}
+							
+							estvElement.getPropertyTable().repaint();
+							estvElement.getPropertyTable().revalidate();
 						}
 					}
 				});
-		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_UP, 
+		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_UP_EVENT, 
 				new AbstractAction("", Icons.getInstance().getIconUp16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -126,33 +282,27 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 						{
 							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
 									estvElement.getPropertyTable().getModel();
-							int selectedRow = estvElement.getPropertyTable().getSelectedRow();
-							EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
 							
-							// Switch with previous row
-							if (selectedRow > 0) {
-								EventSupportEventVO entryPreviousRow = tblModel.getEntryByRowIndex(selectedRow - 1);
-								entryPreviousRow.setOrder(entryByRowIndex.getOrder());
-								entryByRowIndex.setOrder(entryByRowIndex.getOrder()-1);
-								
-								// Update entry
-								if (entryByRowIndex.getId() != null) {
-									EventSupportDelegate.getInstance().modifyEventSupportEvent(entryPreviousRow);
-								}
-								if (entryByRowIndex.getId() != null) {
-									EventSupportDelegate.getInstance().modifyEventSupportEvent(entryByRowIndex);
-								}
-								
-								tblModel.fireTableRowsUpdated(selectedRow, selectedRow-1);
-							}
+							int selectedRow = estvElement.getPropertyTable().getSelectedRow();
+							tblModel.moveUp(selectedRow);
+							estvElement.getPropertyTable().repaint();
+							estvElement.getPropertyTable().revalidate();
 						}
 					}
 				});
-		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_DOWN, 
+		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_DOWN_EVENT, 
 				new AbstractAction("", Icons.getInstance().getIconDown16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						
+						EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
+						if (estvElement != null)
+						{
+							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
+									estvElement.getPropertyTable().getModel();
+							
+							int selectedRow = estvElement.getPropertyTable().getSelectedRow();
+							tblModel.moveDown(selectedRow);
+						}
 					}
 				});
 		MAP_ACTIONS.put(ACTIONS.ACTION_REFRESH_TARGETTREE, 
@@ -239,70 +389,113 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		}	
 	}
 	
-	public void showTargetSupportProperties(EventSupportTreeNode node) {
+	public void showTargetStateSupportPropertiesNotModified(final EventSupportTreeNode node) {
+		final EventSupportStatePropertiesTableModel targetStateModel = viewEventSupportManagement.getTargetStateModel();
+		
+		Collection<EventSupportTransitionVO> EventSupportTransitionVO;
+		
 		try {
-				switch (node.getTreeNodeType()) {
-				case EVENTSUPPORT_TYPE:
-					EventSupportEntityPropertiesTableModel targetEntityModel = viewEventSupportManagement.getTargetEntityModel();
-					targetEntityModel.clear();
-					if (node.getParentNode().getTreeNodeType().equals(EventSupportTargetType.ENTITY))
-					{	
-						Integer iEntityId = Integer.parseInt(node.getParentNode().getId().toString());
-						Collection<EventSupportEventVO> eventSupportsForEntity = EventSupportRepository.getInstance().getEventSupportsForEntity(iEntityId);
-					
-						for (EventSupportEventVO esevo : eventSupportsForEntity)
-						{
-							if (esevo.getEventSupportType().equals(node.getEntityName()))
-							{
-								targetEntityModel.addEntry(esevo);
-							}
-						}
-						// show Property Panel for this supporttype
-						EventSupportTargetView targetViewPanel = viewEventSupportManagement.getTargetViewPanel();
-						
-						// States for the given entities
-						Collection<StateVO> statesByModule = StateDelegate.getInstance().getStatesByModule(iEntityId);
-						targetEntityModel.getStatus().clear();
-						for (StateVO svo : statesByModule)
-						{
-							targetEntityModel.addStatus(svo);
-						}
-						
-						
-						// Processes for the given entities
-						Collection<ProcessVO> processesByModuleId = EventSupportRepository.getInstance().getProcessesByModuleId(iEntityId);
-						targetEntityModel.getProcess().clear();
-						for (ProcessVO svo : processesByModuleId)
-						{
-							targetEntityModel.addProcess(svo);
-						}
-						
-						targetViewPanel.loadPropertyPanelByModelType(targetEntityModel);
+			EventSupportTransitionVO = EventSupportRepository.getInstance().getEventSupportsByTransitionId((Integer) node.getId());
+			targetStateModel.clear();
+			
+			for(EventSupportTransitionVO estVO : EventSupportTransitionVO) {
+				targetStateModel.addEntry(estVO);
+			}
+			viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(targetStateModel);
+			
+		} catch (RemoteException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		
+	}
+	
+	public void showTargetSupportPropertiesNotModified(final EventSupportTreeNode node) {
+		
+		final EventSupportEntityPropertiesTableModel targetEntityModel = viewEventSupportManagement.getTargetEntityModel();
+		targetEntityModel.clear();
+		
+		try {
+			if (node.getParentNode().getTreeNodeType().equals(EventSupportTargetType.ENTITY))
+			{	
+				Integer iEntityId = Integer.parseInt(node.getParentNode().getId().toString());
+				Collection<EventSupportEventVO> eventSupportsForEntity = EventSupportRepository.getInstance().getEventSupportsForEntity(iEntityId);
+				
+				for (EventSupportEventVO esevo : eventSupportsForEntity)
+				{
+					if (esevo.getEventSupportType().equals(node.getEntityName()))
+					{
+						targetEntityModel.addEntry(esevo);
 					}
+				}
+				// show Property Panel for this supporttype
+				EventSupportTargetView targetViewPanel = viewEventSupportManagement.getTargetViewPanel();
+				
+				// States for the given entities
+				Collection<StateVO> statesByModule = StateDelegate.getInstance().getStatesByModule(iEntityId);
+				targetEntityModel.getStatus().clear();
+				for (StateVO svo : statesByModule)
+				{
+					targetEntityModel.addStatus(svo);
+				}
+				
+				
+				// Processes for the given entities
+				Collection<ProcessVO> processesByModuleId = EventSupportRepository.getInstance().getProcessesByModuleId(iEntityId);
+				targetEntityModel.getProcess().clear();
+				for (ProcessVO svo : processesByModuleId)
+				{
+					targetEntityModel.addProcess(svo);
+				}
+				
+				targetViewPanel.loadPropertyPanelByModelType(targetEntityModel);
+			}
+		} catch (RemoteException e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
+		
+	public void showTargetSupportProperties(final EventSupportTreeNode node) {
+		
+		switch (node.getTreeNodeType()) {
+				case EVENTSUPPORT_TYPE:
+					final EventSupportEntityPropertiesTableModel targetEntityModel = viewEventSupportManagement.getTargetEntityModel();
+					if (targetEntityModel.isModelModified() ) {
+						
+						final String sMsg = getSpringLocaleDelegate().getMessage(
+								"CollectController.14","Der Datensatz wurde ge\u00e4ndert.") + "\n" + getSpringLocaleDelegate().getMessage(
+										"CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" +
+										getSpringLocaleDelegate().getMessage("CollectController.20","Jetzt speichern?");
+						int result = JOptionPane.showConfirmDialog(viewEventSupportManagement, sMsg, "", JOptionPane.YES_NO_OPTION);
+						if (result == OverlayOptionPane.YES_OPTION) {
+							MAP_ACTIONS.get(ACTIONS.ACTION_SAVE_ALL_EVENTS).actionPerformed(null);
+						}	
+						targetEntityModel.setModelModified(false);
+					}
+					
+					showTargetSupportPropertiesNotModified(node);
+					
 					break;
 				case STATE_TRANSITION:
 					EventSupportStatePropertiesTableModel targetStateModel = viewEventSupportManagement.getTargetStateModel();
 					
-					Collection<EventSupportTransitionVO> EventSupportTransitionVO = 
-							EventSupportRepository.getInstance().getEventSupportsByTransitionId((Integer) node.getId());
-					
-					targetStateModel.clear();
-					
-					for(EventSupportTransitionVO estVO : EventSupportTransitionVO) {
-						targetStateModel.addEntry(estVO);
+					if (targetStateModel.isModelModified()) {
+						final String sMsg = getSpringLocaleDelegate().getMessage(
+								"CollectController.14","Der Datensatz wurde ge\u00e4ndert.") + "\n" + getSpringLocaleDelegate().getMessage(
+										"CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" +
+										getSpringLocaleDelegate().getMessage("CollectController.20","Jetzt speichern?");
+						int result = JOptionPane.showConfirmDialog(viewEventSupportManagement, sMsg, "", JOptionPane.YES_NO_OPTION);
+						if (result == OverlayOptionPane.YES_OPTION) {
+							MAP_ACTIONS.get(ACTIONS.ACTION_SAVE_ALL_STATETRANSITION).actionPerformed(null);
+						}	
+						targetStateModel.setModelModified(false);
 					}
 					
-					viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(targetStateModel);
+					showTargetStateSupportPropertiesNotModified(node);
 					
 					break;
 				default:
 					break;
-				}
-			
-			
-		} catch (RemoteException e) {
-			LOG.error(e.getMessage(), e);
-		} 
+			}
 	}
 	
 	public void showManagementPane(MainFrameTabbedPane desktopPane)
@@ -329,7 +522,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 			viewEventSupportManagement.showGui();			
 		}
 		
-		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, 
+		ifrm = Main.getInstance().getMainController().newMainFrameTab(null, 
 				localeDelegate.getMessage("nuclos.entity.eventsupportmangagement.label", "Nucleus Entit\u00e4tenwizard <Neue Entit\u00e4t>"));
 	
 		ifrm.add(viewEventSupportManagement);

@@ -138,5 +138,5 @@ public class EventSupportEventVO extends NuclosValueObject
 		}
 	
 	}
-	
+
 }

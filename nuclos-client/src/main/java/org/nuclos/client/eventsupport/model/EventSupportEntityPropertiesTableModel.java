@@ -1,12 +1,16 @@
 package org.nuclos.client.eventsupport.model;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.jfree.util.Log;
+import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
@@ -19,11 +23,22 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	
 	static final String[] COLUMNS = new String[] {COL_ORDER, COL_EVENTSUPPORT, COL_STATUS, COL_PROCESS};
 	
+	private boolean isModelModified= false;
+	
 	final List<StateVO> status = new ArrayList<StateVO> ();
 	final List<ProcessVO> process = new ArrayList<ProcessVO> ();
 	
 	List<EventSupportEventVO> entries = new ArrayList<EventSupportEventVO>();
 	
+	
+	public boolean isModelModified() {
+		return isModelModified;
+	}
+
+	public void setModelModified(boolean isModelModified) {
+		this.isModelModified = isModelModified;
+	}
+
 	@Override
 	public int getRowCount() {
 		return entries.size();
@@ -40,14 +55,12 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		boolean retVal = false;
 		if (columnIndex == 2 || columnIndex == 3)
 		{
-			return true;
+			retVal = true;
 		}
-		else
-		{
-			return false;
-		}
+		return retVal;
 	}
 	@Override
 	public int getColumnCount() {
@@ -61,7 +74,7 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	public void addEntry (EventSupportEventVO eseVO)
 	{
 		entries.add(eseVO);
-		fireTableRowsInserted(entries.size(), entries.size());
+		
 	}
 	
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -76,6 +89,7 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 					 {
 						 entries.get(rowIndex).setStateId(svo.getId());
 						 entries.get(rowIndex).setStateName(svo.getDescription());
+						 setModelModified(true);
 						 break;
 					 }
 				 }				 
@@ -86,6 +100,7 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 					if (pvo.getDescription().equals(value)) {
 						 entries.get(rowIndex).setProcessId(pvo.getId());
 						 entries.get(rowIndex).setProcessName(pvo.getDescription());
+						 setModelModified(true);
 						 break;
 					}
 				}
@@ -105,6 +120,15 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 			break;
 		case 1:
 			retVal = esepe.getEventSupportClass();
+			try {
+				EventSupportVO ese = EventSupportRepository.getInstance().getEventSupportByClassname(esepe.getEventSupportClass());
+				if (ese != null && ese.getName() != null) {
+					retVal = ese.getName();
+				}
+			} catch (RemoteException e) {
+				Log.error(e.getMessage(), e);
+			}
+			
 			break;
 		case 2:
 			if ( esepe.getStateName() != null)
@@ -124,9 +148,7 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	public void clear() {
 		if (!entries.isEmpty())
 		{
-			int count = entries.size();
 			entries.clear();
-			fireTableRowsDeleted(0, count);
 		}
 	}
 	
@@ -165,4 +187,47 @@ public class EventSupportEntityPropertiesTableModel extends AbstractTableModel {
 	public void addProcess(ProcessVO newProcess) {
 		process.add(newProcess);
 	}
+
+	public void moveUp(int selectedRow) {
+		if (selectedRow != 0) {
+			EventSupportEventVO eseVO = entries.get(selectedRow);
+			EventSupportEventVO prevEseVO = entries.get(selectedRow - 1);
+			
+			entries.remove(selectedRow);
+			entries.remove(selectedRow-1);
+			
+			eseVO.setOrder(eseVO.getOrder() - 1);
+			prevEseVO.setOrder(prevEseVO.getOrder() + 1);
+			
+			entries.add(eseVO.getOrder() -1, eseVO);
+			entries.add(prevEseVO.getOrder() -1, prevEseVO);
+			
+			setModelModified(true);
+		}
+	}
+	
+	public void moveDown(int selectedRow) {
+		if (selectedRow < entries.size() - 1) {
+			EventSupportEventVO eseVO = entries.get(selectedRow);
+			EventSupportEventVO forwEseVO = entries.get(selectedRow + 1);
+			
+			eseVO.setOrder(eseVO.getOrder() + 1);
+			forwEseVO.setOrder(forwEseVO.getOrder() - 1);
+			
+			setModelModified(true);
+		}
+	}
+	
+	public void removeEntry(int row) {
+		if (row < entries.size()) {
+			entries.remove(row);
+		}
+		
+		for (int i=row; i <entries.size();i++) {
+			EventSupportEventVO eventSupportEventVO = entries.get(i);
+			eventSupportEventVO.setOrder(eventSupportEventVO.getOrder() - 1 );
+		}
+		
+	}
+	
 }

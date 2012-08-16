@@ -2,36 +2,30 @@ package org.nuclos.server.eventsupport.ejb3;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nuclos.api.annotation.NuclosEventType;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
-import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
-import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonCreateException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.EventSupportCache;
-import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.customcode.CustomCodeManager;
-import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
-import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -40,13 +34,10 @@ import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
-import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
-import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
@@ -98,15 +89,18 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 		
 		final List<EventSupportTransitionVO> evtSupps = new ArrayList<EventSupportTransitionVO>();
 		
-		StateTransitionVO strans = MasterDataWrapper.getStateTransitionVOWithoutDependants(
-				masterDataFacade.get(NuclosEntity.STATETRANSITION.getEntityName(), transId));
-		
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_EVENTSUPPORT_TRANSITION").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTORDER", Integer.class),
 						  t.baseColumn("STREVENTSUPPORTCLASS", String.class),
-					      t.baseColumn("BLNRUNAFTERWARDS", Boolean.class));
+					      t.baseColumn("BLNRUNAFTERWARDS", Boolean.class),
+					      t.baseColumn("DATCREATED", java.sql.Date.class),
+						  t.baseColumn("STRCREATED", String.class),
+						  t.baseColumn("DATCHANGED", java.sql.Date.class),
+						  t.baseColumn("STRCHANGED", String.class),
+						  t.baseColumn("INTVERSION", Integer.class),
+						  t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_STATE_TRANSITION", Integer.class), transId));
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
@@ -116,12 +110,17 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 					EventSupportCache.getInstance().getEventSupport(res.get(1, String.class));
 	
 			evtSupps.add(new EventSupportTransitionVO(
-					new NuclosValueObject(strans.getId(),strans.getCreatedAt(),strans.getCreatedBy(),strans.getChangedAt(),strans.getChangedBy(), strans.getVersion()),
+					new NuclosValueObject(
+							res.get(8, Integer.class),
+							new Date(res.get(3, java.sql.Date.class).getTime()),
+							res.get(4, String.class),
+							new Date(res.get(5, java.sql.Date.class).getTime()),
+							res.get(6, String.class),
+							res.get(7, Integer.class)),
 					eventSupport.getName(),
 					transId, 
 					res.get(0, Integer.class), 
 					res.get(2, Boolean.class)));
-			
 		}
 		
 		return evtSupps;
@@ -199,7 +198,12 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 				t.baseColumn("INTID_T_MD_STATE", Integer.class),
 				t.baseColumn("STRVALUE_T_MD_ENTITY", String.class),
 				t.baseColumn("STRVALUE_T_MD_PROCESS", String.class),
-				t.baseColumn("STRVALUE_T_MD_STATE", String.class));
+				t.baseColumn("STRVALUE_T_MD_STATE", String.class),
+				t.baseColumn("DATCREATED", java.sql.Date.class),
+				t.baseColumn("STRCREATED", String.class),
+				t.baseColumn("DATCHANGED", java.sql.Date.class),
+				t.baseColumn("STRCHANGED", String.class),
+				t.baseColumn("INTVERSION", Integer.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_ENTITY", Integer.class), entityId));
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 		
@@ -207,15 +211,20 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 			Integer id = res.get(0, Integer.class);
 			Integer order = res.get(1, Integer.class);
 			String esType = res.get(2, String.class);
-			String esClass = EventSupportCache.getInstance().getEventSupport(res.get(3, String.class)).getName();
+			String esClass = res.get(3, String.class);
 			Integer process = res.get(5, Integer.class);
 			Integer state = res.get(6, Integer.class);
 			String strEntity = res.get(7, String.class);
 			String strProcess = res.get(8, String.class);
 			String strState= res.get(9, String.class);
+			Date dCreated = new Date(res.get(10, java.sql.Date.class).getTime());
+			String sCreated = res.get(11, String.class);
+			Date dChanged = new Date(res.get(12, java.sql.Date.class).getTime());
+			String sChanged = res.get(13, String.class);
+			Integer version = res.get(14, Integer.class);
 			
 			EventSupportEventVO retVal = new EventSupportEventVO(
-					new NuclosValueObject(id, null,null,null,null,null), 
+					new NuclosValueObject(id, dCreated,sCreated,dChanged,sChanged,version), 
 					esClass,esType, entityId ,process,state,order,strEntity, strState,strProcess);  
 	     
 			result.add(retVal);	
@@ -352,6 +361,16 @@ public class EventSupportFacadeBean extends NuclosFacadeBean implements EventSup
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		} 	
+	}
+
+	@Override
+	public void deleteEventSupportEvents(Integer entityId,	String eventSupportType) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonRemoveException, CommonStaleVersionException {
+	
+		Collection<MasterDataVO> mdVOList = getMasterDataFacade().getDependantMasterData(NuclosEntity.EVENTSUPPORTEVENT.getEntityName(), "entity", entityId);
+		for (MasterDataVO mdvo : mdVOList) {
+			if (eventSupportType.equals(mdvo.getField("eventsupporttype").toString()))
+				getMasterDataFacade().remove(NuclosEntity.EVENTSUPPORTEVENT.getEntityName(), mdvo, false);
+		}		
 	}
 	
 	

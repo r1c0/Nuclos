@@ -6,6 +6,8 @@ import java.util.List;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.common2.exception.CommonRemoveException;
+import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
@@ -54,6 +56,8 @@ public interface EventSupportFacadeRemote
 	
 	public List<ProcessVO> getProcessesByModuleId(Integer moduleId);
 	
-	public Collection<EventSupportTransitionVO> getEventSupportsByTransitionId(Integer transId) throws CommonFinderException, CommonPermissionException  ;		
+	public Collection<EventSupportTransitionVO> getEventSupportsByTransitionId(Integer transId) throws CommonFinderException, CommonPermissionException  ;
+
+	public void deleteEventSupportEvents(Integer entityId,String eventSupportType) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonRemoveException, CommonStaleVersionException;		
 	
 }

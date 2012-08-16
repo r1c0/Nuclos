@@ -101,7 +101,9 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			
 			// selected tree element			
+			
 			final EventSupportTargetExplorerNode node= (EventSupportTargetExplorerNode) tree.getSelectionPath().getLastPathComponent();
 			
 			// show infos and properties for this node

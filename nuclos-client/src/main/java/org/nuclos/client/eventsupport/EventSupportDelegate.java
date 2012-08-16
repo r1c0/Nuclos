@@ -137,6 +137,18 @@ public class EventSupportDelegate {
 		
 	}
 	
+	public void deleteEventSupportEvents(Integer entityId, String eventSupportType) {
+		
+		try {
+			eventSupportFacadeRemote.deleteEventSupportEvents(entityId, eventSupportType);
+			EventSupportRepository.getInstance().updateEventSupports();
+			
+		} catch (Exception e) {
+			Log.error(e.getMessage(), e);
+		}
+		
+	}
+
 	public void deleteEventSupportEvent(EventSupportEventVO eseVOToUpdate) {
 		
 		try {

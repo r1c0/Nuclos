@@ -21,6 +21,10 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.border.Border;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.client.eventsupport.EventSupportManagementController.ACTIONS;
@@ -118,11 +122,9 @@ public class EventSupportTargetView extends JPanel {
 			statePropertiesPanel = new JPanel();
 			statePropertiesPanel.setLayout(new BorderLayout());
 			
-			JTable propTable = new JTable(this.esView.getTargetStateModel());
+			propTable = new JTable(this.esView.getTargetStateModel());
 			propTable.setFillsViewportHeight(true);
 			propTable.setRowSelectionAllowed(true);
-			propTable.setCellSelectionEnabled(false);
-			propTable.setColumnSelectionAllowed(false);
 			
 			propTable.getColumnModel().getColumn(0).setMaxWidth(120);
 			propTable.getColumnModel().getColumn(0).setMinWidth(20);
@@ -136,16 +138,16 @@ public class EventSupportTargetView extends JPanel {
 			
 			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();;
 			
-			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_DELETE)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE_STATETRANSITION))
+				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_STATETRANSITION)));
 			
 			toolBar.addSeparator();
 			
-			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP_STATETRANSITION))
+				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_STATETRANSITION)));
 			
-			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN_STATETRANSITION))
+				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_STATETRANSITION)));
 					
 			statePropertiesPanel.setBorder(b);
 			statePropertiesPanel.add(scrollPane, BorderLayout.CENTER);
@@ -172,7 +174,6 @@ public class EventSupportTargetView extends JPanel {
 			propTable.setRowSelectionAllowed(true);
 			propTable.addMouseMotionListener(new StatusModelMouseEventAdapter());
 			
-			
 			propTable.getColumnModel().getColumn(0).setMaxWidth(120);
 			propTable.getColumnModel().getColumn(0).setMinWidth(20);
 			propTable.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -192,19 +193,19 @@ public class EventSupportTargetView extends JPanel {
 			
 			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();;
 			
-			if (actionsMap.containsKey(ACTIONS.ACTION_SAVE))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_SAVE)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_SAVE_EVENT))
+				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_SAVE_EVENT)));
 			
-			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_DELETE)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE_EVENT))
+				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_EVENT)));
 			
 			toolBar.addSeparator();
 			
-			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP_EVENT))
+				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_EVENT)));
 			
-			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN_EVENT))
+				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_EVENT)));
 			
 			entityPropertiesPanel.setBorder(b);
 			entityPropertiesPanel.add(scrollPane, BorderLayout.CENTER);
