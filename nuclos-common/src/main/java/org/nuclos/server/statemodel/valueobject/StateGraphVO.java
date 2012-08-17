@@ -76,7 +76,12 @@ public class StateGraphVO implements Serializable {
 	 * @param states states of graph
 	 */
 	public void setStates(Set<StateVO> states) {
-		this.mpStates = states;
+		//this.mpStates = states;
+		this.mpStates = new HashSet<StateVO>();
+		for (StateVO state : states) {
+			if (state != null)
+				this.mpStates.add(state);
+		}		
 	}
 
 	/**

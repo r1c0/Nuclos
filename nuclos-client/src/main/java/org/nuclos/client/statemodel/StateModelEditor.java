@@ -1109,7 +1109,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 					log.error("Startpunkt ist f\u00e4lschlicherweise < 0 (" + start + ", readModel())");
 					start = 0;
 				}
-				statetransition.setSourceConnection(new ConnectionPoint(entry.getShape(), start));
+				if (entry != null)
+					statetransition.setSourceConnection(new ConnectionPoint(entry.getShape(), start));
 			}
 			if (iTargetStateId != null) {
 				final StateEntry entry = mpShapes.get(iTargetStateId);
@@ -1117,7 +1118,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 					log.error("Endpunkt ist f\u00e4lschlicherweise < 0 (" + end + ", readModel())");
 					end = 0;
 				}
-				statetransition.setDestinationConnection(new ConnectionPoint(entry.getShape(), end));
+				if (entry != null)
+					statetransition.setDestinationConnection(new ConnectionPoint(entry.getShape(), end));
 			}
 
 			shapemodel.setActiveLayer("Connectors");

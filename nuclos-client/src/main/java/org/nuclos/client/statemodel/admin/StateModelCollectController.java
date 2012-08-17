@@ -395,6 +395,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		final Integer iUpdatedStateModelId = saveStateModelAndUsages(statemodeleditor, clctEdited.getStateModelVO());
 
 		// reread the updated state model:
+		StateDelegate.getInstance().invalidate();
 		return new CollectableStateModel(StateDelegate.getInstance().getStateGraph(iUpdatedStateModelId));
 	}
 
@@ -405,6 +406,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		final Integer iInsertedModelId = saveStateModelAndUsages(statemodeleditor, clctNew.getStateModelVO());
 
 		// reread the inserted state model:
+		StateDelegate.getInstance().invalidate();
 		return new CollectableStateModel(StateDelegate.getInstance().getStateGraph(iInsertedModelId));
 	}
 

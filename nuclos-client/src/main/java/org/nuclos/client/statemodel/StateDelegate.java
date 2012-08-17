@@ -119,7 +119,7 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 		tnr.subscribe(getCachingTopic(), this);
 	}
 	
-	private void invalidate() {
+	public void invalidate() {
 		mpStateGraphVO = new ConcurrentHashMap<Integer, StateGraphVO>();
 		for (StateModelVO smvo : stateFacadeRemote.getStateModels()) {
 			try {
