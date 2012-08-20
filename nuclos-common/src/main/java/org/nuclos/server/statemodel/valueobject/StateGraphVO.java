@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.httpclient.util.LangUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.StringUtils;
@@ -198,7 +199,7 @@ public class StateGraphVO implements Serializable {
 				if (!mpStates.containsKey(statetransitionvo.getStateTarget())) {
 					throw new CommonValidationException("statemachine.error.validation.graph.invalidend");
 				}
-				if (statetransitionvo.getStateTarget().equals(statetransitionvo.getStateSource())) {
+				if (LangUtils.equals(statetransitionvo.getStateTarget(), statetransitionvo.getStateSource())) {
 					throw new CommonValidationException("statemachine.error.validation.graph.startequalsend");
 				}
 
@@ -233,8 +234,10 @@ public class StateGraphVO implements Serializable {
 		List<StateTransitionVO> duplicateTransitions = new ArrayList<StateTransitionVO>();
 		for (StateTransitionVO statetransitionvo2 : this.getTransitions()) {
 			if (!statetransitionvo2.isRemoved()) {
-				if (!statetransitionvo.getClientId().equals(statetransitionvo2.getClientId())) {
-					if ((statetransitionvo.getStateSource() != null) && (statetransitionvo.getStateSource().equals(statetransitionvo2.getStateSource())) && (statetransitionvo.getStateTarget().equals(statetransitionvo2.getStateTarget())))
+				if (!LangUtils.equals(statetransitionvo.getClientId(), statetransitionvo2.getClientId())) {
+					if ((statetransitionvo.getStateSource() != null)
+							&& (LangUtils.equals(statetransitionvo.getStateSource(), statetransitionvo2.getStateSource()))
+							&& (LangUtils.equals(statetransitionvo.getStateTarget(), statetransitionvo2.getStateTarget())))
 					{
 						duplicateTransitions.add(statetransitionvo2);
 					}
@@ -266,15 +269,15 @@ public class StateGraphVO implements Serializable {
 			@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == null && t.isAutomatic() == true; }
 		});
 		
-		if (startTransition == null || statetransitionvo.getStateSource() == null || statetransitionvo.getStateSource().equals(startTransition.getStateTarget()))
+		if (startTransition == null || statetransitionvo.getStateSource() == null || LangUtils.equals(statetransitionvo.getStateSource(), startTransition.getStateTarget()))
 			return true;
 		
 		for (StateTransitionVO statetransitionvo2 : this.getTransitions()) {
 			if (!statetransitionvo2.isRemoved()) {
-				if (!statetransitionvo.getClientId().equals(statetransitionvo2.getClientId())) {
+				if (!LangUtils.equals(statetransitionvo.getClientId(), statetransitionvo2.getClientId())) {
 					if ((statetransitionvo.getStateSource() != null)
 							&& (statetransitionvo2.getStateTarget() != null)
-							&& (statetransitionvo2.getStateTarget().equals(statetransitionvo.getStateSource())))
+							&& (LangUtils.equals(statetransitionvo2.getStateTarget(), statetransitionvo.getStateSource())))
 					{
 						checkedTransitions.add(statetransitionvo2);
 					}
@@ -284,7 +287,9 @@ public class StateGraphVO implements Serializable {
 		if (checkedTransitions.isEmpty())
 			return true;
 		for (StateVO state : getStates()) {
-			if (state.getId().equals(statetransitionvo.getStateSource())) {
+			if (state.getId() == null)
+				System.err.println("sdsd");
+			if (LangUtils.equals(state.getId(), statetransitionvo.getStateSource())) {
 				break;
 			}
 		}
@@ -293,7 +298,7 @@ public class StateGraphVO implements Serializable {
 			StateTransitionVO checkedTransition = (StateTransitionVO) iterator.next();
 			if (checkedTransition.isDefault()) {
 				for (StateVO state : getStates()) {
-					if (state.getId().equals(statetransitionvo.getStateSource())) {
+					if (LangUtils.equals(state.getId(), statetransitionvo.getStateSource())) {
 						break;
 					}
 				}
@@ -368,8 +373,10 @@ public class StateGraphVO implements Serializable {
 		List<StateTransitionVO> duplicateTransitions = new ArrayList<StateTransitionVO>();
 		for (StateTransitionVO statetransitionvo2 : this.getTransitions()) {
 			if (!statetransitionvo2.isRemoved()) {
-				if (!statetransitionvo.getClientId().equals(statetransitionvo2.getClientId())) {
-					if ((statetransitionvo.getStateSource() != null) && (statetransitionvo.getStateSource().equals(statetransitionvo2.getStateSource())) && (statetransitionvo.isDefault() && statetransitionvo2.isDefault()))
+				if (!LangUtils.equals(statetransitionvo.getClientId(), statetransitionvo2.getClientId())) {
+					if ((statetransitionvo.getStateSource() != null)
+							&& (LangUtils.equals(statetransitionvo.getStateSource(), statetransitionvo2.getStateSource()))
+							&& (statetransitionvo.isDefault() && statetransitionvo2.isDefault()))
 					{
 						duplicateTransitions.add(statetransitionvo2);
 					}
