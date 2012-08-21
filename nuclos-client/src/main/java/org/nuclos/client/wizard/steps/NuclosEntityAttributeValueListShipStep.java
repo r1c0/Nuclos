@@ -25,7 +25,6 @@ import java.util.EventListener;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
@@ -53,9 +52,9 @@ import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.wizard.model.ValueList;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -65,7 +64,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttributeAbstractStep implements IReferenceHolder {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeValueListShipStep.class);
@@ -82,20 +81,20 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 
 	public NuclosEntityAttributeValueListShipStep() {	
-		// initComponents();		
+		initComponents();		
 	}
 
 	public NuclosEntityAttributeValueListShipStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributeValueListShipStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {		
 		
@@ -105,7 +104,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		pnlName = new JPanel();
 		pnlName.setLayout(new BorderLayout(5, 5));
 		
-		lbName = new JLabel(localeDelegate.getMessage("wizard.step.attributevaluelist.7", "Name"));
+		lbName = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributevaluelist.7", "Name"));
 		tfName = new JTextField();
 		
 		tfName.setDocument(new LimitSpecialCharacterDocument(25));
@@ -113,7 +112,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		pnlName.add(lbName, BorderLayout.WEST);
 		pnlName.add(tfName, BorderLayout.CENTER);
 		
-		lbInfo = new JLabel(localeDelegate.getMessage(
+		lbInfo = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.attributevaluelist.1","Entität ist schon vorhanden. Bitte anderen Namen vergeben!"));
 		lbInfo.setForeground(Color.RED);
 		lbInfo.setVisible(false);
@@ -276,15 +275,15 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
         public String getColumnName(int column) {
 	        switch(column) {
             case 0:
-	            return localeDelegate.getMessage("wizard.step.attributevaluelist.2", "Wert");
+	            return SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributevaluelist.2", "Wert");
             case 1:
-	            return localeDelegate.getMessage("wizard.step.attributevaluelist.3", "Mnemonic");
+	            return SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributevaluelist.3", "Mnemonic");
             case 2:
-	            return localeDelegate.getMessage("wizard.step.attributevaluelist.4", "Beschreibung");
+	            return SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributevaluelist.4", "Beschreibung");
             case 3:
-	            return localeDelegate.getMessage("wizard.step.attributevaluelist.5", "Gültig von");
+	            return SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributevaluelist.5", "Gültig von");
             case 4:
-	            return localeDelegate.getMessage("wizard.step.attributevaluelist.6", "Gültig bis");
+	            return SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributevaluelist.6", "Gültig bis");
             default:
             	return super.getColumnName(column);
             }

@@ -22,11 +22,8 @@ import javax.swing.Icon;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.wizard.NuclosEntityAttributeWizardStaticModel;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -36,15 +33,13 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public abstract class NuclosEntityAttributeAbstractStep extends PanelWizardStep implements Closeable {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeAbstractStep.class);
 	
 	NuclosEntityAttributeWizardStaticModel model;
 	
-	SpringLocaleDelegate localeDelegate;
-
 	public NuclosEntityAttributeAbstractStep() {
 	}
 
@@ -55,12 +50,7 @@ public abstract class NuclosEntityAttributeAbstractStep extends PanelWizardStep 
 	public NuclosEntityAttributeAbstractStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
 	}
-	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		this.localeDelegate = cld;
-	}
-	
+		
 	protected abstract void initComponents();
 	
 	@Override
@@ -83,7 +73,6 @@ public abstract class NuclosEntityAttributeAbstractStep extends PanelWizardStep 
 		LOG.debug("close(): " + this);
 		removeAll();
 		model = null;
-		localeDelegate = null;
 	}
 
 }

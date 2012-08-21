@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -48,6 +47,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.console.NuclosConsole;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -74,11 +74,8 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -88,7 +85,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityNameStep.class);
@@ -101,49 +98,34 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	private JLabel lbInfo;
 
-	private String sEntityName;
-
 	private JButton btnRemove;
 
 	private Collection<EntityMetaDataVO> colMasterdata;
 	private EntityMetaDataVO toEdit;
 	
-	// Spring injection
-	
-	private ConsoleFacadeRemote consoleFacadeRemote;
-	
-	// end of Spring injection
-
 	public NuclosEntityNameStep() {
-		// initComponents();
+		 initComponents();
 	}
 
 	public NuclosEntityNameStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityNameStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
 	public void setEntityToEdit(EntityMetaDataVO vo) {
 		this.toEdit = vo;
 	}
-	
-	@Autowired
-	final void setConsoleFacadeRemote(ConsoleFacadeRemote consoleFacadeRemote) {
-		this.consoleFacadeRemote = consoleFacadeRemote;
-	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 
 		colMasterdata =  MetaDataClientProvider.getInstance().getAllEntities();
-
-		sEntityName = new String();
 
 		double size [][] = {{TableLayout.PREFERRED, 200, TableLayout.FILL}, {20,20,20,20,20,TableLayout.FILL}};
 
@@ -151,16 +133,16 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		lbName = new JLabel(localeDelegate.getMessage(
+		lbName = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityname.1", "Bitte geben Sie den Namen der neuen Entit\u00e4t ein")+": ");
 		tfName = new JTextField();
-		tfName.setToolTipText(localeDelegate.getMessage(
+		tfName.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityname.tooltip.1", "Namen der neuen Entit\u00e4t"));
 		tfName.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbChoice = new JLabel(localeDelegate.getMessage(
+		lbChoice = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityname.2", "oder w\u00e4hlen Sie eine Entit\u00e4t die Sie ver\u00e4ndern m\u00f6chten")+": ");
 		cmbEntity = new JComboBox();
-		cmbEntity.setToolTipText(localeDelegate.getMessage(
+		cmbEntity.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityname.tooltip.2", "Namen der Entit\u00e4t die Sie ver\u00e4ndern m\u00f6chten"));
 		this.fillEntityCombobox();
 		cmbEntity.setEditable(true);
@@ -170,7 +152,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		lbInfo.setVisible(false);
 		lbInfo.setForeground(Color.RED);
 
-		btnRemove = new JButton(localeDelegate.getMessage(
+		btnRemove = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityname.8", "Entit\u00e4t entfernen"));
 		btnRemove.setVisible(false);
 
@@ -207,7 +189,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 							break;
 						}
 						if(e.getDocument().getLength() > 250) {
-							lbInfo.setText(localeDelegate.getMessage(
+							lbInfo.setText(SpringLocaleDelegate.getInstance().getMessage(
 									"wizard.step.entityname.12", "Der Name ist zu lang. Bitte k\u00fcrzen!"));
 							lbInfo.setVisible(true);
 							NuclosEntityNameStep.this.setComplete(false);
@@ -215,10 +197,10 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 						}
 
 						if(e.getDocument().getText(0, size).equals(metaVO.getEntity())
-							|| e.getDocument().getText(0, size).equals(localeDelegate.getResource(
+							|| e.getDocument().getText(0, size).equals(SpringLocaleDelegate.getInstance().getResource(
 									metaVO.getLocaleResourceIdForLabel(), "") )) {
 							NuclosEntityNameStep.this.setComplete(false);
-							lbInfo.setText(localeDelegate.getMessage(
+							lbInfo.setText(SpringLocaleDelegate.getInstance().getMessage(
 									"wizard.step.entityname.4", "Entit\u00e4t ist schon vorhanden"));
 							lbInfo.setVisible(true);
 							return;
@@ -227,7 +209,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 							lbInfo.setVisible(false);
 						}
 						if(e.getDocument().getLength() > 25) {
-							lbInfo.setText(localeDelegate.getMessage(
+							lbInfo.setText(SpringLocaleDelegate.getInstance().getMessage(
 									"wizard.step.entityname.13", "Der Tabellenname wird für interne Zwecke gekürzt!"));
 							lbInfo.setVisible(true);
 						}
@@ -291,18 +273,18 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 					StringBuffer sbMessage = new StringBuffer();
 					if(!dropEntityAllowed(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity(), sbMessage)) {
 						JOptionPane.showMessageDialog(NuclosEntityNameStep.this, sbMessage,
-							localeDelegate.getMessage("wizard.step.inputattribute.12", "Entfernen nicht möglich!"), 
+							SpringLocaleDelegate.getInstance().getMessage("wizard.step.inputattribute.12", "Entfernen nicht möglich!"), 
 							JOptionPane.OK_OPTION);
 						return;
 					}
 
 					boolean blnImportStructure = MetaDataDelegate.getInstance().hasEntityImportStructure(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity().getId());
 					if(blnImportStructure) {
-						String sMessage = localeDelegate.getMessage(
+						String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 								"wizard.step.entityname.14",
 								"Diese Entität besitzt Strukturdefinitionen für Objektimporte. Diese wird gelöscht! Sie können den Vorgang abbrechen!");
 						int abort = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this, sMessage,
-							localeDelegate.getMessage("wizard.step.entityname.16", "Achtung!"), 
+							SpringLocaleDelegate.getInstance().getMessage("wizard.step.entityname.16", "Achtung!"), 
 							JOptionPane.OK_CANCEL_OPTION);
 						if(abort != JOptionPane.OK_OPTION)
 							return;
@@ -310,19 +292,19 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 					boolean blnWorkflow = MetaDataDelegate.getInstance().hasEntityWorkflow(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity().getId());
 					if(blnWorkflow) {
-						String sMessage = localeDelegate.getMessage(
+						String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 								"wizard.step.entityname.15",
 								"Diese Entität ist in einem Arbeitsschritt integriert! Dieser wird gelöscht!");
 						int abort = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this, sMessage,
-							localeDelegate.getMessage("wizard.step.entityname.16", "Achtung!"), JOptionPane.OK_CANCEL_OPTION);
+							SpringLocaleDelegate.getInstance().getMessage("wizard.step.entityname.16", "Achtung!"), JOptionPane.OK_CANCEL_OPTION);
 						if(abort != JOptionPane.OK_OPTION)
 							return;
 					}
 
-					final String sMessage = localeDelegate.getMessage(
+					final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 							"wizard.step.entityname.9", 
 							"Sind Sie sicher, dass Sie die Entit\u00e4t l\u00f6schen m\u00f6chten?");
-					final String sTitle = localeDelegate.getMessage("wizard.step.entityname.10", "L\u00f6schen");
+					final String sTitle = SpringLocaleDelegate.getInstance().getMessage("wizard.step.entityname.10", "L\u00f6schen");
 
 					int dropEntity = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this, sMessage, sTitle, JOptionPane.YES_NO_OPTION);
 					switch(dropEntity) {
@@ -330,14 +312,14 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 						boolean bDropLayout = false;
 						if(MetaDataDelegate.getInstance().hasEntityLayout(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity().getId())) {
 							int dropLayout = JOptionPane.showConfirmDialog(NuclosEntityNameStep.this,
-									localeDelegate.getMessage("wizard.step.entityname.11", "Soll das Layout der Entität gelöscht werden?"), 
+									SpringLocaleDelegate.getInstance().getMessage("wizard.step.entityname.11", "Soll das Layout der Entität gelöscht werden?"), 
 									sTitle, JOptionPane.YES_NO_OPTION);
 							bDropLayout = (dropLayout == JOptionPane.YES_OPTION);
 						}
 
 						MetaDataDelegate.getInstance().removeEntity(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity(), bDropLayout);
 						NuclosWizardUtils.flushCaches();
-						consoleFacadeRemote.invalidateAllCaches();
+						NuclosConsole.getInstance().invalidateAllCaches();
 						NuclosEntityNameStep.this.model.cancelWizard();
 						break;
 					case JOptionPane.NO_OPTION:
@@ -398,7 +380,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 					.getAllEntityFieldsByEntity(vo.getEntity()).values()) {
 				if(voField.getForeignEntity() != null 
 						&& voField.getForeignEntity().equals(voEntity.getEntity())) {
-					sbEntities.append(localeDelegate.getTextFallback(
+					sbEntities.append(SpringLocaleDelegate.getInstance().getTextFallback(
 							vo.getLocaleResourceIdForLabel(), vo.getEntity()));
 					sbEntities.append(" ");
 					blnAllowed = false;
@@ -406,7 +388,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 			}
 		}
 		if(!blnAllowed) {
-			sb.append(localeDelegate.getMessage("wizard.step.entityname.7", 
+			sb.append(SpringLocaleDelegate.getInstance().getMessage("wizard.step.entityname.7", 
 					"Die Entität wird referenziert von " + sbEntities.substring(0, sbEntities.length()-1) + ". Bitte entfernen Sie die Referenz vorher dort!", 
 					sbEntities));
 		}
@@ -439,8 +421,6 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		cmbEntity = null;
 
 		lbInfo = null;
-
-		sEntityName = null;
 
 		btnRemove = null;
 
@@ -476,12 +456,12 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				}
 				NuclosEntityNameStep.this.model.setEditMode(true);
 				NuclosEntityNameStep.this.model.setEntityName(vo.getEntity());
-				NuclosEntityNameStep.this.model.setLabelSingular(localeDelegate.getResource(
+				NuclosEntityNameStep.this.model.setLabelSingular(SpringLocaleDelegate.getInstance().getResource(
 						vo.getLocaleResourceIdForLabel(), ""));
 				NuclosEntityNameStep.this.model.setEditable(vo.isEditable());
 				NuclosEntityNameStep.this.model.setSearchable(vo.isSearchable());
 				NuclosEntityNameStep.this.model.setLogbook(vo.isLogBookTracking());
-				NuclosEntityNameStep.this.model.setMenuPath(localeDelegate.getResource(
+				NuclosEntityNameStep.this.model.setMenuPath(SpringLocaleDelegate.getInstance().getResource(
 						vo.getLocaleResourceIdForMenuPath(), ""));
 				NuclosEntityNameStep.this.model.setCachable(vo.isCacheable());
 				NuclosEntityNameStep.this.model.setImExport(vo.isImportExport());
@@ -490,10 +470,10 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				NuclosEntityNameStep.this.model.setStateModel(vo.isStateModel());
 				NuclosEntityNameStep.this.model.setTableOrViewName(vo.getDbEntity());
 				String sNodeLabel = vo.getLocaleResourceIdForTreeView() == null ? ""
-						: localeDelegate.getTextForStaticLabel(vo.getLocaleResourceIdForTreeView());
+						: SpringLocaleDelegate.getInstance().getTextForStaticLabel(vo.getLocaleResourceIdForTreeView());
 				NuclosEntityNameStep.this.model.setNodeLabel(sNodeLabel.startsWith("[Missing resource id=null, locale") ? null : sNodeLabel);
 				String sNodeTooltip = vo.getLocaleResourceIdForTreeViewDescription() == null ? ""
-						: localeDelegate.getTextForStaticLabel(vo.getLocaleResourceIdForTreeViewDescription());
+						: SpringLocaleDelegate.getInstance().getTextForStaticLabel(vo.getLocaleResourceIdForTreeViewDescription());
 				NuclosEntityNameStep.this.model.setNodeTooltip(sNodeTooltip.startsWith("[Missing resource id=null, locale") ? null : sNodeTooltip);
 				NuclosEntityNameStep.this.model.setMultiEditEquation(vo.getFieldsForEquality());
 				NuclosEntityNameStep.this.model.setLabelSingularResource(vo.getLocaleResourceIdForLabel());
@@ -556,7 +536,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 			}
 		}
 
-		model.getParentFrame().setTitle(localeDelegate.getMessage(
+		model.getParentFrame().setTitle(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityname.5", "Nucleus Entit\u00e4tenwizard") 
 				+ " " + model.getEntityName());
 		super.applyState();
@@ -671,7 +651,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		Collection<EntityObjectVO> entityMenus = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.ENTITYMENU.getEntityName(), "entity", entityId);
 		for (EntityObjectVO menu : entityMenus) {
 			for (LocaleInfo li : LocaleDelegate.getInstance().getAllLocales(false)) {
-				menu.getFields().put("menupath_" + li.getTag(), localeDelegate.getResourceById(
+				menu.getFields().put("menupath_" + li.getTag(), SpringLocaleDelegate.getInstance().getResourceById(
 						li, menu.getField("menupath", String.class)));
 			}
 		}
@@ -688,8 +668,8 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 			@Override
 			public int compare(EntityMetaDataVO o1, EntityMetaDataVO o2) {
-				String s1 = localeDelegate.getTextFallback(o1.getLocaleResourceIdForLabel(), o1.toString());
-				String s2 = localeDelegate.getTextFallback(o2.getLocaleResourceIdForLabel(), o2.toString());
+				String s1 = SpringLocaleDelegate.getInstance().getTextFallback(o1.getLocaleResourceIdForLabel(), o1.toString());
+				String s2 = SpringLocaleDelegate.getInstance().getTextFallback(o2.getLocaleResourceIdForLabel(), o2.toString());
 				return s1.toUpperCase().compareTo(s2.toUpperCase());
 			}
 
@@ -707,16 +687,15 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 	public static Attribute wrapEntityMetaFieldVO(EntityFieldMetaDataVO fieldVO) throws CommonFinderException,
         CommonPermissionException {
 		
-		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		Attribute attr = new Attribute();
         attr.setId(fieldVO.getId());
         attr.setDistinct(fieldVO.isUnique());
         attr.setLogBook(fieldVO.isLogBookTracking());
         attr.setMandatory(!fieldVO.isNullable());
         attr.setIndexed(Boolean.TRUE.equals(fieldVO.isIndexed()));
-        attr.setLabel(localeDelegate.getResource(
+        attr.setLabel(SpringLocaleDelegate.getInstance().getResource(
         		fieldVO.getLocaleResourceIdForLabel(), fieldVO.getFallbacklabel()));
-        attr.setDescription(localeDelegate.getResource(fieldVO.getLocaleResourceIdForDescription(), ""));
+        attr.setDescription(SpringLocaleDelegate.getInstance().getResource(fieldVO.getLocaleResourceIdForDescription(), ""));
         attr.setLabelResource(fieldVO.getLocaleResourceIdForLabel());
         attr.setDescriptionResource(fieldVO.getLocaleResourceIdForDescription());
 
@@ -826,7 +805,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 			// value can't be set, don't worry
 		}
 
-        attr.setDescription(localeDelegate.getResource(fieldVO.getLocaleResourceIdForDescription(), ""));
+        attr.setDescription(SpringLocaleDelegate.getInstance().getResource(fieldVO.getLocaleResourceIdForDescription(), ""));
         return attr;
     }
 
@@ -867,7 +846,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 		@Override
         public String toString() {
-			return localeDelegate.getTextFallback(voEntity.getLocaleResourceIdForLabel(), voEntity.getEntity());
+			return SpringLocaleDelegate.getInstance().getTextFallback(voEntity.getLocaleResourceIdForLabel(), voEntity.getEntity());
 		}
 
 		public EntityMetaDataVO getWrappedEntity()  {

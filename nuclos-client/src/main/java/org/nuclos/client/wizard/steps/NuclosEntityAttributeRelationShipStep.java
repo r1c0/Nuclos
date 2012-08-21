@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -60,8 +59,8 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -71,7 +70,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttributeAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeRelationShipStep.class);
@@ -79,18 +78,13 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 	private JLabel lbEntity;
 	private JComboBox cbxEntity;
 
-	private JLabel lbFields;
-
 	private JScrollPane scrollPane;
 	private JList listFields;
 	private JButton btSelect;
 
 	private JLabel lbInfo;
 
-	private JLabel lbAlternativeLabel;
 	private JTextField tfAlternativeLabel;
-
-	private EntityMetaDataVO voSelected;
 
 	private JLabel lbValueListProvider;
 	private JCheckBox cbValueListProvider;
@@ -104,24 +98,24 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 
 	public NuclosEntityAttributeRelationShipStep() {
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributeRelationShipStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributeRelationShipStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
 	public void setAttributeList(List<Attribute> lst) {
 		this.lstAttributes = lst;
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.PREFERRED,40, TableLayout.FILL}, {20,20,20,20,100,20,TableLayout.PREFERRED, TableLayout.FILL}};
@@ -131,25 +125,22 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		layout.setHGap(5);
 		this.setLayout(layout);
 
-		lbEntity = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
+		lbEntity = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
 		cbxEntity = new JComboBox();
-		cbxEntity.setToolTipText(localeDelegate.getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
+		cbxEntity.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 
-		lbFields = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
-
-		lbAlternativeLabel = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
 		tfAlternativeLabel = new JTextField();
-		tfAlternativeLabel.setToolTipText(localeDelegate.getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
+		tfAlternativeLabel.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
 		tfAlternativeLabel.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
-		lbOnDeleteCascade = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
+		lbOnDeleteCascade = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
 		cbOnDeleteCascade = new JCheckBox();
-		cbOnDeleteCascade.setToolTipText(localeDelegate.getMessage(
+		cbOnDeleteCascade.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.attributerelationship.deletecascade.description", "Delete all referencing objects in this entity if the referenced object is deleted."));
 
-		lbValueListProvider = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
+		lbValueListProvider = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
 		cbValueListProvider = new JCheckBox();
-		cbValueListProvider.setToolTipText(localeDelegate.getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
+		cbValueListProvider.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
 
 		lbInfo = new JLabel();
 
@@ -185,7 +176,6 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 					final Object obj = e.getItem();
 					if(obj instanceof EntityMetaDataVO) {
 						EntityMetaDataVO vo = (EntityMetaDataVO)obj;
-						voSelected = vo;
 						Set<String> setFieldNames = new HashSet<String>();
 						List<EntityFieldMetaDataVO> lstFields = new ArrayList<EntityFieldMetaDataVO>(MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values());
 						Collections.sort(lstFields, new Comparator<EntityFieldMetaDataVO>() {
@@ -205,7 +195,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 								setFieldNames.add(voField.getField());
 						}
 						if(!NuclosEntityAttributeRelationShipStep.this.model.isEditMode())
-							tfAlternativeLabel.setText(localeDelegate.getResource(vo.getLocaleResourceIdForTreeView(), ""));
+							tfAlternativeLabel.setText(SpringLocaleDelegate.getInstance().getResource(vo.getLocaleResourceIdForTreeView(), ""));
 						try {
 							checkReferenceField();
 						}
@@ -317,12 +307,12 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 		if(parentWizardModel.hasRows() && model.isEditMode() && !parentWizardModel.isVirtual()) {
 			cbxEntity.setEnabled(false);
-			cbxEntity.setToolTipText(localeDelegate.getMessage(
+			cbxEntity.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));
 		}
 		else {
 			cbxEntity.setEnabled(true);
-			cbxEntity.setToolTipText(localeDelegate.getMessage(
+			cbxEntity.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 		}
 	}
@@ -368,18 +358,13 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		lbEntity = null;
 		cbxEntity = null;
 
-		lbFields = null;
-
 		scrollPane = null;
 		listFields = null;
 		btSelect = null;
 
 		lbInfo = null;
 
-		lbAlternativeLabel = null;
 		tfAlternativeLabel = null;
-
-		voSelected = null;
 
 		lbValueListProvider = null;
 		cbValueListProvider = null;
@@ -418,7 +403,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 				invalid = false;
 			}
 			catch (Exception e) {
-				throw new InvalidStateException(localeDelegate.getMessage(
+				throw new InvalidStateException(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName,
 						sName));
 			}
@@ -427,7 +412,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		if (invalid) {
 			final String msg = "Es wurde kein gültiger Referenzeintrag gefunden: Feld '" 
 					+ sField + "'";
-			throw new InvalidStateException(localeDelegate.getMessage(
+			throw new InvalidStateException(SpringLocaleDelegate.getInstance().getMessage(
 					"wizard.step.attributerelationship.8", msg));
 			// LOG.warn(msg);
 		}

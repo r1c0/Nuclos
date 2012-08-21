@@ -31,7 +31,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -65,12 +64,12 @@ import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -80,7 +79,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAbstractStep implements ChangeListener, ActionListener {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
@@ -156,23 +155,23 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 	private DataTyp customtype;
 
 	public NuclosEntityAttributePropertiesStep() {
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributePropertiesStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributePropertiesStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
-		customtypename = localeDelegate.getText("wizard.datatype.individual");
+		customtypename = SpringLocaleDelegate.getInstance().getText("wizard.datatype.individual");
 		customtype = new DataTyp(customtypename, null, null, null, null, null, null, null);
 		
 		double size [][] = {
@@ -185,21 +184,21 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		layout.setHGap(5);
 		this.setLayout(layout);
 
-		lbName = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.1", "Anzeigename")+": ");
+		lbName = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.1", "Anzeigename")+": ");
 		tfName = new JTextField();
 		tfName.setActionCommand(ACTIONCOMMAND_NAME);
-		tfName.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.1", "Anzeigename"));
+		tfName.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.1", "Anzeigename"));
 		tfName.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfName.addActionListener(this);
 
-		lbDesc = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.2", "Beschreibung")+": ");
+		lbDesc = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.2", "Beschreibung")+": ");
 		tfDesc = new JTextField();
 		tfDesc.setActionCommand(ACTIONCOMMAND_DESCRIPTION);
-		tfDesc.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.2", "Beschreibung"));
+		tfDesc.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.2", "Beschreibung"));
 		tfDesc.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfDesc.addActionListener(this);
 
-		lbDatatyp = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.3", "Datentyp")+": ");
+		lbDatatyp = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.3", "Datentyp")+": ");
 		List<DataTyp> lstTypes = DataTyp.getAllDataTyps();
 		Collections.sort(lstTypes, new Comparator<DataTyp>() {
 			@Override
@@ -209,48 +208,48 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		});
 		cbxDatatyp = new JComboBox(lstTypes.toArray());
 		cbxDatatyp.setActionCommand(ACTIONCOMMAND_DATATYPE);
-		cbxDatatyp.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.3", "Datentyp"));
+		cbxDatatyp.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.3", "Datentyp"));
 		cbxDatatyp.addActionListener(this);
 
-		lbJavatype = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.javatype", "Javatyp")+": ");
+		lbJavatype = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.javatype", "Javatyp")+": ");
 		List<String> javaTypes = CollectionUtils.asList(JAVA_TYPES);
 		Collections.sort(javaTypes);
 		cbxJavatype = new JComboBox(javaTypes.toArray());
 		cbxJavatype.setActionCommand(ACTIONCOMMAND_JAVATYPE);
-		cbxJavatype.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.javatype", "Javatyp"));
+		cbxJavatype.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.javatype", "Javatyp"));
 		cbxJavatype.addActionListener(this);
 
-		lbFieldWidth = new JLabel(localeDelegate.getMessage("wizard.datatype.3", "Feldbreite")+": ");
+		lbFieldWidth = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.datatype.3", "Feldbreite")+": ");
 		tfFieldWidth = new JTextField();
 		tfFieldWidth.setActionCommand(ACTIONCOMMAND_FIELDWIDTH);
 		tfFieldWidth.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfFieldWidth.addActionListener(this);
 
-		lbFieldPrecision = new JLabel(localeDelegate.getMessage("wizard.datatype.4", "Nachkommastellen")+": ");
+		lbFieldPrecision = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.datatype.4", "Nachkommastellen")+": ");
 		tfFieldPrecision = new JTextField();
 		tfFieldPrecision.setActionCommand(ACTIONCOMMAND_FIELDPRECISION);
 		tfFieldPrecision.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfFieldPrecision.addActionListener(this);
 
-		lbOutputFormat = new JLabel(localeDelegate.getMessage("wizard.datatype.6", "Ausgabeformat")+": ");
+		lbOutputFormat = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.datatype.6", "Ausgabeformat")+": ");
 		tfOutputFormat = new JTextField();
 		tfOutputFormat.setActionCommand(ACTIONCOMMAND_OUTPUTFORMAT);
 		tfOutputFormat.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfOutputFormat.addActionListener(this);
 
-		lbMinValue = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.21", "Mindestwert"));
+		lbMinValue = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.21", "Mindestwert"));
 		tfMinValue = new JTextField();
 		tfMinValue.setActionCommand(ACTIONCOMMAND_MINVALUE);
 		tfMinValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		tfMinValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.23", "Bestimmen Sie einen Mindeswert, der in der Eingabemaske validiert wird."));
+		tfMinValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.23", "Bestimmen Sie einen Mindeswert, der in der Eingabemaske validiert wird."));
 		tfMinValue.setEnabled(false);
 		tfMinValue.addActionListener(this);
 
-		lbMaxValue = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.22", "Maximalwert"));
+		lbMaxValue = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.22", "Maximalwert"));
 		tfMaxValue = new JTextField();
 		tfMaxValue.setActionCommand(ACTIONCOMMAND_MAXVALUE);
 		tfMaxValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		tfMaxValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.24", "Bestimmen Sie einen Maximalwert, der in der Eingabemaske validiert wird."));
+		tfMaxValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.24", "Bestimmen Sie einen Maximalwert, der in der Eingabemaske validiert wird."));
 		tfMaxValue.setEnabled(false);
 		tfMaxValue.addActionListener(this);
 
@@ -259,28 +258,28 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		datMinValue = new DateChooser(support);
 		datMinValue.setActionCommand(ACTIONCOMMAND_MINVALUEDATE);
 		datMinValue.setVisible(false);
-		datMinValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.23", "Bestimmen Sie einen Mindeswert, der in der Eingabemaske validiert wird."));
+		datMinValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.23", "Bestimmen Sie einen Mindeswert, der in der Eingabemaske validiert wird."));
 		datMinValue.addActionListener(this);
 
 		datMaxValue = new DateChooser(support);
 		datMaxValue.setActionCommand(ACTIONCOMMAND_MAXVALUEDATE);
-		datMaxValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.24", "Bestimmen Sie einen Maximalwert, der in der Eingabemaske validiert wird."));
+		datMaxValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.24", "Bestimmen Sie einen Maximalwert, der in der Eingabemaske validiert wird."));
 		datMaxValue.setVisible(false);
 		datMaxValue.addActionListener(this);
 
 		btnDataTyp = new JButton("...");
-		btnDataTyp.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.4", "Datentypen konfigurieren"));
+		btnDataTyp.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.4", "Datentypen konfigurieren"));
 
-		lbReference = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.reference", "Referenzfeld"));
+		lbReference = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.reference", "Referenzfeld"));
 		cbxReference = new JCheckBox();
 		cbxReference.setActionCommand(ACTIONCOMMAND_REFERENCE);
-		cbxReference.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.reference", "Ein Referenzfeld erm\u00f6glicht die Auswahl von Werten aus einer anderen Entit\u00e4t."));
+		cbxReference.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.reference", "Ein Referenzfeld erm\u00f6glicht die Auswahl von Werten aus einer anderen Entit\u00e4t."));
 		cbxReference.addActionListener(this);
 
-		lbValueList = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.77", "Werteliste:"));
+		lbValueList = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.77", "Werteliste:"));
 		cbxValueList = new JCheckBox();
 		cbxValueList.setActionCommand(ACTIONCOMMAND_VALUELIST);
-		cbxValueList.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.22", "In einer Werteliste definieren Sie fest definierte Werte"));
+		cbxValueList.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.22", "In einer Werteliste definieren Sie fest definierte Werte"));
 		cbxValueList.addActionListener(this);
 
 		lbInfo = new JLabel();
@@ -371,7 +370,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-				final MainFrameTab tabDataType = new MainFrameTab(localeDelegate.getMessage(
+				final MainFrameTab tabDataType = new MainFrameTab(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.23", "Datentypen verwalten"));
 				final DataTypeCollectController dtcc = factory.newDataTypeCollectController(tabDataType);
 				dtcc.addChangeListener(NuclosEntityAttributePropertiesStep.this);
@@ -487,7 +486,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 					for(Attribute attr : parentWizardModel.getAttributeModel().getAttributes()) {
 						if(attr.getLabel().equals(tfName.getText())) {
 							lbInfo.setForeground(Color.RED);
-							lbInfo.setText(localeDelegate.getMessage(
+							lbInfo.setText(SpringLocaleDelegate.getInstance().getMessage(
 									"wizard.step.attributeproperties.5", "Der Name wurde schon einmal vergeben"));
 							lbInfo.setVisible(true);
 							setComplete(false);
@@ -677,14 +676,14 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				newType.setScale((Integer)CollectableFieldFormat.getInstance(Integer.class).parse(null, tfFieldWidth.getText()));
 			}
 			catch (CollectableFieldFormatException ex) {
-				throw new InvalidStateException(localeDelegate.getMessage(
+				throw new InvalidStateException(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.validation.scale", "", tfFieldWidth.getText()));
 			}
 			try {
 				newType.setPrecision((Integer)CollectableFieldFormat.getInstance(Integer.class).parse(null, tfFieldPrecision.getText()));
 			}
 			catch (CollectableFieldFormatException ex) {
-				throw new InvalidStateException(localeDelegate.getMessage(
+				throw new InvalidStateException(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.validation.precision", "", tfFieldPrecision.getText()));
 			}
 
@@ -703,11 +702,11 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				}
 			}
 			catch (IllegalArgumentException ex) {
-				throw new InvalidStateException(localeDelegate.getMessage(
+				throw new InvalidStateException(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.validation.outputformat", "", tfOutputFormat.getText(), selectedType.getJavaType()));
 			}
 			if (model.isEditMode() && !DataTyp.isConversionSupported(selectedType, newType)) {
-				throw new InvalidStateException(localeDelegate.getText("wizard.step.attributeproperties.validation.conversion"));
+				throw new InvalidStateException(SpringLocaleDelegate.getInstance().getText("wizard.step.attributeproperties.validation.conversion"));
 			}
 			else {
 				selectedType = newType;
@@ -754,13 +753,13 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				return;
 			}
 			if(!(dMin != null && dMax != null)) {
-				throw new CommonValidationException(localeDelegate.getMessage(
+				throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.24", "Mindest- und Maximalwert müssen gesetzt sein."));
 			}
 			long l1 = dMin.getTime();
 			long l2 = dMax.getTime();
 			if(l1 > l2) {
-				throw new CommonValidationException(localeDelegate.getMessage(
+				throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.25", "Der Maximalwert ist kleiner als der Mindestwert."));
 			}
 			model.getAttribute().setInputValidation(l1 + " " + l2);
@@ -774,14 +773,14 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			}
 
 			if(!(s1.length() > 0 && s2.length() > 0)) {
-				throw new CommonValidationException(localeDelegate.getMessage(
+				throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.24", "Mindest- und Maximalwert müssen gesetzt sein."));
 			}
 			if(model.getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer")) {
 				Integer i1 = Integer.parseInt(s1);
 				Integer i2 = Integer.parseInt(s2);
 				if(i1 > i2) {
-					throw new CommonValidationException(localeDelegate.getMessage(
+					throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
 							"wizard.step.attributeproperties.25", "Der Maximalwert ist kleiner als der Mindestwert."));
 				}
 				model.getAttribute().setInputValidation(s1 + " " + s2);
@@ -792,7 +791,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				Double d1 = Double.parseDouble(s1);
 				Double d2 = Double.parseDouble(s2);
 				if(d1 > d2) {
-					throw new CommonValidationException(localeDelegate.getMessage(
+					throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
 							"wizard.step.attributeproperties.25", "Der Maximalwert ist kleiner als der Mindestwert."));
 				}
 				model.getAttribute().setInputValidation(s1 + " " + s2);

@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -61,9 +60,9 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -73,7 +72,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityOptionStep.class);
@@ -118,17 +117,17 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 	private JComboBox cbxImportTables;
 
 	public NuclosEntityOptionStep() {
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityOptionStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityOptionStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
 	protected void initPanel() {
@@ -141,37 +140,37 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		pnlImport = new JPanel();
 		pnlImport.setLayout(layout);
 
-		lbImportServer = new JLabel(localeDelegate.getMessage(
+		lbImportServer = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.1", "Server")+":");
 		tfImportServer = new JTextField();
 		tfImportServer.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportPort = new JLabel(localeDelegate.getMessage(
+		lbImportPort = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.2", "Port")+":");
 		tfImportPort = new JTextField();
 		tfImportPort.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportDatabase = new JLabel(localeDelegate.getMessage(
+		lbImportDatabase = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.3", "Datenbanktyp")+":");
 		cbxImportDatabase = new JComboBox();
 		cbxImportDatabase.addItem("Oracle");
 		cbxImportDatabase.addItem("MS SQL");
 		cbxImportDatabase.addItem("Postgres");
 		cbxImportDatabase.addItem("Sybase");
-		lbImportUser = new JLabel(localeDelegate.getMessage(
+		lbImportUser = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.4", "User"));
 		tfImportUser = new JTextField();
 		tfImportUser.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportPassword = new JLabel(localeDelegate.getMessage(
+		lbImportPassword = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.5", "Passwort"));
 		tfImportPassword = new JTextField();
 		tfImportPassword.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportSSID = new JLabel(localeDelegate.getMessage(
+		lbImportSSID = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.6", "Datenbank"));
 		tfImportSSID = new JTextField();
-		lbUrl = new JLabel(localeDelegate.getMessage(
+		lbUrl = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.7", "Datenbank URL"));
 		tfUrl = new JTextField();
 		tfUrl.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		btConnect = new JButton(localeDelegate.getMessage(
+		btConnect = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.8", "Verbindung \u00f6ffnen"));
 		btConnect.addActionListener(new ActionListener() {
 
@@ -197,7 +196,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		});
 
 
-		lbImportTables = new JLabel(localeDelegate.getMessage(
+		lbImportTables = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.9", "Tabelle"));
 		cbxImportTables = new JComboBox();
 
@@ -233,7 +232,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 
@@ -243,30 +242,30 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		lbName = new JLabel(localeDelegate.getMessage(
+		lbName = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.10", "Wie m\u00f6chten Sie Attribute erfassen")+" ");
-		rbGatherAttributes = new JRadioButton(localeDelegate.getMessage(
+		rbGatherAttributes = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.11", "Attribute manuell erfassen"));
-		rbGatherAttributes.setToolTipText(localeDelegate.getMessage(
+		rbGatherAttributes.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.tooltip.11", "Attribute manuell erfassen"));
-		rbCopyAttributes = new JRadioButton(localeDelegate.getMessage(
+		rbCopyAttributes = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.12", "Attribute von anderer Entit\u00e4t selektiv \u00fcbernehmen"));
-		rbCopyAttributes.setToolTipText(localeDelegate.getMessage(
+		rbCopyAttributes.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.tooltip.12", "Attribute von anderer Entit\u00e4t selektiv \u00fcbernehmen"));
-		rbAssignAttributes = new JRadioButton(localeDelegate.getMessage(
+		rbAssignAttributes = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.13", "\u00dcbernahme aus bestehender Datenbanktabelle"));
-		rbAssignAttributes.setToolTipText(localeDelegate.getMessage(
+		rbAssignAttributes.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.tooltip.13", "\u00dcbernahme aus bestehender Datenbanktabelle"));
-		rbTemplateAttributes = new JRadioButton(localeDelegate.getMessage(
+		rbTemplateAttributes = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.14", "Vorlage \u00fcbernehmen"));
-		rbTemplateAttributes.setToolTipText(localeDelegate.getMessage(
+		rbTemplateAttributes.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.tooltip.14", "Vorlage \u00fcbernehmen"));
-		rbImportTable = new JRadioButton(localeDelegate.getMessage(
+		rbImportTable = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.15", "Entit\u00e4t importieren"));
-		rbImportTable.setToolTipText(localeDelegate.getMessage(
+		rbImportTable.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.tooltip.15", "Entit\u00e4t importieren"));
 		rbImportTable.setVisible(false);
-		lbEntity = new JLabel(localeDelegate.getMessage(
+		lbEntity = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entityoption.16", "Bitte w\u00e4hlen Sie eine Entit\u00e4t aus")+":");
 		lbEntity.setVisible(false);
 		cbxEntity = new JComboBox();
@@ -442,9 +441,9 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								if(NuclosWizardUtils.isSystemField(field))
 									continue;
 								Attribute attr = new Attribute();
-								attr.setLabel(localeDelegate.getResource(
+								attr.setLabel(SpringLocaleDelegate.getInstance().getResource(
 										field.getLocaleResourceIdForLabel(), field.getFallbacklabel()));
-								attr.setDescription(localeDelegate.getResource(
+								attr.setDescription(SpringLocaleDelegate.getInstance().getResource(
 										field.getLocaleResourceIdForDescription(), ""));
 								attr.setDistinct(field.isUnique());
 								attr.setMandatory(!field.isNullable());

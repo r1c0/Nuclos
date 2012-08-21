@@ -55,17 +55,17 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Configurable
+//@Configurable
 public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 	private static final long serialVersionUID = 2900241917334839766L;
@@ -74,26 +74,24 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 	public static final String[] labels = TranslationVO.labelsEntity;
 	
-	//
-
 	private SubForm subform;
 	private MasterDataSubFormController subFormController;
 
 	public NuclosEntityMenuStep() {
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityMenuStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityMenuStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL}, {TableLayout.FILL}};
@@ -186,8 +184,8 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 		try {
 			subformdata = subFormController.getCollectables(true, true, true);
 		} catch (CommonValidationException e1) {
-			JOptionPane.showMessageDialog(this, localeDelegate.getMessageFromResource(e1.getMessage()),
-	    			localeDelegate.getMessage("wizard.step.menu.error.title", "Achtung!"), 
+			JOptionPane.showMessageDialog(this, SpringLocaleDelegate.getInstance().getMessageFromResource(e1.getMessage()),
+	    			SpringLocaleDelegate.getInstance().getMessage("wizard.step.menu.error.title", "Achtung!"), 
 	    			JOptionPane.OK_OPTION);
  	        throw new InvalidStateException();
 		}

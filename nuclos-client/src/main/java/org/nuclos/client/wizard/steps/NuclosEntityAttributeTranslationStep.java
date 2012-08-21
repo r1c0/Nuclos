@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
@@ -45,7 +44,6 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.LocaleInfo;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -55,14 +53,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeTranslationStep.class);
 
 	public static final String[] labels = TranslationVO.labelsField;
-	
-	//
 	
 	private JScrollPane scrolPane;
 	private JTable tblAttributes;
@@ -73,20 +69,20 @@ public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeA
 	
 	
 	public NuclosEntityAttributeTranslationStep() {	
-		// initComponents();		
+		initComponents();		
 	}
 
 	public NuclosEntityAttributeTranslationStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributeTranslationStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		

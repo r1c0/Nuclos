@@ -208,6 +208,10 @@ public class NuclosConsole extends ConsoleConstants {
 		nuclosRemoteServerSession.logout();
 	}
 
+	public String invalidateAllCaches() {
+		return consoleFacadeRemote.invalidateAllCaches();
+	}
+	
 	/**
 	 * Invalidates the attribute cache
 	 */

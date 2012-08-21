@@ -18,14 +18,12 @@ package org.nuclos.client.wizard.steps;
 
 import info.clearthought.layout.TableLayout;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -35,7 +33,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 
 	private JLabel lbName;
@@ -45,20 +43,20 @@ public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 	
 
 	public NuclosEntityFinalStep() {	
-		// initComponents();		
+		initComponents();		
 	}
 
 	public NuclosEntityFinalStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityFinalStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		

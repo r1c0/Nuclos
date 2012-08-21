@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
@@ -54,14 +53,13 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Configurable
+//@Configurable
 public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	private static final long serialVersionUID = 2900241917334839766L;
@@ -70,26 +68,24 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	public static final String[] labels = TranslationVO.labelsEntity;
 	
-	//
-
 	private SubForm subform;
 	private MasterDataSubFormController subFormController;
 
 	public NuclosEntityProcessStep() {
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityProcessStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityProcessStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL}, {TableLayout.FILL}};
@@ -168,13 +164,12 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	@Override
 	public void applyState() throws InvalidStateException {
-		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		List<CollectableEntityObject> subformdata;
 		try {
 			subformdata = subFormController.getCollectables(true, true, true);
 		} catch (CommonValidationException e1) {
-			JOptionPane.showMessageDialog(this, localeDelegate.getMessageFromResource(e1.getMessage()),
-	    			localeDelegate.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(this, SpringLocaleDelegate.getInstance().getMessageFromResource(e1.getMessage()),
+	    			SpringLocaleDelegate.getInstance().getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
  	        throw new InvalidStateException();
 		}
 		Collection<EntityObjectVO> processes = CollectionUtils.transform(subformdata, new Transformer<CollectableEntityObject, EntityObjectVO>() {
@@ -188,15 +183,15 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		for (EntityObjectVO process : processes) {
 			String name = process.getField("name");
 			if (StringUtils.isNullOrEmpty(name)) {
-				JOptionPane.showMessageDialog(this, localeDelegate.getMessage(
+				JOptionPane.showMessageDialog(this, SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.processes.error.name.mandatory", "Bitte definieren Sie für jede Aktion einen Namen."),
-		    			localeDelegate.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+		    			SpringLocaleDelegate.getInstance().getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 			}
 			if (!names.add(name)) {
-				JOptionPane.showMessageDialog(this, localeDelegate.getMessage(
+				JOptionPane.showMessageDialog(this, SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.processes.error.name.unique", "Der Name einer Aktion muss eindeutig sein ({0}).", name),
-		    			localeDelegate.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+		    			SpringLocaleDelegate.getInstance().getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 			}
 		}

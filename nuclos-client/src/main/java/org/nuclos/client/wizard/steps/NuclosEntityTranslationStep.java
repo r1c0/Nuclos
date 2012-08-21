@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
@@ -43,10 +42,9 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -56,12 +54,10 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 
 	public static final String[] labels = TranslationVO.labelsEntity;
-	
-	//
 	
 	private JScrollPane scrolPane;
 	private JTable attributeTable;
@@ -69,20 +65,20 @@ public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 	private EntityTranslationTableModel tablemodel;
 	
 	public NuclosEntityTranslationStep() {	
-		// initComponents();		
+		initComponents();		
 	}
 
 	public NuclosEntityTranslationStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityTranslationStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL, 130,130, TableLayout.FILL, 10}, {TableLayout.FILL, 10}};

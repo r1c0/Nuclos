@@ -37,7 +37,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -110,7 +109,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -120,7 +118,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttributeAbstractStep {
 	
 	public static class ListOfValues extends org.nuclos.client.ui.ListOfValues implements ICollectableListOfValues, JPopupMenuFactory, CollectableEventListener {
@@ -457,20 +455,20 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 
 	public NuclosEntityAttributeCommonPropertiesStep() {
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributeCommonPropertiesStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosEntityAttributeCommonPropertiesStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{150,20, TableLayout.FILL}, {20,20,20,20,20,20,20,20,90, TableLayout.FILL}};
@@ -482,85 +480,85 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		
 		final LabeledComponentSupport support = new LabeledComponentSupport();
 
-		lbLabel = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.10", "Feldname")+": ");
+		lbLabel = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.10", "Feldname")+": ");
 		tfLabel = new JTextField();
 		tfLabel.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		tfLabel.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.10", "Feldname"));
+		tfLabel.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.10", "Feldname"));
 
-		lbDefaultValue = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.11", "Standardwert")+": ");
+		lbDefaultValue = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.11", "Standardwert")+": ");
 		tfDefaultValue = new JTextField();
-		tfDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
+		tfDefaultValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 		tfDefaultValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		
 		cbxDefaultValue = new JComboBox();
 		cbxDefaultValue.setVisible(false);
-		cbxDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
+		cbxDefaultValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 
 		lovDefaultValue = new ListOfValues();
 		lovDefaultValue.setVisible(false);
-		lovDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
+		lovDefaultValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 
 		dateDefaultValue = new DateChooser(support, true);
 		dateDefaultValue.setVisible(false);
-		dateDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
+		dateDefaultValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 
 		cbDefaultValue = new JCheckBox();
 		cbDefaultValue.setVisible(false);
-		cbDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
+		cbDefaultValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 
-		lbDistinct = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.7", "Eindeutig")+": ");
+		lbDistinct = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.7", "Eindeutig")+": ");
 		cbDistinct = new JCheckBox();
-		cbDistinct.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.7", "Eindeutig"));
+		cbDistinct.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.7", "Eindeutig"));
 
-		lbLogBook = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.8", "Logbuch")+": ");
+		lbLogBook = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.8", "Logbuch")+": ");
 		cbLogBook = new JCheckBox();
-		cbLogBook.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.8", "Logbuch"));
+		cbLogBook.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.8", "Logbuch"));
 
-		lbMandatory = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.9", "Pflichtfeld")+": ");
+		lbMandatory = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.9", "Pflichtfeld")+": ");
 		cbMandatory = new JCheckBox();
-		cbMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.9", "Pflichtfeld"));
+		cbMandatory.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.9", "Pflichtfeld"));
 
 		tfMandatory = new JTextField();
 		tfMandatory.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		tfMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		tfMandatory.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
 
 		cbxMandatory = new JComboBox();
 		cbxMandatory.setVisible(false);
-		cbxMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		cbxMandatory.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
 
 		lovMandatory = new ListOfValues();
 		lovMandatory.setVisible(false);
-		lovMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		lovMandatory.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
 		
 		dateMandatory = new DateChooser(support);
 		dateMandatory.setVisible(false);
-		dateMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		dateMandatory.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
 		
 		cbMandatoryValue = new JCheckBox();
 		cbMandatoryValue.setVisible(false);
-		cbMandatoryValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		cbMandatoryValue.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
 
-		lbDBFieldName = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.12", "DB-Spaltename"));
+		lbDBFieldName = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.12", "DB-Spaltename"));
 		tfDBFieldName = new JTextField();
-		tfDBFieldName.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.12", "DB-Spaltename"));
+		tfDBFieldName.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.12", "DB-Spaltename"));
 		tfDBFieldName.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
-		lbDBFieldNameComplete = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.18", "Vollst\u00e4ndiger Spaltenname"));
+		lbDBFieldNameComplete = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.18", "Vollst\u00e4ndiger Spaltenname"));
 		tfDBFieldNameComplete = new JTextField();
 		tfDBFieldNameComplete.setEnabled(false);
 
-		lbAttributeGroup = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.19", "Attributegruppe"));
+		lbAttributeGroup = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.19", "Attributegruppe"));
 		cbxAttributeGroup = new JComboBox();
-		cbxAttributeGroup.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.19", "Attributegruppe"));
+		cbxAttributeGroup.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.19", "Attributegruppe"));
 
-		lbCalcFunction = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.20", "Berechungsvorschrift"));
+		lbCalcFunction = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.20", "Berechungsvorschrift"));
 		cbxCalcFunction = new JComboBox();
-		cbxCalcFunction.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.20", "Berechungsvorschrift"));
+		cbxCalcFunction.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.20", "Berechungsvorschrift"));
 
-		lbCalculationScript = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.calculationscript.label", "Berechnungsausdruck"));
-		lbCalculationScript.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.calculationscript.description", "Berechnungsausdruck"));
+		lbCalculationScript = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.calculationscript.label", "Berechnungsausdruck"));
+		lbCalculationScript.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.calculationscript.description", "Berechnungsausdruck"));
 		btCalculationScript = new JButton("...");
-		btCalculationScript.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.calculationscript.description", "Berechnungsausdruck"));
+		btCalculationScript.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.calculationscript.description", "Berechnungsausdruck"));
 		btCalculationScript.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -577,9 +575,9 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			}
 		});
 
-		lbIndexed = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.26", "Indiziert"));
+		lbIndexed = new JLabel(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.26", "Indiziert"));
 		cbIndexed = new JCheckBox();
-		cbIndexed.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.26", "Indiziert"));
+		cbIndexed.setToolTipText(SpringLocaleDelegate.getInstance().getMessage("wizard.step.attributeproperties.tooltip.26", "Indiziert"));
 
 		pnlMoreOptions = new JPanel();
 
@@ -696,7 +694,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		tfDefaultValue.getDocument().addDocumentListener(new DefaultValueDocumentListener());
 
 		tfMandatory.getDocument().addDocumentListener(new MandatoryValueDocumentListener());
-		tfMandatory.setLocale(localeDelegate.getLocale());
+		tfMandatory.setLocale(SpringLocaleDelegate.getInstance().getLocale());
 
 
 		tfDBFieldName.setDocument(new LimitCharacterDocument());
@@ -769,7 +767,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().setMandatory(cb.isSelected());
 				if(NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.isEditMode() && cb.isSelected() && !parentWizardModel.isVirtual()) {
 					if(NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute().getMandatoryValue() == null) {
-						(new Bubble(cb, localeDelegate.getMessage(
+						(new Bubble(cb, SpringLocaleDelegate.getInstance().getMessage(
 								"wizard.step.attributeproperties.tooltip.28", "Bitte tragen Sie einen Wert ein mit dem das Feld vorbelegt werden kann!"), 3, Position.UPPER)).setVisible(true);
 					}
 
@@ -1288,7 +1286,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			if(!blnAllowed && !attr.isDistinct()) {
 				cbDistinct.setSelected(false);
 				cbDistinct.setEnabled(false);
-				cbDistinct.setToolTipText(localeDelegate.getMessage(
+				cbDistinct.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.entitysqllayout.6", "Das Feld {0} kann nicht auf ein eindeutiges Feld umgestellt werden.", attr.getLabel()));
 			}
 		}
@@ -1372,7 +1370,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		if(!getModel().isEditMode()) {
 			for(Attribute attribute : this.parentWizardModel.getAttributeModel().getAttributes()) {
 				if(attribute.getDbName().equals(sDBName)) {
-					String sMessage = localeDelegate.getMessage(
+					String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 							"wizard.step.attributeproperties.14", "<html>Der Spaltenname existiert schon in der Tabelle.<p> " +
 						"Bitte \u00e4ndern Sie den Namen oder vergeben einen im Expertenmodus selbst.</html>");
 
@@ -1384,7 +1382,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		}
 
 		if(getModel().getAttribute().getInternalName().length() > 250) {
-			String sMessage = localeDelegate.getMessage(
+			String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"wizard.step.attributeproperties.15", "<html>Der Feldname ist zu lang.<p> " +
 			"Bitte \u00e4ndern Sie den Namen.</html>");
 
@@ -1395,7 +1393,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 		for(String sFieldName : forbiddenNames) {
 			if(sFieldName.equals(sDBName.toUpperCase())) {
-				String sMessage = localeDelegate.getMessage(
+				String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.16", "<html>Der Spaltenname wird vom System vergeben.<p> " +
 					"Bitte \u00e4ndern Sie den Namen oder vergeben einen im Expertenmodus selbst.</html>");
 				JLabel lb = new JLabel(sMessage);
@@ -1410,7 +1408,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		}
 
 		if(sDBName.length() > iCheck) {
-			String sMessage = localeDelegate.getMessage(
+			String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"wizard.step.attributeproperties.17", "<html>Der Spaltenname ist zu lang.<p> " +
 				"Bitte k\u00fcrzen Sie den Namen oder vergeben einen im Expertenmodus selbst.</html>");
 			JLabel lb = new JLabel(sMessage);
@@ -1440,7 +1438,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				throw new InvalidStateException(sMessage);
 			}
 			if(date == null) {
-				String sMessage = localeDelegate.getMessage(
+				String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert für das Pflichtfeld angegeben!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
@@ -1453,7 +1451,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		else if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Integer") && this.parentWizardModel.isEditMode() && requiresDefault) {
 			int iScale = this.getModel().getAttribute().getDatatyp().getScale();
 			if(tfMandatory.getText().length() > iScale) {
-				String sMessage = localeDelegate.getMessage(
+				String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gültigen Wert!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
@@ -1466,14 +1464,14 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			String sValue = tfMandatory.getText().replace(',', '.');
 			String s[] = sValue.split("\\.");
 			if(s.length != 2) {
-				String sMessage = localeDelegate.getMessage(
+				String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gültigen Wert!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
 				throw new InvalidStateException("");
 			}
 			if(s[0].length() > iScale-iPrecision || s[1].length() > iPrecision) {
-				String sMessage = localeDelegate.getMessage(
+				String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.27", "Der angegebene Defaultwert hat keinen gültigen Wert!");
 				JLabel lb = new JLabel(sMessage);
 				JOptionPane.showMessageDialog(this, lb);
@@ -1487,11 +1485,11 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			if(obj != null && obj instanceof String) {
 				String s = (String)obj;
 				if(s.length() < 1)
-					sMessage = localeDelegate.getMessage(
+					sMessage = SpringLocaleDelegate.getInstance().getMessage(
 							"wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert für das Pflichtfeld angegeben!");
 			}
 			else if(obj == null) {
-				sMessage = localeDelegate.getMessage(
+				sMessage = SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.attributeproperties.tooltip.29", "Sie haben keinen Wert für das Pflichtfeld angegeben!");
 			}
 

@@ -20,7 +20,6 @@ import info.clearthought.layout.TableLayout;
 
 import java.util.Collection;
 
-import javax.annotation.PostConstruct;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
@@ -35,15 +34,14 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.Localizable;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MasterDataPermission;
 import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -53,7 +51,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
+//@Configurable
 public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosUserGroupRightsStep.class);
@@ -66,20 +64,20 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 	
 	
 	public NuclosUserGroupRightsStep() {	
-		// initComponents();		
+		initComponents();		
 	}
 
 	public NuclosUserGroupRightsStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
 	public NuclosUserGroupRightsStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		
