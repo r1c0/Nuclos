@@ -52,6 +52,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
@@ -4373,7 +4374,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			}
 		}
 	}
-
+	
 	/**
 	 * used by <code>DefaultCollectStateListener</code>:
 	 * On entering <code>CollectState.DETAILSMODE_VIEW</code> the collectable would be loaded completely.

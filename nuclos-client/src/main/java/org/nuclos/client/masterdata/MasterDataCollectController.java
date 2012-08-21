@@ -346,8 +346,10 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 				switch (iDetailsMode) {
 				case CollectState.DETAILSMODE_VIEW:
+					getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(false);
+					break;
 				case CollectState.DETAILSMODE_EDIT:
-					getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
+					getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(true);
 					break;
 				case CollectState.DETAILSMODE_NEW:
 				case CollectState.DETAILSMODE_NEW_CHANGED:
@@ -727,6 +729,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 						clct = getSelectedCollectable();
 					}
 					readValuesFromEditPanel(clct, false);
+					prepareCollectableForSaving(clct, getCollectableEntityForDetails());
 					final MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(clct.getMasterDataCVO(), getAllSubFormData(clct.getId()).toDependantMasterDataMap());
 					mddelegate.executeBusinessRules(getEntityName(), lstRuleVO, md, bSaveAfterRuleExecution);
 
@@ -1107,6 +1110,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(MasterDataCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
 			}
 			else {
+				if (((MasterDataSubFormController) subformctl).isChildSubForm())
+					continue;
+				
 				SubFormsInterruptableClientWorker sfClientWorker = new SubFormsInterruptableClientWorker() {
 					Collection<EntityObjectVO> collmdvo;
 					Integer iParentId;
@@ -1178,7 +1184,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 				MasterDataCollectController.this.getSubFormsLoader().addSubFormClientWorker(subformctl.getCollectableEntity().getName(), sfClientWorker);
 
-				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
+				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(false);
 			}
 		}
 	}

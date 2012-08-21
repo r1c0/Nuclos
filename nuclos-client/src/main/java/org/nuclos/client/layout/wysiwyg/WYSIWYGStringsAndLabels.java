@@ -972,6 +972,7 @@ public class WYSIWYGStringsAndLabels {
 		/** static button */
 		public static final String ACTIONCOMMAND = "Befehlstyp";
 		public static final String ACTIONCOMMAND_PROPERTIES = "Argumente";
+		public static final String DISABLE_DURING_EDIT = "Während Eingabe nicht aktiv";
 		public static final String ACTIONKEYSTROKE = "Tastenkürzel";
 		public static final String LABEL = "Beschriftung";
 		public static final String TOOLTIP = "Tooltip";

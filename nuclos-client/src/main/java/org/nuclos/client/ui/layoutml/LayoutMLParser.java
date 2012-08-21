@@ -2776,6 +2776,15 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 			}
 
+			public void setDisableDuringEdit(boolean bDisableDuringEdit) {
+				putClientProperty("disableDuringEdit", true);
+			}
+			
+			@Override
+			public void setEnabled(boolean enabled) {
+				super.setEnabled(enabled);
+			}
+
 		}
 
 		public static class LayoutMLButtonLocalizationHandler implements LocalizationHandler {
@@ -2861,6 +2870,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						log.warn("Icon not found or invalid", ex);
 					}
 				}
+				
+				btn.setDisableDuringEdit(ATTRIBUTEVALUE_YES.equals(attributes.getValue(ATTRIBUTE_DISABLE_DURING_EDIT)));
 
 				if (BuildFormHandler.this.alButtons != null) {
 					btn.addActionListener(BuildFormHandler.this.alButtons);

@@ -91,9 +91,17 @@ public abstract class LayoutMLButtonActionListener implements ActionListener {
 		}
 	}
 	
-	public void fireComponentEnabledStateUpdate() {
+	public void fireComponentEnabledStateUpdate(boolean edit) {
 		for (Map.Entry<JComponent, String> entry : this.mpParentComps.entrySet()) {
-			entry.getKey().setEnabled(enableParentComponent(entry.getValue()));
+			if (Boolean.TRUE.equals(entry.getKey().getClientProperty("disableDuringEdit"))) {
+				if (edit) {
+					entry.getKey().setEnabled(false);
+				} else {
+					entry.getKey().setEnabled(enableParentComponent(entry.getValue()));
+				}
+			} else {
+				entry.getKey().setEnabled(enableParentComponent(entry.getValue()));
+			}
 		}
 	}
 	

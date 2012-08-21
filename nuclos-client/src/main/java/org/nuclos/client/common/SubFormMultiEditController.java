@@ -26,6 +26,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -37,6 +38,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparator;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
@@ -161,9 +163,12 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 				}
 			}
 			for (Object o : newFields) {
-				final Clct clctNew = controller.newCollectable();
-				clctNew.setField(columnName, (CollectableField) o);
-				model.add(clctNew);
+				try {
+					final Clct clctNew = controller.insertNewRow();
+					clctNew.setField(columnName, (CollectableField) o);
+				} catch (CommonBusinessException e) {
+					Errors.getInstance().showExceptionDialog(getParent(), e);
+				}
 			}
 			
 			if (model instanceof SortableCollectableTableModel)

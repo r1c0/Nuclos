@@ -2388,7 +2388,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			selectTabPane(clct);
 
-			getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
+			getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(false);
 		}
 		finally {
 			/** @todo this doesn't seem to belong here... */
@@ -4817,7 +4817,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				}
 			}
 
-			getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
+			getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT);
 		}
 	}
 
@@ -5625,14 +5625,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				getResultTable().clearSelection();
 				break;
 			case CollectState.DETAILSMODE_VIEW:
-			case CollectState.DETAILSMODE_EDIT:
-				final boolean bWritable = ctl.isCurrentRecordWritable();
 				// show subsequent state buttons only in current (non-historical) view and only if the current record is writable:
-				setSubsequentStatesVisible(true, bWritable);
-				setStatesDefaultPathVisible(true, bWritable);
-				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
+				setSubsequentStatesVisible(true, ctl.isCurrentRecordWritable());
+				setStatesDefaultPathVisible(true, ctl.isCurrentRecordWritable());
+				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(false);
 				break;
-
+			case CollectState.DETAILSMODE_EDIT:
+				// show subsequent state buttons only in current (non-historical) view and only if the current record is writable:
+				setSubsequentStatesVisible(true, ctl.isCurrentRecordWritable());
+				setStatesDefaultPathVisible(true, ctl.isCurrentRecordWritable());
+				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(true);
+				break;
 			case CollectState.DETAILSMODE_MULTIVIEW:
 			case CollectState.DETAILSMODE_MULTIEDIT:
 				// show the buttons for subsequent states only if all objects are in the same state:

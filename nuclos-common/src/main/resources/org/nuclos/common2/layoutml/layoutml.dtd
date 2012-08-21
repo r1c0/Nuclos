@@ -221,6 +221,7 @@ resourceId CDATA #IMPLIED
 icon CDATA #IMPLIED
 nextfocuscomponent CDATA #IMPLIED
 nextfocusonaction CDATA #IMPLIED
+disable-during-edit (%boolean;) #IMPLIED
 >
 
 <!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?,enabled?)>

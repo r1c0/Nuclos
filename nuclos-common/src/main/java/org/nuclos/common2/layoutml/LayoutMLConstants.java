@@ -226,6 +226,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_LANGUAGE = "language";
 	public static final String ATTRIBUTE_CLASS = "class";
 	public static final String ATTRIBUTE_DYNAMIC_CELL_HEIGHTS_DEFAULT = "dynamic-cell-heights-default";
+	public static final String ATTRIBUTE_DISABLE_DURING_EDIT = "disable-during-edit";
 
 
 	// constants for XML attribute values used in the LayoutML:

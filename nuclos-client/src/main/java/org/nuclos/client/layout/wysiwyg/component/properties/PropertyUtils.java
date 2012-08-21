@@ -371,7 +371,7 @@ public class PropertyUtils implements LayoutMLConstants {
 		properties.setProperty(WYSIWYGStaticButton.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_BUTTON_PREFERREDSIZE), DEFAULTVALUE_BUTTON_PREFERREDSIZE.getClass());
 		//FIX NUCLEUSINT-255
 		properties.setProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND, new PropertyValueString(COMPONENT_PROCESSOR.LABEL_DEFAULTACTIONCOMMAND_BUTTON), String.class);
-		
+		properties.setProperty(WYSIWYGStaticButton.PROPERTY_DISABLE_DURING_EDIT, new PropertyValueBoolean(false), Boolean.class);
 	}
 
 	/**
