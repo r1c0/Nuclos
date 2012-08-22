@@ -556,6 +556,7 @@ public class MasterDataWrapper {
 			(NuclosImage)mdVO.getField("icon"),
 			(Integer)mdVO.getField("modelId"));
 		vo.setTabbedPaneName((String)mdVO.getField("tab"));
+		vo.setButtonLabel((String) mdVO.getField("buttonRes"));
 		vo.setButtonIcon(ResourceCache.getInstance().getResourceById((Integer) mdVO.getField("buttonIconId")));
 		vo.setColor((String) mdVO.getField("color"));
 
@@ -571,6 +572,7 @@ public class MasterDataWrapper {
 		mpFields.put("modelId", vo.getModelId());
 		mpFields.put("tab", vo.getTabbedPaneName());
 		mpFields.put("color", vo.getColor());
+		mpFields.put("buttonRes", vo.getButtonLabel());
 		mpFields.put("buttonIconId", vo.getButtonIcon()==null?null:vo.getButtonIcon().getId());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);

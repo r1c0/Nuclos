@@ -175,6 +175,8 @@ public interface StateFacadeRemote {
 	String getResourceSIdForName(Integer iStateId);
 	
 	String getResourceSIdForDescription(Integer iStateId);
+	
+	String getResourceSIdForButtonLabel(Integer iStateId);
 
 	Statemodel getStatemodel(UsageCriteria usageCriteria);
 

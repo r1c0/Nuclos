@@ -1595,6 +1595,21 @@ public class StatePropertiesPanel extends JPanel {
 		tfIconSet.setPreferredSize(new Dimension(100, 230));
 		tfIconSet.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 		
+		final JLabel labButtonLabel = new JLabel(localeDelegate.getMessage("nuclos.entityfield.state.buttonres.label","Button Beschriftung"));
+		final JTextField tfButtonLabel = new JTextField();
+		labButtonLabel.setAlignmentY((float) 0.0);
+		labButtonLabel.setHorizontalAlignment(SwingConstants.LEADING);
+		labButtonLabel.setHorizontalTextPosition(SwingConstants.TRAILING);
+		labButtonLabel.setLabelFor(tfName);
+		labButtonLabel.setVerticalAlignment(SwingConstants.CENTER);
+		labButtonLabel.setVerticalTextPosition(SwingConstants.CENTER);
+
+		tfButtonLabel.setAlignmentX((float) 0.0);
+		tfButtonLabel.setAlignmentY((float) 0.0);
+		tfButtonLabel.setPreferredSize(new Dimension(100, 21));
+		tfButtonLabel.setDocument(model.docButtonLabel);
+		tfButtonLabel.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
+		
 		final org.nuclos.client.ui.resource.ResourceIconChooser.Button risButtonIcon = model.clctButtonIcon.getJComponent();
 		
 		final ColorChooserButton ccbColor = model.clctColor.getJComponent();
@@ -1661,23 +1676,29 @@ public class StatePropertiesPanel extends JPanel {
 		pnlStateProperties.add(tfIconSet,
 				new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 						new Insets(2, 5, 0, 0), 0, 0));
-		pnlStateProperties.add(risButtonIcon,
+		pnlStateProperties.add(labButtonLabel,
+				new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+						new Insets(2, 0, 0, 5), 0, 0));
+		pnlStateProperties.add(tfButtonLabel,
 				new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 						new Insets(2, 5, 0, 0), 0, 0));
+		pnlStateProperties.add(risButtonIcon,
+				new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+						new Insets(2, 5, 0, 0), 0, 0));
 		pnlStateProperties.add(ccbColor,
-				new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+				new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
 						new Insets(2, 5, 0, 0), 0, 0));
 		pnlStateProperties.add(labDescription,
-				new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
+				new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
 						new Insets(2, 0, 0, 5), 0, 0));
 		pnlStateProperties.add(scrlpn,
-				new GridBagConstraints(1, 7, 2, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new GridBagConstraints(1, 8, 2, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
 						new Insets(2, 5, 0, 0), 0, 0));
 		pnlStateProperties.add(labTabbedPaneName,
-			new GridBagConstraints(0, 11, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+			new GridBagConstraints(0, 12, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
 					new Insets(2, 0, 0, 5), 0, 0));
 		pnlStateProperties.add(cmbbxTabbedPaneName,
-			new GridBagConstraints(1, 11, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+			new GridBagConstraints(1, 12, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 					new Insets(2, 5, 0, 0), 0, 0));
 		return pnlStateProperties;
 	}

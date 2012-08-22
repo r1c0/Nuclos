@@ -6493,7 +6493,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		private final StateVO statevoTarget;
 
 		public StateChangeAction(StateVO statevoSource, StateVO statevoTarget) {
-			super(statevoTarget.getStatename(), statevoTarget.getButtonIcon()==null?null:ResourceCache.getInstance().getIconResource(statevoTarget.getButtonIcon().getId()));
+			super(StringUtils.looksEmpty(statevoTarget.getButtonLabel())?
+					statevoTarget.getStatename():
+					SpringLocaleDelegate.getInstance().getResource(statevoTarget.getButtonLabel(), statevoTarget.getStatename()), 
+				statevoTarget.getButtonIcon()==null?null:ResourceCache.getInstance().getIconResource(statevoTarget.getButtonIcon().getId()));
 			this.statevoSource = statevoSource;
 			this.statevoTarget = statevoTarget;
 			putValue("Color", statevoTarget.getColor());

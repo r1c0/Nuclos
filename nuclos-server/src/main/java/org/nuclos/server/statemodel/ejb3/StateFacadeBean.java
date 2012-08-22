@@ -316,6 +316,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 				LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_LABEL, getLocaleFacade().setDefaultResource(null, statevo.getStatename()));
 				LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, statevo.getDescription()));
+				LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_BUTTON, getLocaleFacade().setDefaultResource(null, statevo.getButtonLabel()));
 			}
 		}
 		for (StateTransitionVO statetransitionvo : stategraphvo.getTransitions()) {
@@ -369,6 +370,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 				getMasterDataFacade().remove(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(statevo), false);
 				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_LABEL));
 				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_DESCRIPTION));
+				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_BUTTON));
 			}
 		}
 
@@ -485,6 +487,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_LABEL));
 				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_DESCRIPTION));
+				getLocaleFacade().deleteResource(LocaleUtils.getResourceIdForField(STATE_TABLE, statevo.getId(), LocaleUtils.FIELD_BUTTON));
 			}
 		}
 
@@ -503,6 +506,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 					layoutinfo.updateStateId(statevo.getClientId(), mpStates.get(statevo.getClientId()));
 					LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_LABEL, getLocaleFacade().setDefaultResource(null, statevo.getStatename()));
 					LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, statevo.getDescription()));
+					LocaleUtils.setResourceIdForField(STATE_TABLE, createdState.getIntId(), LocaleUtils.FIELD_BUTTON, getLocaleFacade().setDefaultResource(null, statevo.getButtonLabel()));
 				}
 				else {
 					// update state:
@@ -614,10 +618,12 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		
 		String labelResId = LocaleUtils.getResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_LABEL);
 		String descriptionResId = LocaleUtils.getResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_DESCRIPTION);
+		String buttonLabelResId = LocaleUtils.getResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_BUTTON);
 		
 		MasterDataVO mdvo = MasterDataWrapper.wrapStateVO(dbStateVO);
 		mdvo.setField("labelres", labelResId);
 		mdvo.setField("descriptionres", descriptionResId);
+		mdvo.setField("labelRes", buttonLabelResId);
 		getMasterDataFacade().modify(NuclosEntity.STATE.getEntityName(), mdvo, null);
 
 		if (labelResId != null) {
@@ -630,6 +636,12 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			getLocaleFacade().setResourceForLocale(descriptionResId, getLocaleFacade().getUserLocale(), dbStateVO.getDescription());
 		} else {
 			LocaleUtils.setResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, dbStateVO.getDescription()));
+		}
+		
+		if (buttonLabelResId != null) {
+			getLocaleFacade().setResourceForLocale(buttonLabelResId, getLocaleFacade().getUserLocale(), clientStateVO.getButtonLabel());
+		} else {
+			LocaleUtils.setResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_BUTTON, getLocaleFacade().setDefaultResource(null, clientStateVO.getButtonLabel()));
 		}
 	}
 
@@ -1515,6 +1527,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
     public String getResourceSIdForDescription(Integer iStateId) {
 		return LocaleUtils.getResourceIdForField(STATE_TABLE, iStateId, LocaleUtils.FIELD_DESCRIPTION);
+	}
+    
+    public String getResourceSIdForButtonLabel(Integer iStateId) {
+		return LocaleUtils.getResourceIdForField(STATE_TABLE, iStateId, LocaleUtils.FIELD_BUTTON);
 	}
 
 	public Statemodel getStatemodel(UsageCriteria usageCriteria) {

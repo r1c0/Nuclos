@@ -53325,6 +53325,21 @@
     "text": "Locale Resource-ID für den Namen"
   },
   {
+    "resourceID": "nuclos.entityfield.state.buttonres.label",
+    "locale": "i-default",
+    "text": "Button label"
+  },
+  {
+    "resourceID": "nuclos.entityfield.state.buttonres.label",
+    "locale": "en",
+    "text": "Button label"
+  },
+  {
+    "resourceID": "nuclos.entityfield.state.buttonres.label",
+    "locale": "de",
+    "text": "Button Beschriftung"
+  },
+  {
     "resourceID": "nuclos.entityfield.releasehistory.release.label",
     "locale": "i-default",
     "text": "Version number"

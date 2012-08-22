@@ -250,6 +250,20 @@ public class StateShape extends ContainerShape implements ImageObserver {
 		statevo.setDescription(sDescription);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getButtonLabel() {
+		return statevo.getButtonLabel();
+	}
+
+	/**
+	 * @param sName
+	 */
+	public void setButtonLabel(String sButtonLabel) {
+		statevo.setButtonLabel(sButtonLabel);
+	}
+	
 	public void setTabbedPaneName(String tab) {
 		statevo.setTabbedPaneName(tab);
 	}

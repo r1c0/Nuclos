@@ -32,6 +32,7 @@ import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.collect.component.CollectableColorChooserButton;
 import org.nuclos.client.ui.collect.component.CollectableResourceIconChooserButton;
+import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
@@ -138,6 +139,7 @@ public class StatePropertiesPanelModel implements Serializable {
 	public Document docDescription = new PlainDocument();
 	public ComboBoxModel modelTab = new DefaultComboBoxModel();
 	public final NuclosCollectableImage clctImage;
+	public Document docButtonLabel = new PlainDocument();
 	public CollectableResourceIconChooserButton clctButtonIcon;
 	public CollectableColorChooserButton clctColor;
 
@@ -169,6 +171,28 @@ public class StatePropertiesPanelModel implements Serializable {
 		try {
 			this.docName.remove(0, docName.getLength());
 			this.docName.insertString(0, sName, null);
+		}
+		catch (BadLocationException ex) {
+			throw new NuclosFatalException(ex);
+		}
+	}
+	
+	public String getButtonLabel() {
+		String sResult = "";
+		try {
+			sResult = docButtonLabel.getText(0, docButtonLabel.getLength());
+		}
+		catch (BadLocationException e) {
+			// this should never happens
+			LOG.warn("getButtonLabel failed: " + e, e);
+		}
+		return sResult;
+	}
+	
+	public void setButtonLabel(String sButtonLabel) {
+		try {
+			this.docButtonLabel.remove(0, docButtonLabel.getLength());
+			this.docButtonLabel.insertString(0, sButtonLabel, null);
 		}
 		catch (BadLocationException ex) {
 			throw new NuclosFatalException(ex);

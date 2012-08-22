@@ -6137,7 +6137,18 @@
         "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.generation.color.label"
-      }
+      },
+      {
+        "name": "buttonRes",
+        "dbfield": "STR_LOCALERESOURCE_BUT",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.state.buttonres.label"
+      },
     ]
   },
   {

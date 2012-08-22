@@ -42,6 +42,7 @@ public class StateVO extends NuclosValueObject {
 	private String sDescription;
 	private Integer iModelId;
 	private NuclosImage bIcon;
+	private String sButtonLabel;
 	private ResourceVO resButtonIcon;
 	private String sColor;
 	private String sTab;
@@ -184,6 +185,14 @@ public class StateVO extends NuclosValueObject {
 	 */
 	public void setStatename(String sStatename) {
 		this.sStatename = sStatename;
+	}
+
+	public String getButtonLabel() {
+		return sButtonLabel;
+	}
+
+	public void setButtonLabel(String sButtonLabel) {
+		this.sButtonLabel = sButtonLabel;
 	}
 
 	/**

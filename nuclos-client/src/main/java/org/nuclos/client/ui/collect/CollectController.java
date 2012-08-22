@@ -3691,6 +3691,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		navigationmodel.addChangeListener(navigationChangeListener);
 
 		ctlResult.setStatusBar(tblResult, bResultTruncated, iTotalNumberOfRecords);
+		
+		if (!lstclct.isEmpty()) {
+			tblResult.getSelectionModel().setSelectionInterval(0, 0);
+		}
 	}
 
 	/**

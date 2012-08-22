@@ -32,6 +32,7 @@ public class LocaleUtils {
 	public final static String FIELD_DESCRIPTION = "description";
 	public final static String FIELD_TREEVIEW = "treeview";
 	public final static String FIELD_TREEVIEWDESCRIPTION = "treeviewdescription";
+	public final static String FIELD_BUTTON = "button";
 	
 	public final static String ENTITYFIELD_LABEL = "label";
 	public final static String ENTITYFIELD_DESCRIPTION = FIELD_DESCRIPTION;
@@ -49,6 +50,8 @@ public class LocaleUtils {
 			return "STR_LOCALERESOURCE_TT";
 		else if (sFieldName.equals(FIELD_DESCRIPTION))
 			return "STR_LOCALERESOURCE_D";
+		else if (sFieldName.equals(FIELD_BUTTON))
+			return "STR_LOCALERESOURCE_BUT";
 		else
 			return null;
 	}

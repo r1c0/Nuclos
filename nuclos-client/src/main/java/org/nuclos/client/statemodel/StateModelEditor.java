@@ -332,6 +332,22 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		}
 	}
 	
+	private class ButtonLabelDocumentListener implements DocumentListener {
+		@Override
+        public void changedUpdate(DocumentEvent e) {
+			StateModelEditor.this.changeButtonLabel();
+		}
+
+		@Override
+        public void insertUpdate(DocumentEvent e) {
+			StateModelEditor.this.changeButtonLabel();
+		}
+
+		@Override
+        public void removeUpdate(DocumentEvent e) {
+			StateModelEditor.this.changeButtonLabel();
+		}
+	}
 	
 	private class ButtonIconChangeListener implements CollectableComponentModelListener {
 		@Override
@@ -468,6 +484,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private final NoteDocumentListener noteDocumentListener = new NoteDocumentListener();
 	private final TabDataListener tabDataListener = new TabDataListener();
 	private final ColorChangeListener colorChangeListener = new ColorChangeListener();
+	private final ButtonLabelDocumentListener buttonLabelDocumentListener = new ButtonLabelDocumentListener();
 	private final ButtonIconChangeListener buttonIconChangeListener = new ButtonIconChangeListener();
 
 //	private StateRoleSubFormController ctlsubformRole;
@@ -609,6 +626,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		pnlProperties.getStatePropertiesPanel().getModel().docDescription.addDocumentListener(descriptionDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().modelTab.addListDataListener(tabDataListener);
 		pnlProperties.getStatePropertiesPanel().getModel().clctColor.getModel().addCollectableComponentModelListener(colorChangeListener);
+		pnlProperties.getStatePropertiesPanel().getModel().docButtonLabel.addDocumentListener(buttonLabelDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().clctButtonIcon.getModel().addCollectableComponentModelListener(buttonIconChangeListener);
 	}
 
@@ -621,6 +639,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		pnlProperties.getStatePropertiesPanel().getModel().clctImage.getModel().removeCollectableComponentModelListener(iconDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().docDescription.removeDocumentListener(descriptionDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().clctColor.getModel().removeCollectableComponentModelListener(colorChangeListener);
+		pnlProperties.getStatePropertiesPanel().getModel().docButtonLabel.removeDocumentListener(buttonLabelDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().clctButtonIcon.getModel().removeCollectableComponentModelListener(buttonIconChangeListener);
 	}
 
@@ -699,6 +718,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			model.setDescription(stateshapeSelected.getDescription());
 			model.setTab(stateshapeSelected.getStateVO().getTabbedPaneName());
 			model.setColor(stateshapeSelected.getStateVO().getColor());
+			model.setButtonLabel(stateshapeSelected.getButtonLabel());
 			model.setButtonIcon(stateshapeSelected.getStateVO().getButtonIcon());
 
 			this.addStatePanelListeners();
@@ -893,6 +913,14 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		}
 	}
 	
+	public void changeButtonLabel() {
+		if (shapeSelected != null && shapeSelected instanceof StateShape) {
+			((StateShape) shapeSelected).setButtonLabel(pnlProperties.getStatePropertiesPanel().getModel().getButtonLabel());
+			pnlShapeViewer.getModel().fireModelChanged();
+			pnlShapeViewer.repaint();
+		}
+	}
+	
 	public void changeColor() {
 		if (shapeSelected != null && shapeSelected instanceof StateShape) {
 			((StateShape) shapeSelected).setStateColor(pnlProperties.getStatePropertiesPanel().getModel().getColor());
@@ -1078,6 +1106,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			statevo.setDescription(SpringLocaleDelegate.getInstance().getResource(
 					StateDelegate.getInstance().getResourceSIdForDescription(statevo.getId()), statevo.getDescription()));
 			//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForDescription(statevo.getId())));
+			statevo.setButtonLabel(SpringLocaleDelegate.getInstance().getResource(
+					StateDelegate.getInstance().getResourceSIdForButtonLabel(statevo.getId()), statevo.getButtonLabel()));
 			entry.setVo(statevo);
 			entry.setShape(stateshape);
 			mpShapes.put(statevo.getClientId(), entry);

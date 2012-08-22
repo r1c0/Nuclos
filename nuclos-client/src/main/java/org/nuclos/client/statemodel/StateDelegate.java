@@ -420,6 +420,15 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 			throw new CommonFatalException(ex);
 		}
 	}
+	
+	public String getResourceSIdForButtonLabel(Integer iStateId) {
+		try {
+			return stateFacadeRemote.getResourceSIdForButtonLabel(iStateId);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
 
 	public StatemodelClosure getStatemodelClosure(Integer moduleId) {
 		if (!mpStatemodelClosure.containsKey(moduleId))
