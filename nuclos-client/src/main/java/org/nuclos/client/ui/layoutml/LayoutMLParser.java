@@ -2777,7 +2777,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			}
 
 			public void setDisableDuringEdit(boolean bDisableDuringEdit) {
-				putClientProperty("disableDuringEdit", true);
+				putClientProperty("disableDuringEdit", bDisableDuringEdit);
 			}
 			
 			@Override
