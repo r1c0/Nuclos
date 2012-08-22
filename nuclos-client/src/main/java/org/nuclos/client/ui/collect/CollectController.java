@@ -16,7 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -52,7 +54,6 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
@@ -4524,6 +4525,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 
 		public void setToolbarButtonsForDetailsMode(final int iDetailsMode) {
+			Component focusedComp = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+
 			final CollectPanel<Clct> pnlCollect = CollectController.this.getCollectPanel();
 			final DetailsPanel pnlDetails = pnlCollect.getDetailsPanel();
 			// enable/disable toolbar buttons:
@@ -4572,16 +4575,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 			CollectController.this.ctlDetails.displayCurrentRecordNumberInDetailsPanelStatusBar();
 
-			SwingUtilities.invokeLater(new Runnable() {
-
-				public void run() {
-					// @see NUCLOS-747
-					if (CollectController.this.getDetailsPanel() != null) {
-						CollectController.this.getDetailsPanel().requestFocusInWindow();
+			if (focusedComp == null) {
+				SwingUtilities.invokeLater(new Runnable() {
+	
+					public void run() {
+						// @see NUCLOS-747
+						if (CollectController.this.getDetailsPanel() != null) {
+							CollectController.this.getDetailsPanel().requestFocusInWindow();
+						}
 					}
-				}
-			});
-
+				});
+			}
 		}
 
 		@Override
