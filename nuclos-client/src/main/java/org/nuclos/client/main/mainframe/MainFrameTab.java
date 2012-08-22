@@ -626,6 +626,14 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 		return this;
 	}
+	
+	/**
+	 * 
+	 * @param oc
+	 */
+	public void setOverlayComponentOnTop(IOverlayComponent oc) {
+		getLastOverlayTab().setOverlayComponent(oc);
+	}
 
 	/**
 	 *
