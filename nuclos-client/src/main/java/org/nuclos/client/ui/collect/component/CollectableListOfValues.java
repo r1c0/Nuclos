@@ -158,9 +158,11 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 */
 	public CollectableListOfValues(final CollectableEntityField clctef, boolean bSearchable) {
 		super(clctef, new LabeledListOfValues(new LabeledComponentSupport()), bSearchable);
+		
+		init();
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	final void init() {
 		final CollectableEntityField clctef = getEntityField();
 		if (clctef == null) {
@@ -180,7 +182,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		assert !this.isInsertable();
 		this.setInsertable(this.isSearchComponent());
 
-		setEntityFacadeRemote(SpringApplicationContextHolder.getBean(EntityFacadeRemote.class));
+		setEntityFacadeRemote((EntityFacadeRemote)SpringApplicationContextHolder.getBean("entityService"));
 		getListOfValues().setQuickSearchResulting(new QuickSearchResulting() {
 			@Override
 			protected List<CollectableValueIdField> getQuickSearchResult(String inputString) {
