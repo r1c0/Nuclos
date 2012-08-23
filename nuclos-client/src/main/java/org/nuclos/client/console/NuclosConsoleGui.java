@@ -364,8 +364,8 @@ public class NuclosConsoleGui extends JPanel {
 		}
 	}
 
-	void login(String sUsername, String sPassword) throws LoginException {
-		nuclosRemoteServerSession.login(sUsername, sPassword);
+	String login(String sUsername, String sPassword) throws LoginException {
+		return nuclosRemoteServerSession.login(sUsername, sPassword);
 	}
 
 	public static void main(String[] args) {

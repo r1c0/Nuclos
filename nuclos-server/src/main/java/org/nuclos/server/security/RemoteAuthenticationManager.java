@@ -82,8 +82,8 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 	}
 
 	@Override
-	public void changePassword(final String username, String oldpassword, final String newpassword) throws AuthenticationException, CommonBusinessException {
-		UserDetails ud = userDetailsService.loadUserByUsername(username);
+	public void changePassword(String username, String oldpassword, final String newpassword) throws AuthenticationException, CommonBusinessException {
+		final UserDetails ud = userDetailsService.loadUserByUsername(username);
 
 		boolean authenticated = false;
 		if (StringUtils.isNullOrEmpty(ud.getPassword()) && StringUtils.isNullOrEmpty(oldpassword)) {
@@ -106,7 +106,7 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 				// required.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
 				
 				required.removeAll(granted);
-				if (required.isEmpty() && ud.getUsername().equals(username) && sPasswordFromUser.equals(ud.getPassword())) {
+				if (required.isEmpty() && ud.getUsername().equalsIgnoreCase(username) && sPasswordFromUser.equals(ud.getPassword())) {
 					authenticated = true;
 				}
 			}
@@ -114,14 +114,14 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 		
 		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		authorities.add(new SimpleGrantedAuthority("Login"));
-		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, ud.getPassword(), authorities);
+		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(ud.getUsername(), ud.getPassword(), authorities);
 		context.setAuthentication(auth);
 
 		if (authenticated) {
-			ServerServiceLocator.getInstance().getFacade(UserFacadeLocal.class).setPassword(username, newpassword);
+			ServerServiceLocator.getInstance().getFacade(UserFacadeLocal.class).setPassword(ud.getUsername(), newpassword);
 		}
 		else {
-			userDetailsService.logAttempt(username, authenticated);
+			userDetailsService.logAttempt(ud.getUsername(), authenticated);
 			throw new BadCredentialsException("invalid.login.exception");
 		}
 	}

@@ -90,18 +90,20 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 			t.baseColumn("BLNLOCKED", Boolean.class),
 			t.baseColumn("DATEXPIRATIONDATE", Date.class),
 			t.baseColumn("DATPASSWORDCHANGED", Date.class),
-			t.baseColumn("BLNREQUIREPASSWORDCHANGE", Boolean.class));
+			t.baseColumn("BLNREQUIREPASSWORDCHANGE", Boolean.class),
+			t.baseColumn("STRUSER", String.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 
-		DbTuple tuple = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
-		Long intid;
-		Boolean isSuperUser;
-		String password;
-		Date lastlogin;
+		final DbTuple tuple = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
+		final Long intid;
+		final Boolean isSuperUser;
+		final String password;
+		final Date lastlogin;
 		Boolean locked;
-		Date expiration;
-		Date passwordchanged;
-		Boolean requirechange;
+		final Date expiration;
+		final Date passwordchanged;
+		final Boolean requirechange;
+		final String user;
 
 		if (tuple != null) {
 			intid = tuple.get(0, Long.class);
@@ -112,6 +114,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 			expiration = tuple.get(5, Date.class);
 			passwordchanged = tuple.get(6, Date.class);
 			requirechange = Boolean.TRUE.equals(tuple.get(7, Boolean.class));
+			user = tuple.get(8, String.class);
 		} else {
 			throw new UsernameNotFoundException("User not found");
 		}
@@ -176,7 +179,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 			}
 		});
 
-		return new User(username, password == null ? "" : password, true, !expired, !credentialsExpired && !requirechange, !locked, authorities);
+		return new User(user, password == null ? "" : password, true, !expired, !credentialsExpired && !requirechange, !locked, authorities);
 	}
 
 	@Override

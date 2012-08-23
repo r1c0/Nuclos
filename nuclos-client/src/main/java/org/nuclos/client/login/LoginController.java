@@ -592,17 +592,18 @@ public class LoginController extends Controller<Component> {
 		}
 	}
 
-	private void performLogin(String sUserName, char[] acPassword) {
+	private String performLogin(String sUserName, char[] acPassword) {
 		// wait for context set. @see NUCLOS-1036 
 		if (clientContextCondition != null) {
 			synchronized(clientContextCondition) {
 				clientContextCondition.waitFor();
 			}
 		}
-		nuclosRemoteServerSession.login(sUserName, new String(acPassword));
+		final String result = nuclosRemoteServerSession.login(sUserName, new String(acPassword));
 		if (!ShutdownActions.getInstance().isRegistered(ShutdownActions.SHUTDOWNORDER_LOGOUT)) {
 			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_LOGOUT, new Logout());
 		}
+		return result;
 	}
 
 	public synchronized void addLoginListener(LoginListener loginlistener) {

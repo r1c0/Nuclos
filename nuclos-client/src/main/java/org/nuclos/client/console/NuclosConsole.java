@@ -199,9 +199,9 @@ public class NuclosConsole extends ConsoleConstants {
 		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
 	}
 
-	private void login(String sUser, String sPassword) throws LoginException {
-		sUserName = sUser;
-		nuclosRemoteServerSession.login(sUser, sPassword);
+	private String login(String sUser, String sPassword) throws LoginException {
+		 sUserName = nuclosRemoteServerSession.login(sUser, sPassword);
+		 return sUserName;
 	}
 
 	private void logout() throws LoginException {
