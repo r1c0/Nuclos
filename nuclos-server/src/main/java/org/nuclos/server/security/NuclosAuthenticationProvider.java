@@ -118,7 +118,7 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 				authenticated = true;
 			}
 
-			final String sPasswordFromUser = StringUtils.encryptBase64(username.toLowerCase() + ((password == null) ? "" : new String(password)));
+			final String sPasswordFromUser = StringUtils.encryptPw(username, password);
 			if(sPasswordFromUser.equals(userDetails.getPassword())) {
 				authenticated = true;
 			}
@@ -129,8 +129,7 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 				// Authenticate the user for ChangeOwnPassword only.
 				final Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 				authorities.add(new SimpleGrantedAuthority("Login"));
-				authorities.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
-				authorities.add(new SimpleGrantedAuthority("username:" + username));
+				// authorities.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
 				final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
 						username, userDetails.getPassword(), authorities);
 				SecurityContextHolder.getContext().setAuthentication(auth);

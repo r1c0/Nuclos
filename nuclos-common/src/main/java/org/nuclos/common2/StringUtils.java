@@ -303,6 +303,9 @@ public class StringUtils {
 		}
   }
 
+	/**
+	 * @deprecated
+	 */
 	public static String encryptBase64(String x)  {
 		try {
 			// previously used jboss class uses ISO-8859-1 encoding
@@ -311,6 +314,10 @@ public class StringUtils {
 		catch(UnsupportedEncodingException e) {
 			throw new NuclosFatalException();
 		}
+	}
+	
+	public static String encryptPw(String username, String password) {
+		return StringUtils.encryptBase64(username.toLowerCase() + ((password == null) ? "" : password));
 	}
 
 	public static String defaultIfNull(String x, String sDefault) {
