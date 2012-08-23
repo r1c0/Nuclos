@@ -3647,7 +3647,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 *
 	 * TODO: Make this protected again.
 	 */
-	public final void fillResultPanel(List<Clct> lstclct, int iTotalNumberOfRecords, boolean bSortInitially) {
+	public final void fillResultPanel(final List<Clct> lstclct, int iTotalNumberOfRecords, boolean bSortInitially) {
 		if (iTotalNumberOfRecords < lstclct.size()) {
 			throw new IllegalArgumentException("iTotalNumberOfRecords");
 		}
@@ -3670,6 +3670,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		navigationmodel.addChangeListener(navigationChangeListener);
 
 		ctlResult.setStatusBar(tblResult, bResultTruncated, iTotalNumberOfRecords);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if (!lstclct.isEmpty()) {
+					tblResult.getSelectionModel().setSelectionInterval(0, 0);
+				}
+			}
+		});
 	}
 
 	/**
