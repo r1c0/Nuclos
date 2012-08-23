@@ -90,7 +90,7 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 			authenticated = true;
 		}
 
-		final String sPasswordFromUser = StringUtils.encryptBase64(username + ((oldpassword == null) ? "" : new String(oldpassword)));
+		final String sPasswordFromUser = StringUtils.encryptPw(username, oldpassword);
 		if (!authenticated && sPasswordFromUser.equals(ud.getPassword())) {
 			authenticated = true;
 		}
@@ -103,11 +103,10 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 			if (granted != null && !granted.isEmpty()) {
 				final Collection<GrantedAuthority> required = new ArrayList<GrantedAuthority>();
 				required.add(new SimpleGrantedAuthority("Login"));
-				required.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
-				required.add(new SimpleGrantedAuthority("username:" + username));
+				// required.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
 				
 				required.removeAll(granted);
-				if (required.isEmpty()) {
+				if (required.isEmpty() && ud.getUsername().equals(username) && sPasswordFromUser.equals(ud.getPassword())) {
 					authenticated = true;
 				}
 			}
