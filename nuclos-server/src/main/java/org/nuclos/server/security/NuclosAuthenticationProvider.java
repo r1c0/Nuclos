@@ -17,6 +17,7 @@
 package org.nuclos.server.security;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -42,6 +43,8 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -120,7 +123,20 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 				authenticated = true;
 			}
 
+			// Allow user to change password if credential is expired
 			if (authenticated && !userDetails.isCredentialsNonExpired()) {
+				
+				// Authenticate the user for ChangeOwnPassword only.
+				final Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+				authorities.add(new SimpleGrantedAuthority("Login"));
+				authorities.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
+				authorities.add(new SimpleGrantedAuthority("username:" + username));
+				final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+						username, userDetails.getPassword(), authorities);
+				SecurityContextHolder.getContext().setAuthentication(auth);
+				LOG.info("User " + username + " gets authenticated only for ChangeOwnPassword: " + auth.isAuthenticated());
+				
+				// This exception trigger the change password dialog on login.
 				throw new CredentialsExpiredException("nuclos.security.authentication.credentialsexpired");
 			}
 		}
@@ -129,7 +145,8 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 			throw new BadCredentialsException("invalid.login.exception");//"Benutzername/Kennwort ung\u00fcltig.");
 		}
 
-		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
+		final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+				username, userDetails.getPassword(), userDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(auth);
 		LOG.info("User " + username + " gets authenticated: " + auth.isAuthenticated());
 		return auth;

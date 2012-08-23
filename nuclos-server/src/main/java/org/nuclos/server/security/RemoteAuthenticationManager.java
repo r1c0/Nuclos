@@ -31,7 +31,8 @@ import org.springframework.security.authentication.rcp.RemoteAuthenticationExcep
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -90,14 +91,32 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 		}
 
 		final String sPasswordFromUser = StringUtils.encryptBase64(username + ((oldpassword == null) ? "" : new String(oldpassword)));
-		if(sPasswordFromUser.equals(ud.getPassword())) {
+		if (!authenticated && sPasswordFromUser.equals(ud.getPassword())) {
 			authenticated = true;
 		}
 
+		// http://support.novabit.de/browse/ACC-228
+		final SecurityContext context = SecurityContextHolder.getContext();
+		final Authentication preAuth = context.getAuthentication();
+		if (!authenticated && preAuth != null) {
+			final Collection<? extends GrantedAuthority> granted = preAuth.getAuthorities();
+			if (granted != null && !granted.isEmpty()) {
+				final Collection<GrantedAuthority> required = new ArrayList<GrantedAuthority>();
+				required.add(new SimpleGrantedAuthority("Login"));
+				required.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
+				required.add(new SimpleGrantedAuthority("username:" + username));
+				
+				required.removeAll(granted);
+				if (required.isEmpty()) {
+					authenticated = true;
+				}
+			}
+		}
+		
 		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(new GrantedAuthorityImpl("Login"));
+		authorities.add(new SimpleGrantedAuthority("Login"));
 		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, ud.getPassword(), authorities);
-		SecurityContextHolder.getContext().setAuthentication(auth);
+		context.setAuthentication(auth);
 
 		if (authenticated) {
 			ServerServiceLocator.getInstance().getFacade(UserFacadeLocal.class).setPassword(username, newpassword);
