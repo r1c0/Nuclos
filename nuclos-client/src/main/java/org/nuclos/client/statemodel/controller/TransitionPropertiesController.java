@@ -34,6 +34,7 @@ import org.nuclos.client.statemodel.shapes.StateTransition;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 
 /**
  * Controller for transition properties
@@ -122,6 +123,16 @@ public class TransitionPropertiesController {
 		pnlTransitionRoles.getBtnDelete().setEnabled(iSelIndex >= 0);
 	}
 
+	private Integer getHighestOrdered() {
+		Integer retVal = new Integer(0);
+		
+		for (SortedRuleVO srvO : pnlTransitionRules.getModel().getRules()) {
+			if (srvO.getOrder() > retVal) 
+				retVal = srvO.getOrder();
+		}
+		return retVal;
+	}
+	
 	private void rulesActionPerformed(ActionEvent ev) {
 		final SortableRuleTableModel model = pnlTransitionRules.getModel();
 		try {
@@ -129,9 +140,14 @@ public class TransitionPropertiesController {
 				final InsertRuleController controller = new InsertRuleController(parent);
 				if (controller.run(SpringLocaleDelegate.getInstance().getMessage(
 						"TransitionPropertiesController.1","Liste der verf\u00fcgbaren Regeln"), pnlTransitionRules.getModel().getRules())) {
+					Integer orderNewElement = getHighestOrdered();
 					for (int i = 0; i < controller.getRulesPanel().getTblRules().getSelectedRowCount(); i++) {
-						parent.addRule(controller.getRulesPanel().getRow(controller.getRulesPanel().getTblRules().getSelectedRows()[i]));
+						SortedRuleVO row = controller.getRulesPanel().getRow(controller.getRulesPanel().getTblRules().getSelectedRows()[i]);
+						orderNewElement += 1;
+						row.setOrder(orderNewElement);
+						parent.addRule(row);
 					}
+					
 					pnlTransitionRules.getModel().fireTableDataChanged();
 				}
 			}
@@ -156,8 +172,15 @@ public class TransitionPropertiesController {
 					pnlTransitionRules.getTblRules().setRowSelectionInterval(iSelIndex - 1, iSelIndex - 1);
 					parent.getViewer().getModel().fireModelChanged();
 					st.getStateTransitionVO().getRuleIdsWithRunAfterwards().clear();
+					st.getStateTransitionVO().getEventSupportWithRunAfterwards().clear();
 					for (SortedRuleVO sortedrulevo : model.getRules()) {
-						st.getStateTransitionVO().getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(sortedrulevo.getId(), sortedrulevo.isRunAfterwards()));
+						if (sortedrulevo.getId() != null) {
+							st.getStateTransitionVO().getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(sortedrulevo.getId(), sortedrulevo.isRunAfterwards()));							
+						}
+						else {
+							EventSupportTransitionVO estVO = new EventSupportTransitionVO(sortedrulevo.getClassname(),st.getStateTransitionVO().getId(), sortedrulevo.getOrder(), sortedrulevo.isRunAfterwards());
+							st.getStateTransitionVO().getEventSupportWithRunAfterwards().add(new Pair<EventSupportTransitionVO, Boolean>(estVO, estVO.isRunAfterwards()));
+						}
 					}
 				}
 			}
@@ -169,8 +192,15 @@ public class TransitionPropertiesController {
 					pnlTransitionRules.getTblRules().setRowSelectionInterval(iSelIndex + 1, iSelIndex + 1);
 					parent.getViewer().getModel().fireModelChanged();
 					st.getStateTransitionVO().getRuleIdsWithRunAfterwards().clear();
+					st.getStateTransitionVO().getEventSupportWithRunAfterwards().clear();
 					for (SortedRuleVO sortedrulevo : model.getRules()) {
-						st.getStateTransitionVO().getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(sortedrulevo.getId(), sortedrulevo.isRunAfterwards()));
+						if (sortedrulevo.getId() != null) {
+							st.getStateTransitionVO().getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(sortedrulevo.getId(), sortedrulevo.isRunAfterwards()));							
+						}
+						else {
+							EventSupportTransitionVO estVO = new EventSupportTransitionVO(sortedrulevo.getClassname(),st.getStateTransitionVO().getId(), sortedrulevo.getOrder(), sortedrulevo.isRunAfterwards());
+							st.getStateTransitionVO().getEventSupportWithRunAfterwards().add(new Pair<EventSupportTransitionVO, Boolean>(estVO, estVO.isRunAfterwards()));
+						}
 					}
 				}
 			}

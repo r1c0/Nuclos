@@ -1,37 +1,33 @@
 package org.nuclos.server.eventsupport.valueobject;
 
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 /**
  * @author reichama
  * @version 00.01.000
  */
-public class EventSupportTransitionVO extends NuclosValueObject 
-{
-	private String  sEventSupportClass;
+public class EventSupportTransitionVO extends EventSupportVO 
+{	
 	private Integer iTransitionId;
-	private Integer iOrder;
+	private String  sTransitionName;
 	private Boolean bRunAfterwards;
 	
 	
 	public EventSupportTransitionVO(NuclosValueObject nvo, String sEventSupportClass,
 			Integer iTransitionId, Integer iOrder, Boolean bRunAfterwards) {
-		super(nvo);
-		this.sEventSupportClass = sEventSupportClass;
+		super(nvo, iOrder, sEventSupportClass);
 		this.iTransitionId = iTransitionId;
-		this.iOrder = iOrder;
 		this.bRunAfterwards = bRunAfterwards;
 	}
 
 	public EventSupportTransitionVO(String sEventSupportClass,
 			Integer iTransitionId, Integer iOrder, Boolean bRunAfterwards) {
-		this.sEventSupportClass = sEventSupportClass;
+		super(iOrder, sEventSupportClass);
 		this.iTransitionId = iTransitionId;
-		this.iOrder = iOrder;
 		this.bRunAfterwards = bRunAfterwards;
 	}
-
-	
 
 	@Override
 	public String toString() {
@@ -39,26 +35,21 @@ public class EventSupportTransitionVO extends NuclosValueObject
 				+ " ES-Class: " + this.getEventSupportClass();
 	}
 
-
 	public Integer getTransitionId() {
 		return iTransitionId;
 	}
-
 
 	public void setTransitionId(Integer iTransitionId) {
 		this.iTransitionId = iTransitionId;
 	}
 
-
-	public Integer getOrder() {
-		return iOrder;
+	public String getTransitionName() {
+		return sTransitionName;
 	}
 
-
-	public void setOrder(Integer iOrder) {
-		this.iOrder = iOrder;
+	public void setTransitionName(String sTransitionName) {
+		this.sTransitionName = sTransitionName;
 	}
-
 
 	public Boolean isRunAfterwards() {
 		return bRunAfterwards;
@@ -70,16 +61,17 @@ public class EventSupportTransitionVO extends NuclosValueObject
 	}
 
 
-	public String getEventSupportClass() {
-		return sEventSupportClass;
+	/**
+	 * validity checker
+	 */
+	@Override
+	public void validate() throws CommonValidationException {
+		super.validate();
+		
+//		if (getTransitionId() == null || getTransitionId().intValue() == 0) {
+//			throw new CommonValidationException("ruleengine.error.validation.rule.name");
+//		}
 	}
-
-
-	public void setEventSupportClass(String sEventSupportClass) {
-		this.sEventSupportClass = sEventSupportClass;
-	}
-
-
 	
 	
 }

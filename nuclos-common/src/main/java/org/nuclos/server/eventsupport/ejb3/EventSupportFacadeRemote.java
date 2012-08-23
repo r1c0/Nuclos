@@ -10,11 +10,15 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportGenerationVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
-import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
-import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
+import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
 /**
  * @author reichama
@@ -33,14 +37,20 @@ public interface EventSupportFacadeRemote
 	 * @return
 	 * @throws CommonPermissionException
 	 */
-	public Collection<EventSupportVO> getAllEventSupports() throws CommonPermissionException;
+	public Collection<EventSupportSourceVO> getAllEventSupports() throws CommonPermissionException;
 	
-	public List<EventSupportVO> getAllEventSupportTypes() throws CommonPermissionException;
+	public List<EventSupportSourceVO> getAllEventSupportTypes() throws CommonPermissionException;
 	
-	public Collection<EventSupportVO> getEventSupportsByClasstype(List<Class<?>> listOfinterfaces)
+	public Collection<EventSupportSourceVO> getEventSupportsByClasstype(List<Class<?>> listOfinterfaces)
 			throws CommonPermissionException;
 
 	public List<EventSupportEventVO> getAllEventSupportsForEntity(Integer entityname) throws CommonPermissionException;
+	
+	public EventSupportJobVO createEventSupportJob(EventSupportJobVO esjVOToInsert) throws CommonPermissionException, CommonValidationException, NuclosBusinessRuleException, CommonCreateException;
+
+	public EventSupportJobVO modifyEventSupportJob(EventSupportJobVO esjVOToUpdate);
+	
+	public void deleteEventSupportJob(EventSupportJobVO esjVOToUpdate);
 	
 	public EventSupportEventVO createEventSupportEvent(EventSupportEventVO eseVOToInsert) throws CommonPermissionException, CommonValidationException, NuclosBusinessRuleException, CommonCreateException;
 
@@ -60,4 +70,23 @@ public interface EventSupportFacadeRemote
 
 	public void deleteEventSupportEvents(Integer entityId,String eventSupportType) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonRemoveException, CommonStaleVersionException;		
 	
+	public List<EventSupportJobVO> getAllEventSupportsForJob(Integer jobId) throws CommonPermissionException;
+
+	public List<EventSupportGenerationVO> getEventSupportsByGenerationId(Integer genId) throws CommonPermissionException;
+	
+	public EventSupportGenerationVO createEventSupportGeneration(EventSupportGenerationVO eseVOToInsert) throws CommonPermissionException, CommonValidationException, NuclosBusinessRuleException, CommonCreateException;
+
+	public EventSupportGenerationVO modifyEventSupportGeneration(EventSupportGenerationVO eseVOToUpdate);
+	
+	public void deleteEventSupportGeneration(EventSupportGenerationVO eseVOToUpdate);
+
+	public List<EventSupportEventVO> getEventSupportEventsByClassname(String classname);
+	
+	public List<StateModelVO> getStateModelsByEventSupportClassname(String classname);
+	
+	public List<JobVO> getJobsByClassname(String classname);
+	
+	public List<GeneratorActionVO> getGenerationsByClassname(String classname);
+
+	public void forceEventSupportCompilation();
 }

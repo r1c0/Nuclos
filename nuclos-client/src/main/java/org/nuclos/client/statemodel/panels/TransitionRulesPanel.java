@@ -19,6 +19,7 @@ package org.nuclos.client.statemodel.panels;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -32,9 +33,13 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.jfree.util.Log;
+import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.masterdata.SortableRuleTableModel;
+import org.nuclos.client.statemodel.SortedRuleVO;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 
 /**
  * shows the rules attached to a transition.
@@ -107,11 +112,29 @@ public class TransitionRulesPanel extends JPanel {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				JCheckBox result = new JCheckBox();
-				if (value != null && value instanceof Boolean)
-					result.setSelected((Boolean) value);
-				else
-					result.setSelected(false);
-				return result;
+				SortableRuleTableModel srtm = (SortableRuleTableModel) table.getModel();
+				SortedRuleVO srVO = srtm.getRow(row);
+				if (srVO.getId() != null) {
+					if (value != null && value instanceof Boolean)
+						result.setSelected((Boolean) value);
+					else
+						result.setSelected(false);
+				}
+				else {
+					try {
+						EventSupportSourceVO eseByClass = EventSupportRepository.getInstance().getEventSupportByClassname(srVO.getClassname());
+						if ("org.nuclos.api.eventsupport.StateChangeFinalSupport".equals(eseByClass.getInterface())) {
+							result.setSelected(true);
+						}
+						else {
+							result.setSelected(false);
+						}
+						result.setEnabled(false);
+					} catch (RemoteException e) {
+						Log.error(e.getMessage(), e);
+					}
+				}
+				return result;		
 			}
 		});
 		tblRules.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JCheckBox()));

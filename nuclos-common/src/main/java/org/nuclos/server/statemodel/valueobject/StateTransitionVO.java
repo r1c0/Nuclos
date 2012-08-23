@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 
 /**
  * Value object representing a state transition.
@@ -41,7 +43,7 @@ public class StateTransitionVO extends NuclosValueObject {
 	private boolean bAutomatic;
 	private boolean bDefault;
 	private List<Pair<Integer, Boolean>> lstRuleIdsWithRunAfterwards = new ArrayList<Pair<Integer, Boolean>>();
-	private List<Pair<String, Boolean>> lstEventSupportsWithRunAfterwards = new ArrayList<Pair<String, Boolean>>();
+	private List<Pair<EventSupportTransitionVO, Boolean>> lstEventSupportsWithRunAfterwards = new ArrayList<Pair<EventSupportTransitionVO, Boolean>>();
 	private List<Integer> lstRoleIds = new ArrayList<Integer>();
 
 	/**
@@ -179,11 +181,15 @@ public class StateTransitionVO extends NuclosValueObject {
 		lstRuleIdsWithRunAfterwards.remove(new Pair<Integer, Boolean>(ruleId, null));
 	}
 	
-	public void removeEventSupport(String supportclassname)
+	public void removeEventSupport(EventSupportTransitionVO supportclassname)
 	{
-		lstEventSupportsWithRunAfterwards.remove(new Pair<String, Boolean>(supportclassname, Boolean.TRUE));
-		lstEventSupportsWithRunAfterwards.remove(new Pair<String, Boolean>(supportclassname, Boolean.FALSE));
-		lstEventSupportsWithRunAfterwards.remove(new Pair<String, Boolean>(supportclassname, null));
+		for (Pair<EventSupportTransitionVO, Boolean> elm :lstEventSupportsWithRunAfterwards) {
+			if (elm.getX().getEventSupportClass().equals(supportclassname.getEventSupportClass()) &&
+					elm.getX().getTransitionId().equals(supportclassname.getTransitionId())) {
+				lstEventSupportsWithRunAfterwards.remove(elm);
+				break;
+			}
+		}
 	}
 	
 	public List<Integer> getRuleIds() {
@@ -194,10 +200,10 @@ public class StateTransitionVO extends NuclosValueObject {
 		return result;
 	}
 
-	public List<String> getEventSupports() {
-		List<String> result = new ArrayList<String>();
-		for (Pair<String, Boolean> p : lstEventSupportsWithRunAfterwards) {
-			result.add(p.x);
+	public List<EventSupportTransitionVO> getEventSupports() {
+		List<EventSupportTransitionVO> result = new ArrayList<EventSupportTransitionVO>();
+		for (Pair<EventSupportTransitionVO, Boolean> p : lstEventSupportsWithRunAfterwards) {
+			result.add(p.getX());
 		}
 		return result;
 	}
@@ -214,7 +220,7 @@ public class StateTransitionVO extends NuclosValueObject {
 	 * get list of rules attached to transition
 	 * @return list of rules attached to transition
 	 */
-	public List<Pair<String, Boolean>> getEventSupportWithRunAfterwards() {
+	public List<Pair<EventSupportTransitionVO, Boolean>> getEventSupportWithRunAfterwards() {
 		return lstEventSupportsWithRunAfterwards;
 	}
 	
@@ -231,7 +237,7 @@ public class StateTransitionVO extends NuclosValueObject {
 	 * attach list of rules to transition
 	 * @param lstRuleIdsWithRunAfterwards list of rules to attach to transition
 	 */
-	public void setEventSupportsWithRunAfterwards(List<Pair<String, Boolean>> lstEventSupportsWithRunAfterwards) {
+	public void setEventSupportsWithRunAfterwards(List<Pair<EventSupportTransitionVO, Boolean>> lstEventSupportsWithRunAfterwards) {
 		this.lstEventSupportsWithRunAfterwards = lstEventSupportsWithRunAfterwards;
 	}
 	

@@ -1058,7 +1058,8 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 	public void addRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
 			((StateTransition) shapeSelected).addRule(vo.getId(), vo.isRunAfterwards());
-			pnlProperties.getTransitionRulePanel().getModel().setRules(RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
+			pnlProperties.getTransitionRulePanel().getModel().setRules(
+					RuleRepository.getInstance().selectRulesById(((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards()));
 			pnlShapeViewer.getModel().fireModelChanged();
 			pnlShapeViewer.repaint();
 		}

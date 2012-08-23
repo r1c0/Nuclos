@@ -23,13 +23,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.jfree.util.Log;
 import org.nuclos.common.SpringApplicationContextHolder;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeRemote;
+import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -103,14 +107,19 @@ public class RuleRepository implements InitializingBean {
 	public List<SortedRuleVO> selectRulesById(Collection<Integer> filterID, Collection<Integer> rulesRunAfterwards) {
 		final List<SortedRuleVO> result = new LinkedList<SortedRuleVO>();
 
-		int iCount = 1;
-		for (Iterator<Integer> i = filterID.iterator(); i.hasNext(); iCount++) {
+		for (Iterator<Integer> i = filterID.iterator(); i.hasNext();) {
 			final Integer iId = i.next();
-			final SortedRuleVO sortedRuleVO = new SortedRuleVO(mpRules.get(iId));
-			if (sortedRuleVO.getId() != null) {
-				sortedRuleVO.setOrder(iCount);
-				sortedRuleVO.setRunAfterwards(rulesRunAfterwards.contains(sortedRuleVO.getId()));
-				result.add(sortedRuleVO);
+			if (iId != null) {
+				try {
+					RuleVO ruleVO = ruleEngineFacadeRemote.get(iId);
+					final SortedRuleVO sortedRuleVO = new SortedRuleVO(ruleVO);
+					if (sortedRuleVO.getId() != null) {
+						sortedRuleVO.setOrder(0);
+						result.add(sortedRuleVO);
+					}
+				} catch (Exception e) {
+					Log.error(e.getMessage(), e);
+				}
 			}
 		}
 		return result;
@@ -144,6 +153,32 @@ public class RuleRepository implements InitializingBean {
 			}
 		}
 		return result;
+	}
+
+	public List<SortedRuleVO> selectRulesByTransitionId(Integer transId, List<Pair<Integer, Boolean>> ruleIdsWithRunAfterwards) {
+		
+		List<SortedRuleVO> retVal = new ArrayList<SortedRuleVO>();
+		
+		for (Pair<Integer, Boolean> rule : ruleIdsWithRunAfterwards) {
+			Integer iId = rule.x;
+			if (iId != null) {
+				try {
+					final SortedRuleVO sortedRuleVO = new SortedRuleVO(ruleEngineFacadeRemote.get(iId));
+					if (sortedRuleVO.getId() != null) {
+						final Collection<RuleEngineTransitionVO> allRuleTransitionsForTransitionId = ruleEngineFacadeRemote.getAllRuleTransitionsForTransitionId(transId);
+						for (RuleEngineTransitionVO retVO : allRuleTransitionsForTransitionId) {
+							sortedRuleVO.setOrder(retVO.getOrder());
+							sortedRuleVO.setRunAfterwards(rule.y != null && rule.y);
+						}
+						retVal.add(sortedRuleVO);
+					}
+				} catch (Exception e) {
+					Log.error(e.getMessage(), e);
+				}
+			}
+		}
+		
+		return retVal;
 	}
 
 

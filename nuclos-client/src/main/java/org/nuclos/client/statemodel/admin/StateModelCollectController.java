@@ -49,6 +49,7 @@ import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.gef.DefaultShapeViewer;
 import org.nuclos.client.gef.ShapeModel;
 import org.nuclos.client.gef.shapes.TextShape;
@@ -425,6 +426,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 			StateDelegate.getInstance().invalidateCache();
 			SecurityDelegate.getInstance().invalidateCache();
 			SecurityCache.getInstance().revalidate();
+			EventSupportRepository.getInstance().updateEventSupports();	
 		}
 		catch(Exception e) {
 			throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(

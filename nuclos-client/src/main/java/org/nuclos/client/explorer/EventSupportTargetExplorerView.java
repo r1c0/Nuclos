@@ -9,7 +9,8 @@ import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 
-import org.nuclos.client.eventsupport.EventSupportManagementController.ACTIONS;
+
+import org.nuclos.client.eventsupport.EventSupportActionHandler.ACTIONS;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportDropListener;
 import org.nuclos.server.navigation.treenode.TreeNode;
 

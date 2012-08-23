@@ -3,10 +3,6 @@ package org.nuclos.client.eventsupport.panel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
@@ -21,14 +17,14 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.border.Border;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import org.nuclos.client.eventsupport.EventSupportManagementController.ACTIONS;
+import org.nuclos.client.eventsupport.EventSupportActionHandler.ACTIONS;
 import org.nuclos.client.eventsupport.model.EventSupportEntityPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportGenerationPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportJobPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportPropertiesTableModel;
 import org.nuclos.client.eventsupport.model.EventSupportStatePropertiesTableModel;
 import org.nuclos.client.explorer.EventSupportExplorerView;
 import org.nuclos.client.explorer.EventSupportTargetExplorerView;
@@ -42,9 +38,15 @@ public class EventSupportTargetView extends JPanel {
 
 	JTable propTableEntites;
 	JTable propTableStateModels;
+	JTable propTableJobModels;
+	JTable propTableGenerationModels;
 	
 	JPanel entityPropertiesPanel;
 	JPanel statePropertiesPanel;
+	JPanel jobPropertiesPanel;
+	JPanel generationPropertiesPanel;
+	
+	JTable eventSupportPropertiesTable;
 	
 	public EventSupportTargetView(EventSupportView view, Border b)
 	{
@@ -74,13 +76,16 @@ public class EventSupportTargetView extends JPanel {
 	public JTable getPropertyTableStatemodels(){
 		return this.propTableStateModels;
 	}
-	
+	public JTable getPropTableGenerationModels() {
+		return propTableGenerationModels;
+	}
+
 	public JTree getTree()
 	{
 		return this.explorerView.getJTree();
 	}
 	
-	public void loadPropertyPanelByModelType(AbstractTableModel model)
+	public void loadPropertyPanelByModelType(EventSupportPropertiesTableModel model)
 	{
 		// Remove old Property Panel 
 		if (splitPanelEventSupport.getBottomComponent() != null)
@@ -92,10 +97,18 @@ public class EventSupportTargetView extends JPanel {
 
 	}
 	
-	public JPanel getTargetPropertyByType(AbstractTableModel model)
+	public EventSupportPropertiesTableModel getEventSupportPropertiesTableModel() {
+		return (EventSupportPropertiesTableModel) this.eventSupportPropertiesTable.getModel();
+	}
+	
+	public JTable getEventSupportPropertiesTable() {
+		return this.eventSupportPropertiesTable;
+	}
+	
+	public JPanel getTargetPropertyByType(EventSupportPropertiesTableModel model)
 	{
 		JPanel retVal = null;
-	
+		
 		Border b = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.LIGHT_GRAY);
 		
 		if (model instanceof EventSupportEntityPropertiesTableModel)
@@ -106,6 +119,15 @@ public class EventSupportTargetView extends JPanel {
 		{
 			retVal = createStatePropertiesPanel(b);
 		}
+		else if ( model instanceof EventSupportJobPropertiesTableModel)
+		{
+			retVal = createJobPropertiesPanel(b);
+		}
+		else if ( model instanceof EventSupportGenerationPropertiesTableModel)
+		{
+			retVal = createGenerationPropertiesPanel(b);
+		}
+		
 		return retVal;
 	}
 	
@@ -121,44 +143,209 @@ public class EventSupportTargetView extends JPanel {
 		return pnlEventTypes;
 	}
 	
+	
+	protected JPanel createGenerationPropertiesPanel(Border b) {
+		if (generationPropertiesPanel == null) {
+			generationPropertiesPanel = new JPanel();
+			generationPropertiesPanel.setLayout(new BorderLayout());
+			
+			final JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
+			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();
+			
+			final JButton btnSaveAll = new JButton(actionsMap.get(ACTIONS.ACTION_SAVE_ALL_GENERATIONS));
+			final JButton btnDelete = new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_GENERATION));
+			final JButton btnMoveUp = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_GENERATION));
+			final JButton btnMovedown = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_GENERATION));
+			
+			btnDelete.setEnabled(false);
+			btnMoveUp.setEnabled(false);
+			btnMovedown.setEnabled(false);
+			
+			propTableGenerationModels = new JTable(this.esView.getTargetGenerationModel());
+			propTableGenerationModels.setFillsViewportHeight(true);
+			propTableGenerationModels.setRowSelectionAllowed(true);
+			
+			propTableGenerationModels.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					if(e.getValueIsAdjusting()) {
+						boolean enableButtons = false;
+						if (propTableGenerationModels.getSelectedRow() >= 0) {
+							enableButtons = true;
+						}
+						
+						toolBar.getComponent(toolBar.getComponentIndex(btnDelete)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMoveUp)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMovedown)).setEnabled(enableButtons);
+					}
+				}
+			});
+
+			JScrollPane scrollPane = new JScrollPane(propTableGenerationModels);
+			
+			toolBar.setBorderPainted(false);
+						
+			if (actionsMap.containsKey(ACTIONS.ACTION_SAVE_ALL_GENERATIONS))
+				toolBar.add(btnSaveAll);
+			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE_GENERATION))
+				toolBar.add(btnDelete);
+			
+			toolBar.addSeparator();
+			
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP_GENERATION))
+				toolBar.add(btnMoveUp);
+			
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN_GENERATION))
+				toolBar.add(btnMovedown);
+					
+			generationPropertiesPanel.setBorder(b);
+			generationPropertiesPanel.add(scrollPane, BorderLayout.CENTER);
+			generationPropertiesPanel.add(toolBar, BorderLayout.EAST);
+			generationPropertiesPanel.setPreferredSize(new Dimension(0, 250));
+		}
+		this.eventSupportPropertiesTable = propTableGenerationModels;
+		return this.generationPropertiesPanel;
+	}
+	
+	protected JPanel createJobPropertiesPanel(Border b) {
+		if (jobPropertiesPanel == null) {
+			jobPropertiesPanel = new JPanel();
+			jobPropertiesPanel.setLayout(new BorderLayout());
+			
+			final JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
+			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();
+			
+			final JButton btnSaveAll = new JButton(actionsMap.get(ACTIONS.ACTION_SAVE_ALL_JOBS));
+			final JButton btnDelete = new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_JOB));
+			final JButton btnMoveUp = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_JOB));
+			final JButton btnMovedown = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_JOB));
+		
+			btnDelete.setEnabled(false);
+			btnMoveUp.setEnabled(false);
+			btnMovedown.setEnabled(false);
+			
+			propTableJobModels = new JTable(this.esView.getTargetJobModel());
+			propTableJobModels.setFillsViewportHeight(true);
+			propTableJobModels.setRowSelectionAllowed(true);
+			
+			propTableJobModels.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					if(e.getValueIsAdjusting()) {
+						boolean enableButtons = false;
+						if (propTableJobModels.getSelectedRow() >= 0) {
+							enableButtons = true;
+						}
+					
+						toolBar.getComponent(toolBar.getComponentIndex(btnDelete)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMoveUp)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMovedown)).setEnabled(enableButtons);
+					}
+				}
+			});
+	
+			JScrollPane scrollPane = new JScrollPane(propTableJobModels);
+		
+			toolBar.setBorderPainted(false);
+		
+			if (actionsMap.containsKey(ACTIONS.ACTION_SAVE_ALL_JOBS))
+				toolBar.add(btnSaveAll);
+			
+			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE_JOB))
+				toolBar.add(btnDelete);
+			
+			toolBar.addSeparator();
+			
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP_JOB))
+				toolBar.add(btnMoveUp);
+			
+			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN_JOB))
+				toolBar.add(btnMovedown);
+					
+			jobPropertiesPanel.setBorder(b);
+			jobPropertiesPanel.add(scrollPane, BorderLayout.CENTER);
+			jobPropertiesPanel.add(toolBar, BorderLayout.EAST);
+			jobPropertiesPanel.setPreferredSize(new Dimension(0, 250));
+		}
+		
+		this.eventSupportPropertiesTable = propTableJobModels;
+		return this.jobPropertiesPanel;
+	}
 	protected JPanel createStatePropertiesPanel(Border b) {
+		
+		String[] transitions = this.esView.getTargetStateModel().getTransitionsAsArray();
+		
 		if (statePropertiesPanel == null) {
 			statePropertiesPanel = new JPanel();
 			statePropertiesPanel.setLayout(new BorderLayout());
+			
+			final JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
+			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();
+			
+			final JButton btnSaveAll = new JButton(actionsMap.get(ACTIONS.ACTION_SAVE_ALL_STATETRANSITION));
+			final JButton btnDelete = new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_STATETRANSITION));
+			final JButton btnMoveUp = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_STATETRANSITION));
+			final JButton btnMovedown = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_STATETRANSITION));
+			
+			
+			btnDelete.setEnabled(false);
+			btnMoveUp.setEnabled(false);
+			btnMovedown.setEnabled(false);
 			
 			propTableStateModels = new JTable(this.esView.getTargetStateModel());
 			propTableStateModels.setFillsViewportHeight(true);
 			propTableStateModels.setRowSelectionAllowed(true);
 			
-			propTableStateModels.getColumnModel().getColumn(0).setMaxWidth(120);
-			propTableStateModels.getColumnModel().getColumn(0).setMinWidth(20);
-			propTableStateModels.getColumnModel().getColumn(0).setPreferredWidth(100);
+			propTableStateModels.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox(transitions)));
 			
+			propTableStateModels.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					if(e.getValueIsAdjusting()) {
+						boolean enableButtons = false;
+						if (propTableStateModels.getSelectedRow() >= 0) {
+							enableButtons = true;
+						}
+					
+						toolBar.getComponent(toolBar.getComponentIndex(btnDelete)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMoveUp)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMovedown)).setEnabled(enableButtons);
+					}
+				}
+			});
+
 			JScrollPane scrollPane = new JScrollPane(propTableStateModels);
-			
-			JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
 			
 			toolBar.setBorderPainted(false);
 			
-			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();;
+			if (actionsMap.containsKey(ACTIONS.ACTION_SAVE_ALL_STATETRANSITION))
+				toolBar.add(btnSaveAll);
 			
 			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE_STATETRANSITION))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_STATETRANSITION)));
+				toolBar.add(btnDelete);
 			
 			toolBar.addSeparator();
 			
 			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP_STATETRANSITION))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_STATETRANSITION)));
+				toolBar.add(btnMoveUp);
 			
 			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN_STATETRANSITION))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_STATETRANSITION)));
+				toolBar.add(btnMovedown);
 					
 			statePropertiesPanel.setBorder(b);
 			statePropertiesPanel.add(scrollPane, BorderLayout.CENTER);
 			statePropertiesPanel.add(toolBar, BorderLayout.EAST);
 			statePropertiesPanel.setPreferredSize(new Dimension(0, 250));
 		}
-		
+		else
+		{
+			propTableStateModels.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox(transitions)));
+			
+		}
+		this.eventSupportPropertiesTable = propTableStateModels;
 		return this.statePropertiesPanel;
 	}
 	
@@ -172,44 +359,66 @@ public class EventSupportTargetView extends JPanel {
 			this.entityPropertiesPanel = new JPanel();
 			entityPropertiesPanel.setLayout(new BorderLayout());
 			
+			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();
+			
+			final JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
+			
+			final JButton btnSaveAll = new JButton(actionsMap.get(ACTIONS.ACTION_SAVE_ALL_EVENTS));
+			final JButton btnDelete = new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_EVENT));
+			final JButton btnMoveUp = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_EVENT));
+			final JButton btnMovedown = new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_EVENT));
+			
+		
+			btnDelete.setEnabled(false);
+			btnMoveUp.setEnabled(false);
+			btnMovedown.setEnabled(false);
+			
 			propTableEntites = new JTable(this.esView.getTargetEntityModel());
 			
 			propTableEntites.setFillsViewportHeight(true);
 			propTableEntites.setRowSelectionAllowed(true);
-			propTableEntites.addMouseMotionListener(new StatusModelMouseEventAdapter());
 			
-			propTableEntites.getColumnModel().getColumn(0).setMaxWidth(120);
+			propTableEntites.getColumnModel().getColumn(0).setMaxWidth(220);
 			propTableEntites.getColumnModel().getColumn(0).setMinWidth(20);
-			propTableEntites.getColumnModel().getColumn(0).setPreferredWidth(100);
+			propTableEntites.getColumnModel().getColumn(0).setPreferredWidth(200);
 			
-			propTableEntites.getColumnModel().getColumn(1).setMaxWidth(220);
-			propTableEntites.getColumnModel().getColumn(1).setMinWidth(20);
-			propTableEntites.getColumnModel().getColumn(1).setPreferredWidth(200);
-			
-			propTableEntites.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
-			propTableEntites.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
+			propTableEntites.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
+			propTableEntites.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
+					
+			propTableEntites.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					if(e.getValueIsAdjusting()) {
+						boolean enableButtons = false;
+						if (propTableEntites.getSelectedRow() >= 0) {
+							enableButtons = true;
+						}
+						
+						toolBar.getComponent(toolBar.getComponentIndex(btnDelete)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMoveUp)).setEnabled(enableButtons);
+						toolBar.getComponent(toolBar.getComponentIndex(btnMovedown)).setEnabled(enableButtons);
+					}
+				}
+			});
 			
 			JScrollPane scrollPane = new JScrollPane(propTableEntites);
 			
-			JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
+			toolBar.setBorderPainted(false);	
 			
-			toolBar.setBorderPainted(false);
-			
-			Map<ACTIONS, AbstractAction> actionsMap = esView.getActionsMap();;
-			
-			if (actionsMap.containsKey(ACTIONS.ACTION_SAVE_EVENT))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_SAVE_EVENT)));
+			if (actionsMap.containsKey(ACTIONS.ACTION_SAVE_ALL_EVENTS))
+				toolBar.add(btnSaveAll);
 			
 			if (actionsMap.containsKey(ACTIONS.ACTION_DELETE_EVENT))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_DELETE_EVENT)));
+				toolBar.add(btnDelete);
 			
 			toolBar.addSeparator();
 			
 			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_UP_EVENT))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_UP_EVENT)));
+				toolBar.add(btnMoveUp);
 			
 			if (actionsMap.containsKey(ACTIONS.ACTION_MOVE_DOWN_EVENT))
-				toolBar.add(new JButton(actionsMap.get(ACTIONS.ACTION_MOVE_DOWN_EVENT)));
+				toolBar.add(btnMovedown);
 			
 			entityPropertiesPanel.setBorder(b);
 			entityPropertiesPanel.add(scrollPane, BorderLayout.CENTER);
@@ -218,19 +427,12 @@ public class EventSupportTargetView extends JPanel {
 		}
 		else
 		{
-			propTableEntites.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
-			propTableEntites.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
+			propTableEntites.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox(status)));
+			propTableEntites.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox(process)));
 		}
 		
+		this.eventSupportPropertiesTable = propTableEntites;
 		return entityPropertiesPanel;	
 	}
 	
-	public class StatusModelMouseEventAdapter extends MouseMotionAdapter {
-		public void mouseMoved(MouseEvent e) {
-			JTable aTable = (JTable)e.getSource();
-			int itsRow = aTable.rowAtPoint(e.getPoint());
-			int itsColumn = aTable.columnAtPoint(e.getPoint());
-			aTable.repaint();
-		}
-	}
 }

@@ -136,7 +136,12 @@ public class SortableRuleTableModel extends DefaultTableModel {
 		} else if (aValue instanceof Boolean && column == 2) {
 			lstRules.get(row).setRunAfterwards((Boolean) aValue);
 			for (ActionListener al : lstValueChangedListener) {
-				al.actionPerformed(new ActionEvent(this, lstRules.get(row).getId(), "RunAfterwards_changed"));
+				if (lstRules.get(row).getId() != null) {
+					al.actionPerformed(new ActionEvent(this, lstRules.get(row).getId(), "RunAfterwards_changed_Rule"));					
+				}
+				else {
+					al.actionPerformed(new ActionEvent(this, 0, "RunAfterwards_changed_EventSupport"));
+				}
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package org.nuclos.client.eventsupport;
 
-import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -9,69 +8,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 import org.nuclos.client.eventsupport.model.EventSupportEntityPropertiesTableModel;
-import org.nuclos.client.eventsupport.model.EventSupportPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportGenerationPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportJobPropertiesTableModel;
+import org.nuclos.client.eventsupport.model.EventSupportSourcePropertiesTableModel;
 import org.nuclos.client.eventsupport.model.EventSupportStatePropertiesTableModel;
-import org.nuclos.client.eventsupport.panel.EventSupportSourceView;
-import org.nuclos.client.eventsupport.panel.EventSupportView;
 import org.nuclos.client.eventsupport.panel.EventSupportTargetView;
-import org.nuclos.client.explorer.node.EventSupportTargetExplorerNode;
+import org.nuclos.client.eventsupport.panel.EventSupportView;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetTreeNode;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetType;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
+import org.nuclos.client.explorer.node.rule.DirectoryRuleNode;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Controller;
-import org.nuclos.client.ui.Icons;
-import org.nuclos.client.ui.OvOpAdapter;
-import org.nuclos.client.ui.OverlayOptionPane;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonCreateException;
-import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportGenerationVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
-import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.nuclos.server.navigation.treenode.TreeNode;
+import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
 public class EventSupportManagementController extends Controller<MainFrameTabbedPane> {
 
-	private static final Logger LOG = Logger.getLogger(EventSupportManagementController.class);	
-	MainFrameTab ifrm;
-	
-	public enum ACTIONS {
-		ACTION_SAVE_EVENT, 
-		ACTION_SAVE_ALL_EVENTS, 
-		ACTION_DELETE_EVENT, 
-		ACTION_MOVE_UP_EVENT, 
-		ACTION_MOVE_DOWN_EVENT,
-		ACTION_SAVE_ALL_STATETRANSITION,
-		ACTION_DELETE_STATETRANSITION, 
-		ACTION_MOVE_UP_STATETRANSITION, 
-		ACTION_MOVE_DOWN_STATETRANSITION,
-		ACTION_REFRESH_TARGETTREE, 
-		ACTION_REFRESH_SOURCETREE};
-		
 	public static final Map<String, String> MAP_EVENTTYPES = new HashMap<String, String>();
-	
 	
 	static {
 		MAP_EVENTTYPES.put("CustomSupport", "User");
@@ -85,252 +62,16 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		MAP_EVENTTYPES.put("GenerateFinalSupport", "User");
 	}
 	
+	private static final Logger LOG = Logger.getLogger(EventSupportManagementController.class);	
 	private EventSupportView viewEventSupportManagement;
-	public final Map<ACTIONS, AbstractAction> MAP_ACTIONS = new HashMap<ACTIONS, AbstractAction>();
+	private EventSupportActionHandler esActionHandler;
+	private MainFrameTab ifrm;
+	
 	
 	public EventSupportManagementController(MainFrameTabbedPane pParent) {
 		super(pParent);
-	
-		loadActions();
 	}
 	
-	private void loadActions() {
-		MAP_ACTIONS.put(ACTIONS.ACTION_SAVE_EVENT, 
-				new AbstractAction("", Icons.getInstance().getIconSaveS16()) {
-					@Override
-					public void actionPerformed(ActionEvent actEvent) {
-						EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-						if (estvElement != null)
-						{
-							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
-									estvElement.getPropertyTableEntites().getModel();
-							int selectedRow = estvElement.getPropertyTableEntites().getSelectedRow();
-							
-							EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
-								
-							// Modify entry
-							if (entryByRowIndex.getId() != null) {
-								try {
-									EventSupportDelegate.getInstance().modifyEventSupportEvent(entryByRowIndex);
-									
-								} catch (Exception e) {
-									LOG.error(e.getMessage(), e);
-								}
-							}
-							tblModel.setModelModified(false);
-						}
-					}
-				});
-		MAP_ACTIONS.put(ACTIONS.ACTION_SAVE_ALL_EVENTS, 
-				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
-			@Override
-			public void actionPerformed(ActionEvent actEv) {
-				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-				if (estvElement != null)
-				{
-					EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
-							estvElement.getPropertyTableEntites().getModel();
-
-					for(int selectedRow = 0; selectedRow < tblModel.getRowCount(); selectedRow++){
-						
-						EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
-						
-						// Modify entry
-						if (entryByRowIndex.getId() != null) {
-							try {
-								EventSupportDelegate.getInstance().modifyEventSupportEvent(entryByRowIndex);
-								
-							} catch (Exception e) {
-								LOG.error(e.getMessage(), e);
-							}
-						}
-					}
-				
-					tblModel.setModelModified(false);
-				}
-			}
-		});
-		MAP_ACTIONS.put(ACTIONS.ACTION_SAVE_ALL_STATETRANSITION, 
-				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
-			@Override
-			public void actionPerformed(ActionEvent actEv) {
-				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-				if (estvElement != null)
-				{
-					EventSupportStatePropertiesTableModel  tblModel = (EventSupportStatePropertiesTableModel) 
-							estvElement.getPropertyTableStatemodels().getModel();
-					
-					for(int selectedRow = 0; selectedRow < tblModel.getRowCount(); selectedRow++){
-						
-						EventSupportTransitionVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
-						
-						// Modify entry
-						if (entryByRowIndex.getId() != null) {
-							try {
-								EventSupportDelegate.getInstance().modifyEventSupportTransition(entryByRowIndex);
-								
-							} catch (Exception e) {
-								LOG.error(e.getMessage(), e);
-							}
-						}
-					}
-
-					tblModel.setModelModified(false);
-				}
-			}
-		});
-		MAP_ACTIONS.put(ACTIONS.ACTION_DELETE_STATETRANSITION, 
-				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
-			@Override
-			public void actionPerformed(ActionEvent actEv) {
-				EventSupportTargetView  estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-				if (estvElement != null)
-				{
-					EventSupportStatePropertiesTableModel tblModel = (EventSupportStatePropertiesTableModel)	 
-							estvElement.getPropertyTableStatemodels().getModel();
-					
-					int selectedRow = estvElement.getPropertyTableStatemodels().getSelectedRow();
-					EventSupportTransitionVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
-					
-					// Delete element
-					if (entryByRowIndex.getId() != null) {
-						EventSupportDelegate.getInstance().deleteEventSupportTransition(entryByRowIndex);
-					}
-					
-					// remove it from tablemodel
-					tblModel.removeEntry(selectedRow);
-					
-					// and refresh new order and store it in db
-					for (int idx = selectedRow; idx < tblModel.getRowCount(); idx++) {
-						EventSupportDelegate.getInstance().modifyEventSupportTransition(tblModel.getEntryByRowIndex(idx));
-					}
-					
-					estvElement.getPropertyTableStatemodels().repaint();
-					estvElement.getPropertyTableStatemodels().revalidate();
-				}
-			}
-		});
-		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_DOWN_STATETRANSITION, 
-				new AbstractAction("", Icons.getInstance().getIconDown16()) {
-			@Override
-			public void actionPerformed(ActionEvent actEv) {
-				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-				if (estvElement != null)
-				{
-					EventSupportStatePropertiesTableModel tblModel = (EventSupportStatePropertiesTableModel) 
-							estvElement.getPropertyTableStatemodels().getModel();
-					
-					int selectedRow = estvElement.getPropertyTableStatemodels().getSelectedRow();
-					tblModel.moveDown(selectedRow);
-				}
-			}
-		});
-		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_UP_STATETRANSITION, 
-				new AbstractAction("", Icons.getInstance().getIconUp16()) {
-			@Override
-			public void actionPerformed(ActionEvent actEv) {
-				EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-				if (estvElement != null)
-				{
-					EventSupportStatePropertiesTableModel tblModel = (EventSupportStatePropertiesTableModel) 
-							estvElement.getPropertyTableStatemodels().getModel();
-					
-					int selectedRow = estvElement.getPropertyTableStatemodels().getSelectedRow();
-					tblModel.moveUp(selectedRow);
-					estvElement.getPropertyTableStatemodels().repaint();
-					estvElement.getPropertyTableStatemodels().revalidate();
-				}
-			}
-		});
-		MAP_ACTIONS.put(ACTIONS.ACTION_DELETE_EVENT, 
-				new AbstractAction("", Icons.getInstance().getIconDelete16()) {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-						if (estvElement != null)
-						{
-							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel)	 
-									estvElement.getPropertyTableEntites().getModel();
-							
-							int selectedRow = estvElement.getPropertyTableEntites().getSelectedRow();
-							EventSupportEventVO entryByRowIndex = tblModel.getEntryByRowIndex(selectedRow);
-							
-							// Delete element
-							if (entryByRowIndex.getId() != null) {
-								EventSupportDelegate.getInstance().deleteEventSupportEvent(entryByRowIndex);
-							}
-							
-							// remove it from tablemodel
-							tblModel.removeEntry(selectedRow);
-							
-							// and refresh new order and store it in db
-							for (int idx = selectedRow; idx < tblModel.getRowCount(); idx++) {
-								EventSupportDelegate.getInstance().modifyEventSupportEvent(tblModel.getEntryByRowIndex(idx));
-							}
-							
-							estvElement.getPropertyTableEntites().repaint();
-							estvElement.getPropertyTableEntites().revalidate();
-						}
-					}
-				});
-		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_UP_EVENT, 
-				new AbstractAction("", Icons.getInstance().getIconUp16()) {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-						if (estvElement != null)
-						{
-							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
-									estvElement.getPropertyTableEntites().getModel();
-							
-							int selectedRow = estvElement.getPropertyTableEntites().getSelectedRow();
-							tblModel.moveUp(selectedRow);
-							estvElement.getPropertyTableEntites().repaint();
-							estvElement.getPropertyTableEntites().revalidate();
-						}
-					}
-				});
-		MAP_ACTIONS.put(ACTIONS.ACTION_MOVE_DOWN_EVENT, 
-				new AbstractAction("", Icons.getInstance().getIconDown16()) {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-						if (estvElement != null)
-						{
-							EventSupportEntityPropertiesTableModel tblModel = (EventSupportEntityPropertiesTableModel) 
-									estvElement.getPropertyTableEntites().getModel();
-							
-							int selectedRow = estvElement.getPropertyTableEntites().getSelectedRow();
-							tblModel.moveDown(selectedRow);
-						}
-					}
-				});
-		MAP_ACTIONS.put(ACTIONS.ACTION_REFRESH_TARGETTREE, 
-				new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-							EventSupportTargetView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getTargetViewPanel();
-							estvElement.getExplorerView().getRootNode().refresh(estvElement.getTree());							
-						} catch (Exception err) {
-							LOG.error(err.getMessage(), err);
-						}
-					}
-				});
-		MAP_ACTIONS.put(ACTIONS.ACTION_REFRESH_SOURCETREE, 
-				new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-							EventSupportSourceView estvElement = EventSupportManagementController.this.viewEventSupportManagement.getSourceViewPanel();
-							estvElement.getExplorerView().getRootNode().refresh(estvElement.getTree());
-						} catch (CommonFinderException err) {
-							LOG.error(err.getMessage(), err);
-						}
-					}
-				});
-	}
-
 	public static class NuclosESMRunnable implements Runnable {
 	
 		private final MainFrameTabbedPane desktopPane;
@@ -354,10 +95,10 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 
 	public void showSupportProperties(EventSupportTreeNode node)
 	{
-		EventSupportPropertiesTableModel propertyModel = viewEventSupportManagement.getPropertyModel();
+		EventSupportSourcePropertiesTableModel propertyModel = viewEventSupportManagement.getPropertyModel();
 		try {
 			propertyModel.clear();
-			EventSupportVO eventSupportByClassname;
+			EventSupportSourceVO eventSupportByClassname;
 			switch (node.getTreeNodeType())
 			{
 				case EVENTSUPPORT:
@@ -374,12 +115,12 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 			{
 				DateFormat dateInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 				
-				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_NAME, eventSupportByClassname.getName());
-				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_DESCRIPTION, eventSupportByClassname.getDescription());
-				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_TYPE, eventSupportByClassname.getInterface());
-				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_NUCLET, node.getParentNode().getParentNode().getEntityName());
-				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_PATH, eventSupportByClassname.getPackage());
-				propertyModel.addEntry(EventSupportPropertiesTableModel.ELM_ES_CREATION_DATE, 
+				propertyModel.addEntry(EventSupportSourcePropertiesTableModel.ELM_ES_NAME, eventSupportByClassname.getName());
+				propertyModel.addEntry(EventSupportSourcePropertiesTableModel.ELM_ES_DESCRIPTION, eventSupportByClassname.getDescription());
+				propertyModel.addEntry(EventSupportSourcePropertiesTableModel.ELM_ES_TYPE, eventSupportByClassname.getInterface());
+				propertyModel.addEntry(EventSupportSourcePropertiesTableModel.ELM_ES_NUCLET, node.getParentNode().getParentNode().getEntityName());
+				propertyModel.addEntry(EventSupportSourcePropertiesTableModel.ELM_ES_PATH, eventSupportByClassname.getPackage());
+				propertyModel.addEntry(EventSupportSourcePropertiesTableModel.ELM_ES_CREATION_DATE, 
 						eventSupportByClassname.getDateOfCompilation() != null ? dateInstance.format(eventSupportByClassname.getDateOfCompilation()) : null);
 				
 			}
@@ -392,24 +133,76 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 	public void showTargetStateSupportPropertiesNotModified(final EventSupportTreeNode node) {
 		final EventSupportStatePropertiesTableModel targetStateModel = viewEventSupportManagement.getTargetStateModel();
 		
-		Collection<EventSupportTransitionVO> EventSupportTransitionVO;
+		Integer iStatemodelId = Integer.parseInt(node.getId().toString());
 		
 		try {
-			EventSupportTransitionVO = EventSupportRepository.getInstance().getEventSupportsByTransitionId((Integer) node.getId());
+			List<StateTransitionVO> lstTranses = StateDelegate.getInstance().getOrderedStateTransitionsByStatemodel(iStatemodelId);
+			List<EventSupportTransitionVO> lstSupportsForTransition = EventSupportRepository.getInstance().getEventSupportsByStateModelId(iStatemodelId);
+			
 			targetStateModel.clear();
 			
-			for(EventSupportTransitionVO estVO : EventSupportTransitionVO) {
-				targetStateModel.addEntry(estVO);
+			targetStateModel.addTransitions(lstTranses);
+			
+			for(EventSupportTransitionVO estVO : lstSupportsForTransition) {
+				EventSupportSourceVO esVO = EventSupportRepository.getInstance().getEventSupportByClassname(estVO.getEventSupportClass());
+				if (node.getEntityName().equals(esVO.getInterface()))
+					targetStateModel.addEntry(estVO);
 			}
+			
 			viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(targetStateModel);
 			
-		} catch (RemoteException e) {
+		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		}
 		
 	}
 	
-	public void showTargetSupportPropertiesNotModified(final EventSupportTreeNode node) {
+	public void showTargetGenerationSupportPropertiesNotModified(final EventSupportTreeNode node) {
+		EventSupportGenerationPropertiesTableModel targetGenerationModel = viewEventSupportManagement.getTargetGenerationModel();
+		
+		Collection<EventSupportGenerationVO> lstEseGVOs;
+		
+		try {
+			
+			lstEseGVOs = EventSupportRepository.getInstance().getEventSupportsByGenerationId((Integer) node.getId());
+			targetGenerationModel.clear();
+			
+			for (EventSupportGenerationVO esgVO : lstEseGVOs) {
+				 EventSupportSourceVO esVO = EventSupportRepository.getInstance().getEventSupportByClassname(esgVO.getEventSupportClass());
+				 if (esVO.getInterface().equals(node.getEntityName()))
+					 targetGenerationModel.addEntry(esgVO);
+			}
+			
+			viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(targetGenerationModel);
+			
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
+	
+	public void showTargetJobSupportPropertiesNotModified (final EventSupportTreeNode node) {
+		final EventSupportJobPropertiesTableModel targetJobModel = viewEventSupportManagement.getTargetJobModel();
+		targetJobModel.clear();
+		
+		try {
+			if (node.getParentNode().getTreeNodeType().equals(EventSupportTargetType.JOB))
+			{
+				Integer iJobControllerId = Integer.parseInt(node.getParentNode().getId().toString());
+				Collection<EventSupportJobVO> eventSupportsForJob = EventSupportRepository.getInstance().getEventSupportsForJob(iJobControllerId);
+				
+				for (EventSupportJobVO esjVO : eventSupportsForJob) {
+					targetJobModel.addEntry(esjVO);
+				}
+				
+				viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(targetJobModel);
+				
+			}			
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
+	
+	public void showTargetEntitySupportPropertiesNotModified(final EventSupportTreeNode node) {
 		
 		final EventSupportEntityPropertiesTableModel targetEntityModel = viewEventSupportManagement.getTargetEntityModel();
 		targetEntityModel.clear();
@@ -456,36 +249,21 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		
 	public void showTargetSupportProperties(final EventSupportTreeNode node) {
 		
-		final EventSupportEntityPropertiesTableModel targetEntityModel = viewEventSupportManagement.getTargetEntityModel();
-		final EventSupportStatePropertiesTableModel targetStateModel = viewEventSupportManagement.getTargetStateModel();
-		final String sMsg = getSpringLocaleDelegate().getMessage(
-				"CollectController.14","Der Datensatz wurde ge\u00e4ndert.") + "\n" + getSpringLocaleDelegate().getMessage(
-						"CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" +
-						getSpringLocaleDelegate().getMessage("CollectController.20","Jetzt speichern?");
-		
-		if (targetStateModel.isModelModified()) {
-			int result = JOptionPane.showConfirmDialog(viewEventSupportManagement, sMsg, "", JOptionPane.YES_NO_OPTION);
-			if (result == OverlayOptionPane.YES_OPTION) {
-				MAP_ACTIONS.get(ACTIONS.ACTION_SAVE_ALL_STATETRANSITION).actionPerformed(null);
-			}	
-			targetStateModel.setModelModified(false);
-		}
-		if (targetEntityModel.isModelModified()) {
-			int result = JOptionPane.showConfirmDialog(viewEventSupportManagement, sMsg, "", JOptionPane.YES_NO_OPTION);
-			if (result == OverlayOptionPane.YES_OPTION) {
-				MAP_ACTIONS.get(ACTIONS.ACTION_SAVE_ALL_EVENTS).actionPerformed(null);
-			}	
-			targetEntityModel.setModelModified(false);
-		}
-		
 		switch (node.getTreeNodeType()) {
 				case EVENTSUPPORT_TYPE:
-					showTargetSupportPropertiesNotModified(node);
+					showTargetEntitySupportPropertiesNotModified(node);
 					break;
 				case STATE_TRANSITION:
 					showTargetStateSupportPropertiesNotModified(node);
 					break;
+				case JOB_EVENT:
+					showTargetJobSupportPropertiesNotModified(node);
+					break;
+				case GENERATION_EVENT:
+					showTargetGenerationSupportPropertiesNotModified(node);
+					break;
 				default:
+					viewEventSupportManagement.getTargetViewPanel().loadPropertyPanelByModelType(null);
 					break;
 			}
 	}
@@ -496,9 +274,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		
 		// Explorer Panel including Toolbar and tree for eventsupports
 		final EventSupportTreeNode treenodeRoot = new EventSupportTreeNode(this, null, null,
-				localeDelegate.getMessage("ExplorerController.24","Regelverwendungen"),
-				localeDelegate.getMessage("ExplorerController.24","Regelverwendungen"),
-				localeDelegate.getMessage("ExplorerController.24","Regelverwendungen"),
+				null, null, null,
 				EventSupportTargetType.ROOT, true);
 		
 		final EventSupportTargetTreeNode treenodeRootTargets = new EventSupportTargetTreeNode(this, null, null, 
@@ -509,8 +285,14 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		
 		
 		if (viewEventSupportManagement == null) {
+			
 			viewEventSupportManagement = new EventSupportView(treenodeRoot, treenodeRootTargets);
-			viewEventSupportManagement.setActionMap(MAP_ACTIONS);
+			
+			this.esActionHandler = 
+					new EventSupportActionHandler(viewEventSupportManagement);
+			
+			viewEventSupportManagement.setActionMap(this.esActionHandler.getActionMaps());
+			
 			viewEventSupportManagement.showGui();			
 		}
 		
@@ -526,16 +308,16 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		ifrm.setVisible(true);
 	}
 
-	public List<EventSupportTreeNode> createSubNodesByType(EventSupportTreeNode esNode)
+	public List<TreeNode> createSubNodesByType(EventSupportTreeNode esNode)
 	{
-		List<EventSupportTreeNode> retVal = new ArrayList<EventSupportTreeNode>();
+		List<TreeNode> retVal = new ArrayList<TreeNode>();
 		
 		try {
-			List<EventSupportVO> eventSupportTypes;
+			List<EventSupportSourceVO> eventSupportTypes;
 			
 			switch (esNode.getTreeNodeType()) 
 			{
-				case ROOT:
+				case RULEVERSION:
 					// Default Node for all nuclos elements that are not attached to a nuclet
 					retVal.add(new EventSupportTreeNode(this, esNode, null, "<Default>", "<Default>", "Alle nicht zugewiesenen Elemente", EventSupportTargetType.NUCLET, false));
 					// Nuclet Nodes
@@ -545,10 +327,16 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 						retVal.add(new EventSupportTreeNode(this, esNode, msvo.getId(), msvo.getField("package").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.NUCLET, false));
 					}
 					break;
+				case ROOT:
+						retVal.add(new EventSupportTreeNode(this, esNode, null, getSpringLocaleDelegate().getMessage("ExplorerController.33","Regelbibliothek"), getSpringLocaleDelegate().getMessage("ExplorerController.33","Regelbibliothek"), getSpringLocaleDelegate().getMessage("ExplorerController.33","Regelbibliothek"), EventSupportTargetType.RULEVERSION, false));
+						retVal.add(new DirectoryRuleNode(true, getSpringLocaleDelegate().getMessage(
+								"ExplorerController.24","Regelverwendungen"), 
+								getSpringLocaleDelegate().getMessage("ExplorerController.25","Regelverwendungen"), null, false));
+					break;
 				case NUCLET:
 					// EventSupportTypes
 					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportTypes();
-					for (EventSupportVO s : eventSupportTypes)
+					for (EventSupportSourceVO s : eventSupportTypes)
 					{
 						EventSupportTreeNode eventSupportTreeNode = new EventSupportTreeNode(this, esNode, null, s.getClassname(), s.getName(), s.getDescription(), EventSupportTargetType.EVENTSUPPORT_TYPE, false);
 						retVal.add(eventSupportTreeNode);
@@ -558,7 +346,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportsByType(esNode.getEntityName());
 					masterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.NUCLET.getEntityName());
 					
-					for (EventSupportVO s : eventSupportTypes)
+					for (EventSupportSourceVO s : eventSupportTypes)
 					{
 						boolean isNucletEventSupport = false;
 						for (MasterDataVO msvo : masterData)
@@ -583,24 +371,97 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 			}
 			
 		} catch (RemoteException e) {
-			Log.error(e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 		
+		return retVal;
+	}
+	
+	public EventSupportJobVO addEventSupportToJob(EventSupportTreeNode sourceNode, EventSupportTreeNode targetNode) {
+		EventSupportJobVO retVal = null;
+		
+		if (targetNode != null && EventSupportTargetType.JOB.equals(targetNode.getTreeNodeType()))
+		{
+			String  sSupportClass = sourceNode.getEntityName();
+			String  sDescription = sourceNode.getDescription();
+			Integer iJobControllerId = Integer.parseInt(targetNode.getId().toString());
+			Integer iOrder = targetNode.getSubNodes().size() + 1;
+			try {
+				Collection<EventSupportJobVO> eventSupportsForJob = EventSupportRepository.getInstance().getEventSupportsForJob(iJobControllerId);
+				iOrder = eventSupportsForJob != null ? eventSupportsForJob.size() + 1: 1;
+				retVal = EventSupportDelegate.getInstance().createEventSupportJob(
+						new EventSupportJobVO(sDescription,sSupportClass, iOrder, iJobControllerId));
+			} catch (Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
+		}
+		
+		return retVal;
+	}
+	
+	public EventSupportGenerationVO addEventSupportToGeneration(EventSupportTreeNode sourceNode, EventSupportTreeNode targetNode) {
+		EventSupportGenerationVO retVal = null;
+		
+		if (targetNode != null && EventSupportTargetType.GENERATION.equals(targetNode.getTreeNodeType()))
+		{
+			try {
+				Integer genId = Integer.parseInt(targetNode.getId().toString());
+				int newOrder = 1;
+				
+				EventSupportSourceVO eseVO = EventSupportRepository.getInstance().getEventSupportByClassname(sourceNode.getEntityName());				
+				Collection<EventSupportGenerationVO> lsteseg = EventSupportRepository.getInstance().getEventSupportsForGeneration(genId);
+				
+				for (EventSupportGenerationVO esgVO : lsteseg) {
+					if (EventSupportRepository.getInstance().getEventSupportByClassname(
+							esgVO.getEventSupportClass()).getInterface().equals(eseVO.getInterface()))
+							 newOrder++;
+				}
+				
+				Boolean bRunAfterwards = Boolean.FALSE;
+				if ("org.nuclos.api.eventsupport.GenerateFinalSupport".equals(eseVO.getInterface())) {
+					bRunAfterwards = Boolean.TRUE;
+				}
+				
+				String  sSupportClass = sourceNode.getEntityName();
+				Integer iGenerationId = Integer.parseInt(targetNode.getId().toString());
+				Integer iOrder = newOrder;
+				
+				retVal = EventSupportDelegate.getInstance().createEventSupportGeneration(
+						new EventSupportGenerationVO(iOrder,iGenerationId,sSupportClass, bRunAfterwards));
+								
+			} catch (Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
+		}
 		return retVal;
 	}
 	
 	public EventSupportTransitionVO addEventSupportToStateTransition(EventSupportTreeNode sourceNode, EventSupportTreeNode targetNode) {
 		EventSupportTransitionVO retVal = null;
 		
-		if (targetNode != null && EventSupportTargetType.STATE_TRANSITION.equals(targetNode.getTreeNodeType()))
+		if (targetNode != null && EventSupportTargetType.STATEMODEL.equals(targetNode.getTreeNodeType()))
 		{
-			String sSupportClass = sourceNode.getEntityName();
-			Integer iTransitionId = Integer.parseInt(targetNode.getId().toString());
-			Integer iOrder = targetNode.getSubNodes().size() + 1;
-			Boolean bRunAfterwards = false;
-	
-			EventSupportDelegate.getInstance().createEventSupportTransition(
-					new EventSupportTransitionVO(sSupportClass, iTransitionId, iOrder, bRunAfterwards));
+			try {
+				String sSupportClass = sourceNode.getEntityName();
+				Integer iModuleId = Integer.parseInt(targetNode.getId().toString());
+				Boolean bRunAfterwards = true;
+				
+				String sEventSupportType = EventSupportRepository.getInstance().getEventSupportByClassname(sSupportClass).getInterface();
+				
+				List<EventSupportTransitionVO> stateTransitionsBySupportType = 
+						EventSupportDelegate.getInstance().getStateTransitionsBySupportType(iModuleId, sEventSupportType);
+				
+				List<StateTransitionVO> orderedStateTransitionsByStatemodel = StateDelegate.getInstance().getOrderedStateTransitionsByStatemodel(iModuleId);
+				
+				Integer iOrder = stateTransitionsBySupportType.size() + 1;
+				Integer iTransId =  orderedStateTransitionsByStatemodel.size() > 0 ? orderedStateTransitionsByStatemodel.get(0).getId() : 0;
+				
+				retVal = EventSupportDelegate.getInstance().createEventSupportTransition(
+						new EventSupportTransitionVO(sSupportClass, iTransId, iOrder, bRunAfterwards));
+				
+			} catch (Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
 		}
 		
 		return retVal;
@@ -617,9 +478,7 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 			
 			int idx = 0;
 			int id = 0;
-			
-//			if (targetNode.getId() instanceof Long)
-//				id = ((Long) targetNode.getId()).intValue();
+
 			if (targetNode.getId() instanceof Integer)
 				id = ((Integer) targetNode.getId()).intValue();
 			
@@ -663,14 +522,102 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 		EventSupportTargetType type = node.getTreeNodeType();
 		Object nodeId = node.getId();
 		
-		switch (type) {
+		String strStatuwechsel = getSpringLocaleDelegate().getMessage("RuleNode.12","Statuswechsel");
+		String strTimelimits = getSpringLocaleDelegate().getMessage("RuleNode.3","Fristen");
+		String strWorksteps = getSpringLocaleDelegate().getMessage("RuleNode.7","Arbeitsschritt");
+		String strEntitaet = getSpringLocaleDelegate().getMessage("nuclos.entity.entity.label","Entität");
+		String strAllRules = getSpringLocaleDelegate().getMessage("DirectoryRuleNode.1","All Regeln");
+		
+		
+		if (type != null) {
+			switch (type) {
 			case ROOT:
 				masterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.NUCLET.getEntityName());
-				
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node, null, strAllRules, strAllRules, strAllRules, EventSupportTargetType.ALL_EVENTSUPPORTS, false));
 				lstSubNodes.add(new EventSupportTargetTreeNode(this, node, null, "<Default>", "<Default>", "Alle nicht zugewiesenen Elemente", EventSupportTargetType.NUCLET, false));
 				for (MasterDataVO msvo : masterData)
 				{
 					lstSubNodes.add(new EventSupportTargetTreeNode(this, node, msvo.getId(), msvo.getField("name").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.NUCLET, false));
+				}
+				break;
+			case ALL_EVENTSUPPORTS:
+				try {
+					for (EventSupportSourceVO eseVO : EventSupportRepository.getInstance().getAllEventSupports()) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, eseVO.getId(), eseVO.getClassname(), eseVO.getName(), eseVO.getDescription(), EventSupportTargetType.EVENTSUPPORT, false));					
+					}					
+				} catch (Exception e) {
+					LOG.error(e.getMessage(), e);
+				}
+				break;
+			case ALL_ENTITIES:
+				try {
+					List<EventSupportEventVO> eventSupportEventsByClassname = EventSupportRepository.getInstance().getEventSupportEventsByClassname(node.getParentNode().getEntityName());
+					for (EventSupportEventVO eseVO : eventSupportEventsByClassname) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, eseVO.getId(), eseVO.getEntityName(), eseVO.getEntityName(), eseVO.getEntityName(), EventSupportTargetType.ALL_ENTITIES_ENTITY, false));
+					}					
+				} catch (Exception ex) {
+					LOG.error(ex.getMessage(), ex);
+				}
+				break;
+			case ALL_STATEMODELS:
+				try {
+					List<StateModelVO> stateModelByEventSupportClassname = EventSupportRepository.getInstance().getStateModelByEventSupportClassname(node.getParentNode().getEntityName());
+					for (StateModelVO eseVO : stateModelByEventSupportClassname) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, eseVO.getId(), eseVO.getName(), eseVO.getName(), eseVO.getDescription(), EventSupportTargetType.ALL_STATEMODELS_STATEMODEL, false));
+					}					
+				} catch (Exception e) {
+					LOG.error(e.getMessage(), e);
+				}
+				break;
+			case ALL_JOBS:
+				try {
+					List<JobVO> jobsByClassname = EventSupportRepository.getInstance().getJobsByEventSupportClassname(node.getParentNode().getEntityName());
+					for (JobVO eseVO : jobsByClassname) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, eseVO.getId(), eseVO.getName(), eseVO.getName(), eseVO.getDescription(), EventSupportTargetType.ALL_JOBS_JOB, false));
+					}					
+				} catch (Exception e) {
+					LOG.error(e.getMessage(), e);
+				}
+				break;
+			case ALL_GENERATIONS:
+				try {
+					List<GeneratorActionVO> gensByClassname = EventSupportRepository.getInstance().getGenerationsByEventSupportClassname(node.getParentNode().getEntityName());
+					for (GeneratorActionVO eseVO : gensByClassname) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, eseVO.getId(), eseVO.getName(), eseVO.getName(), eseVO.getName(), EventSupportTargetType.ALL_GENERATIONS_GENERATION, false));
+					}					
+				} catch (Exception e) {
+					LOG.error(e.getMessage(), e);
+				}
+				break;
+			case EVENTSUPPORT:
+				
+				 try {
+					 // Entites
+					List<EventSupportEventVO> lsteseByClassname = EventSupportRepository.getInstance().getEventSupportEventsByClassname(node.getEntityName());
+					if (lsteseByClassname.size() > 0)
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, null, strEntitaet, strEntitaet, strEntitaet, EventSupportTargetType.ALL_ENTITIES, false));
+									
+					// StateModels
+					List<StateModelVO> lstSmVOByClassname = EventSupportRepository.getInstance().getStateModelByEventSupportClassname(node.getEntityName());
+					if (lstSmVOByClassname.size() > 0) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, null, strStatuwechsel,strStatuwechsel, strStatuwechsel, EventSupportTargetType.ALL_STATEMODELS, false));
+					}
+					
+					// Job
+					List<JobVO> lstJobVOByClassname = EventSupportRepository.getInstance().getJobsByEventSupportClassname(node.getEntityName());
+					if (lstJobVOByClassname.size() > 0) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, null, strTimelimits, strTimelimits,strTimelimits, EventSupportTargetType.ALL_JOBS, false));
+					}
+					
+					// Generation
+					List<GeneratorActionVO> lstGaVOByClassname = EventSupportRepository.getInstance().getGenerationsByEventSupportClassname(node.getEntityName());
+					if (lstGaVOByClassname.size() > 0) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, null, strWorksteps, strWorksteps,strWorksteps, EventSupportTargetType.ALL_GENERATIONS, false));
+					}
+					
+					
+				} catch (RemoteException e1) {
+					LOG.error(e1.getMessage(), e1);
 				}
 				break;
 			case ENTITY_CATEGORIE:
@@ -695,8 +642,77 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 				
 				break;
 			case NUCLET: 
-				lstSubNodes.add(new EventSupportTargetTreeNode(this, node, nodeId, "Entitäten", "Entitäten",  "Entitäten des aktuellen Nuclets", EventSupportTargetType.ENTITY_CATEGORIE, false));
-				lstSubNodes.add(new EventSupportTargetTreeNode(this, node,nodeId, "Statusmodelle", "Statusmodelle",  "Statusmodelle des aktuellen Nuclets", EventSupportTargetType.STATEMODEL_CATEGORIE, false));
+			
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node, nodeId, strEntitaet, strEntitaet, strEntitaet, EventSupportTargetType.ENTITY_CATEGORIE, false));
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node,nodeId, strStatuwechsel, strStatuwechsel, strStatuwechsel, EventSupportTargetType.STATEMODEL_CATEGORIE, false));
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node,nodeId, strTimelimits, strTimelimits,  strTimelimits, EventSupportTargetType.JOB_CATEGORIE, false));
+				lstSubNodes.add(new EventSupportTargetTreeNode(this, node,nodeId, strWorksteps,strWorksteps, strWorksteps, EventSupportTargetType.GENERATION_CATEGORIE, false));
+				
+				break;
+			case GENERATION_CATEGORIE:
+				if (nodeId != null) {
+					Collection<EntityObjectVO> jobsByNuclet = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.GENERATION.getEntityName(), "nuclet", nodeId);
+					for (EntityObjectVO eoVO : jobsByNuclet) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node,eoVO.getId(), eoVO.getField("name").toString(), eoVO.getField("name").toString(), eoVO.getField("description").toString(), EventSupportTargetType.GENERATION, false));
+					}
+				}
+				else {
+					masterData = MasterDataDelegate.getInstance().getMasterData(
+							NuclosEntity.GENERATION.getEntityName(), new CollectableIsNullCondition(SearchConditionUtils.newEntityField(NuclosEntity.ENTITY.getEntityName(), "nuclet")));
+					
+					for (MasterDataVO msvo : masterData)
+					{
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node ,msvo.getId(), msvo.getField("name").toString(), msvo.getField("label").toString(), msvo.getField("description").toString(), EventSupportTargetType.GENERATION, false));
+					}
+				}
+				break;
+			case GENERATION:
+				if (nodeId != null)
+				{
+					EventSupportSourceVO eventSupportTypeByName;
+					try {
+						Integer genId = Integer.parseInt(nodeId.toString());
+						
+						List<String> lstesTypes = EventSupportRepository.getInstance().getEventSupportTypesByGenerationId(genId);
+						for (String s: lstesTypes) {
+							eventSupportTypeByName = EventSupportRepository.getInstance().getEventSupportTypeByName(s);
+							lstSubNodes.add(new EventSupportTargetTreeNode(this, node , nodeId, eventSupportTypeByName.getClassname(), eventSupportTypeByName.getName(), eventSupportTypeByName.getDescription(), EventSupportTargetType.GENERATION_EVENT, false));							
+						}
+						
+					} catch (Exception e) {
+						LOG.error(e.getMessage(), e);
+					}
+				}
+				break;
+			case JOB_CATEGORIE:
+				if (nodeId != null) {
+					Collection<EntityObjectVO> jobsByNuclet = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.JOBCONTROLLER.getEntityName(), "nuclet", nodeId);
+					for (EntityObjectVO eoVO : jobsByNuclet) {
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node,eoVO.getId(), eoVO.getField("name").toString(), eoVO.getField("name").toString(), eoVO.getField("description").toString(), EventSupportTargetType.JOB, false));
+					}
+				}
+				else {
+					masterData = MasterDataDelegate.getInstance().getMasterData(
+							NuclosEntity.JOBCONTROLLER.getEntityName(), new CollectableIsNullCondition(SearchConditionUtils.newEntityField(NuclosEntity.ENTITY.getEntityName(), "nuclet")));
+					
+					for (MasterDataVO msvo : masterData)
+					{
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node ,msvo.getId(), msvo.getField("name").toString(), msvo.getField("name").toString(), msvo.getField("description").toString(), EventSupportTargetType.JOB, false));
+					}
+				}
+				
+				break;
+			case JOB:
+				if (nodeId != null)
+				{
+					EventSupportSourceVO eventSupportTypeByName;
+					try {
+						eventSupportTypeByName = EventSupportRepository.getInstance().getEventSupportTypeByName("org.nuclos.api.eventsupport.TimelimitSupport");
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node , nodeId, eventSupportTypeByName.getName(), eventSupportTypeByName.getName(), eventSupportTypeByName.getDescription(), EventSupportTargetType.JOB_EVENT, false));
+					} catch (RemoteException e) {
+						LOG.error(e.getMessage(), e);
+					}
+				}
 				break;
 			case STATEMODEL_CATEGORIE:
 				if (nodeId != null)
@@ -719,43 +735,30 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 				}
 				break;
 			case STATEMODEL:
-				int moduleId = 0;
 				
-				if (nodeId instanceof Integer) 
-					moduleId = ((Integer)nodeId).intValue();
-				if (nodeId instanceof Long) 
-					moduleId = ((Long)nodeId).intValue();
+				Integer modelId = IdUtils.unsafeToId(nodeId);
 				
-				List<StateTransitionVO> orderedTrans = StateDelegate.getInstance().getOrderedStateTransitionsByStatemodel(moduleId);
-				
-				String sStateSource =  null;
-				String sStateTarget =  null;
-				
-				for (StateTransitionVO stVO : orderedTrans)
-				{
-					if (stVO.getStateSource() != null)
-					{
-						StateVO stateSource = StateDelegate.getInstance().getStatesByModel(moduleId, stVO.getStateSource());
-						sStateSource = stateSource.getNumeral() + " (" + stateSource.getStatename() + ")";
+				try {
+					List<String> eventSupportTypesByStateModelId = EventSupportRepository.getInstance().getEventSupportTypesByStateModelId(modelId);
+					
+					for (String s: eventSupportTypesByStateModelId) {
+						EventSupportSourceVO eventSupportTypeByName = EventSupportRepository.getInstance().getEventSupportTypeByName(s);
+						lstSubNodes.add(new EventSupportTargetTreeNode(this, node, nodeId, eventSupportTypeByName.getClassname(), eventSupportTypeByName.getName(), eventSupportTypeByName.getDescription(), EventSupportTargetType.STATE_TRANSITION, false));
 					}
-					StateVO stateTarget = StateDelegate.getInstance().getStatesByModel(moduleId, stVO.getStateTarget());
-					sStateTarget = stateTarget.getNumeral() + " ( " + stateTarget.getStatename() + ")";
-					
-					String transitionLabel =  sStateSource + " -> " +  sStateTarget;
-					
-					lstSubNodes.add(new EventSupportTargetTreeNode(this, node ,stVO.getId(), transitionLabel, transitionLabel, transitionLabel, EventSupportTargetType.STATE_TRANSITION, false));
+				} catch (Exception e) {
+					LOG.error(e.getMessage(), e);
 				}
-			
+				
 				break;
 			case ENTITY:
-				List<EventSupportVO> eventSupportTypes;
+				List<EventSupportSourceVO> eventSupportTypes;
 				try {
 					eventSupportTypes = EventSupportRepository.getInstance().getEventSupportTypes();
 					// Only display supporttypes if there are support classes with same typ attached
 					Integer iEntityId = Integer.parseInt(node.getId().toString());
 					Collection<EventSupportEventVO> eventSupportsForEntity = EventSupportRepository.getInstance().getEventSupportsForEntity(iEntityId);
 					
-					for (EventSupportVO s : eventSupportTypes)
+					for (EventSupportSourceVO s : eventSupportTypes)
 					{
 						boolean typeAlreadyInserted = false;
 						for (EventSupportEventVO eseVO : eventSupportsForEntity)
@@ -771,10 +774,10 @@ public class EventSupportManagementController extends Controller<MainFrameTabbed
 					LOG.error(e.getMessage(),e);
 				}
 				break;
-			case STATE_TRANSITION:
+			default:
 				break;
-		default:
-			break;
+			}
+			
 		}
 		return lstSubNodes;
 	}

@@ -34,21 +34,16 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.nuclos.api.annotation.Function;
-import org.nuclos.api.eventsupport.CustomEventObject;
 import org.nuclos.api.eventsupport.CustomSupport;
-import org.nuclos.api.eventsupport.DeleteEventObject;
 import org.nuclos.api.eventsupport.DeleteFinalSupport;
 import org.nuclos.api.eventsupport.DeleteSupport;
-import org.nuclos.api.eventsupport.GenerateEventObject;
 import org.nuclos.api.eventsupport.GenerateFinalSupport;
 import org.nuclos.api.eventsupport.GenerateSupport;
-import org.nuclos.api.eventsupport.InsertEventObject;
 import org.nuclos.api.eventsupport.InsertFinalSupport;
 import org.nuclos.api.eventsupport.InsertSupport;
-import org.nuclos.api.eventsupport.StateChangeEventObject;
 import org.nuclos.api.eventsupport.StateChangeFinalSupport;
 import org.nuclos.api.eventsupport.StateChangeSupport;
-import org.nuclos.api.eventsupport.UpdateEventObject;
+import org.nuclos.api.eventsupport.TimelimitSupport;
 import org.nuclos.api.eventsupport.UpdateFinalSupport;
 import org.nuclos.api.eventsupport.UpdateSupport;
 import org.nuclos.common.NuclosEntity;
@@ -60,7 +55,7 @@ import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.RuleClassLoader;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.support.AopUtils;
@@ -86,7 +81,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 	private ApplicationContext parent;
 
-	private Map<Class<?>, List<EventSupportVO>> executableEventSupportFiles;
+	private Map<Class<?>, List<EventSupportSourceVO>> executableEventSupportFiles;
 	
 	// End of Spring injection
 
@@ -102,7 +97,8 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 			GenerateFinalSupport.class, GenerateSupport.class, 
 			InsertFinalSupport.class, InsertSupport.class, 
 			StateChangeFinalSupport.class, StateChangeSupport.class,
-			UpdateFinalSupport.class, UpdateSupport.class};
+			UpdateFinalSupport.class, UpdateSupport.class,
+			TimelimitSupport.class};
 	
 	@Autowired
 	private ServletContext servletContext;
@@ -116,6 +112,10 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 
+	public NuclosJavaCompilerComponent getNuclosJavaCompilerComponent() {
+		return this.nuclosJavaCompilerComponent;
+	}
+	
 	public <T> T getInstance(RuleCodeGenerator<T> generator) throws NuclosCompileException {
 		try {
 			return (T) getClassLoader().loadClass(generator.getClassName()).newInstance();
@@ -242,7 +242,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 		this.parent = applicationContext;
 	}
 
-	public List<EventSupportVO> getExecutableEventSupportFiles()
+	public List<EventSupportSourceVO> getExecutableEventSupportFiles()
 	{
 		try {
 			getClassLoader();
@@ -250,7 +250,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 		catch (NuclosCompileException e) {
 			throw new NuclosFatalException(e);
 		}
-		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
+		List<EventSupportSourceVO> list = new ArrayList<EventSupportSourceVO>();
 	
 		for(Class n : this.executableEventSupportFiles.keySet())
 		{
@@ -260,7 +260,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 		return list;
 	}
 	
-	public List<EventSupportVO> getExecutableEventSupportFilesByClassType(List<Class<?>> listOfInterfaces)
+	public List<EventSupportSourceVO> getExecutableEventSupportFilesByClassType(List<Class<?>> listOfInterfaces)
 	{
 		try {
 			getClassLoader();
@@ -268,7 +268,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 		catch (NuclosCompileException e) {
 			throw new NuclosFatalException(e);
 		}
-		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
+		List<EventSupportSourceVO> list = new ArrayList<EventSupportSourceVO>();
 	
 		for(Class n : listOfInterfaces)
 		{

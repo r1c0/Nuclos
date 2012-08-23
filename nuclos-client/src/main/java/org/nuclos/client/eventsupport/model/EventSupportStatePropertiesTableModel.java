@@ -1,64 +1,57 @@
 package org.nuclos.client.eventsupport.model;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.table.AbstractTableModel;
-
+import org.jfree.util.Log;
+import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 
-public class EventSupportStatePropertiesTableModel extends AbstractTableModel {
+public class EventSupportStatePropertiesTableModel extends EventSupportPropertiesTableModel {
 
 	static final String COL_EVENTSUPPORT = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.4","EventSupport");
-	static final String COL_ORDER = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.1","Reihenfolge");
+	static final String COL_TRANSITION = SpringLocaleDelegate.getInstance().getMessage("EventSupportEntityPropertyModelColumn.5","Transition");
 	
-	static final String[] COLUMNS = new String[] {COL_ORDER, COL_EVENTSUPPORT};
+	static final String[] COLUMNS = new String[] {COL_EVENTSUPPORT, COL_TRANSITION};
 	
 	final List<EventSupportTransitionVO> entries = new ArrayList<EventSupportTransitionVO>();
-	boolean isModelModified;
+	final List<StateTransitionVO> transitions = new ArrayList<StateTransitionVO>();
 			
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		boolean retVal = false;
+		if (columnIndex == 1)
+		{
+			retVal = true;
+		}
+		return retVal;
+	}
+	
+	public void addTransitions(List<StateTransitionVO> pTransitions) {
+		transitions.clear();
+		transitions.addAll(pTransitions);
+	}
+	
+	public String[] getTransitionsAsArray() {
+		String[] vals = new String[transitions.size()];
+		int  idx = 0;
+		for (StateTransitionVO svo : transitions) {
+			vals[idx++] = createTransitionString(svo);
+		}
+		return vals;
+	}
 	public void addEntry(EventSupportTransitionVO eseVO)
 	{
 		entries.add(eseVO);
 		fireTableRowsInserted(entries.size(), entries.size());
 	}
 	
-	public void clear()
-	{
-		if (!entries.isEmpty())
-		{
-			int curSizeOfList = entries.size();
-			entries.clear();
-			fireTableRowsDeleted(0, curSizeOfList);
-		}
-	}
-	
-	public boolean isModelModified() {
-		return isModelModified;
-	}
-
-	public void setModelModified(boolean isModelModified) {
-		this.isModelModified = isModelModified;
-	}
-
-	
-	@Override
-	public int getRowCount() {
-		return entries.size();
-	}
-
-	@Override
-	public String getColumnName(int column) {
-		return COLUMNS[column];
-	}
-	
-	@Override
-	public int getColumnCount() {
-		return COLUMNS.length;
-	}
-
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object retVal = null;
@@ -66,10 +59,25 @@ public class EventSupportStatePropertiesTableModel extends AbstractTableModel {
 		
 		switch (columnIndex) {
 		case 0:
-			retVal = eseVO.getOrder();
+			retVal = eseVO.getEventSupportClass();
+			
+			EventSupportSourceVO ese;
+			try {
+				ese = EventSupportRepository.getInstance().getEventSupportByClassname(eseVO.getEventSupportClass());
+				if (ese != null && ese.getName() != null) {
+					retVal = ese.getName();
+				}
+			} catch (RemoteException e) {
+				Log.error(e.getMessage(), e);
+			}
 			break;
 		case 1:
-			retVal = eseVO.getEventSupportClass();
+			 for (StateTransitionVO svo : transitions)
+			 {
+				 if (svo.getId().equals(eseVO.getTransitionId())) {
+					 retVal = createTransitionString(svo);					 
+				 }
+			 }
 			break;
 		default:
 			break;
@@ -77,54 +85,50 @@ public class EventSupportStatePropertiesTableModel extends AbstractTableModel {
 		return retVal;
 	}
 	
-	public void moveUp(int selectedRow) {
-		if (selectedRow != 0) {
-			EventSupportTransitionVO eseVO = entries.get(selectedRow);
-			EventSupportTransitionVO prevEseVO = entries.get(selectedRow - 1);
-			
-			entries.remove(selectedRow);
-			entries.remove(selectedRow-1);
-			
-			eseVO.setOrder(eseVO.getOrder() - 1);
-			prevEseVO.setOrder(prevEseVO.getOrder() + 1);
-			
-			entries.add(eseVO.getOrder() -1, eseVO);
-			entries.add(prevEseVO.getOrder() -1, prevEseVO);
-			
-			setModelModified(true);
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		if (aValue != null) 
+		{
+			 String value = (String) aValue;
+			 if (columnIndex == 1)
+			 {
+				 for (StateTransitionVO svo : transitions)
+				 {
+					 String sTransName = createTransitionString(svo);
+					 
+					 if (sTransName.equals(value))
+					 { 
+						 entries.get(rowIndex).setTransitionId(svo.getId());
+						 entries.get(rowIndex).setTransitionName(sTransName);
+						 setModelModified(true);
+						 break;
+					 }
+				 }				 
+			 }
+			 fireTableDataChanged();
 		}
+    }
+	
+	private static String createTransitionString(StateTransitionVO vo) {
+		 String sTransName = "-> " + vo.getStateTarget();
+		 if (vo.getStateSource() != null) {
+			 sTransName = vo.getStateSource() + " " + sTransName;
+		 }
+		 return sTransName;
+	}
+
+	@Override
+	public List<? extends EventSupportVO> getEntries() {
+		return this.entries;
+	}
+
+	@Override
+	public String[] getColumns() {
+		return this.COLUMNS;
 	}
 	
-	public EventSupportTransitionVO getEntryByRowIndex(int id) {
-		EventSupportTransitionVO retVal = null;
-		if (id < entries.size())
-			retVal = entries.get(id);
-		
-		return retVal;
+	@Override
+	public void addEntry(int rowId, EventSupportVO elm) {
+		this.entries.add(rowId, (EventSupportTransitionVO) elm);
+		fireTableRowsInserted(rowId, rowId);
 	}
-	
-	public void moveDown(int selectedRow) {
-		if (selectedRow < entries.size() - 1) {
-			EventSupportTransitionVO eseVO = entries.get(selectedRow);
-			EventSupportTransitionVO forwEseVO = entries.get(selectedRow + 1);
-			
-			eseVO.setOrder(eseVO.getOrder() + 1);
-			forwEseVO.setOrder(forwEseVO.getOrder() - 1);
-			
-			setModelModified(true);
-		}
-	}
-	
-	public void removeEntry(int row) {
-		if (row < entries.size()) {
-			entries.remove(row);
-		}
-		
-		for (int i=row; i <entries.size();i++) {
-			EventSupportTransitionVO eventSupportEventVO = entries.get(i);
-			eventSupportEventVO.setOrder(eventSupportEventVO.getOrder() - 1 );
-		}
-		
-	}
-	
 }

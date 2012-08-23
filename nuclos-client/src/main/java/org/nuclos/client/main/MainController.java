@@ -692,7 +692,7 @@ public class MainController {
 				}};
 				
 			cmdOpenEventSupportManagement = new AbstractAction(
-					localeDelegate.getMessage("miEventSupportManagement", "EventSupport Management"),
+					localeDelegate.getMessage("miEventSupportManagement", "Regelmanagement"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.34-coffee.png"))) {
 
 				@Override

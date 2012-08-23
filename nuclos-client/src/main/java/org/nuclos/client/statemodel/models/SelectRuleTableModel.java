@@ -17,6 +17,8 @@
 package org.nuclos.client.statemodel.models;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -26,6 +28,7 @@ import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.statemodel.RuleRepository;
 import org.nuclos.client.statemodel.SortedRuleVO;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 
 /**
  * Table model for selection of rules for state transitions.
@@ -84,7 +87,27 @@ public class SelectRuleTableModel extends AbstractTableModel {
 
 	public void setExcludeRules(List<SortedRuleVO> lstExcludeRules) throws RemoteException {
 		this.lstRules = RuleRepository.getInstance().filterRulesByVO(lstExcludeRules);
-		this.lstRules.addAll(0,EventSupportDelegate.getInstance().filterEventSupportByVO(lstExcludeRules));
+		// now add to all rules the eventsupports that have been added via EventSupportManagement
+		String[] sEventSupportaSupported = new String[] {
+				"org.nuclos.api.eventsupport.StateChangeSupport",
+				"org.nuclos.api.eventsupport.StateChangeFinalSupport"};
+
+		List<EventSupportSourceVO> eventSupportsByType = 
+				EventSupportRepository.getInstance().getEventSupportsByTypes(sEventSupportaSupported);
+		
+		for (EventSupportSourceVO esVO : eventSupportsByType) {
+			SortedRuleVO srVO = new SortedRuleVO(esVO, 0, false);		
+			boolean toExclude = false;
+			for (SortedRuleVO srVOExlcude : lstExcludeRules) {
+				if (srVO.getClassname().equals(srVOExlcude.getClassname())) {
+					toExclude = true;
+					break;
+				}
+			}
+			
+			if (!toExclude)
+				this.lstRules.add(srVO);
+		}
 	}
 
 	public List<SortedRuleVO> getRules() {

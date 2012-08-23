@@ -34,6 +34,8 @@ import org.nuclos.client.gef.shapes.ArrowConnector;
 import org.nuclos.client.gef.shapes.ConnectionPoint;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 
 /**
@@ -120,15 +122,15 @@ public class StateTransition extends ArrowConnector implements ImageObserver {
 		transitionvo.getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(ruleId, bRunAfterwards));
 	}
 
-	public void addRule(String classname, Boolean bRunAfterwards) {
-		transitionvo.getEventSupportWithRunAfterwards().add(new Pair<String, Boolean>(classname, bRunAfterwards));
+	public void addRule(EventSupportTransitionVO evTrans, Boolean bRunAfterwards) {
+		transitionvo.getEventSupportWithRunAfterwards().add(new Pair<EventSupportTransitionVO, Boolean>(evTrans, bRunAfterwards));
 	}
 	
 	public void removeRule(Integer iRuleId) {
 		transitionvo.removeRule(iRuleId);
 	}
 
-	public void removeEventSupport(String ruleClassname) {
+	public void removeEventSupport(EventSupportTransitionVO ruleClassname) {
 		transitionvo.removeEventSupport(ruleClassname);
 	}
 	
@@ -154,18 +156,18 @@ public class StateTransition extends ArrowConnector implements ImageObserver {
 		return null;
 	}
 	
-	public java.util.List<String> getEventSupports() {
+	public java.util.List<EventSupportTransitionVO> getEventSupports() {
 		return transitionvo.getEventSupports();
 	}
 	
-	public List<Pair<String, Boolean>> getEventSupportsWithRunAfterwards() {
+	public List<Pair<EventSupportTransitionVO, Boolean>> getEventSupportsWithRunAfterwards() {
 		return transitionvo.getEventSupportWithRunAfterwards();
 	}
 	
 	
-	public Pair<String, Boolean> getEventSupport(String classname) {
-		for (Pair<String, Boolean> rule : transitionvo.getEventSupportWithRunAfterwards()){
-			if (rule.x.equals(classname))
+	public Pair<EventSupportTransitionVO, Boolean> getEventSupport(EventSupportTransitionVO classname) {
+		for (Pair<EventSupportTransitionVO, Boolean> rule : transitionvo.getEventSupportWithRunAfterwards()){
+			if (rule.getX().getEventSupportClass().equals(classname.getEventSupportClass()))
 				return rule;
 		}
 		return null;

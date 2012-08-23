@@ -988,16 +988,21 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		// --- create RuleEngineTransitions ---
 		Collection<RuleEngineTransitionVO> dbRules;
+		Collection<EventSupportTransitionVO> dbESTrans;
+		
 		try {
 			dbRules = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).getAllRuleTransitionsForTransitionId(vo.getId());
+			dbESTrans = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class).getEventSupportsByTransitionId(vo.getId());
 		}
-		catch(CommonPermissionException e) {
+		catch(Exception e) {
 			throw new CommonFatalException(e);
 		}
 
 		List<Integer> dbRuleIds = new ArrayList<Integer>();
+		List<Integer> dbESTransitionIds = new ArrayList<Integer>();
+		
 		List<Pair<Integer, Boolean>> clientRules = vo.getRuleIdsWithRunAfterwards();
-		List<Pair<String, Boolean>> clientRulesByClasses = vo.getEventSupportWithRunAfterwards();
+		List<Pair< EventSupportTransitionVO, Boolean>> clientEventSupports = vo.getEventSupportWithRunAfterwards();
 		
 		int order = 1;
 
@@ -1017,6 +1022,16 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 					DalSupportForMD.getEntityObjectVO(ruleTransition, mdVO));
 		}
 
+		for (Iterator<EventSupportTransitionVO> iterES = dbESTrans.iterator();iterES.hasNext();) {
+			EventSupportTransitionVO nextestVO = iterES.next();	
+			dbESTransitionIds.add(nextestVO.getId());
+			MasterDataVO mdVO = MasterDataWrapper.wrapEventSupportTransitionVO(nextestVO);
+			mdVO.remove();
+			
+			dependants.addData(eventSupportTransition, 
+					DalSupportForMD.getEntityObjectVO(eventSupportTransition, mdVO));
+		}
+		
 		//add all new rules for transition because or new ordering
 		//clientRuleIds.removeAll(dbRuleIds);
 
@@ -1029,11 +1044,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		}
 
 		// Eventsupports
-		for (Pair<String, Boolean> rule : clientRulesByClasses) {
-			EventSupportTransitionVO ruleTransitionVO = new EventSupportTransitionVO(new NuclosValueObject(), rule.x, vo.getId(), order++,rule.y);
+		for (Pair<EventSupportTransitionVO, Boolean> rule : clientEventSupports) {
 			dependants.addData(eventSupportTransition,
 				DalSupportForMD.getEntityObjectVO(eventSupportTransition, 
-						MasterDataWrapper.wrapEventSupportTransitionVO(ruleTransitionVO)));
+						MasterDataWrapper.wrapEventSupportTransitionVO(rule.getX())));
 		}
 	
 		// --- create RoleTransitions ---
@@ -1427,6 +1441,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			loccvoAfterModified.setSourceStateNum(iSourceStateNum);
 			loccvoAfterModified.setSourceStateName(sSourceStateName);
 			facade.fireRule(iSourceStateId, iTargetStateId, loccvoAfterModified, true);
+			evtSupFacade.fireEventSupports(iSourceStateId, iTargetStateId, loccvoBefore, true);
 		}
 		catch (Exception ex) {
 			throw new NuclosBusinessRuleException(ex.getMessage(), ex);

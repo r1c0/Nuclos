@@ -2785,6 +2785,86 @@
     ]
   },
    {
+    "name": "Verknüpfung von auszuführendem EventSupport mit Objektgenerierungen",
+    "entity": "nuclos_eventsupportgeneration",
+    "searchable": true,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "T_MD_EVENTSUPPORT_GENERATION",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.eventsupportgeneration.label",
+    "uniquefields": [
+      [
+        "generation",
+        "eventsupportclass"
+      ],
+      [
+        "generation",
+        "order",
+        "eventsupportclass"
+      ]
+    ],
+    "nuclos_entityfield": [
+      {
+        "name": "generation",
+        "dbfield": "INTID_T_MD_GENERATION",
+        "label": "Objektgenerierung",
+        "description": "Objektgenerierung",
+        "foreignentity": "nuclos_generation",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.rulegeneration.generation.label",
+        "descriptionres": "nuclos.entityfield.rulegeneration.generation.description"
+      },
+      {
+        "name": "eventsupportclass",
+        "dbfield": "STREVENTSUPPORTCLASS",
+        "label": "Klasse fuer EventSupport",
+        "description": "Klasse fuer EventSupport",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupportevent.supportclass.label",
+        "descriptionres": "nuclos.entityfield.eventsupportevent.supportclass.description"
+      },
+      {
+        "name": "order",
+        "dbfield": "INTORDER",
+        "label": "Reihenfolge",
+        "description": "Reihenfolge",
+        "datatype": "java.lang.Integer",
+        "datascale": 9,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.rulegeneration.order.label",
+        "descriptionres": "nuclos.entityfield.rulegeneration.order.description"
+      },
+      {
+        "name": "runafterwards",
+        "dbfield": "BLNRUNAFTERWARDS",
+        "label": "Lauf im Anschluss",
+        "description": "Lauf nach erfolgreichem Statuswechsel",
+        "datatype": "java.lang.Boolean",
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.rulegeneration.runafterwards.label",
+        "descriptionres": "nuclos.entityfield.rulegeneration.runafterwards.description"
+      }
+    ]
+  },
+   {
     "name": "Zuweisung von EventSupports an Entitaetenereignisse",
     "entity": "nuclos_eventsupportevent",
     "searchable": true,
@@ -3283,9 +3363,6 @@
     "uniquefields": [
       [
         "eventsupportclass",
-        "transition"
-      ],
-      [
         "transition",
         "order"
       ]
@@ -3346,6 +3423,86 @@
         "unique": false,
         "labelres": "nuclos.entityfield.ruletransition.runafterwards.label",
         "descriptionres": "nuclos.entityfield.ruletransition.runafterwards.description"
+      }
+    ]
+  },
+   {
+    "name": "Eventsupports fuer JobSteuerung",
+    "entity": "nuclos_eventsupportjobs",
+    "searchable": true,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "T_MD_EVENTSUPPORT_JOB",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.eventsupporttransition.label",
+    "uniquefields": [
+      [
+        "eventsupportclass",
+        "jobcontroller"
+      ],
+      [
+        "jobcontroller",
+        "order"
+      ]
+    ],
+    "nuclos_entityfield": [
+      {
+        "name": "jobcontroller",
+        "dbfield": "INTID_T_MD_JOBCONTROLLER",
+        "label": "Transition",
+        "description": "Transition",
+        "foreignentity": "nuclos_jobcontroller",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.ruletransition.transition.label",
+        "descriptionres": "nuclos.entityfield.ruletransition.transition.description"
+      },
+      {
+        "name": "eventsupportclass",
+        "dbfield": "STREVENTSUPPORTCLASS",
+        "label": "Klasse fuer EventSupport",
+        "description": "Klasse fuer EventSupport",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
+        "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
+      },
+       {
+        "name": "description",
+        "dbfield": "STRDESCRIPTION",
+        "label": "Beschreibung",
+        "description": "Beschreibung des Jobs",
+        "datatype": "java.lang.String",
+        "datascale": 4000,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.jobcontroller.description.label",
+        "descriptionres": "nuclos.entityfield.jobcontroller.description.description"
+      },
+      {
+        "name": "order",
+        "dbfield": "INTORDER",
+        "label": "Reihenfolge",
+        "description": "Reihenfolge",
+        "datatype": "java.lang.Integer",
+        "datascale": 9,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.ruletransition.order.label",
+        "descriptionres": "nuclos.entityfield.ruletransition.order.description"
       }
     ]
   },

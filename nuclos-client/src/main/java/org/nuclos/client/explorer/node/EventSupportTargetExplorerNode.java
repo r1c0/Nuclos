@@ -68,11 +68,21 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 		case EVENTSUPPORT:
 			result = Icons.getInstance().getIconRuleUsage16();
 			break;
-		case STATE_TRANSITION:
-			result = Icons.getInstance().getIconStateTransition();
-			break;
 		case ENTITY:
+		case ALL_ENTITIES_ENTITY:
 			result = Icons.getInstance().getIconModule();
+			break;
+		case STATEMODEL:
+		case ALL_STATEMODELS_STATEMODEL:
+			result = Icons.getInstance().getIconStateModel();
+			break;
+		case JOB:
+		case ALL_JOBS_JOB:
+			result = Icons.getInstance().getIconJobRunning();
+			break;
+		case GENERATION:
+		case ALL_GENERATIONS_GENERATION:
+			result = Icons.getInstance().getIconGenericObject16();
 			break;
 		default:
 			break;

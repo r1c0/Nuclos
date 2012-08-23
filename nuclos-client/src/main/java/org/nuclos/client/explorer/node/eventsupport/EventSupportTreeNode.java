@@ -47,6 +47,7 @@ public class EventSupportTreeNode implements TreeNode {
 		this.bIsRoot = isRoot;
 		this.parentNode = parentNode;
 		this.controller = controller;
+	
 	}
 	
 	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type) {

@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeLocal;
-import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.mbean.MBeanAgent;
 
 public class EventSupportCache 
@@ -18,7 +18,7 @@ public class EventSupportCache
 	
 	private static EventSupportCache INSTANCE;
 
-	private final Map<String, EventSupportVO> mpEvtSupportsByClass	= new ConcurrentHashMap<String, EventSupportVO>();
+	private final Map<String, EventSupportSourceVO> mpEvtSupportsByClass	= new ConcurrentHashMap<String, EventSupportSourceVO>();
 	
 	EventSupportCache() {
 		INSTANCE = this;
@@ -30,7 +30,7 @@ public class EventSupportCache
 	}
 	
 		
-	public EventSupportVO getEventSupport(String classname)
+	public EventSupportSourceVO getEventSupport(String classname)
 	{
 		if (mpEvtSupportsByClass.isEmpty())
 		{
@@ -44,7 +44,7 @@ public class EventSupportCache
 	{
 		EventSupportFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
 		try {
-			for (EventSupportVO ev : facade.getAllEventSupports())
+			for (EventSupportSourceVO ev : facade.getAllEventSupports())
 			{
 				mpEvtSupportsByClass.put(ev.getClassname(), ev);
 			}

@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel;
 
-import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 /**
@@ -44,12 +44,13 @@ public class SortedRuleVO {
 		sDescription = vo.getDescription();
 	}
 
-	public SortedRuleVO(EventSupportVO vo) {
-		iOrder = new Integer(-1);
+	public SortedRuleVO(EventSupportSourceVO vo, int order, boolean runAfterwards) {
+		iOrder = order;
 		iId = vo.getId();
 		sName = vo.getName();
 		sDescription = vo.getDescription();
 		sClassname = vo.getClassname();
+		this.bRunAfterwards = runAfterwards;
 	}
 
 	

@@ -16083,12 +16083,22 @@
    {
     "resourceID": "nuclos.entity.eventsupportmangagement.label",
     "locale": "de",
-    "text": "EventSupport Management"
+    "text": "Regelmanagement"
   },
     {
     "resourceID": "nuclos.entity.eventsupportmangagement.label",
     "locale": "en",
-    "text": "EventSupport Management"
+    "text": "Rulemanagement"
+  },
+    {
+    "resourceID": "nuclos.entity.eventsupportgeneration.label",
+    "locale": "de",
+    "text": "Eventsupport Generierung"
+  },
+    {
+    "resourceID": "nuclos.entity.eventsupportgeneration.label",
+    "locale": "en",
+    "text": "Eventsupport Generation"
   },
   {
     "resourceID": "R00016383",
@@ -22171,6 +22181,81 @@
     "text": "Boolean"
   },
    {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.1",
+    "locale": "i-default",
+    "text": "Order"
+  },
+  {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.1",
+    "locale": "en",
+    "text": "Order"
+  },
+  {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.1",
+    "locale": "de",
+    "text": "Reihenfolge"
+  },
+  {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.2",
+    "locale": "i-default",
+    "text": "EventSupport"
+  },
+  {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.2",
+    "locale": "en",
+    "text": "EventSupport"
+  },
+  {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.2",
+    "locale": "de",
+    "text": "EventSupport"
+  },
+   {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.3",
+    "locale": "i-default",
+    "text": "Run afterwards"
+  },
+  {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.3",
+    "locale": "en",
+    "text": "Run afterwards"
+  },
+  {
+    "resourceID": "EventSupportGenerationPropertyModelColumn.3",
+    "locale": "de",
+    "text": "Ausführen im Anschluss"
+  },
+    {
+    "resourceID": "EventSupportJobPropertyModelColumn.1",
+    "locale": "i-default",
+    "text": "Order"
+  },
+  {
+    "resourceID": "EventSupportJobPropertyModelColumn.1",
+    "locale": "en",
+    "text": "Order"
+  },
+  {
+    "resourceID": "EventSupportJobPropertyModelColumn.1",
+    "locale": "de",
+    "text": "Reihenfolge"
+  },
+    {
+    "resourceID": "EventSupportJobPropertyModelColumn.2",
+    "locale": "i-default",
+    "text": "EventSupport Class"
+  },
+  {
+    "resourceID": "EventSupportJobPropertyModelColumn.2",
+    "locale": "en",
+    "text": "EventSupport Class"
+  },
+  {
+    "resourceID": "EventSupportJobPropertyModelColumn.2",
+    "locale": "de",
+    "text": "EventSupport"
+  },
+   {
     "resourceID": "EventSupportEntityPropertyModelColumn.1",
     "locale": "i-default",
     "text": "Order"
@@ -22229,6 +22314,21 @@
     "resourceID": "EventSupportEntityPropertyModelColumn.4",
     "locale": "de",
     "text": "EventSupport"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.5",
+    "locale": "i-default",
+    "text": "Transition"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.5",
+    "locale": "en",
+    "text": "Transition"
+  },
+  {
+    "resourceID": "EventSupportEntityPropertyModelColumn.5",
+    "locale": "de",
+    "text": "Transition"
   },
    {
     "resourceID": "EventSupportTableModelColumn.1",
@@ -28054,6 +28154,21 @@
     "resourceID": "ExplorerController.24",
     "locale": "de",
     "text": "Regelverwendungen"
+  },
+   {
+    "resourceID": "ExplorerController.33",
+    "locale": "i-default",
+    "text": "Regelbibliothek"
+  },
+  {
+    "resourceID": "ExplorerController.33",
+    "locale": "en",
+    "text": "RuleLibrary"
+  },
+  {
+    "resourceID": "ExplorerController.33",
+    "locale": "de",
+    "text": "Regelbibliothek"
   },
   {
     "resourceID": "ExplorerController.21",
@@ -35643,12 +35758,12 @@
   {
     "resourceID": "miEventSupportManagement",
     "locale": "de",
-    "text": "EventSupport Management"
+    "text": "Regelmanagement"
   },
    {
     "resourceID": "miEventSupportManagement",
     "locale": "i-default",
-    "text": "EventSupport Management"
+    "text": "Rulemanagement"
   },
   {
     "resourceID": "miEntityWizard",

@@ -39,6 +39,8 @@ public class EventSupportSourceView extends JPanel {
 		
 		newExplorerView = new EventSupportExplorerView(this.treenode, view.getActionsMap());
 		
+		newExplorerView.getJTree().setRootVisible(false);
+		
 		final JSplitPane splitpn = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
 		Border b2 = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.LIGHT_GRAY);

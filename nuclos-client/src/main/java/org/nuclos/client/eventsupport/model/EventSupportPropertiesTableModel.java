@@ -1,114 +1,104 @@
 package org.nuclos.client.eventsupport.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.event.EventListenerList;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 
-public class EventSupportPropertiesTableModel extends AbstractTableModel {
+public abstract class EventSupportPropertiesTableModel extends AbstractTableModel {
+
+	public abstract List<? extends EventSupportVO> getEntries();
+	public abstract String[] getColumns();
+	public abstract void addEntry(int rowId,EventSupportVO elm);
 	
-	public static final String COL_PROPERTY = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModelColumn.1","Eigenschaft");
-	public static final String COL_VALUE = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModelColumn.2","Wert");
+	private boolean isModelModified= false;
 	
-	public static final String ELM_ES_NAME = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModel.1","Name");
-	public static final String ELM_ES_TYPE = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModel.2","Typ");
-	public static final String ELM_ES_DESCRIPTION = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModel.6","Beschreibung");
-	public static final String ELM_ES_NUCLET = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModel.3","Nuclet");
-	public static final String ELM_ES_PATH = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModel.4","Package");
-	public static final String ELM_ES_CREATION_DATE = SpringLocaleDelegate.getInstance().getMessage("EventSupportTableModel.5","Erstellt am");
-	
-	static final String[] COLUMNS = new String[] { COL_PROPERTY, COL_VALUE};
-	
-	static final List<String> PROPERTIES = new ArrayList<String>();	
-	final List<EventSupportPropertyModelEntry> ENTRIES = new ArrayList<EventSupportPropertyModelEntry>();
-		
-	public EventSupportPropertiesTableModel()
-	{
-		super();
-		PROPERTIES.addAll(
-				java.util.Arrays.asList(new String[] {ELM_ES_NAME, ELM_ES_DESCRIPTION, ELM_ES_TYPE,ELM_ES_NUCLET,ELM_ES_PATH,ELM_ES_CREATION_DATE}));
-	}
-	 
 	@Override
 	public int getRowCount() {
-		return ENTRIES.size();
+		return getEntries().size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return COLUMNS.length;
+		return getColumns().length;
 	}
 
 	@Override
 	public String getColumnName(int column) {
-		return COLUMNS[column];
+		return getColumns()[column];
 	}
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		
-		String retVal = null;
-		
-		if (columnIndex == 0)
-		{
-			retVal = PROPERTIES.get(rowIndex);
-		}
-		else
-		{
-			Iterator<EventSupportPropertyModelEntry> lstEntries = ENTRIES.iterator();
-			
-			while (lstEntries.hasNext())
-			{
-				EventSupportPropertyModelEntry next = lstEntries.next();
-				if (next.getProperty().equals(PROPERTIES.get(rowIndex)))
-				{
-					retVal = next.getValue();
-				}
-			}
-		}
-		
-		return retVal;
-	}
-
+	
 	public void clear() {
-		if (!ENTRIES.isEmpty())
+		if (!getEntries().isEmpty())
 		{
-			int count = ENTRIES.size();
-			ENTRIES.clear();
+			int count = getEntries().size();
+			getEntries().clear();
 			fireTableRowsDeleted(0, count);
 		}
 	}
 	
-	public void addEntry(String propertyName, String value)
-	{
-		if (PROPERTIES.contains(propertyName))
-		{
-			ENTRIES.add(new EventSupportPropertyModelEntry(propertyName, value));
-			fireTableRowsInserted(ENTRIES.size(), ENTRIES.size());
+	public boolean isModelModified() {
+		return isModelModified;
+	}
+
+	public void setModelModified(boolean isModelModified) {
+		this.isModelModified = isModelModified;
+	}
+	
+	public void removeEntry(int row) {
+		if (row < getEntries().size()) {
+			getEntries().remove(row);
+		}	
+	}
+	
+	public void moveDown(int selectedRow) {
+		if (selectedRow < getEntries().size() - 1) {
+			EventSupportVO eseVO = getEntries().get(selectedRow);
+			EventSupportVO forwEseVO = getEntries().get(selectedRow + 1);
+			int order = eseVO.getOrder();
+			eseVO.setOrder(forwEseVO.getOrder());
+			forwEseVO.setOrder(order);
+			
+			setModelModified(true);
+			
+			Collections.sort(getEntries(), new Comparator<EventSupportVO>() {		
+				@Override
+				public int compare(EventSupportVO o1, EventSupportVO o2) {
+					return o1.getOrder() > o2.getOrder() ? 1 : o1.getOrder() < o2.getOrder() ? -1: 0;
+				}
+			});
+			fireTableRowsUpdated(selectedRow, selectedRow+1);
 		}
 	}
-		
-	class EventSupportPropertyModelEntry
-	{
-		String property;
-		String value;
-		
-		public EventSupportPropertyModelEntry(String prop, String val)
-		{
-			this.property = prop;
-			this.value = val;
-		}
 
-		public String getProperty() {
-			return property;
-		}
-
-		public String getValue() {
-			return value;
+	public void moveUp(int selectedRow) {
+		if (selectedRow != 0) {
+			EventSupportVO eseVO = getEntries().get(selectedRow);
+			EventSupportVO prevEseVO = getEntries().get(selectedRow - 1);
+			int order = eseVO.getOrder();
+			eseVO.setOrder(prevEseVO.getOrder());
+			prevEseVO.setOrder(order);
+			
+			setModelModified(true);
+			Collections.sort(getEntries(), new Comparator<EventSupportVO>() {		
+				@Override
+				public int compare(EventSupportVO o1, EventSupportVO o2) {
+					return o1.getOrder() > o2.getOrder() ? 1 : o1.getOrder() < o2.getOrder() ? -1: 0;
+				}
+			});
+			fireTableRowsUpdated(selectedRow-1, selectedRow);
 		}
 	}
+	
+	public EventSupportVO getEntryByRowIndex(int id) {
+		EventSupportVO retVal = null;
+		if (id < getEntries().size())
+			retVal = getEntries().get(id);
+		
+		return retVal;
+	}
+		
 }

@@ -1,18 +1,13 @@
 package org.nuclos.client.explorer.node.eventsupport;
 
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.io.IOException;
 
 import javax.swing.JTree;
-import javax.swing.JTree.DropLocation;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
@@ -22,6 +17,8 @@ import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.EventSupportExplorerNode;
 import org.nuclos.client.explorer.node.EventSupportTargetExplorerNode;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportGenerationVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 
 public class EventSupportDropListener implements DropTargetListener {
@@ -68,7 +65,8 @@ public class EventSupportDropListener implements DropTargetListener {
 				switch (node.getTreeNode().getTreeNodeType()) {
 				case ENTITY:
 					if (EventSupportTargetType.EVENTSUPPORT.equals(treeNode.getTreeNodeType()) && 
-						!"org.nuclos.api.eventsupport.StateChangeSupport".equals(treeNode.getParentNode().getEntityName()))
+						!"org.nuclos.api.eventsupport.StateChangeSupport".equals(treeNode.getParentNode().getEntityName()) && 
+						!"org.nuclos.api.eventsupport.StateChangeFinalSupport".equals(treeNode.getParentNode().getEntityName()))
 					{	
 						ev.acceptDrag(ev.getDropAction());
 					}
@@ -77,9 +75,10 @@ public class EventSupportDropListener implements DropTargetListener {
 						ev.rejectDrag();
 					}
 					break;
-				case STATE_TRANSITION:
-					if (EventSupportTargetType.EVENTSUPPORT.equals(treeNode.getTreeNodeType()) && 
-					 "org.nuclos.api.eventsupport.StateChangeSupport".equals(treeNode.getParentNode().getEntityName()))
+				case STATEMODEL:
+					if (EventSupportTargetType.EVENTSUPPORT.equals(treeNode.getTreeNodeType()) && (
+					 "org.nuclos.api.eventsupport.StateChangeSupport".equals(treeNode.getParentNode().getEntityName()) || 
+					 "org.nuclos.api.eventsupport.StateChangeFinalSupport".equals(treeNode.getParentNode().getEntityName())))
 						{	
 							ev.acceptDrag(ev.getDropAction());
 						}
@@ -87,6 +86,29 @@ public class EventSupportDropListener implements DropTargetListener {
 						{
 							ev.rejectDrag();
 						}
+					break;
+				case JOB:
+					if (EventSupportTargetType.EVENTSUPPORT.equals(treeNode.getTreeNodeType()) && 
+							 "org.nuclos.api.eventsupport.TimelimitSupport".equals(treeNode.getParentNode().getEntityName()))
+								{	
+									ev.acceptDrag(ev.getDropAction());
+								}
+								else
+								{
+									ev.rejectDrag();
+								}
+					break;
+				case GENERATION:
+					if (EventSupportTargetType.EVENTSUPPORT.equals(treeNode.getTreeNodeType()) && (
+							 "org.nuclos.api.eventsupport.GenerateSupport".equals(treeNode.getParentNode().getEntityName()) || 
+							 "org.nuclos.api.eventsupport.GenerateFinalSupport".equals(treeNode.getParentNode().getEntityName())))
+								{	
+									ev.acceptDrag(ev.getDropAction());
+								}
+								else
+								{
+									ev.rejectDrag();
+								}
 					break;
 				default:
 					ev.rejectDrag();
@@ -126,12 +148,22 @@ public class EventSupportDropListener implements DropTargetListener {
 				EventSupportEventVO addedEseVO = esenSource.getTreeNode().getController().addEventSupportToEntity(esenSource.getTreeNode(), esenTarget.getTreeNode());				
 				success = addedEseVO != null;
 			}
-			else if(esenTarget.getTreeNode().getTreeNodeType().equals(EventSupportTargetType.STATE_TRANSITION)) {
+			else if(esenTarget.getTreeNode().getTreeNodeType().equals(EventSupportTargetType.STATEMODEL)) {
 				// and attach it to the selected statetransition
 				EventSupportTransitionVO addedEstVO = esenSource.getTreeNode().getController().addEventSupportToStateTransition(esenSource.getTreeNode(), esenTarget.getTreeNode());
 				success = addedEstVO != null;
 			}
-						
+			else if(esenTarget.getTreeNode().getTreeNodeType().equals(EventSupportTargetType.JOB)) {
+				// and attach it to the selected jobcontroller
+				EventSupportJobVO addedEstVO = esenSource.getTreeNode().getController().addEventSupportToJob(esenSource.getTreeNode(), esenTarget.getTreeNode());
+				success = addedEstVO != null;
+			}
+			else if(esenTarget.getTreeNode().getTreeNodeType().equals(EventSupportTargetType.GENERATION)) {
+				// and attach it to the selected jobcontroller
+				EventSupportGenerationVO addedEstVO = esenSource.getTreeNode().getController().addEventSupportToGeneration(esenSource.getTreeNode(), esenTarget.getTreeNode());
+				success = addedEstVO != null;
+			}
+			
 			if (success)
 			{
 				EventSupportRepository.getInstance().updateEventSupports();

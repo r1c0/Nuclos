@@ -8,10 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureRecognizer;
 import java.awt.dnd.DragSource;
-import java.awt.dnd.DropTarget;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
@@ -23,19 +19,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
+import javax.swing.tree.TreeSelectionModel;
 
-import org.nuclos.client.eventsupport.EventSupportManagementController.ACTIONS;
+import org.nuclos.client.eventsupport.EventSupportActionHandler.ACTIONS;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportDragListener;
-import org.nuclos.client.explorer.node.eventsupport.EventSupportDropListener;
 import org.nuclos.client.explorer.ui.ExplorerNodeRenderer;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
-import org.nuclos.client.ui.Icons;
-import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
 public class EventSupportExplorerView extends JPanel implements ExplorerView 
@@ -88,7 +78,8 @@ public class EventSupportExplorerView extends JPanel implements ExplorerView
 		this.tree.setBackground(Color.WHITE);
 		this.tree.setRootVisible(true);
 		this.tree.setShowsRootHandles(true);
-
+		this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
 		addDNDFunctionality(this.tree);
 		
 		// don't expand on double click:

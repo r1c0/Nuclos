@@ -17,7 +17,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.nuclos.server.customcode.codegenerator.RuleClassLoader;
-import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
@@ -67,9 +67,9 @@ public class CustomCodeRuleScanner
 	 * @return
 	 * @throws IOException 
 	 */
-	public Map<Class<?>, List<EventSupportVO>> getExecutableRulesFromClasspath(Class<?>... listOfAllowedInterfaces) throws IOException
+	public Map<Class<?>, List<EventSupportSourceVO>> getExecutableRulesFromClasspath(Class<?>... listOfAllowedInterfaces) throws IOException
 	{
-		Map<Class<?>, List<EventSupportVO>> execRuleClasses = new HashMap<Class<?>,List<EventSupportVO>>();
+		Map<Class<?>, List<EventSupportSourceVO>> execRuleClasses = new HashMap<Class<?>,List<EventSupportSourceVO>>();
 	
 		Environment env = new StandardEnvironment();
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(this.cl);				
@@ -126,7 +126,7 @@ public class CustomCodeRuleScanner
 								if (curIF != null && curIF.contains(inter.getName()))
 								{
 									if (execRuleClasses.get(inter) == null) 
-											execRuleClasses.put(inter, new ArrayList<EventSupportVO>());
+											execRuleClasses.put(inter, new ArrayList<EventSupportSourceVO>());
 
 									ClassMetadata classMetadata = metadataReader.getClassMetadata();
 									AnnotationMetadata anmeta = metadataReader.getAnnotationMetadata();
@@ -137,7 +137,8 @@ public class CustomCodeRuleScanner
 									Date ruleClassCompilationDate = new Date(resource.lastModified());
 									
 									String rulePackagePath = ClassUtils.convertResourcePathToClassName(env.resolveRequiredPlaceholders(env.resolveRequiredPlaceholders(pfad)));
-									if (rulePackagePath.lastIndexOf(".") == rulePackagePath.length() - 1)
+									if (rulePackagePath != null && rulePackagePath.trim().length() > 0 && 
+											rulePackagePath.lastIndexOf(".") == rulePackagePath.length() - 1)
 										rulePackagePath = rulePackagePath.substring(0, rulePackagePath.length()-1);
 									
 									if (anmeta.hasAnnotation("org.nuclos.api.annotation.NuclosEvent"))
@@ -152,7 +153,7 @@ public class CustomCodeRuleScanner
 											ruleDescription = (String) annotationAttributes.get("description");
 										}										
 									}
-									EventSupportVO newRule = new EventSupportVO(ruleName, ruleDescription, ruleClassName, inter.getName(), rulePackagePath, ruleClassCompilationDate);
+									EventSupportSourceVO newRule = new EventSupportSourceVO(ruleName, ruleDescription, ruleClassName, inter.getName(), rulePackagePath, ruleClassCompilationDate);
 									
 									execRuleClasses.get(inter).add(newRule);
 								}	
