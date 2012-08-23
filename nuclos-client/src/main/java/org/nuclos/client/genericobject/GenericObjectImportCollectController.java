@@ -73,6 +73,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Special masterdata collect controller for generic object file import.
@@ -80,6 +81,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
+@Configurable(preConstruction=true)
 public class GenericObjectImportCollectController extends MasterDataCollectController implements MessageListener {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectImportCollectController.class);

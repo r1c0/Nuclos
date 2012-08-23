@@ -67,6 +67,7 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -91,7 +92,6 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>CollectController</code> for entity "user".
@@ -130,12 +130,7 @@ public class UserCollectController extends MasterDataCollectController {
 	protected LDAPDataDelegate ldapdelegate = null;
 	private List<MasterDataWithDependantsVO> ldapRegisteredUsers = null;
 	
-	// Spring injection
 	
-	private PreferencesFacadeRemote preferencesFacadeRemote;
-	
-	// end of Spring injection
-
 	CollectableComponentModelListener ccml_superuser = new CollectableComponentModelAdapter() {
 		@Override
 		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
@@ -176,11 +171,6 @@ public class UserCollectController extends MasterDataCollectController {
 		if(this.ldapSynchronization){
 			this.ldapdelegate = LDAPDataDelegate.getInstance();
 		}
-	}
-	
-	@Autowired
-	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
-		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 
 	@Override
@@ -516,6 +506,8 @@ public class UserCollectController extends MasterDataCollectController {
 				for (Collectable c : selectedUsers) {
 					String userName = (String) c.getField("name").getValue();
 					try {
+						PreferencesFacadeRemote preferencesFacadeRemote
+							= SpringApplicationContextHolder.getBean(PreferencesFacadeRemote.class);
 						preferencesFacadeRemote.mergePreferencesForUser(userName, selectedPreferences);
 					} catch(CommonFinderException ex) {
 						Errors.getInstance().showExceptionDialog(getTab(),

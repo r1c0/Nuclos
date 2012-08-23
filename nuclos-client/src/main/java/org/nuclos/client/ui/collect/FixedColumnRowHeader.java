@@ -88,15 +88,13 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  *
  * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
  *
  */
-@Configurable
+//@Configurable
 public class FixedColumnRowHeader extends SubformRowHeader {
 
 	private static final Logger LOG = Logger.getLogger(FixedColumnRowHeader.class);
@@ -113,12 +111,6 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	private final SubForm subform;
 	private final SubFormPreferences subFormPreferences;
 	
-	// Spring injection
-	
-	private WorkspaceUtils workspaceUtils; 	
-
-	// end of Spring injection
-
 	public FixedColumnRowHeader(SubForm subform, SubFormPreferences subFormPreferences) {
 		super();
 		this.subform = subform;
@@ -129,11 +121,6 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		getHeaderTable().getColumnModel().addColumnModelListener(headerColumnModelListener);
 	}
 	
-	@Autowired
-	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
-		this.workspaceUtils = workspaceUtils;
-	}
-
 	private void initColumnModelListener() {
 
 		this.headerColumnModelListener = new TableColumnModelListener() {
@@ -229,7 +216,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 */
 	private void cmdSelectColumns(final SortableTableModel tblmodel) {
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
-				workspaceUtils.getWorkspace().isAssigned()) {
+				WorkspaceUtils.getInstance().getWorkspace().isAssigned()) {
 			return;
 		}
 		
@@ -280,7 +267,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			
 			// add DEselected to hidden in preferences
 			for (CollectableEntityField clctef : collDeselected) {
-				workspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+				WorkspaceUtils.getInstance().addHiddenColumn(subFormPreferences, clctef.getName());
 			}
 		}
 	}
@@ -303,7 +290,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			// add DEselected to hidden in preferences
 			final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelected, lstSelectedNew);
 			for (CollectableEntityField clctef : collDeselected) {
-				workspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+				WorkspaceUtils.getInstance().addHiddenColumn(subFormPreferences, clctef.getName());
 			}
 		}
 	}
@@ -741,12 +728,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 				lstWidths.add(column.getWidth());
 			}
 		}
-		workspaceUtils.addFixedColumns(subFormPreferences, lstFixedColumnCollNames, lstWidths);
+		WorkspaceUtils.getInstance().addFixedColumns(subFormPreferences, lstFixedColumnCollNames, lstWidths);
 	}
 
 	public void initializeFieldsFromPreferences(SubFormPreferences subFormPreferences) {
-		this.lstFixedColumnCollNames = workspaceUtils.getFixedColumns(subFormPreferences);
-		this.lstHeaderColumnWidthsFromPref = workspaceUtils.getColumnWidths(subFormPreferences);
+		this.lstFixedColumnCollNames = WorkspaceUtils.getInstance().getFixedColumns(subFormPreferences);
+		this.lstHeaderColumnWidthsFromPref = WorkspaceUtils.getInstance().getColumnWidths(subFormPreferences);
 	}
 
 	/**
@@ -1140,7 +1127,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			if (renderer instanceof JLabel) {
 				if (column == 0) {
 					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
-							!workspaceUtils.getWorkspace().isAssigned()) {
+							!WorkspaceUtils.getInstance().getWorkspace().isAssigned()) {
 						((JLabel) renderer).setIcon(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconSelectVisibleColumns16(), 12));
 						((JLabel) renderer).setBorder(BorderFactory.createEmptyBorder(2, 2, 1, 1));
 					}

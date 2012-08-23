@@ -80,6 +80,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.report.ejb3.SchedulerControlFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Controller for nucleus quartz jobs.
@@ -90,6 +91,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
+@Configurable(preConstruction=true)
 public class JobControlCollectController extends MasterDataCollectController {
 
 	private static final Logger LOG = Logger.getLogger(JobControlCollectController.class);

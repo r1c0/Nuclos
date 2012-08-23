@@ -514,7 +514,7 @@ public class SearchConditionSubFormController extends SubFormController {
 	 */
 	@Override
 	protected List<Integer> getTableColumnWidthsFromPreferences() {
-		List<Integer> result = workspaceUtils.getColumnWidths(getSubFormPrefs());
+		List<Integer> result = WorkspaceUtils.getInstance().getInstance().getColumnWidths(getSubFormPrefs());
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
@@ -537,7 +537,7 @@ public class SearchConditionSubFormController extends SubFormController {
 
 	private List<CollectableEntityField> getColumnsFromPrefs() {
 		List<CollectableEntityField> lstFieldsToDisplay = new ArrayList<CollectableEntityField>();
-		List<String> lstFields = workspaceUtils.getSelectedColumns(getSubFormPrefs());
+		List<String> lstFields = WorkspaceUtils.getInstance().getSelectedColumns(getSubFormPrefs());
 		if(lstFields.size() == 0) {
 			lstFieldsToDisplay = getTableColumns();
 			List<CollectableEntityField> lstTMP = new ArrayList<CollectableEntityField>();

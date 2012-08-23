@@ -83,6 +83,7 @@ import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * <code>MasterDataCollectController</code> for reports.
@@ -95,6 +96,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
+@Configurable(preConstruction=true)
 public class ReportCollectController extends MasterDataCollectController {
 	
 	// Spring injection

@@ -30,8 +30,8 @@ import java.util.NavigableMap;
 import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.PostConstruct;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
@@ -57,6 +57,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
@@ -67,22 +68,14 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
+//@Configurable
 public class CopyPreferencesPanel extends JPanel {
 
 	private static final Logger LOG = Logger.getLogger(CopyPreferencesPanel.class);
+		
+	//private PreferencesFacadeRemote preferencesFacadeRemote;
 	
-	//
-	
-	// Spring injection
-	
-	private PreferencesFacadeRemote preferencesFacadeRemote;
-	
-	// end of Spring injection
-
 	private final String defaultUser;
 	private final JComboBox userCollectableCbx;
 	private final JXTree tree;
@@ -128,11 +121,6 @@ public class CopyPreferencesPanel extends JPanel {
 			}
 		});
 	}
-	
-	@Autowired
-	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
-		this.preferencesFacadeRemote = preferencesFacadeRemote;
-	}
 
 	private static List<String> getUserNames() {
 		try {
@@ -149,6 +137,9 @@ public class CopyPreferencesPanel extends JPanel {
 		PreferencesTreeModel model = new PreferencesTreeModel();
 		if (userName != null) {
 			try {
+				PreferencesFacadeRemote preferencesFacadeRemote
+					= SpringApplicationContextHolder.getBean(PreferencesFacadeRemote.class);
+				
 				PreferencesVO prefs = preferencesFacadeRemote.getPreferencesForUser(userName);
 				NavigableMap<String, Map<String, String>> prefsMap;
 				try {

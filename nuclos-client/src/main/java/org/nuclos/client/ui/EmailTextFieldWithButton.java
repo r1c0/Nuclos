@@ -35,30 +35,24 @@ import org.apache.log4j.Logger;
 import org.nuclos.api.ui.MailToEventHandler;
 import org.nuclos.client.nuclet.MailToEventHandlerRepository;
 import org.nuclos.client.ui.labeled.ILabeledComponentSupport;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
+//@Configurable
 public class EmailTextFieldWithButton extends HyperlinkTextFieldWithButton {
 
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger log = Logger.getLogger(EmailTextFieldWithButton.class);
 	
-	private MailToEventHandlerRepository mtehRepository;
-
 	public EmailTextFieldWithButton(ILabeledComponentSupport support, boolean bSearchable) {
 		super(support, bSearchable);
 	}
 	
-	@Autowired
-	void setMailToEventHandlerRepository(MailToEventHandlerRepository mtehRepository) {
-		this.mtehRepository = mtehRepository;
-	}
-
 	/**
 	 * Click or Ctrl+Enter
 	 */
@@ -118,6 +112,9 @@ public class EmailTextFieldWithButton extends HyperlinkTextFieldWithButton {
 	}
 	
 	private List<Action> getMailToEventHandler() {
+		MailToEventHandlerRepository mtehRepository
+			= (MailToEventHandlerRepository)SpringApplicationContextHolder.getBean("mailToEventHandlerRepository");
+		
 		List<Action> result = new ArrayList<Action>();
 		for (MailToEventHandler mteh : mtehRepository.getMailToEventHandler()) {
 			Action mailToAction = mteh.getMailToAction(getText(), null);

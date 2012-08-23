@@ -113,10 +113,10 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.time.LocalTime;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
@@ -129,7 +129,7 @@ import org.pietschy.wizard.models.StaticModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
+//@Configurable
 public class CustomComponentWizardModel extends StaticModel {
 
 	Wizard wizard;
@@ -138,8 +138,6 @@ public class CustomComponentWizardModel extends StaticModel {
 	ResPlanConfigVO configVO;
 	List<TranslationVO> translations;
 	
-	private SpringLocaleDelegate localeDelegate;
-
 	CustomComponentWizardModel() {
 		add(new CustomComponentWizardStep1());
 		add(new CustomComponentWizardStep2());
@@ -151,13 +149,8 @@ public class CustomComponentWizardModel extends StaticModel {
 		setLastVisible(false);
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		this.localeDelegate = cld;
-	}
-	
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
-		return localeDelegate;
+		return SpringLocaleDelegate.getInstance();
 	}
 
 	void setWizard(Wizard wizard) {

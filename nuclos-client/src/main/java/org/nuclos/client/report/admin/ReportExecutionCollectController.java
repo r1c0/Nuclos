@@ -61,6 +61,7 @@ import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * <code>MasterDataCollectController</code> for entity "reportExecution".
@@ -73,6 +74,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author	<a href="mailto:rostislav.maksymovskyi@novabit.de">rostislav.maksymovskyi</a>
  * @version 02.00.00
  */
+@Configurable(preConstruction=true)
 public class ReportExecutionCollectController extends MasterDataCollectController {
 
 	protected class ExecuteAction extends AbstractAction {

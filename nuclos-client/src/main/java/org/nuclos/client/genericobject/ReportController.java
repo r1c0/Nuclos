@@ -45,7 +45,11 @@ import org.nuclos.client.report.reportrunner.ReportThread;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common.*;
+import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -63,7 +67,6 @@ import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * ReportController for exporting leased object forms.
@@ -85,14 +88,6 @@ public class ReportController extends Controller<JComponent> {
 	private boolean bFilesBeAttached = false;
 
 	Integer iModuleId;
-	
-	// Spring injection
-	
-	private ReportFacadeRemote reportFacadeRemote;
-	
-	private ReportDelegate reportDelegate;
-
-	// end of Spring injection
 
 	/**
 	 * @param parent
@@ -101,16 +96,6 @@ public class ReportController extends Controller<JComponent> {
 		super(parent);
 	}
 	
-	@Autowired
-	final void setReportFacadeRemote(ReportFacadeRemote reportFacadeRemote) {
-		this.reportFacadeRemote = reportFacadeRemote;
-	}
-	
-	@Autowired
-	final void setReportDelegate(ReportDelegate reportDelegate) {
-		this.reportDelegate = reportDelegate;
-	}
-
 	private String getDirectory(CollectableGenericObject clctlo) {
 		Integer iModuleId = clctlo.getGenericObjectCVO().getModuleId();
 		String sNewPath = (String)Modules.getInstance().getModuleById(iModuleId).getField("documentpath");
@@ -203,7 +188,7 @@ public class ReportController extends Controller<JComponent> {
 	 */
 	public boolean hasFormsAssigned(UsageCriteria quadruple){
 		try {
-			return (reportFacadeRemote.findReportsByUsage(quadruple).size() > 0);
+			return (ReportDelegate.getInstance().findReportsByUsage(quadruple).size() > 0);
 		}
 		catch (RuntimeException e) {
 			throw new CommonFatalException(e);
@@ -324,7 +309,7 @@ public class ReportController extends Controller<JComponent> {
 					private Collection<ReportOutputVO> collFormat;
 					{
 						try {
-							collFormat = reportFacadeRemote.getReportOutputs(reportvo.getId());
+							collFormat = ReportDelegate.getInstance().getReportOutputs(reportvo.getId());
 						}
 						catch (RuntimeException ex) {
 							throw new CommonFatalException(ex);

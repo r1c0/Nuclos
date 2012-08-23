@@ -25,10 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.nuclos.client.ui.model.MutableListModel;
-import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.util.Assert;
 
 /**
  * Base class for panels, in which data can be moved from one list to another to choose from a selection
@@ -38,7 +34,7 @@ import org.springframework.util.Assert;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version	01.00.00
  */
-@Configurable
+//@Configurable
 public abstract class SelectObjectsPanel<T> extends JPanel {
 
 	/*
@@ -63,22 +59,10 @@ public abstract class SelectObjectsPanel<T> extends JPanel {
 	protected final JList jlstAvailableColumns = newList();
 	protected final JList jlstSelectedColumns = newList();
 	
-	private SpringLocaleDelegate localeDelegate;
-
 	protected SelectObjectsPanel() {
 		super(new BorderLayout());
 	}
-	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		Assert.notNull(cld);
-		this.localeDelegate = cld;
-	}
-	
-	protected SpringLocaleDelegate getSpringLocaleDelegate() {
-		return localeDelegate;
-	}
-
+		
 	/**
 	 * @return the <code>JList</code> containing available columns
 	 */

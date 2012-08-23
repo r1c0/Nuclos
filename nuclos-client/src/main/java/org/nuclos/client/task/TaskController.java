@@ -65,7 +65,6 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -106,14 +105,6 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 
 	private final Map<DynamicTaskView, MainFrameTab> dynamictasklistTabs = new HashMap<DynamicTaskView, MainFrameTab>();
 	
-	// Spring injection
-	
-	private TimelimitTaskDelegate timelimittaskdelegate;
-
-	private TaskDelegate taskDelegate;
-	
-	// end of Spring injection
-
 	/**
 	 *
 	 * @param parent
@@ -124,20 +115,10 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	public TaskController(String sCurrentUser) {
 		super(null);
 
-		ctlPersonalTasks = new PersonalTaskController(prefs, taskDelegate, sCurrentUser);
-		ctlTimelimitTasks = new TimelimitTaskController(prefs, timelimittaskdelegate);
+		ctlPersonalTasks = new PersonalTaskController(prefs, TaskDelegate.getInstance(), sCurrentUser);
+		ctlTimelimitTasks = new TimelimitTaskController(prefs, TimelimitTaskDelegate.getInstance());
 		ctlGenericObjectTasks = new GenericObjectTaskController();
 		ctlDynamicTasks = new DynamicTaskController();
-	}
-	
-	@Autowired
-	final void setTimelimitTaskDelegate(TimelimitTaskDelegate timelimitTaskDelegate) {
-		this.timelimittaskdelegate = timelimitTaskDelegate;
-	}
-	
-	@Autowired
-	final void setTaskDelegate(TaskDelegate taskDelegate) {
-		this.taskDelegate = taskDelegate;
 	}
 
 	@Override

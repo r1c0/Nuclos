@@ -30,6 +30,7 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosFile;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
@@ -247,6 +248,34 @@ public class ReportDelegate {
 	public boolean isSaveAllowed(Integer iReportId) {
 		try {
 			return reportFacadeRemote.isSaveAllowed(iReportId);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+	/**
+	 * finds reports (forms) by usage criteria
+	 * @param usagecriteria
+	 * @return collection of reports (forms)
+	 */
+	public Collection<ReportVO> findReportsByUsage(
+		UsageCriteria usagecriteria) {
+		try {
+			return reportFacadeRemote.findReportsByUsage(usagecriteria);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+	
+	/**
+	 * get output formats for report
+	 * @param iReportId id of report
+	 * @return collection of output formats
+	 */
+	public Collection<ReportOutputVO> getReportOutputs(Integer iReportId) {
+		try {
+			return reportFacadeRemote.getReportOutputs(iReportId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

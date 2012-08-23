@@ -144,7 +144,7 @@ import com.jhlabs.image.BoxBlurFilter;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
+//@Configurable
 public abstract class AbstractCollectableComponent
 		implements CollectableComponent, CollectableComponentModelListener, JPopupMenuFactory, ToolTipTextProvider {
 
@@ -201,7 +201,7 @@ public abstract class AbstractCollectableComponent
 	 */
 	private CollectableEntity clcte;
 
-	private SpringLocaleDelegate localeDelegate;
+	private SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 
 	private boolean enabled = true;
 
@@ -262,7 +262,7 @@ public abstract class AbstractCollectableComponent
 		assert isSearchComponent() == bSearchable;
 	}
 
-	@Autowired
+	//@Autowired
 	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}

@@ -23,8 +23,6 @@ import java.util.Set;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Abstract implementation of <code>CollectableEntity</code>.
@@ -35,27 +33,20 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-@Configurable(preConstruction=true)
+//@Configurable(preConstruction=true)
 public abstract class AbstractCollectableEntity implements CollectableEntity {
 	
 	private final String sName;
 	private final String sLabel;
 	private final Map<String, CollectableEntityField> mpclctef = new HashMap<String, CollectableEntityField>();
 	
-	private SpringLocaleDelegate localeDelegate;
-
 	public AbstractCollectableEntity(String sName, String sLabel) {
 		this.sName = sName;
 		this.sLabel = sLabel;
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		this.localeDelegate = cld;
-	}
-	
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
-		return localeDelegate;
+		return SpringLocaleDelegate.getInstance();
 	}
 
 	protected void addCollectableEntityField(CollectableEntityField clctef) {

@@ -18,8 +18,6 @@ package org.nuclos.common.collect.collectable;
 
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Abstract (basic) implementation of a <code>Collectable</code>.
@@ -30,21 +28,14 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
  */
-@Configurable
+//@Configurable
 public abstract class AbstractCollectable implements Collectable {
-	
-	private SpringLocaleDelegate localeDelegate;
 	
 	protected AbstractCollectable() {
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		this.localeDelegate = cld;
-	}
-	
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
-		return localeDelegate;
+		return SpringLocaleDelegate.getInstance();
 	}
 
 	/**

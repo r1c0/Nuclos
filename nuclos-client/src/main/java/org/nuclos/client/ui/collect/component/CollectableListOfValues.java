@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -24,16 +23,14 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 
-import javax.swing.ComboBoxEditor;
+import javax.annotation.PostConstruct;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
@@ -53,6 +50,7 @@ import org.nuclos.client.ui.labeled.LabeledListOfValues;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 import org.nuclos.client.valuelistprovider.DefaultValueProvider;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache.CachingCollectableFieldsProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -70,9 +68,6 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * A <code>CollectableComponent</code> that presents a value in a <code>ListOfValues</code>.
@@ -83,7 +78,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
+//@Configurable
 public class CollectableListOfValues extends LabeledCollectableComponentWithVLP implements ICollectableListOfValues, CollectableEventListener {
 
 	private static final Logger LOG = Logger.getLogger(CollectableListOfValues.class);
@@ -99,12 +94,8 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 	private DocumentListener documentlistener;
 	
-	// Spring injection
-	
 	private EntityFacadeRemote entityFacadeRemote;
 	
-	// end of Spring injection
-
 	/**
 	 * inner class <code>CollectableListOfValues.Event</code>.
 	 */
@@ -189,6 +180,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		assert !this.isInsertable();
 		this.setInsertable(this.isSearchComponent());
 
+		setEntityFacadeRemote(SpringApplicationContextHolder.getBean(EntityFacadeRemote.class));
 		getListOfValues().setQuickSearchResulting(new QuickSearchResulting() {
 			@Override
 			protected List<CollectableValueIdField> getQuickSearchResult(String inputString) {
@@ -250,8 +242,6 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		assert this.isInsertable() == this.isSearchComponent();
 	}
 	
-	@Autowired
-	@Qualifier("entityService")
 	final void setEntityFacadeRemote(EntityFacadeRemote entityFacadeRemote) {
 		this.entityFacadeRemote = entityFacadeRemote;
 	}

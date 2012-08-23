@@ -112,7 +112,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		}
 
 		if (this.isColumnSelectionAllowed(sParentEntityName)) {
-			final List<String> lstStoredFieldNames = workspaceUtils.getSelectedColumns(getSubFormPrefs());
+			final List<String> lstStoredFieldNames = WorkspaceUtils.getInstance().getSelectedColumns(getSubFormPrefs());
 			if (!lstStoredFieldNames.isEmpty()) {
 				removeColumnsFromTableColumnModel(subform.getJTable(), lstStoredFieldNames, true);
 			}
@@ -266,7 +266,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	}
 
 	protected void storeColumnOrderToPreferences(){
-		workspaceUtils.setSortKeys(getSubFormPrefs(), getCollectableTableModel().getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {
+		WorkspaceUtils.getInstance().setSortKeys(getSubFormPrefs(), getCollectableTableModel().getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {
 			@Override
 			public String getColumnName(int iColumn) {
 				return getSubFormTableModel().getColumnFieldName(iColumn);
@@ -278,7 +278,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences() {
-		return workspaceUtils.getSortKeys(getSubFormPrefs(), new WorkspaceUtils.IColumnIndexRecolver() {
+		return WorkspaceUtils.getInstance().getSortKeys(getSubFormPrefs(), new WorkspaceUtils.IColumnIndexRecolver() {
 			@Override
 			public int getColumnIndex(String columnIdentifier) {
 				return getCollectableTableModel().findColumnByFieldName(columnIdentifier);

@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -58,9 +57,8 @@ import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.PreferencesException;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
+//@Configurable
 public class SearchFilterBar implements ItemSelectable {
 	
 	private static final Logger LOG = Logger.getLogger(SearchFilterBar.class);
@@ -77,7 +75,11 @@ public class SearchFilterBar implements ItemSelectable {
 	
 	private SearchFilter selected;
 	
-	@PostConstruct
+	public SearchFilterBar() {
+		init();
+	}
+	
+	//@PostConstruct
 	void init() {
 		pnl = new Panel();
 		scroll = new JScrollPane(pnl, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {

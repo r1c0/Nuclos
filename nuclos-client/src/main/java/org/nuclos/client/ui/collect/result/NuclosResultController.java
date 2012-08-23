@@ -69,6 +69,7 @@ import org.nuclos.client.ui.popupmenu.AbstractJPopupMenuListener;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -79,7 +80,6 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A specialization of ResultController for use with an {@link NuclosCollectController}.
@@ -93,14 +93,6 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	
 	private static final Logger LOG = Logger.getLogger(NuclosResultController.class);
 	
-	// 
-	
-	// Spring injection
-	
-	private PreferencesFacadeRemote preferencesFacadeRemote;
-	
-	// end of Spring injection
-	
 	public NuclosResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
 		super(clcte, srs);
 	}
@@ -110,11 +102,6 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 */
 	public NuclosResultController(String entityName, ISearchResultStrategy<Clct> srs) {
 		super(entityName, srs);
-	}
-	
-	@Autowired
-	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
-		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 	
 	/**
@@ -730,6 +717,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
+						PreferencesFacadeRemote preferencesFacadeRemote
+							= SpringApplicationContextHolder.getBean(PreferencesFacadeRemote.class);	
 						preferencesFacadeRemote.publishEntityPreferences(
 								getMainFrame().getWorkspace(), getCollectController().getEntityPreferences());
 					} catch (CommonBusinessException e1) {

@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -86,10 +85,9 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_TITLED_SE
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableElement;
 import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * PaletteController builds palette view and handles drag&drop
@@ -101,10 +99,8 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author <a href="mailto:thomas.schiffmann@novabit.de">thomas.schiffmann</a>
  * @version 01.00.00
  */
-@Configurable
+//@Configurable
 public class PaletteController implements DragGestureListener, LayoutMLConstants, WYSIWYGEditorModes {
-
-	private NucletComponentRepository nucletComponentRepository;
 	
 	private JPanel palettePanel = new JPanel();
 	private JList paletteList;
@@ -123,14 +119,10 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 	 * ctor
 	 */
 	public PaletteController() {
+		init();
 	}
 	
-	@Autowired
-	void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
-		this.nucletComponentRepository = nucletComponentRepository;
-	}
-	
-	@PostConstruct
+	//@PostConstruct
 	void init() {
 		palettePanel.setLayout(new GridBagLayout());
 
@@ -145,7 +137,6 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 
 		dragsource.createDefaultDragGestureRecognizer(paletteList, DnDConstants.ACTION_COPY, this);
 		palettePanel.add(new JScrollPane(paletteList), new GridBagConstraints(0, 2, 1, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
-
 	}
 
 	/**
@@ -229,6 +220,8 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 		model.addElement(new PaletteItem(ELEMENT_SEPARATOR, new STATIC_SEPERATOR()));
 		model.addElement(new PaletteItem(ELEMENT_TITLEDSEPARATOR, new STATIC_TITLED_SEPARATOR()));
 
+		NucletComponentRepository nucletComponentRepository
+			= SpringApplicationContextHolder.getBean(NucletComponentRepository.class);
 		List<LayoutComponentFactory> layoutComponentFactories = nucletComponentRepository.getLayoutComponentFactories();
 		if (!layoutComponentFactories.isEmpty()) {
 			model.addElement(PALETTE_CONTROLLER.SECTION_NUCLET);

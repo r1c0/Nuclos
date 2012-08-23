@@ -19,7 +19,6 @@ package org.nuclos.client.ui;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -31,13 +30,11 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-@Configurable(preConstruction=true)
+//@Configurable(preConstruction=true)
 public abstract class Controller<Parent> {
 	
 	private Parent parent;
 	
-	private SpringLocaleDelegate localeDelegate;
-
 	private MainController mainController;
 	
 	public Controller(Parent parent) {
@@ -50,14 +47,9 @@ public abstract class Controller<Parent> {
 		}
 		this.parent = parent;
 	}
-	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		this.localeDelegate = cld;
-	}
-	
+		
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
-		return localeDelegate;
+		return SpringLocaleDelegate.getInstance();
 	}
 
 	protected MainController getMainController() {

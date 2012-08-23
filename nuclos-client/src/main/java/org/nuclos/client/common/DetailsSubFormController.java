@@ -65,6 +65,7 @@ import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -90,6 +91,7 @@ import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.PointerException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -131,12 +133,6 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	private static final Logger LOG = Logger.getLogger(DetailsSubFormController.class);
 	
-	// Spring injection
-	
-	private PreferencesFacadeRemote preferencesFacadeRemote;
-	
-	// end of Spring injection
-
 	/**
 	 * the id of the (current) parent object.
 	 */
@@ -267,11 +263,6 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				}
 			}
 		});
-	}
-	
-	@Autowired
-	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
-		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 
 	/**
@@ -518,7 +509,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			result.add(new JSeparator());
 
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
-					!mainFrame.getWorkspace().isAssigned()) {
+					!Main.getInstance().getMainFrame().getWorkspace().isAssigned()) {
 				final JMenuItem miPopupHideThisColumn = new JMenuItem(
 						SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.5","Diese Spalte ausblenden"));
 				miPopupHideThisColumn.setIcon(Icons.getInstance().getIconRemoveColumn16());
@@ -544,15 +535,17 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			}
 
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
-				mainFrame.getWorkspace().isAssigned()) {
+				Main.getInstance().getMainFrame().getWorkspace().isAssigned()) {
 			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage(
 					"DetailsSubFormController.4", "Spalten in Vorlage publizieren"),
 					Icons.getInstance().getIconRedo16()) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
+						PreferencesFacadeRemote preferencesFacadeRemote
+							= SpringApplicationContextHolder.getBean(PreferencesFacadeRemote.class);
 						preferencesFacadeRemote.publishSubFormPreferences(
-								mainFrame.getWorkspace(),
+								Main.getInstance().getMainFrame().getWorkspace(),
 								getCollectController().getEntity(),
 								getSubFormPrefs());
 					} catch (CommonBusinessException e1) {
@@ -570,12 +563,12 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					workspaceUtils.restoreSubFormPreferences(getSubFormPrefs(), getCollectController().getEntity());
+					WorkspaceUtils.getInstance().restoreSubFormPreferences(getSubFormPrefs(), getCollectController().getEntity());
 
-					final List<Integer> widths = workspaceUtils.getColumnWidths(getSubFormPrefs());
+					final List<Integer> widths = WorkspaceUtils.getInstance().getColumnWidths(getSubFormPrefs());
 					final List<CollectableEntityField> allFields = fixedcolumnheader.getAllAvailableFields();
-					final List<CollectableEntityField> selected = workspaceUtils.getSelectedFields(getSubFormPrefs(), allFields);
-					final Set<CollectableEntityField> fixed = workspaceUtils.getFixedFields(getSubFormPrefs(), selected);
+					final List<CollectableEntityField> selected = WorkspaceUtils.getInstance().getSelectedFields(getSubFormPrefs(), allFields);
+					final Set<CollectableEntityField> fixed = WorkspaceUtils.getInstance().getFixedFields(getSubFormPrefs(), selected);
 
 					makeSureSelectedFieldsAreNonEmpty(getCollectableEntity(), selected);
 

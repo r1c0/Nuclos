@@ -139,6 +139,7 @@ import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -175,9 +176,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.Assert;
 
 
 /**
@@ -286,16 +284,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	private boolean closed = false;
 	
-	// Spring injection
+	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport = null;
 	
-	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
-	
-	private WorkspaceUtils workspaceUtils;
-	
-	private MainFrame mainFrame;
-	
-	// end of Spring injection
-
 	/**
 	 * Messages for Collectable events
 	 */
@@ -591,6 +581,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.clcte = clcte;
 		this.ctlResult = rc;
 		this.ctlResult.setCollectController(this);
+		
+		this.invokeWithInputRequiredSupport
+			= SpringApplicationContextHolder.getBean(InvokeWithInputRequiredSupport.class);
+		
 		setTab(tabIfAny);
 	}
 
@@ -605,29 +599,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	protected CollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
 		this(clcte, tabIfAny, new ResultController<Clct>(clcte, new SearchResultStrategy<Clct>()));
 	}
-
-	@Autowired
-	final void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
-		Assert.notNull(invokeWithInputRequiredSupport);
-		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
-	}
-	
-	@Autowired
-	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
-		this.workspaceUtils = workspaceUtils;
-	}
 	
 	protected WorkspaceUtils getWorkspaceUtils() {
-		return workspaceUtils;
-	}
-	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
+		return WorkspaceUtils.getInstance();
 	}
 	
 	protected MainFrame getMainFrame() {
-		return mainFrame;
+		return Main.getInstance().getMainFrame();
 	}
 
 	public final ISearchStrategy<Clct> getSearchStrategy() {
@@ -750,7 +728,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return
 	 */
 	public EntityPreferences getEntityPreferences() {
-		return mainFrame.getWorkspaceDescription().getEntityPreferences(this.getEntityName());
+		return getMainFrame().getWorkspaceDescription().getEntityPreferences(this.getEntityName());
 	}
 
 	/**
@@ -910,7 +888,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences(final SortableCollectableTableModel<Clct> tblmdl) {
-		return workspaceUtils.getSortKeys(getEntityPreferences(),
+		return getWorkspaceUtils().getSortKeys(getEntityPreferences(),
 				new WorkspaceUtils.IColumnIndexRecolver() {
 					@Override
 					public int getColumnIndex(String columnIdentifier) {
@@ -3692,10 +3670,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		navigationmodel.addChangeListener(navigationChangeListener);
 
 		ctlResult.setStatusBar(tblResult, bResultTruncated, iTotalNumberOfRecords);
-		
-		if (!lstclct.isEmpty()) {
-			tblResult.getSelectionModel().setSelectionInterval(0, 0);
-		}
 	}
 
 	/**
@@ -3705,7 +3679,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		TableModel resultTableModel = this.getResultTable().getModel();
 		// NUCLEUSINT-1045
 		if (resultTableModel instanceof SortableTableModel) {
-			workspaceUtils.setSortKeys(getEntityPreferences(), ((SortableTableModel) resultTableModel).getSortKeys(), 
+			getWorkspaceUtils().setSortKeys(getEntityPreferences(), ((SortableTableModel) resultTableModel).getSortKeys(), 
 					new WorkspaceUtils.IColumnNameResolver() {
 						@Override
 						public String getColumnName(int iColumn) {

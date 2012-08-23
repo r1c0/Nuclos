@@ -25,13 +25,11 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelLis
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * common controller for the Search and Details panels.
  */
-@Configurable(preConstruction=true)
+//@Configurable(preConstruction=true)
 public abstract class CommonController<Clct extends Collectable> implements Closeable {
 	
 	private static final Logger LOG = Logger.getLogger(CommonController.class);
@@ -42,21 +40,14 @@ public abstract class CommonController<Clct extends Collectable> implements Clos
 	
 	private CollectController<Clct> cc;
 	
-	private SpringLocaleDelegate localeDelegate;
-	
 	private boolean closed = false;
 	
 	public CommonController(CollectController<Clct> cc) {
 		this.cc = cc;
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		this.localeDelegate = cld;
-	}
-	
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
-		return localeDelegate;
+		return SpringLocaleDelegate.getInstance();
 	}
 	
 	protected final CollectController<Clct> getCollectController() {

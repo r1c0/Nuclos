@@ -38,6 +38,7 @@ import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.transfer.ejb3.XmlExportImportProtocolFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Controller for export/import protocol.
@@ -54,6 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * NOTE: this controller should not be used, if the transfered data is not compressed
  *       because of memory problems
  */
+@Configurable(preConstruction=true)
 public class ExportImportCollectController extends MasterDataCollectController {
 
 	private final JButton btnCopyFile = new JButton();

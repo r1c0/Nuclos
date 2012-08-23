@@ -28,7 +28,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -112,6 +111,7 @@ import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosScript;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.TranslationMap;
 import org.nuclos.common.caching.GenCache;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -134,8 +134,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.common2.layoutml.exception.LayoutMLParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -151,7 +149,7 @@ import org.xml.sax.SAXParseException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
+//@Configurable
 public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 	private static final Logger log = Logger.getLogger(LayoutMLParser.class.getName());
@@ -3964,18 +3962,10 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		/**
 		 * inner class <code>LayoutComponentElementProcessor</code>. Processes a layout component element.
 		 */
-		@Configurable
+		//@Configurable
 		class LayoutComponentElementProcessor extends ComponentElementProcessor {
 
-			private NucletComponentRepository nucletComponentRepository;
-
 			public LayoutComponentElementProcessor() {
-
-			}
-
-			@Autowired
-			void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
-				this.nucletComponentRepository = nucletComponentRepository;
 			}
 
 			/**
@@ -3996,6 +3986,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final String sClass = attributes.getValue(ATTRIBUTE_CLASS);
 				LayoutComponentFactory layoutComponentFactory = null;
 				if (sClass != null) {
+					NucletComponentRepository nucletComponentRepository
+						= (NucletComponentRepository)SpringApplicationContextHolder.getBean("nucletComponentRepository");
+					 
 					for (LayoutComponentFactory lcf : nucletComponentRepository.getLayoutComponentFactories()) {
 						if (lcf.getClass().getName().equals(sClass)) {
 							layoutComponentFactory = lcf;

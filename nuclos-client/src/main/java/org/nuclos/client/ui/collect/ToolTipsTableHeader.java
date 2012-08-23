@@ -38,6 +38,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.table.SortableTableModel;
@@ -45,37 +46,25 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 
-@Configurable(preConstruction=true)
+//@Configurable(preConstruction=true)
 public class ToolTipsTableHeader extends JTableHeader {
 
 	private CollectableEntityFieldBasedTableModel entityTableModel;
 	private final Icon ascendingSortIcon;
 	private final Icon descendingSortIcon;
 	
-	// Spring injection
-	
-	private MainFrame mainFrame;
-	
-	// end of Spring injection
-
 	public ToolTipsTableHeader(CollectableEntityFieldBasedTableModel aTableModel, TableColumnModel cm) {
 		super(cm);
 		this.entityTableModel = aTableModel;
 		this.ascendingSortIcon = UIManager.getIcon("Table.ascendingSortIcon");
 		this.descendingSortIcon = UIManager.getIcon("Table.descendingSortIcon");
+		
+		MainFrame mainFrame = Main.getInstance().getMainFrame();
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
 				mainFrame.getWorkspace() != null && mainFrame.getWorkspace().isAssigned()) {
 			setReorderingAllowed(false);
 		}
-	}
-	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
 	}
 
 	/**

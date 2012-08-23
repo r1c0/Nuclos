@@ -59,6 +59,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.CommonAbstractAction;
@@ -96,9 +97,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Controller for the Result panel.
@@ -121,7 +119,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @since Nuclos 3.1.01 this is a top-level class.
  * @author Thomas Pasch
  */
-@Configurable(preConstruction=true)
+//@Configurable(preConstruction=true)
 public class ResultController<Clct extends Collectable> {
 
 	private static final Logger LOG = Logger.getLogger(ResultController.class);
@@ -176,16 +174,6 @@ public class ResultController<Clct extends Collectable> {
 	private final Action actDeleteSelectedCollectables;
 
 	private MouseListener mouselistenerTableDblClick;
-	
-	// Spring injection
-	
-	private SpringLocaleDelegate localeDelegate;
-	
-	private MainFrame mainFrame;
-	
-	private WorkspaceUtils workspaceUtils;
-
-	// end of Spring injection
 	
 	/**
 	 * action: Define as new Search result
@@ -250,31 +238,16 @@ public class ResultController<Clct extends Collectable> {
 		this.clcte = clcte;
 	}
 	
-	@Autowired
-	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		this.localeDelegate = cld;
-	}
-	
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
-		return localeDelegate;
-	}
-	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
+		return SpringLocaleDelegate.getInstance();
 	}
 	
 	protected MainFrame getMainFrame() {
-		return mainFrame;
-	}
-	
-	@Autowired
-	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
-		this.workspaceUtils = workspaceUtils;
+		return Main.getInstance().getMainFrame();
 	}
 	
 	protected WorkspaceUtils getWorkspaceUtils() {
-		return workspaceUtils;
+		return WorkspaceUtils.getInstance();
 	}
 
 	/**
@@ -806,7 +779,7 @@ public class ResultController<Clct extends Collectable> {
 	 * TODO: make private?
 	 */
 	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences() {
-		List<String> lstSelectedFieldNames = workspaceUtils.getSelectedColumns(clctctl.getEntityPreferences());
+		List<String> lstSelectedFieldNames = getWorkspaceUtils().getSelectedColumns(clctctl.getEntityPreferences());
 		
 		final List<CollectableEntityField> result = Utils.createCollectableEntityFieldListFromFieldNames(this, clcte, lstSelectedFieldNames);
 		return result;
@@ -1093,7 +1066,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField) {
 		fields.moveToAvailableFields(entityField);
-		workspaceUtils.addHiddenColumn(getCollectController().getEntityPreferences(), entityField.getName());
+		getWorkspaceUtils().addHiddenColumn(getCollectController().getEntityPreferences(), entityField.getName());
 
 		// Note that it is not enough to remove the column from the result table model.
 		// We must rebuild the table model's columns in order to sync it with the table column model:
@@ -1178,7 +1151,7 @@ public class ResultController<Clct extends Collectable> {
 			}
 		}
 		
-		workspaceUtils.setColumnPreferences(entityPreferences, lstFields, lstFieldWidths);
+		getWorkspaceUtils().setColumnPreferences(entityPreferences, lstFields, lstFieldWidths);
 	}
 	
 	protected List<String> getFieldsForPreferences(List<? extends CollectableEntityField> lstclctefSelected) {

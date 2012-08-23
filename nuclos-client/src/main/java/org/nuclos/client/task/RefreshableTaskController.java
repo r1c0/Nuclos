@@ -15,7 +15,9 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.common.NuclosFatalException;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable(preConstruction=true)
 public abstract class RefreshableTaskController extends Controller<MainFrameTabbedPane> {
 
     private static final Logger log = Logger.getLogger(RefreshableTaskController.class);
