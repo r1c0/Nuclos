@@ -45,7 +45,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -172,7 +172,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		List<GrantedAuthority> authorities = CollectionUtils.transform(actions, new Transformer<String, GrantedAuthority>() {
 			@Override
 			public GrantedAuthority transform(String i) {
-				return new GrantedAuthorityImpl(i);
+				return new SimpleGrantedAuthority(i);
 			}
 		});
 
