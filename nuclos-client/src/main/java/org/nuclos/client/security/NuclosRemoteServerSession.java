@@ -59,15 +59,16 @@ public class NuclosRemoteServerSession {
 		this.securityFacadeRemote = securityFacadeRemote;
 	}
 
-	public void login(String username, String password) throws AuthenticationException {
+	public String login(String username, String password) throws AuthenticationException {
 		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
 		try {
-			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
-			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
-			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password, auth.getAuthorities());
-			SecurityContextHolder.getContext().setAuthentication(auth);
+			final AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
+			final UsernamePasswordAuthenticationToken auth1 = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
+			final UsernamePasswordAuthenticationToken auth2 = new UsernamePasswordAuthenticationToken(auth1.getPrincipal(), password, auth1.getAuthorities());
+			SecurityContextHolder.getContext().setAuthentication(auth2);
 			sessionId = securityFacadeRemote.login();
-			LOG.info("User " + username + " logged in, session=" + sessionId);
+			LOG.info("User " + username + " logged in as " + auth2.getPrincipal() + " , session=" + sessionId);
+			return auth2.getPrincipal().toString();
 		}
 		catch (AuthenticationException ex) {
 			SecurityContextHolder.getContext().setAuthentication(null);

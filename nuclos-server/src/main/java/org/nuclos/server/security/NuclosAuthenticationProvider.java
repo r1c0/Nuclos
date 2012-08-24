@@ -77,11 +77,11 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 
 		boolean authenticated = false;
 
-		String username = authentication.getPrincipal().toString();
-		String password = authentication.getCredentials().toString();
-		LOG.debug("NuclosAuthenticationProvider.authenticate(" + username + "), locale:" + LocaleContextHolder.getLocale().toString());
+		final String username = authentication.getPrincipal().toString();
+		final String password = authentication.getCredentials().toString();
 
-		UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+		LOG.debug("NuclosAuthenticationProvider.authenticate(" + userDetails.getUsername() + "), locale:" + LocaleContextHolder.getLocale().toString());
 
 		if (!userDetails.isAccountNonLocked()) {
 			throw new LockedException("nuclos.security.authentication.locked");
@@ -131,9 +131,9 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 				authorities.add(new SimpleGrantedAuthority("Login"));
 				// authorities.add(new SimpleGrantedAuthority("ChangeOwnPassword"));
 				final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-						username, userDetails.getPassword(), authorities);
+						userDetails.getUsername(), userDetails.getPassword(), authorities);
 				SecurityContextHolder.getContext().setAuthentication(auth);
-				LOG.info("User " + username + " gets authenticated only for ChangeOwnPassword: " + auth.isAuthenticated());
+				LOG.info("User " + userDetails.getUsername() + " gets authenticated only for ChangeOwnPassword: " + auth.isAuthenticated());
 				
 				// This exception trigger the change password dialog on login.
 				throw new CredentialsExpiredException("nuclos.security.authentication.credentialsexpired");
@@ -145,9 +145,9 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 		}
 
 		final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-				username, userDetails.getPassword(), userDetails.getAuthorities());
+				userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(auth);
-		LOG.info("User " + username + " gets authenticated: " + auth.isAuthenticated());
+		LOG.info("User " + userDetails.getUsername() + " gets authenticated: " + auth.isAuthenticated());
 		return auth;
 	}
 
