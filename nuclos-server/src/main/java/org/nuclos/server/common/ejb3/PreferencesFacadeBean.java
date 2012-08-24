@@ -186,11 +186,12 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	}
 
 	public Collection<WorkspaceVO> getWorkspaceHeaderOnly() {
+		final String user = getCurrentUserName();
 		List<WorkspaceVO> result = new ArrayList<WorkspaceVO>();
-		List<WorkspaceVO> lstAssignedByRole = getWorkspaceProcessor().getByAssignedByRole(getCurrentUserName());
+		List<WorkspaceVO> lstAssignedByRole = getWorkspaceProcessor().getByAssignedByRole(user);
 		List<WorkspaceVO> lstToRemove = new ArrayList<WorkspaceVO>();
-		boolean isAssigner = SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN);
-		for (WorkspaceVO wsvo : getWorkspaceProcessor().getByUser(getCurrentUserName())) {
+		boolean isAssigner = SecurityCache.getInstance().getAllowedActions(user).contains(Actions.ACTION_WORKSPACE_ASSIGN);
+		for (WorkspaceVO wsvo : getWorkspaceProcessor().getByUser(user)) {
 			if (isAssigner) {
 				result.add(wsvo); 
 			} else {
@@ -314,9 +315,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	}
 
 	public WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
-		DalUtils.updateVersionInformation(wovo, getCurrentUserName());
+		final String user = getCurrentUserName();
+		DalUtils.updateVersionInformation(wovo, user);
 		if (wovo.getId() == null) {
-			wovo.setUser(SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue());
+			wovo.setUser(SecurityCache.getInstance().getUserId(user).longValue());
 			wovo.flagNew();
 			wovo.setId(DalUtils.getNextId());
 		} else {
@@ -999,7 +1001,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			return;
 		}
 		
-		final Long nuclosUserId = SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue();
+		final String user = getCurrentUserName();
+		final Long nuclosUserId = SecurityCache.getInstance().getUserId(user).longValue();
 		
 		final Map<String, Object> conditions = new HashMap<String, Object>(1);
 		conditions.put("INTID_T_MD_USER", nuclosUserId);
@@ -1019,8 +1022,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		values.put("STRSETTINGKEY", key);
 		values.put("CLBSETTING", sSettings);
 		values.put("INTID", IdUtils.toLongId(dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE)));
-		values.put("STRCREATED", getCurrentUserName());
-		values.put("STRCHANGED", getCurrentUserName());
+		values.put("STRCREATED", user);
+		values.put("STRCHANGED", user);
 		values.put("DATCREATED", new Date());
 		values.put("DATCHANGED", new Date());
 		values.put("INTVERSION", 1);

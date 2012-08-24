@@ -807,7 +807,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 
 		try {
-			DalUtils.updateVersionInformation(updatedMDEntity, getCurrentUserName());
+			final String user2 = getCurrentUserName();
+			DalUtils.updateVersionInformation(updatedMDEntity, user2);
 
 			if(updatedMDEntity.getId() != null) {
 				updatedMDEntity.flagUpdate();
@@ -847,7 +848,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 						if (process.getId() == null || process.isFlagNew()) {
 							process.flagNew();
 							process.setId(DalUtils.getNextId());
-							DalUtils.updateVersionInformation(process, getCurrentUserName());
+							DalUtils.updateVersionInformation(process, user2);
 						}
 						process.getFieldIds().put("module", updatedMDEntity.getId());
 						processor.insertOrUpdate(process);
@@ -865,7 +866,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 						if (menu.getId() == null || menu.isFlagNew()) {
 							menu.flagNew();
 							menu.setId(DalUtils.getNextId());
-							DalUtils.updateVersionInformation(menu, getCurrentUserName());
+							DalUtils.updateVersionInformation(menu, user2);
 						}
 						menu.getFieldIds().put("entity", updatedMDEntity.getId());
 						if (menu.getField("process") != null && menu.getFieldId("process") != null && menu.getFieldId("process") < 0L) {
@@ -915,9 +916,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				// Standard nuclos fields
 				m.put("INTID", DalUtils.getNextId());
 				m.put("DATCREATED", new Date(System.currentTimeMillis()));
-				m.put("STRCREATED", getCurrentUserName());
+				m.put("STRCREATED", user2);
 				m.put("DATCHANGED", new Date(System.currentTimeMillis()));
-				m.put("STRCHANGED", getCurrentUserName());
+				m.put("STRCHANGED", user2);
 				m.put("INTVERSION", 1);
 
 				dataBaseHelper.getDbAccess().execute(new DbInsertStatement(EntityTreeViewVO.SUBNODES_TABLE, DbNull.escapeNull(m)));

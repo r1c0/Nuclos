@@ -212,9 +212,10 @@ public abstract class NuclosFacadeBean {
 				throw new NullArgumentException("iGenericObjectId");
 			}
 
-			if (!securityCache.isReadAllowedForModule(this.getCurrentUserName(), sEntityName, iGenericObjectId)) {
+			final String user = getCurrentUserName();
+			if (!securityCache.isReadAllowedForModule(user, sEntityName, iGenericObjectId)) {
 				throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.1", 
-					this.getCurrentUserName(), getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName)));
+					user, getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName)));
 			}
 		}
 	}
@@ -243,9 +244,10 @@ public abstract class NuclosFacadeBean {
 				throw new NullArgumentException("iGenericObjectId");
 			}
 
-			if (!securityCache.isWriteAllowedForModule(this.getCurrentUserName(), sEntityName, iGenericObjectId)) {
+			final String user = getCurrentUserName();
+			if (!securityCache.isWriteAllowedForModule(user, sEntityName, iGenericObjectId)) {
 				throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.2",
-					this.getCurrentUserName(), getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName)));
+					user, getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName)));
 			}
 		}
 	}
@@ -268,16 +270,17 @@ public abstract class NuclosFacadeBean {
 	 */
 	protected void checkWriteAllowedForObjectGroup(String sEntityName, Integer iObjectGroupId) throws CommonPermissionException {
 		if (this.isCalledRemotely()) {
-			if (!securityCache.isWriteAllowedForObjectGroup(this.getCurrentUserName(), sEntityName, iObjectGroupId)) {
+			final String user = getCurrentUserName();
+			if (!securityCache.isWriteAllowedForObjectGroup(user, sEntityName, iObjectGroupId)) {
 				if (iObjectGroupId == null) {
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.3",
-						this.getCurrentUserName(), modules.getEntityLabelByModuleName(sEntityName)));
+						user, modules.getEntityLabelByModuleName(sEntityName)));
 				}
 				else {
 					final GenericObjectGroupFacadeLocal genericObjectGroupFacade 
 						= ServerServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.4",
-						this.getCurrentUserName(), genericObjectGroupFacade.getObjectGroupName(iObjectGroupId)));
+						user, genericObjectGroupFacade.getObjectGroupName(iObjectGroupId)));
 				}
 			}
 		}
@@ -308,15 +311,16 @@ public abstract class NuclosFacadeBean {
 			if (iGenericObjectId == null) {
 				throw new NullArgumentException("iGenericObjectId");
 			}
+			final String user = getCurrentUserName();
 			String sMessage;
-			if (!securityCache.isDeleteAllowedForModule(this.getCurrentUserName(), sEntityName, iGenericObjectId, bDeletePhysically)) {
+			if (!securityCache.isDeleteAllowedForModule(user, sEntityName, iGenericObjectId, bDeletePhysically)) {
 				if (!bDeletePhysically) {
 					sMessage = StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.5",
-						this.getCurrentUserName(), getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName));
+						user, getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName));
 				}
 				else {
 					sMessage = StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.6",
-						this.getCurrentUserName(), getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName));
+						user, getSystemIdentifier(iGenericObjectId), modules.getEntityLabelByModuleName(sEntityName));
 				}
 				throw new CommonPermissionException(sMessage);
 			}
@@ -335,17 +339,18 @@ public abstract class NuclosFacadeBean {
 	 */
 	protected boolean checkReadAllowed(String sEntityName, Integer entityId) {
 		boolean isReadAllowed = false;
+		final String user = getCurrentUserName();
 		String sEntityLabel;
-		if(modules.isModuleEntity(sEntityName)) {
+		if (modules.isModuleEntity(sEntityName)) {
 			sEntityLabel = modules.getEntityLabelByModuleName(sEntityName);
-			if(securityCache.isReadAllowedForModule(this.getCurrentUserName(), sEntityName, entityId)) {
+			if (securityCache.isReadAllowedForModule(user, sEntityName, entityId)) {
 			  isReadAllowed = true;
 			}
 		}
 		else {
 			sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName));
 			//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
-			if(securityCache.isReadAllowedForMasterData(this.getCurrentUserName(), sEntityName)) {
+			if (securityCache.isReadAllowedForMasterData(user, sEntityName)) {
 			  isReadAllowed = true;
 			}
 		}
@@ -361,10 +366,11 @@ public abstract class NuclosFacadeBean {
 		if (this.isCalledRemotely()) {
 			boolean isReadAllowed = false;
 			for (int i = 0; i < sEntityName.length; i++) {
+				final String user = getCurrentUserName();
 				String sEntityLabel;
 				if(modules.isModuleEntity(sEntityName[i])) {
 					sEntityLabel = modules.getEntityLabelByModuleName(sEntityName[i]);
-					if(securityCache.isReadAllowedForModule(this.getCurrentUserName(), sEntityName[i], null)) {
+					if(securityCache.isReadAllowedForModule(user, sEntityName[i], null)) {
 					  isReadAllowed = true;
 					  break;
 					}
@@ -372,13 +378,14 @@ public abstract class NuclosFacadeBean {
 				else {
 					sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
-					if(securityCache.isReadAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
+					if(securityCache.isReadAllowedForMasterData(user, sEntityName[i])) {
 					  isReadAllowed = true;
 					  break;
 					}
 				}
 				if (!isReadAllowed) {
-					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.7", this.getCurrentUserName(), sEntityLabel));
+					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage(
+							"nucleus.facade.permission.exception.7", user, sEntityLabel));
 				}
 			}
 
@@ -399,10 +406,11 @@ public abstract class NuclosFacadeBean {
 		if (this.isCalledRemotely()) {
 			boolean isWriteAllowed = false;
 			for (int i = 0; i < sEntityName.length; i++) {
+				final String user = getCurrentUserName();
 				String sEntityLabel;
 				if (modules.isModuleEntity(sEntityName[i])) {
 					sEntityLabel = modules.getEntityLabelByModuleName(sEntityName[i]);
-					if(securityCache.isWriteAllowedForModule(this.getCurrentUserName(), sEntityName[i], null)) {
+					if(securityCache.isWriteAllowedForModule(user, sEntityName[i], null)) {
 					  isWriteAllowed = true;
 					  break;
 					}
@@ -410,13 +418,14 @@ public abstract class NuclosFacadeBean {
 				else {
 					sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
-					if(securityCache.isWriteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
+					if(securityCache.isWriteAllowedForMasterData(user, sEntityName[i])) {
 					  isWriteAllowed = true;
 					  break;
 					}
 				}
 				if (!isWriteAllowed) {
-					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.8", this.getCurrentUserName(), sEntityLabel));
+					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage(
+							"nucleus.facade.permission.exception.8", user, sEntityLabel));
 				}
 			}
 		}
@@ -434,12 +443,13 @@ public abstract class NuclosFacadeBean {
 	protected void checkDeleteAllowed(String... sEntityName) throws CommonPermissionException {
 		checkFrozenEntities(sEntityName);
 		if (this.isCalledRemotely()) {
+			final String user = getCurrentUserName();
 			boolean isDeleteAllowed = false;
 			for (int i = 0; i < sEntityName.length; i++) {
 				String sEntityLabel;
 				if(modules.isModuleEntity(sEntityName[i])) {
 					sEntityLabel = modules.getEntityLabelByModuleName(sEntityName[i]);
-					if(securityCache.isDeleteAllowedForModule(this.getCurrentUserName(), sEntityName[i], null, true)) {
+					if(securityCache.isDeleteAllowedForModule(user, sEntityName[i], null, true)) {
 					  isDeleteAllowed = true;
 					  break;
 					}
@@ -447,13 +457,13 @@ public abstract class NuclosFacadeBean {
 				else {
 					sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
-					if(securityCache.isDeleteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
+					if(securityCache.isDeleteAllowedForMasterData(user, sEntityName[i])) {
 					  isDeleteAllowed = true;
 					  break;
 					}
 				}
 				if (!isDeleteAllowed) {
-					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.9", this.getCurrentUserName(), sEntityLabel));
+					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.9", user, sEntityLabel));
 				}
 			}
 		}

@@ -687,7 +687,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 
 		EntityObjectVO dalVO = DalSupportForGO.wrapGenericObjectVO(gowdvo);
-		DalUtils.updateVersionInformation(dalVO, getCurrentUserName());
+		final String user = getCurrentUserName();
+		DalUtils.updateVersionInformation(dalVO, user);
 		dalVO.setId(DalUtils.getNextId());
 		dalVO.flagNew();
 
@@ -707,10 +708,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			 */
 			EOGenericObjectVO eogo = new EOGenericObjectVO();
 			eogo.setId(dalVO.getId());
-			eogo.setCreatedBy(getCurrentUserName());
+			eogo.setCreatedBy(user);
 			eogo.setCreatedAt(InternalTimestamp.toInternalTimestamp(sysdate));
 			eogo.setVersion(1);
-			eogo.setChangedBy(getCurrentUserName());
+			eogo.setChangedBy(user);
 			eogo.setChangedAt(InternalTimestamp.toInternalTimestamp(sysdate));
 			eogo.setModuleId(IdUtils.toLongId(iModuleId));
 			eogo.flagNew();
@@ -729,7 +730,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		Integer groupId = null;
 
 		for (final MasterDataVO mdvo : getMasterDataFacade().getMasterData(NuclosEntity.USER.getEntityName(), null, true)) {
-			if (this.getCurrentUserName().equals(mdvo.getField("name"))) {
+			if (user.equals(mdvo.getField("name"))) {
 				groupId = (Integer)mdvo.getField("groupId");
 			}
 		}

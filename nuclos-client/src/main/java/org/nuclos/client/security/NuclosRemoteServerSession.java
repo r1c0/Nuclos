@@ -67,7 +67,7 @@ public class NuclosRemoteServerSession {
 			final UsernamePasswordAuthenticationToken auth2 = new UsernamePasswordAuthenticationToken(auth1.getPrincipal(), password, auth1.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(auth2);
 			sessionId = securityFacadeRemote.login();
-			LOG.info("User " + username + " logged in as " + auth2.getPrincipal() + " , session=" + sessionId);
+			LOG.info("User " + username + " logged in as " + auth2.getPrincipal() + ", session=" + sessionId);
 			return auth2.getPrincipal().toString();
 		}
 		catch (AuthenticationException ex) {
@@ -76,14 +76,15 @@ public class NuclosRemoteServerSession {
 		}
 	}
 
-	public void relogin(String username, String password) throws AuthenticationException {
+	public String relogin(String username, String password) throws AuthenticationException {
 		try {
-			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
-			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
-			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password, auth.getAuthorities());
-			SecurityContextHolder.getContext().setAuthentication(auth);
-			LOG.info("Validated login of " + username + " session=" + sessionId);
+			final AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
+			final UsernamePasswordAuthenticationToken auth1 = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
+			final UsernamePasswordAuthenticationToken auth2 = new UsernamePasswordAuthenticationToken(auth1.getPrincipal(), password, auth1.getAuthorities());
+			SecurityContextHolder.getContext().setAuthentication(auth2);
+			LOG.info("Validated login of " + username + " as " + auth2.getPrincipal() + ", session=" + sessionId);
 			SecurityCache.getInstance().revalidate();
+			return auth2.getPrincipal().toString();
 		}
 		catch (AuthenticationException ex) {
 			SecurityContextHolder.getContext().setAuthentication(null);
