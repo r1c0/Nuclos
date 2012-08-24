@@ -280,6 +280,8 @@ public class SearchFilterBar implements ItemSelectable {
 			if (icon != null) {
 				setIcon(icon);
 				iconWidth = icon.getIconWidth();
+			} else {
+				setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 			}
 		}
 
@@ -335,73 +337,74 @@ public class SearchFilterBar implements ItemSelectable {
 			Rectangle bounds = getBounds();
 			
 			if (mouseOver) {
-				if (sf != selected) {
+//				if (sf != selected) {
 					g2.setColor(mouseOverBackground);
 					g2.fillRoundRect(0, 5, bounds.width, bounds.height-8, 4, 4);
-				}
+//				}
 			}
 			
 			super.paintComponent(g2);
 			
-			if (mouseOver) {
-				if (sf == selected) {
-					if (bounds.width > 30 && bounds.height > 30) {
-						final BufferedImage bi = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
-						final Graphics2D gbi = (Graphics2D) bi.getGraphics();
-						gbi.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-								RenderingHints.VALUE_ANTIALIAS_ON);
-						
-						// draw circle
-						final int x;
-						final int y;
-						final int w;
-						if (bounds.width < bounds.height) {
-							w = bounds.width-10;
-							x = 5;
-							y = (bounds.height - w) / 2;
-						} else {
-							w = bounds.height-10;
-							x = (bounds.width - w) / 2;
-							y = 5;
-						}
-						
-						gbi.setColor(mouseOverBackground);
-						gbi.fillOval(x, y, w, w);
-						
-						// draw X
-						final int thicknessX = w-w*8/10;
-						final int insetsX = 7;
-						final int longX = w-insetsX*2;
-						final int xX1 = x+w/2-thicknessX/2;
-						final int yX1 = y+insetsX;
-						final int xX2 = x+insetsX;
-						final int yX2 = y+w/2-thicknessX/2;
-						
-						gbi.rotate(Math.toRadians(45), bounds.getWidth()/2, bounds.getHeight()/2);
-						
-						gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT));
-						gbi.setPaint(new Color(0, 0, 0, 255));
-						gbi.fillRect(xX1, yX1, thicknessX, longX);
-						gbi.fillRect(xX2, yX2, longX, thicknessX);
-						
-						gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
-						gbi.setPaint(new Color(255, 255, 255, 70));
-						gbi.fillRect(xX1, yX1, thicknessX, longX);
-						gbi.fillRect(xX2, yX2, longX, thicknessX);
-						
-						gbi.dispose();
-						
-						// 90% opaque
-						float[] scales = { 1f, 1f, 1f, 0.9f };
-						float[] offsets = new float[4];
-						RescaleOp rop = new RescaleOp(scales, offsets, null);
-						
-						g2.drawImage(bi, rop, 0, 0);
-					}
-				}
-			}
+//			if (mouseOver) {
+//				if (sf == selected) {
+//					if (bounds.width > 30 && bounds.height > 30) {
+//						final BufferedImage bi = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
+//						final Graphics2D gbi = (Graphics2D) bi.getGraphics();
+//						gbi.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+//								RenderingHints.VALUE_ANTIALIAS_ON);
+//						
+//						// draw circle
+//						final int x;
+//						final int y;
+//						final int w;
+//						if (bounds.width < bounds.height) {
+//							w = bounds.width-10;
+//							x = 5;
+//							y = (bounds.height - w) / 2;
+//						} else {
+//							w = bounds.height-10;
+//							x = (bounds.width - w) / 2;
+//							y = 5;
+//						}
+//						
+//						gbi.setColor(mouseOverBackground);
+//						gbi.fillOval(x, y, w, w);
+//						
+//						// draw X
+//						final int thicknessX = w-w*8/10;
+//						final int insetsX = 7;
+//						final int longX = w-insetsX*2;
+//						final int xX1 = x+w/2-thicknessX/2;
+//						final int yX1 = y+insetsX;
+//						final int xX2 = x+insetsX;
+//						final int yX2 = y+w/2-thicknessX/2;
+//						
+//						gbi.rotate(Math.toRadians(45), bounds.getWidth()/2, bounds.getHeight()/2);
+//						
+//						gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OUT));
+//						gbi.setPaint(new Color(0, 0, 0, 255));
+//						gbi.fillRect(xX1, yX1, thicknessX, longX);
+//						gbi.fillRect(xX2, yX2, longX, thicknessX);
+//						
+//						gbi.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
+//						gbi.setPaint(new Color(255, 255, 255, 70));
+//						gbi.fillRect(xX1, yX1, thicknessX, longX);
+//						gbi.fillRect(xX2, yX2, longX, thicknessX);
+//						
+//						gbi.dispose();
+//						
+//						// 90% opaque
+//						float[] scales = { 1f, 1f, 1f, 0.9f };
+//						float[] offsets = new float[4];
+//						RescaleOp rop = new RescaleOp(scales, offsets, null);
+//						
+//						g2.drawImage(bi, rop, 0, 0);
+//					}
+//				}
+//			}
 				
 			if (sf == selected) {
+				g2.setColor(mouseOver?NuclosThemeSettings.BACKGROUND_ROOTPANE:NuclosThemeSettings.BACKGROUND_PANEL);
 				final int w = 24;
 				final int h = 12;
 				int x = bounds.width/2-w/2;
@@ -412,7 +415,7 @@ public class SearchFilterBar implements ItemSelectable {
 				p.addPoint(x+w/2, 	y-h);
 				p.addPoint(x+w, 	y);
 				
-				g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
+				
 				g2.fillPolygon(p);
 				
 				x = bounds.width/2-w/2;
