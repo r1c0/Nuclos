@@ -1551,8 +1551,8 @@ public class SubForm extends JPanel
 
 		@Override
 		public void lookupSuccessful(LookupEvent ev) {
-			transferLookedUpValues(ev.getSelectedCollectable(), subformtblmdl, bSearchable,
-					subformtbl.getEditingRow(), collTransferValueActions);
+			transferLookedUpValues(ev.getSelectedCollectable(), subformtbl, bSearchable,
+					subformtbl.getEditingRow(), collTransferValueActions, true);
 		}
 
 		@Override
@@ -1632,8 +1632,8 @@ public class SubForm extends JPanel
 				Object id = null;
 				try {
 					CollectableField value = clctcomp.getField();
-					if (value instanceof CollectableValueIdField) {
-						id = ((CollectableValueIdField) value).getValueId();
+					if (value.getFieldType() == CollectableField.TYPE_VALUEIDFIELD) {
+						id = value.getValueId();
 					}
 				} catch(CollectableFieldFormatException e1) {
 					LOG.warn("collectableFieldChangedInModel failed: " + e1, e1);
@@ -1647,7 +1647,7 @@ public class SubForm extends JPanel
 						log.error(ex);
 					}
 				}
-				transferLookedUpValues(clct, subformtblmdl, bSearchable, result.getLastEditingRow(), collTransferValueActions);
+				transferLookedUpValues(clct, subformtbl, bSearchable, result.getLastEditingRow(), collTransferValueActions);
 			}
 		}
 	}
@@ -1857,10 +1857,17 @@ public class SubForm extends JPanel
 	/**
 	 * Transfers the looked-up values.
 	 */
-	public static void transferLookedUpValues(Collectable clctSelected, SubFormTableModel subformtblmdl, boolean isSearchable, int iRow, Collection<TransferLookedUpValueAction> collTransferValueActions) {
+	public static void transferLookedUpValues(Collectable clctSelected, SubFormTable subformtbl, boolean isSearchable, int iRow, Collection<TransferLookedUpValueAction> collTransferValueActions) {
+		transferLookedUpValues(clctSelected, subformtbl, isSearchable, iRow, collTransferValueActions, false);
+	}
+	/**
+	 * Transfers the looked-up values.
+	 */
+	public static void transferLookedUpValues(Collectable clctSelected, SubFormTable subformtbl, boolean isSearchable, int iRow, Collection<TransferLookedUpValueAction> collTransferValueActions, boolean bSetInModel) {
 		// transfer the looked up values:
 		for (TransferLookedUpValueAction act : collTransferValueActions) {
 			final String sSourceFieldName = act.getSourceFieldName();
+			SubForm.SubFormTableModel subformtblmdl = subformtbl.getSubFormModel();
 			final int iTargetColumn = subformtblmdl.findColumnByFieldName(act.getTargetComponentName());
 			if (iTargetColumn == -1) {
 				throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
@@ -1877,7 +1884,15 @@ public class SubForm extends JPanel
 				assert clctfValue != null;
 				oValue = isSearchable ? getSearchConditionForValue(clctefTarget, clctfValue) : clctfValue;
 			}
+			
+			if (iRow < 0)
+				iRow = subformtbl.getSelectedRow();
+			
 			if (iRow >= 0) {
+				if (bSetInModel) {
+					CollectableComponentTableCellEditor editor = (CollectableComponentTableCellEditor)subformtbl.getCellEditor(iRow, subformtbl.convertColumnIndexToView(iTargetColumn));
+					editor.getCollectableComponent().setField((CollectableField)oValue);
+				}
 				subformtblmdl.setValueAt(oValue, iRow, iTargetColumn);
 			}
 		}
@@ -2199,7 +2214,12 @@ public class SubForm extends JPanel
 			
 			String sNextColumn = getSelectedColumn() == -1 ? null : getSubForm().getColumnNextFocusComponent((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
 			if (sNextColumn != null) {
-				int colIndex = sNextColumn == null ? -1 : getColumnModel().getColumnIndex(sNextColumn);
+				int colIndex = -1;
+				try {
+					colIndex = getColumnModel().getColumnIndex(sNextColumn);
+				} catch (Exception e) {
+					// ignore.
+				}
 				if (colIndex != -1) {
 					if (colIndex <= getSelectedColumn() &&
 							rowIndex == getRowCount() - 1)

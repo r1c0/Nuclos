@@ -377,7 +377,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 			@Override
 			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-				if (ev.collectableFieldHasChanged() && !ev.getCollectableComponentModel().isInitializing()) {
+				if (true/*ev.collectableFieldHasChanged() || !ev.getCollectableComponentModel().isInitializing()*/) { //@see NUCLOS-1026 
 					Object id = ev.getNewValue().getValueId();
 					Collectable clctSelected = null;
 					try {
@@ -822,8 +822,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						} else {
 							// if the source field does not have a value id and the target field requires a value id,
 							// try to match the value:
-							/** @todo this is definitely a workaround - the valuelist provider should probably move from
-							 * CollectableComboBox to CollectableComponentModel - but this can't be done at this time. 09.09.2004 CR */
 							try {
 								final Collection<CollectableComponent> collclctcompTarget = provider.getCollectableComponentsFor(clctefTarget.getName());
 								assert !clctfSource.isNull();

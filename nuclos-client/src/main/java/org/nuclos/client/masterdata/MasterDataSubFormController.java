@@ -56,6 +56,7 @@ import org.nuclos.client.ui.SizeKnownEvent;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 import org.nuclos.client.ui.collect.SubForm.TransferLookedUpValueAction;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
@@ -331,7 +332,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 	private static class LookupValuesListener implements LookupListener {
 
-		private final SubForm.SubFormTableModel model;
+		private final SubFormTable subformtbl;
 
 		private final boolean searchable;
 
@@ -339,10 +340,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 		private final Collection<TransferLookedUpValueAction> valueActions;
 
-		private LookupValuesListener(SubForm.SubFormTableModel model, boolean searchable, int row,
+		private LookupValuesListener(SubFormTable subformtbl, boolean searchable, int row,
 				Collection<TransferLookedUpValueAction> valueActions) {
 
-			this.model = model;
+			this.subformtbl = subformtbl;
 			this.searchable = searchable;
 			this.row = row;
 			this.valueActions = valueActions;
@@ -350,8 +351,8 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 		@Override
 		public void lookupSuccessful(LookupEvent ev) {
-			SubForm.transferLookedUpValues(ev.getSelectedCollectable(), model, searchable,
-					row, valueActions);
+			SubForm.transferLookedUpValues(ev.getSelectedCollectable(), subformtbl, searchable,
+					row, valueActions, true);
 		}
 
 		@Override
@@ -427,7 +428,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
                 		final Collection<TransferLookedUpValueAction> valueActions =
                 				getSubForm().getTransferLookedUpValueActions(field);
                         clctlov.addLookupListener(new LookupValuesListener(
-                        		getSubFormTableModel(), isSearchable(), row, valueActions));
+                        		(SubFormTable)getJTable(), isSearchable(), row, valueActions));
                         try {
                             clctlov.acceptLookedUpCollectable(referenceClct);
                             clct.setField(clctlov.getFieldName(), clctlov.getField());
