@@ -91,7 +91,14 @@ public class URIMouseAdapter extends TableRowMouseOverAdapter {
 				else {
 					table.setCursor(Cursor.getDefaultCursor());
 				}
-			}
+			} else if(obj instanceof String) {
+				if(LangUtils.isValidURI(obj.toString())) {
+					table.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				}
+				else {
+					table.setCursor(Cursor.getDefaultCursor());
+				}
+			}	
 		}
 	}
 	
@@ -113,6 +120,10 @@ public class URIMouseAdapter extends TableRowMouseOverAdapter {
 				if(LangUtils.isValidURI(field.toString())) {
 					openURI(field.toString(), table);	
 				}				
+			} else if(obj instanceof String) {
+				if(LangUtils.isValidURI(obj.toString())) {
+					openURI(obj.toString(), table);	
+				}	
 			}
 		}
 	}
@@ -147,6 +158,10 @@ public class URIMouseAdapter extends TableRowMouseOverAdapter {
 				if(LangUtils.isValidURI(field.toString())) {
 					openURI(field.toString(), table);					
 				}				
+			} else if(obj instanceof String) {
+				if(LangUtils.isValidURI(obj.toString())) {
+					openURI(obj.toString(), table);	
+				}	
 			}
 		}
 	}	
