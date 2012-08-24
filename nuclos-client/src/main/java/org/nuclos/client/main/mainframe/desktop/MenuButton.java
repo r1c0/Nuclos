@@ -51,6 +51,7 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -71,7 +72,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Configurable(preConstruction=true)
 abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
-//	private static final Logger LOG = Logger.getLogger(MenuButton.class);
+	private static final Logger LOG = Logger.getLogger(MenuButton.class);
 	
 	public static final Color HOVER_COLOR = new Color(255, 255, 255, 50);
 	
@@ -92,6 +93,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
 	private JWindow popupWindow;
 	private JComponent popupContent;
+	private JPanel menuItemBackground;
 	
 	private final Color defaultBackroundColor;
 	
@@ -155,7 +157,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		jpnMenuItems.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent mev) {
-//				LOG.info("mouse over menu");
+				LOG.info("mouse over menu");
 			}
 
 			@Override
@@ -295,7 +297,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			return;
 		}
 		
-//		LOG.info("show menu");
+		LOG.info("show menu");
 		
 		updateMenuItemsPanel();
 		
@@ -308,8 +310,9 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		});
 		
 		split.setOpaque(false);
+		split.setBorder(BorderFactory.createEmptyBorder());
 		
-		final JPanel menuItemBackground = new JPanel(new BorderLayout(0,0)) {
+		menuItemBackground = new JPanel(new BorderLayout(0,0)) {
 			@Override
 			public void paint(Graphics g) {
 				if (itemResourceBackground == null) {
@@ -433,10 +436,14 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			return false;
 		}
 		mouseOverButton = buttonScreenBounds.contains(mousePoint);
-//		LOG.info(mousePoint + " --> " + buttonScreenBounds);
+		LOG.info(mousePoint + " --> " + buttonScreenBounds);
 		
 		if (popupContent != null) {
 			final Rectangle menuScreenBounds = popupContent.getBounds();
+			menuScreenBounds.height = 0;
+			for (final DefaultMenuItem mi : menuItems) {
+				menuScreenBounds.height += mi.getHeight();
+			}
 			menuScreenBounds.height-=2;
 			try {
 				menuScreenBounds.setLocation(popupContent.getLocationOnScreen());
@@ -444,16 +451,16 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 				return false;
 			}
 			mouseOverMenu = menuScreenBounds.contains(mousePoint);
-//			LOG.info(mousePoint + " --> " + menuScreenBounds);
+			LOG.info(mousePoint + " --> " + menuScreenBounds);
 		} else {
 			mouseOverMenu = false;
 		}
 
 		if (mouseOverButton || mouseOverMenu) {
-//			LOG.info("mouse is over");
+			LOG.info("mouse is over");
 			return true;
 		} else {
-//			LOG.info("mouse is NOT over");
+			LOG.info("mouse is NOT over");
 			return false; 
 		}
 	}
@@ -465,7 +472,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	private void hideMenu(MouseEvent mev) {
 		if (popupWindow != null) {
 			if (mev == null || (mev != null && !isMouseOver())) {
-//				LOG.info("hide menu");
+				LOG.info("hide menu");
 				popupWindow.setVisible(false);
 				popupWindow.removeAll();
 				popupWindow.dispose();
