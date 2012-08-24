@@ -401,10 +401,11 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		try {
 			validateUniqueConstraint(datasourcevo);
 
+			final String user = getCurrentUserName();
 			MasterDataVO dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
 
 			if (NuclosEntity.DATASOURCE.getEntityName().equals(entity)) {
-				if (DatasourceCache.getInstance().getPermission(dsAsMd.getIntId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
+				if (DatasourceCache.getInstance().getPermission(dsAsMd.getIntId(), user) != DatasourceVO.PERMISSION_READWRITE) {
 					throw new CommonPermissionException();
 				}
 			}
@@ -423,11 +424,11 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 
 			if (NuclosEntity.DYNAMICENTITY.getEntityName().equals(entity)) {
-				processChangingDynamicEntity((DynamicEntityVO) datasourcevo, (DynamicEntityVO) type.wrap(dsAsMd, getCurrentUserName()), true);
+				processChangingDynamicEntity((DynamicEntityVO) datasourcevo, (DynamicEntityVO) type.wrap(dsAsMd, user), true);
 			}
 
 			if (NuclosEntity.CHART.getEntityName().equals(entity)) {
-				processChangingChartEntity((ChartVO) datasourcevo, (ChartVO) type.wrap(dsAsMd, getCurrentUserName()), true);
+				processChangingChartEntity((ChartVO) datasourcevo, (ChartVO) type.wrap(dsAsMd, user), true);
 			}
 			
 			if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
@@ -443,7 +444,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			invalidateCaches(type);
 
 			dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
-			return type.wrap(dsAsMd, getCurrentUserName());
+			return type.wrap(dsAsMd, user);
 		}
 		catch (CommonRemoveException ex) {
 			throw new NuclosBusinessRuleException(ex);

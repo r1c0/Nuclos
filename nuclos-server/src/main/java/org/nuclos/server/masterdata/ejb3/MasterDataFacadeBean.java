@@ -827,10 +827,10 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			mpDependants = roccvoResult.getDependants(true);
 		}
 
+		final String user = getCurrentUserName();
 		if(nuclosEntity == NuclosEntity.ROLE
-			&& SecurityCache.getInstance().isReadAllowedForMasterData(
-				this.getCurrentUserName(), NuclosEntity.ROLE.getEntityName())) {
-			if(hasUserRole(this.getCurrentUserName(), mpDependants)) {
+			&& SecurityCache.getInstance().isReadAllowedForMasterData(user, NuclosEntity.ROLE.getEntityName())) {
+			if(hasUserRole(user, mpDependants)) {
 				helper.validateRoleDependants(mpDependants);
 
 				for(EntityObjectVO mdvo_dep : mpDependants.getData(NuclosEntity.ROLEMASTERDATA.getEntityName())) {
@@ -860,7 +860,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 //			NucletDalProvider.getInstance().getEntityObjectProcessor(sEntityName).insertOrUpdate(eo);
 //			result = mdvo.getId();
 //		} else {
-			result = helper.modifySingleRow(sEntityName, mdvo, this.getCurrentUserName(), this.getServerValidatesMasterDataValues());
+			result = helper.modifySingleRow(sEntityName, mdvo, user, this.getServerValidatesMasterDataValues());
 //		}
 
 		if (NuclosEntity.getByName(sEntityName) != null && mdvo.getResources() != null) {

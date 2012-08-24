@@ -490,7 +490,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			DbFrom t = query.from("T_MD_ROLE_USER").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID_T_MD_ROLE", Integer.class));
 			query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()));
-			return new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
+			return Collections.unmodifiableSet(new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))));
 		}
 		
 		private Set<Integer> readDynamicTasklistIds() {
@@ -502,7 +502,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			query.select(t1.baseColumn("INTID_T_MD_DYNAMICTASKLIST", Integer.class));
 			query.where(builder.and(builder.equal(t3.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()),
 					builder.isNotNull(t1.baseColumn("INTID_T_MD_DYNAMICTASKLIST", Integer.class))));
-			return new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
+			return Collections.unmodifiableSet(new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))));
 		}
 
 		private Set<String> readActions() {
@@ -516,7 +516,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				for(MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.ACTION).getAll()) {
 					actions.add(mdvo.getField("action", String.class));
 				}
-				return actions;
+				return Collections.unmodifiableSet(actions);
 			}
 
 			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -524,7 +524,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			DbFrom t = query.from("T_MD_ROLE_ACTION").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("STRACTIONNAME", String.class));
 			query.where(t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()));
-			return new HashSet<String>(dataBaseHelper.getDbAccess().executeQuery(query));
+			return Collections.unmodifiableSet(new HashSet<String>(dataBaseHelper.getDbAccess().executeQuery(query)));
 		}
 
 		public synchronized Map<Integer, Permission> getSubFormPermissions(String sEntityName) {

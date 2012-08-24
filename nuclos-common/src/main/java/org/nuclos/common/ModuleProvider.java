@@ -54,17 +54,22 @@ public abstract class ModuleProvider {
 	
 	//
 
-	private Map<Object, MasterDataVO> mpModulesById = CollectionUtils.newHashMap();
-	private Map<String, MasterDataVO> mpModulesByEntityName = CollectionUtils.newHashMap();
+	private Map<Object, MasterDataVO> mpModulesById;
+	private Map<String, MasterDataVO> mpModulesByEntityName;
+	
+	protected ModuleProvider() {
+	}
 
 	protected void setModules(Collection<MasterDataVO> collmdvoModules) {
-		mpModulesById = CollectionUtils.newHashMap();
-		mpModulesByEntityName = CollectionUtils.newHashMap();
+		final Map<Object, MasterDataVO> idMap = CollectionUtils.newHashMap();
+		final Map<String, MasterDataVO> nameMap = CollectionUtils.newHashMap();
 		LOG.info("Cleared entities in cache " + this);
 		for (MasterDataVO mdvo : collmdvoModules) {
-			mpModulesById.put(mdvo.getId(), mdvo);
-			mpModulesByEntityName.put(mdvo.getField("entity", String.class), mdvo);
+			idMap.put(mdvo.getId(), mdvo);
+			nameMap.put(mdvo.getField("entity", String.class), mdvo);
 		}
+		this.mpModulesById = idMap;
+		this.mpModulesByEntityName = nameMap;
 		LOG.info("Refilled entities in cache " + this);
 	}
 
