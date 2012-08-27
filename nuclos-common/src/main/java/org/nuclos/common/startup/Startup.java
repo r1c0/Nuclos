@@ -18,8 +18,11 @@ package org.nuclos.common.startup;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -40,6 +43,10 @@ public class Startup {
 	
 	public Startup() {
 		try {
+			final RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
+			final List<String> arguments = RuntimemxBean.getInputArguments();
+			LOG.info("server started with " + arguments);
+			
 			final String version = IOUtils.toString(getClasspathResource("nuclos-version.properties"), ENCODING);
 			LOG.info("version info\n:" + version);
 			final String info = IOUtils.toString(getClasspathResource("info.txt"), ENCODING);

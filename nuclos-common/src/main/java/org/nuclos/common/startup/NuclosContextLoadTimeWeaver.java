@@ -35,20 +35,21 @@ public class NuclosContextLoadTimeWeaver extends DefaultContextLoadTimeWeaver {
 		if (ws == null || !ws.booleanValue()) {
 			final String name = classLoader.getClass().getName();
 			if (name.indexOf("InstrumentableClassLoader") >= 0) {
-	            LOG.info("Found instrumentable class loader: " + name);
+				LOG.info("Found instrumentable class loader: " + name);
 				result = true;
 			}
-	        else {
-	            RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
-	            List<String> arguments = RuntimemxBean.getInputArguments();
-	            for (String s: arguments) {
-	                    if (s != null && s.indexOf("-javaagent:") >= 0) {
-	                            LOG.info("Found javaagent vm arg: " + s);
-	                            result = true;
-	                            break;
-	                    }
-	            }
-	        }
+			else {
+				final RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
+				final List<String> arguments = RuntimemxBean.getInputArguments();
+				LOG.info("client started with " + arguments);
+				for (String s : arguments) {
+					if (s != null && s.indexOf("-javaagent:") >= 0) {
+						LOG.info("Found javaagent vm arg: " + s);
+						result = true;
+						break;
+					}
+				}
+			}
 		}
 		LOG.info("enable LTW: " + result);
 		return result;
