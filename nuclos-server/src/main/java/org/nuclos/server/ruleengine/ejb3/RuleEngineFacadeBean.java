@@ -395,17 +395,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws CommonPermissionException
 	 */
 	public Collection<RuleVO> getAllRules() throws CommonPermissionException {
-		/*
-		 * HOT FIX (HACK) for http://support.novabit.de/browse/ACC-379 and http://support.novabit.de/browse/ACC-369
-		 * 
-		 * As reading the rules must be allowed for every login user (to fill the client RuleCache),
-		 * I omitted the read allowed check to circumvent the mentioned bugs. (tp)
-		 */
-		/*
 		if(!this.isInRole("UseManagementConsole")) {
 			this.checkReadAllowed(NuclosEntity.RULE, NuclosEntity.STATEMODEL);
 		}
-		 */
 		return RuleCache.getInstance().getAllRules();
 	}
 
