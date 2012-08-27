@@ -77,7 +77,7 @@ public class SearchFilterCache extends AbstractLocalUserCache implements Initial
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (!wasDeserialized() || !isValid())
+		//if (!wasDeserialized() || !isValid()) //@todo. this cache is user dependant. we need something like 'hasUserChanged(...)'
 			loadSearchFilters();	
 	}
 	
