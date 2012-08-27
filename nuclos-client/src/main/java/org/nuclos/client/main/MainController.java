@@ -1901,6 +1901,7 @@ public class MainController {
 		GeneratorActions.invalidateCache();
 		resourceCache.invalidate();
 		SearchFilterCache.getInstance().validate();
+		RuleCache.getInstance().invalidate(null);
 		GenericObjectDelegate.getInstance().invalidateCaches();
 		LocaleDelegate.getInstance().flush();
 		refreshMenus();
