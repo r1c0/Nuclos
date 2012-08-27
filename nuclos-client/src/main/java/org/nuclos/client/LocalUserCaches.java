@@ -261,7 +261,7 @@ public class LocalUserCaches extends java.util.Properties {
         }
         catch (Exception ex) {
             final String sMessage = "Lokale Caches konnten nicht gespeichert werden.";
-            throw new NuclosFatalException(sMessage, ex);
+            LOG.error(sMessage, ex);
         }
     }	// store
     
