@@ -84,7 +84,7 @@ public class RuleDelegate {
 			return ruleEngineFacadeRemote.getAllRules();
 		}	catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
-		} catch (CommonPermissionException e) {
+		} catch (CommonPermissionException e) {			
 			throw new CommonFatalException(e.getMessage(), e);
 		}
 	}
