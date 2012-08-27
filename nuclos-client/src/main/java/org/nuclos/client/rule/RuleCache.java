@@ -110,8 +110,9 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 	
 	// @PostConstruct
 	public final void afterPropertiesSet() {
-		if (!wasDeserialized() || !isValid())
+		if (!wasDeserialized() || !isValid()) {
 			invalidate(null);
+		}
 	}
 	
 	public final void initMessageListener() {
@@ -359,13 +360,24 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 			}
 			
 			if (sEntity == null || sEntity.equals(NuclosEntity.RULETRANSITION.getEntityName())) {
-				mpAllStateModelsForRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
+				mpAllStateModelsForRuleId.clear(); 
+				// we cannot recreate cache here. since we do not have an rule id in generatorActionVO
 				/*for (Integer aRuleId : mpAllRules.keySet()) {
 					getAllStateModelsForRuleId(aRuleId);
 				}*/
 			}
-		} catch (Exception e) {
-			LOG.info("error initializing rule cache. " + e.getMessage());
+		} 
+		/*
+		 * FIX for http://support.novabit.de/browse/ACC-379 and http://support.novabit.de/browse/ACC-369
+		 * that were introduced by changeset r8766 from 09.08.2012.
+		 * 
+		 * The change r8766 now always initialize the RuleCache (that has not be the case before).
+		 * 
+		 * The change at this place is intended to avoid crashing the client after log-in only
+		 * because the user hasn't the right to read rules.
+		 */
+		catch (Exception e) {
+			LOG.info("error initializing rule cache: " + e);
 		}
 	}
 }	// class RuleCache
