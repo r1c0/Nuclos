@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.util.Date;
 
@@ -74,6 +75,7 @@ import org.nuclos.server.common.ejb3.LocalUserCachesFacadeRemote;
  * @version 01.00.00
  */
 public class LocalUserCaches extends java.util.Properties {
+	
 	private static final Logger LOG = Logger.getLogger(LocalUserCaches.class);
 
 	private static final boolean bUseHashing = false;
@@ -89,6 +91,7 @@ public class LocalUserCaches extends java.util.Properties {
 		void setDeserialized(boolean blnDeserialized);
 		boolean isValid();
 	}
+	
 	public static abstract class AbstractLocalUserCache implements LocalUserCache {
 		boolean blnDeserialized = false;
 		@Override
@@ -104,6 +107,7 @@ public class LocalUserCaches extends java.util.Properties {
 			return wasDeserialized() && LocalUserCaches.getInstance().checkValid(this);
 		}
 	}
+	
 	private static LocalUserCaches singleton;
 
     public static synchronized LocalUserCaches getInstance() {
@@ -139,9 +143,9 @@ public class LocalUserCaches extends java.util.Properties {
 	            // The properties file doesn't exist. or other exception...
 	            // So we start with empty or default values.
 	        }
-	        catch (Exception ex) { 
+	        catch (GeneralSecurityException ex) { 
 	            // other exception... just log and start with empty or default values.
-	        	Log.warn("Lokale Caches konnten nicht geladen werden. "  + ex.getMessage());
+	        	LOG.warn("Lokale Caches konnten nicht geladen werden: "  + ex, ex);
 	        }
 	        finally {
 	        	if (in != null) {
@@ -150,7 +154,7 @@ public class LocalUserCaches extends java.util.Properties {
 	        }
     	}
     	catch (IOException e) {
-            final String sMessage = "Lokale Caches konnten nicht geladen werden.";
+            final String sMessage = "Lokale Caches konnten nicht geladen werden: " + e;
             throw new NuclosFatalException(sMessage, e);
     	}
     	singleton = this;
@@ -178,13 +182,13 @@ public class LocalUserCaches extends java.util.Properties {
 	        oos.close();
 	        
 	        return new String(new Base64().encode(bos.toByteArray()));
-		} catch (Exception e) {
+		} catch (IOException e) {
 			LOG.warn("Serializing cache '" + object.getClass().getSimpleName() + "' failed.", e);
 		}
 		return null;
 	}
 	
-	private Object deserialize(Class clazz) {
+	private Object deserialize(Class<?> clazz) {
 		try {
 			String in = LocalUserCaches.getInstance().getProperty(clazz.getName());
 			ByteArrayInputStream bis = new ByteArrayInputStream(new Base64().decode(in.getBytes()));
@@ -194,13 +198,17 @@ public class LocalUserCaches extends java.util.Properties {
 			ois.close();
 			
 			return obj;
-		} catch (Exception e) {
-			LOG.warn("Deserializing cache '" + clazz.getSimpleName() + "' failed. Maybe file information is missing.");
+		} 
+		catch (ClassNotFoundException e) {
+			LOG.warn("Deserializing cache '" + clazz.getSimpleName() + "' failed. Maybe file information is missing: " + e);
+		}
+		catch (IOException e) {
+			LOG.warn("Deserializing cache '" + clazz.getSimpleName() + "' failed. Maybe file information is missing: " + e);
 		}
 		return null;
 	}
 
-	public Object getObject(Class clazz) {
+	public Object getObject(Class<?> clazz) {
 		Object object = deserialize(clazz);
 		if (object instanceof LocalUserCache)
 			((LocalUserCache)object).setDeserialized(true);
@@ -218,12 +226,14 @@ public class LocalUserCaches extends java.util.Properties {
         try {
         	final BufferedOutputStream out;
 
-        	if (bUseEncryption)
+        	if (bUseEncryption) {
         		out = new BufferedOutputStream(
             		new CipherOutputStream(new FileOutputStream(this.getCachesFile()),
             				createCipher(Cipher.ENCRYPT_MODE, SecurityDelegate.getInstance().getCurrentApplicationInfoOnServer())));
-        	else
+        	}
+        	else {
         		out = new BufferedOutputStream(new FileOutputStream(this.getCachesFile()));
+        	}
             	
         	try {
             	storeObject(MetaDataClientProvider.getInstance());
@@ -250,18 +260,17 @@ public class LocalUserCaches extends java.util.Properties {
             
         	if (bUseHashing) {
 	            // get sha hash.
-	            try {
-	            	LocalUserProperties.getInstance().put(LOCALUSERCACHES_HASH, getHash());
-	            	LocalUserProperties.getInstance().store();
-				} catch (Exception e) {
-					// do nothing just log.
-					LOG.warn("Hash für Lokale Caches konnten nicht gespeichert werden. " + e.getMessage());
-				}
+            	LocalUserProperties.getInstance().put(LOCALUSERCACHES_HASH, getHash());
+            	LocalUserProperties.getInstance().store();
         	}
         }
-        catch (Exception ex) {
-            final String sMessage = "Lokale Caches konnten nicht gespeichert werden.";
-            throw new NuclosFatalException(sMessage, ex);
+        catch (GeneralSecurityException e) {
+            final String sMessage = "Lokale Caches konnten nicht gespeichert werden: " + e;
+            throw new NuclosFatalException(sMessage, e);
+        }
+        catch (IOException e) {
+            final String sMessage = "Lokale Caches konnten nicht gespeichert werden: " + e;
+            throw new NuclosFatalException(sMessage, e);
         }
     }	// store
     
@@ -281,19 +290,20 @@ public class LocalUserCaches extends java.util.Properties {
     	}
     }
     
-    private static Cipher createCipher(int mode, String password) throws Exception {
+    private static Cipher createCipher(int mode, String password) throws GeneralSecurityException {
         String alg = "PBEWithSHA1AndDESede"; //BouncyCastle has better algorithms
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(alg);
         SecretKey secretKey = keyFactory.generateSecret(keySpec);
 
         Cipher cipher = Cipher.getInstance("PBEWithSHA1AndDESede");
+        // TODO: A fixed salt doesn't help anything.
         cipher.init(mode, secretKey, new PBEParameterSpec("saltsalt".getBytes(), 2000));
 
         return cipher;
     }
     
-    private String getHash() throws Exception {
+    private String getHash() throws GeneralSecurityException, IOException {
     	MessageDigest md = MessageDigest.getInstance("SHA-256");
         FileInputStream fis = new FileInputStream(this.getCachesFile());
  
@@ -302,17 +312,17 @@ public class LocalUserCaches extends java.util.Properties {
         int nread = 0; 
         while ((nread = fis.read(dataBytes)) != -1) {
           md.update(dataBytes, 0, nread);
-        };
+        }
         byte[] mdbytes = md.digest();
  
         //convert the byte to hex format method 1
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mdbytes.length; i++) {
           sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
         }
  
         //convert the byte to hex format method 2
-        StringBuffer hexString = new StringBuffer();
+        StringBuilder hexString = new StringBuilder();
     	for (int i=0;i<mdbytes.length;i++) {
     	  hexString.append(Integer.toHexString(0xFF & mdbytes[i]));
     	}
