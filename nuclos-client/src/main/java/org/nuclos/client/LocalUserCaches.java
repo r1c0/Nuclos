@@ -277,8 +277,8 @@ public class LocalUserCaches extends java.util.Properties {
             LOG.error(sMessage, e);
         }
         catch (Exception ex) { 
-        	 final String sMessage = "Lokale Caches konnten nicht gespeichert werden: " + e;
-             LOG.error(sMessage, e);
+        	 final String sMessage = "Lokale Caches konnten nicht gespeichert werden: " + ex;
+             LOG.error(sMessage, ex);
         }
     }	// store
     
