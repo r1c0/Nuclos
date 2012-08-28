@@ -209,6 +209,9 @@ public class LocalUserCaches extends java.util.Properties {
 		catch (IOException e) {
 			LOG.warn("Deserializing cache '" + clazz.getSimpleName() + "' failed. Maybe file information is missing: " + e);
 		}
+		catch (Exception e) {
+			LOG.warn("Deserializing cache '" + clazz.getSimpleName() + "' failed. Maybe file information is missing.");
+		}
 		return null;
 	}
 
