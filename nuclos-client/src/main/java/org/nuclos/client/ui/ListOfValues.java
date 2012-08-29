@@ -671,8 +671,6 @@ public class ListOfValues extends JPanel {
 					ListOfValues.this.cbxQuickChooser.getSelectedItem() != null &&
 					ListOfValues.this.cbxQuickChooser.getSelectedItem() instanceof CollectableValueIdField) {
 					this.quickSearchSelectedListener.actionPerformed(((CollectableValueIdField) ListOfValues.this.cbxQuickChooser.getSelectedItem()));
-				} else {
-					this.quickSearchSelectedListener.actionPerformed(null);
 				}
 			}
 		}

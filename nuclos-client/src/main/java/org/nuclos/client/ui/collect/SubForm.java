@@ -119,6 +119,7 @@ import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
+import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
@@ -139,6 +140,7 @@ import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
@@ -1864,14 +1866,14 @@ public class SubForm extends JPanel
 	/**
 	 * Transfers the looked-up values.
 	 */
-	public static void transferLookedUpValues(Collectable clctSelected, SubFormTable subformtbl, boolean isSearchable, int iRow, Collection<TransferLookedUpValueAction> collTransferValueActions, boolean bSetInModel) {
+	public static void transferLookedUpValues(Collectable clctSelected, final SubFormTable subformtbl, final boolean isSearchable, int iRow, Collection<TransferLookedUpValueAction> collTransferValueActions, final boolean bSetInModel) {
 		if (isSearchable)
 			return; // do not transfer lookedUp values in search fields.
 		
 		// transfer the looked up values:
 		for (TransferLookedUpValueAction act : collTransferValueActions) {
 			final String sSourceFieldName = act.getSourceFieldName();
-			SubForm.SubFormTableModel subformtblmdl = subformtbl.getSubFormModel();
+			final SubForm.SubFormTableModel subformtblmdl = subformtbl.getSubFormModel();
 			final int iTargetColumn = subformtblmdl.findColumnByFieldName(act.getTargetComponentName());
 			if (iTargetColumn == -1) {
 				throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
@@ -1889,14 +1891,33 @@ public class SubForm extends JPanel
 				oValue = isSearchable ? getSearchConditionForValue(clctefTarget, clctfValue) : clctfValue;
 			}
 			
-			if (iRow < 0)
+			//if (iRow < 0)
 				iRow = subformtbl.getSelectedRow();
 			
 			if (iRow >= 0) {
 				if (bSetInModel && !isSearchable) {
 					CollectableComponentTableCellEditor editor = (CollectableComponentTableCellEditor)subformtbl.getCellEditor(iRow, subformtbl.convertColumnIndexToView(iTargetColumn));
-					if (editor != null)
-						editor.getCollectableComponent().setField((CollectableField)oValue);
+					if (editor != null) {
+						try {
+							CollectableField oldValue = editor.getCollectableComponent().getField();
+							editor.getCollectableComponent().setField((CollectableField)oValue);
+							
+							boolean bChanged = true;
+							if (oldValue == null) {
+								bChanged = oValue != null;
+							} else {
+								bChanged = !oldValue.equals((CollectableField)oValue, false);
+							}
+							if (!bChanged) {
+								// always invoke collectableFieldChangedInModel even if oldvalue equals newvalue.
+								CollectableComponent comp = editor.getCollectableComponent();
+								editor.collectableFieldChangedInModel(new CollectableComponentModelEvent(
+										comp.getModel(), (CollectableField)subformtblmdl.getValueAt(iRow, iTargetColumn), (CollectableField)oValue));
+							}
+						} catch (CollectableFieldFormatException e) {
+							// ignore this here.
+						}
+					}
 				}
 				subformtblmdl.setValueAt(oValue, iRow, iTargetColumn);
 			}
