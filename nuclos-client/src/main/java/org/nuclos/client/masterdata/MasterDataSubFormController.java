@@ -467,37 +467,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					CollectableEntityObject original = getCollectableTableModel().getCollectable(getJTable().getSelectedRow());
 					CollectableEntityObject clone = new CollectableEntityObject(original.getCollectableEntity(), original.getEntityObjectVO().copy());
 
-					// check whether the selected record has some dependant data
-					boolean hasDependantData = false;
-					if (hasChildSubForm()) {
-						for (MasterDataSubFormController mdsfctl : getChildSubFormController()) {
-							if (!mdsfctl.getCollectables().isEmpty()) {
-								hasDependantData = true;
-								break;
-							}
-						}
-					}
-
-					int result = JOptionPane.NO_OPTION;
-					if (hasDependantData) {
-						String sMessage = getSpringLocaleDelegate().getMessage(
-								"MasterDataSubFormController.2", "Der zu klonende Datensatz besitzt abh\u00e4ngige Unterformulardaten. Sollen diese auch geklont werden?");
-						result = JOptionPane.showConfirmDialog(getTab(), sMessage,
-								getSpringLocaleDelegate().getMessage("MasterDataSubFormController.1", "Datensatz klonen"), JOptionPane.YES_NO_OPTION);
-					}
-
 					try {
-						// add cloned data
-						CollectableEntityObject clctNew = insertNewRow(clone);
-						setParentId(clctNew, getParentId());
-						getCollectableTableModel().add(clctNew);
-
-						// clone and add dependant data
-						if (result == JOptionPane.YES_OPTION) {
-							cloneDependantData(original, clone);
-						}
-					}
-					catch (NuclosBusinessException e) {
+						cloneRow(original, clone);
+					} catch (NuclosBusinessException e) {
 						throw new CommonFatalException(e);
 					}
 					
@@ -506,6 +478,37 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		}
 	};
+	
+	protected void cloneRow(CollectableEntityObject original, CollectableEntityObject clone) throws NuclosBusinessException {
+		// check whether the selected record has some dependant data
+		boolean hasDependantData = false;
+		if (hasChildSubForm()) {
+			for (MasterDataSubFormController mdsfctl : getChildSubFormController()) {
+				if (!mdsfctl.getCollectables().isEmpty()) {
+					hasDependantData = true;
+					break;
+				}
+			}
+		}
+
+		int result = JOptionPane.NO_OPTION;
+		if (hasDependantData) {
+			String sMessage = getSpringLocaleDelegate().getMessage(
+					"MasterDataSubFormController.2", "Der zu klonende Datensatz besitzt abh\u00e4ngige Unterformulardaten. Sollen diese auch geklont werden?");
+			result = JOptionPane.showConfirmDialog(getTab(), sMessage,
+					getSpringLocaleDelegate().getMessage("MasterDataSubFormController.1", "Datensatz klonen"), JOptionPane.YES_NO_OPTION);
+		}
+		
+		// add cloned data
+		CollectableEntityObject clctNew = insertNewRow(clone);
+		setParentId(clctNew, getParentId());
+		getCollectableTableModel().add(clctNew);
+
+		// clone and add dependant data
+		if (result == JOptionPane.YES_OPTION) {
+			cloneDependantData(original, clone);
+		}
+	}
 
 	/**
 	 * clones the dependant data of the given original collectable recursively
