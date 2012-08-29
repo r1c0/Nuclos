@@ -96,6 +96,7 @@ import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.FocusActionListener;
 import org.nuclos.client.common.NuclosCollectableTextArea;
 import org.nuclos.client.common.SearchConditionSubFormController.SearchConditionTableModel;
+import org.nuclos.client.common.SearchConditionSubFormController.SearchConditionTableModelImpl;
 import org.nuclos.client.common.SubFormController.FocusListSelectionListener;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.scripting.ScriptEvaluator;
@@ -1864,6 +1865,9 @@ public class SubForm extends JPanel
 	 * Transfers the looked-up values.
 	 */
 	public static void transferLookedUpValues(Collectable clctSelected, SubFormTable subformtbl, boolean isSearchable, int iRow, Collection<TransferLookedUpValueAction> collTransferValueActions, boolean bSetInModel) {
+		if (isSearchable)
+			return; // do not transfer lookedUp values in search fields.
+		
 		// transfer the looked up values:
 		for (TransferLookedUpValueAction act : collTransferValueActions) {
 			final String sSourceFieldName = act.getSourceFieldName();
@@ -1889,9 +1893,10 @@ public class SubForm extends JPanel
 				iRow = subformtbl.getSelectedRow();
 			
 			if (iRow >= 0) {
-				if (bSetInModel) {
+				if (bSetInModel && !isSearchable) {
 					CollectableComponentTableCellEditor editor = (CollectableComponentTableCellEditor)subformtbl.getCellEditor(iRow, subformtbl.convertColumnIndexToView(iTargetColumn));
-					editor.getCollectableComponent().setField((CollectableField)oValue);
+					if (editor != null)
+						editor.getCollectableComponent().setField((CollectableField)oValue);
 				}
 				subformtblmdl.setValueAt(oValue, iRow, iTargetColumn);
 			}
