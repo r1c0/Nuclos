@@ -146,9 +146,13 @@ public class LocalUserCaches extends java.util.Properties {
 	            // other exception... just log and start with empty or default values.
 	        	LOG.warn("Lokale Caches konnten nicht geladen werden: "  + ex.getMessage());
 	        }
-	        catch (Exception ex) { 
+	        catch (IllegalArgumentException ex) { 
 	            // other exception... just log and start with empty or default values.
 	        	LOG.warn("Lokale Caches konnten nicht geladen werden: "  + ex.getMessage());
+	        }
+	        catch (Exception ex) { 
+	            // other exception... just log and start with empty or default values.
+	        	LOG.error("Lokale Caches konnten nicht geladen werden: "  + ex.getMessage(), ex);
 	        }
 	        finally {
 	        	if (in != null) {
