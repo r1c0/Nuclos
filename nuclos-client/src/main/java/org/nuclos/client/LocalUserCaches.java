@@ -43,7 +43,6 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.mortbay.log.Log;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LocaleDelegate;
@@ -145,11 +144,11 @@ public class LocalUserCaches extends java.util.Properties {
 	        }
 	        catch (GeneralSecurityException ex) { 
 	            // other exception... just log and start with empty or default values.
-	        	LOG.warn("Lokale Caches konnten nicht geladen werden: "  + ex, ex);
+	        	LOG.warn("Lokale Caches konnten nicht geladen werden: "  + ex.getMessage());
 	        }
 	        catch (Exception ex) { 
 	            // other exception... just log and start with empty or default values.
-	        	LOG.warn("Lokale Caches konnten nicht geladen werden: "  + ex, ex);
+	        	LOG.warn("Lokale Caches konnten nicht geladen werden: "  + ex.getMessage());
 	        }
 	        finally {
 	        	if (in != null) {
@@ -158,7 +157,7 @@ public class LocalUserCaches extends java.util.Properties {
 	        }
     	}
     	catch (IOException e) {
-            final String sMessage = "Lokale Caches konnten nicht geladen werden: " + e;
+            final String sMessage = "Lokale Caches konnten nicht geladen werden: " + e.getMessage();
             throw new NuclosFatalException(sMessage, e);
     	}
     	singleton = this;
