@@ -46,7 +46,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -106,7 +105,7 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.StandardXYSeriesLabelGenerator;
 import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
@@ -172,8 +171,6 @@ import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.admin.ParameterPanel;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.Chart.ChartFunction.CustomChartEditor;
-import org.nuclos.client.ui.collect.Chart.ChartFunction.JTabbedPanel;
 import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
@@ -214,6 +211,7 @@ public class Chart extends JPanel
 	public static final String PROPERTY_BORDER_COLOR = "borderColor";
 	public static final String PROPERTY_BORDER_VISIBLE = "borderVisible";
 	public static final String PROPERTY_COMBINED_PREFIXES = "combinedPrefixes";
+	public static final String PROPERTY_LEGEND_LABEL = "legendLabel";
 	public static final String PROPERTY_DOMAIN_COLUMN = "domainColumn";
 	public static final String PROPERTY_DOMAIN_LABEL = "domainLabel";
 	public static final String PROPERTY_DOMAIN_LABEL_FONT = "domainLabelFont";
@@ -2935,6 +2933,14 @@ public class Chart extends JPanel
 					}
 
 					xyPlot.setRenderer(i, renderer);
+					final String legendLabel = chart.getProperty(prefix + PROPERTY_LEGEND_LABEL, String.class, "");
+					renderer.setLegendItemLabelGenerator(
+				    	      new StandardXYSeriesLabelGenerator() {
+				    	    	  public String generateLabel(XYDataset dataset, int series) {
+				    	    		  return legendLabel;
+				    	    	  }
+				    	        }
+				    	    );
 					
 					if (cFunction == TimeSeriesChart) {
 						xyPlot.setDomainAxis(i, new DateAxis());
@@ -3024,7 +3030,7 @@ public class Chart extends JPanel
 						((XYPlot)jfreechart.getPlot()).addRangeMarker(marker2, Layer.BACKGROUND);
 					}
 				}
-
+				
 				xyPlot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 				ChartUtilities.applyCurrentTheme(jfreechart);
 			    
@@ -3192,6 +3198,108 @@ public class Chart extends JPanel
 		    }
 		}
 
+		static class DefaultLegendEditor extends CustomChartEditor implements ActionListener {
+
+			private final String prefix;
+		    private JTextField label;
+		    private Font labelFont;
+		    private PaintSample labelPaintSample;
+		    private JTextField labelFontField;
+		    protected ResourceBundle localizationResources
+		            = ResourceBundleWrapper.getBundle(
+		                    "org.jfree.chart.editor.LocalizationBundle");
+		    public DefaultLegendEditor(Chart chart) {
+		    	this(chart, "");
+		    }
+		    public DefaultLegendEditor(Chart chart, String prefix) {
+		    	setName(localizationResources.getString("Legend"));
+		    	
+		    	this.prefix = prefix;
+		    	
+		        this.labelFont = new Font("Dialog", 1, 12);
+		        this.labelPaintSample = new PaintSample(Color.DARK_GRAY);
+		        this.labelFont = new Font("Dialog", 1, 12);
+		        this.labelPaintSample = new PaintSample(Color.DARK_GRAY);
+
+		        setLayout(new BorderLayout());
+
+		        JPanel domain = new JPanel(new BorderLayout());
+		        domain.setBorder(
+		            BorderFactory.createTitledBorder(
+		                BorderFactory.createEtchedBorder(),
+		                localizationResources.getString("General")
+		            )
+		        );
+
+		        JPanel interior = new JPanel(new LCBLayout(5));
+		        interior.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		        interior.add(new JLabel(localizationResources.getString("Label")));
+		        this.label = new JTextField(chart.getProperty(prefix + Chart.PROPERTY_LEGEND_LABEL, String.class));
+		        interior.add(this.label);
+		        interior.add(new JPanel());
+
+		        interior.add(new JLabel(localizationResources.getString("Font")));
+		        this.labelFontField = new FontDisplayField(this.labelFont);
+		        interior.add(this.labelFontField);
+		        JButton b = new JButton(localizationResources.getString("Select..."));
+		        b.setActionCommand("SelectLabelFont");
+		        b.addActionListener(this);
+		        b.setEnabled(false);
+		        interior.add(b);
+
+		        interior.add(new JLabel(localizationResources.getString("Paint")));
+		        interior.add(this.labelPaintSample);
+		        b = new JButton(localizationResources.getString("Select..."));
+		        b.setActionCommand("SelectLabelPaint");
+		        b.addActionListener(this);
+		        b.setEnabled(false);
+		        interior.add(b);
+
+		        domain.add(interior);
+
+		        add(domain, BorderLayout.NORTH);
+		    }
+		    public void actionPerformed(ActionEvent event) {
+		        String command = event.getActionCommand();
+		        if (command.equals("SelectLabelFont")) {
+		            attemptLabelFontSelection();
+		        }
+		        else if (command.equals("SelectLabelPaint")) {
+		            attemptModifyLabelPaint();
+		        }
+			}
+		    private void attemptLabelFontSelection() {
+		        FontChooserPanel panel = new FontChooserPanel(this.labelFont);
+		        int result = JOptionPane.showConfirmDialog(this, panel,
+		            localizationResources.getString("Font_Selection"),
+		            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+		        if (result == JOptionPane.OK_OPTION) {
+		            this.labelFont = panel.getSelectedFont();
+		            this.labelFontField.setText(
+		                this.labelFont.getFontName() + " " + this.labelFont.getSize()
+		            );
+		        }
+		    }
+		    private void attemptModifyLabelPaint() {
+		        Color c;
+		        c = JColorChooser.showDialog(
+		            this, localizationResources.getString("Label_Color"), Color.blue
+		        );
+		        if (c != null) {
+		            this.labelPaintSample.setPaint(c);
+		        }
+		    }		    @Override
+		    public List<Pair<String, String>> applyChartProperties(JFreeChart chart) {
+				List<Pair<String, String>> result = new ArrayList<Pair<String,String>>();
+
+				result.add(new Pair<String, String>(prefix + Chart.PROPERTY_LEGEND_LABEL, "" + this.label.getText()));
+				//result.add(new Pair<String, String>(prefix + Chart.PROPERTY_LEGEND_LABEL_FONT, "" + Chart.fontToString(this.labelFont)));
+				//result.add(new Pair<String, String>(prefix + Chart.PROPERTY_LEGEND_LABEL_COLOR, "" + ((Color)this.labelPaintSample.getPaint()).getRGB()));
+		    	
+				return result;
+		    }
+		}
 		static class DefaultPlotMarkerEditor extends CustomChartEditor implements ActionListener {
 
 			private final String prefix;
@@ -3372,7 +3480,7 @@ public class Chart extends JPanel
 		                    "org.jfree.chart.editor.LocalizationBundle");
 
 			private final Object[] plotEditors;
-			private JTabbedPanel[] customPlotEditors;
+			private  Map<String, JTabbedPanel[]> customPlotEditors = new HashMap<String, JTabbedPanel[]>();
 
 		    public DefaultCombinedPlotEditor(Chart chart) {
 		    	Plot plot = chart.getChartPanel().getChart().getPlot();
@@ -3436,9 +3544,18 @@ public class Chart extends JPanel
 
 						// add custom editors.
 						ChartFunction cFunction = ChartFunction.valueOf(prefix.split("\\.")[0]);
-						customPlotEditors = cFunction.getCustomPlotEditorPanels(chart, prefix);
-						for (int j = 0; j < customPlotEditors.length; j++) {
-							JTabbedPanel customEditor = customPlotEditors[j];
+						JTabbedPanel[] cPlotEditors = cFunction.getCustomPlotEditorPanels(chart, prefix);
+						JTabbedPanel[] cPlotEditorsArray = new JTabbedPanel[cPlotEditors.length + 1];
+						for (int j = 0; j < cPlotEditors.length; j++) {
+							cPlotEditorsArray[j] = cPlotEditors[j];
+						}
+						DefaultLegendEditor legendEditor = new DefaultLegendEditor(chart, prefix);
+						cPlotEditorsArray[cPlotEditors.length] = 
+								new JTabbedPanel(legendEditor.getName(), legendEditor);
+						customPlotEditors.put(prefix, cPlotEditorsArray);
+						
+						for (int j = 0; j < cPlotEditorsArray.length; j++) {
+							JTabbedPanel customEditor = cPlotEditorsArray[j];
 							tabsAxis.add(customEditor.getTitle(), customEditor);
 						}
 						plotEditors[i] = new JPanel[] {domainAxisPropertyPanel, rangeAxisPropertyPanel};
@@ -3496,9 +3613,11 @@ public class Chart extends JPanel
 				}
 				
 				List<Pair<String, String>> result = new ArrayList<Pair<String,String>>();
-				for (int i = 0; i < customPlotEditors.length; i++) {
-					JTabbedPanel customEditor = customPlotEditors[i];
-					result.addAll(customEditor.applyChartProperties(chart));
+				for (JTabbedPanel[] cPlotEditors : customPlotEditors.values()) {
+					for (int i = 0; i < cPlotEditors.length; i++) {
+						JTabbedPanel customEditor = cPlotEditors[i];
+						result.addAll(customEditor.applyChartProperties(chart));
+					}
 				}
 				return result;
 			}
@@ -3686,7 +3805,7 @@ public class Chart extends JPanel
 		public static abstract class CustomChartEditor extends JPanel {
 			public abstract List<Pair<String, String>> applyChartProperties(JFreeChart chart);
 		}
-		public class JTabbedPanel extends JPanel {
+		public static class JTabbedPanel extends JPanel {
 			private String title;
 			private CustomChartEditor editor;
 			public JTabbedPanel(String title, CustomChartEditor editor) {
