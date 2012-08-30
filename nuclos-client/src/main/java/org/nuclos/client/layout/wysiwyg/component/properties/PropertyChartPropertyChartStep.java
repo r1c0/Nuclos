@@ -100,7 +100,14 @@ public class PropertyChartPropertyChartStep extends PanelWizardStep implements C
 				new ChartTypeEntry("LineChart", Icons.getInstance().getLineChartIcon(), ChartFunction.LineChart.name()),
 				new ChartTypeEntry("PieChart", Icons.getInstance().getPieChartIcon(), ChartFunction.PieChart.name()),
 				new ChartTypeEntry("TimeSeriesChart", Icons.getInstance().getTimeSeriesChartIcon(), ChartFunction.TimeSeriesChart.name()),
-				new ChartTypeEntry("XYSeriesChart", Icons.getInstance().getXYSeriesChartIcon(), ChartFunction.XYSeriesChart.name())
+				new ChartTypeEntry("XYSeriesChart", Icons.getInstance().getXYSeriesChartIcon(), ChartFunction.XYSeriesChart.name()),
+				new ChartTypeEntry("XYBarChart", Icons.getInstance().getXYBarChartIcon(), ChartFunction.XYBarChart.name()),
+				new ChartTypeEntry("XYScatterChart", Icons.getInstance().getScatterChartIcon(), ChartFunction.XYScatterChart.name()),
+				new ChartTypeEntry("XYStepChart", Icons.getInstance().getStepChartIcon(), ChartFunction.XYStepChart.name()),
+				new ChartTypeEntry("DialChart", Icons.getInstance().getDialChartIcon(), ChartFunction.DialChart.name()),
+				new ChartTypeEntry("DialChart2", Icons.getInstance().getDial2ChartIcon(), ChartFunction.DialChart2.name()),
+				new ChartTypeEntry("CombinedCategoryChart", Icons.getInstance().getCombinedCategoryChartIcon(), ChartFunction.CombinedCategoryChart.name()),
+				new ChartTypeEntry("CombinedXYChart", Icons.getInstance().getCombinedXYChartIcon(), ChartFunction.CombinedXYChart.name())
 			};
 	}
 
@@ -170,16 +177,6 @@ public class PropertyChartPropertyChartStep extends PanelWizardStep implements C
 		});
         list.setVisibleRowCount(-1);
         
-        chartFunction = getChartFunction();
-        if (chartFunction != null) {
-        	for (int i = 0; i < chartTypes.length; i++) {
-				if (chartTypes[i].getType().equals(chartFunction.name())) {
-		        	list.setSelectedValue(chartTypes[i], true);
-		        	break;
-				}
-			}
-        }
-        
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));
         listScroller.setAlignmentX(LEFT_ALIGNMENT);
@@ -207,6 +204,15 @@ public class PropertyChartPropertyChartStep extends PanelWizardStep implements C
 	
 	@Override
 	public Component getView() {
+        chartFunction = getChartFunction();
+        if (chartFunction != null) {
+        	for (int i = 0; i < chartTypes.length; i++) {
+				if (chartTypes[i].getType().equals(chartFunction.name())) {
+		        	list.setSelectedValue(chartTypes[i], true);
+		        	break;
+				}
+			}
+        }
 		return panel;
 	}
 	

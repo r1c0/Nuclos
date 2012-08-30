@@ -858,6 +858,34 @@ public class Icons {
 		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/xyseries.png");
 	}
 	
+	public ImageIcon getXYBarChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/xybarchart.png");
+	}
+	
+	public ImageIcon getStepChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/stepchart.png");
+	}
+	
+	public ImageIcon getScatterChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/scatterchart.png");
+	}
+	
+	public ImageIcon getDialChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/dial1.png");
+	}
+	
+	public ImageIcon getDial2ChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/dial2.png");
+	}
+	
+	public ImageIcon getCombinedCategoryChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/combined-category.png");
+	}
+	
+	public ImageIcon getCombinedXYChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/combined-xy.png");
+	}
+	
 	public Icon getStateViewStateNormal(String type) {
 		if (type.equals("first"))
 			return this.getIconByName("state-view-state-normal-first");

@@ -19,10 +19,13 @@ package org.nuclos.client.layout.wysiwyg.component.properties;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.editor.ChartEditor;
@@ -31,8 +34,10 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyChartProperty.PropertyEditorChartProperty.PropertyStaticModel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGProperty;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropertySet;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.Chart;
 import org.nuclos.client.ui.collect.Chart.ChartFunction;
+import org.nuclos.client.ui.collect.Chart.ChartFunction.JTabbedPanel;
 import org.nuclos.common.collection.Pair;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.PanelWizardStep;
@@ -58,6 +63,8 @@ public class PropertyChartPropertyGeneralStep extends PanelWizardStep implements
 	
 	private ChartEditor chartEditor;
 	
+	private JTabbedPanel[] jTabbedPanels = new JTabbedPanel[0];
+	
 	public PropertyChartPropertyGeneralStep(WYSIYWYGProperty wysiywygProperty) {
 		this.wysiywygProperty = wysiywygProperty;
 	}
@@ -76,6 +83,29 @@ public class PropertyChartPropertyGeneralStep extends PanelWizardStep implements
 		
 		chart = model.getChart();		
 		chartEditor = ChartEditorManager.getChartEditor(chart);
+
+		try {
+			jTabbedPanels = getChartFunction().getCustomPlotEditorPanels(model.getWYSIWYGChart().getChart());
+			if (jTabbedPanels.length > 0) {
+				JPanel editor = (JPanel)UIUtils.findFirstJComponent((JPanel)chartEditor, (Class)Class.forName("org.jfree.chart.editor.DefaultPlotEditor"));
+				JTabbedPane tab = (JTabbedPane)UIUtils.findFirstJComponent(editor, JTabbedPane.class);
+				
+				if (getChartFunction().isCombinedChart())
+					tab.removeAll();
+				
+				for (int i = 0; i < jTabbedPanels.length; i++) {
+					JTabbedPanel jTabbedPanel = jTabbedPanels[i];
+					if (getChartFunction().isCombinedChart())
+						tab.insertTab(jTabbedPanel.getTitle(), null, jTabbedPanel, null, i);
+					else
+						tab.insertTab(jTabbedPanel.getTitle(), null, jTabbedPanel, null, tab.getTabCount());
+				}
+				tab.setSelectedIndex(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			// ignore.
+		}
 	}
 	
 	@Override
@@ -113,8 +143,14 @@ public class PropertyChartPropertyGeneralStep extends PanelWizardStep implements
 	@Override
 	public void applyState() throws InvalidStateException {
 		chartEditor.updateChart(chart);
+
+		List<Pair<String, String>> chartProperties = new ArrayList<Pair<String,String>>();
+		for (int i = 0; i < jTabbedPanels.length; i++) {
+			JTabbedPanel jTabbedPanel = jTabbedPanels[i];
+			chartProperties.addAll(jTabbedPanel.applyChartProperties(chart));
+		}
 		
-		List<Pair<String, String>> chartProperties = getChartFunction().getChartProperties(chart);
+		chartProperties.addAll(getChartFunction().getChartProperties(model.getWYSIWYGChart().getChart(), chart));
 		for (Pair<String, String> property : chartProperties) {
 			wysiywygProperty.addWYSIYWYGPropertySet(
 					new WYSIYWYGPropertySet(property.getX(), property.getY()));

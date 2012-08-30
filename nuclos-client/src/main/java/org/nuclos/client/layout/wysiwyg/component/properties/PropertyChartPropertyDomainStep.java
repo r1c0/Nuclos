@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,10 +33,15 @@ import java.util.NoSuchElementException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.text.TabExpander;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
@@ -143,6 +150,8 @@ public class PropertyChartPropertyDomainStep extends PanelWizardStep implements 
 			return comboBox;
 		}
 	}
+	private Icon iconAdd = new ImageIcon(this.getClass().getClassLoader().getResource("org/nuclos/client/layout/wysiwyg/editor/ui/panels/icons/list-add.png"));
+	private Icon iconRemove = new ImageIcon(this.getClass().getClassLoader().getResource("org/nuclos/client/layout/wysiwyg/editor/ui/panels/icons/list-remove.png"));
 
 	private JFreeChart chart;
 	private WYSIWYGChart wysiwygChart;
@@ -159,13 +168,92 @@ public class PropertyChartPropertyDomainStep extends PanelWizardStep implements 
 		this.wysiywygProperty = wysiywygProperty;
 	}
 	
+	private StringBuffer combinedPrefixes = new StringBuffer("");
+	
 	@Override
 	public void prepare() {
 		super.prepare();
 		
 		chart = model.getChart();
 		wysiwygChart = model.getWYSIWYGChart();
+		
+		String sPrefix = getChartProperty(Chart.PROPERTY_COMBINED_PREFIXES);
+		combinedPrefixes = (sPrefix == null) ? new StringBuffer("") : new StringBuffer(sPrefix);
+		
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
 
+        final ChartFunction chartFunction = getChartFunction();
+		
+		if (!chartFunction.isCombinedChart()) {
+			panel.add(getPanelComponent(chartFunction, ""), BorderLayout.CENTER);
+		} else {
+			JPanel editorType = new JPanel();
+			editorType.setLayout(new GridBagLayout());
+			JLabel propTypeValue = new JLabel(
+					//SpringLocaleDelegate.getInstance().getMessage("wysiwyg.chart.wizard.domain.value",
+							"Diagramm hinzufügen:"/*)*/);
+			editorType.add(propTypeValue, new GridBagConstraints(0, 0, 0, 1, 1D, 1D,
+					GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 0, 0), 0, 0));
+			final JComboBox propTypeComponent = new JComboBox(chartFunction.getCombinedChartFunctions());
+			editorType.add(propTypeComponent, new GridBagConstraints(0, 1, 1, 1, 1D, 1D,
+					GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 15, 0), 0, 0));
+
+			final JTabbedPane tabbedPane = new JTabbedPane();
+
+			JButton removeButton = new JButton(iconRemove);
+			removeButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (tabbedPane.getSelectedIndex() != -1) {
+						PanelComponent panelComponent
+							= (PanelComponent)tabbedPane.getSelectedComponent();
+						combinedPrefixes = new StringBuffer(
+								combinedPrefixes.toString().replaceAll(panelComponent.prefix, ""));
+						tabbedPane.remove(panelComponent);
+					}
+				}
+			});
+			editorType.add(removeButton, new GridBagConstraints(1, 1, 1, 1, 1D, 1D,
+					GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+			JButton addButton = new JButton(iconAdd);
+			addButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					ChartFunction cFunction = (ChartFunction)propTypeComponent.getSelectedItem();
+					String prefix = cFunction.name() + "." + (Math.random() + "").replaceAll("\\.", "") + ":";
+
+					combinedPrefixes.append(prefix);
+					tabbedPane.add(cFunction.name(), getPanelComponent(cFunction, prefix));
+					tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+				}
+			});
+			editorType.add(addButton, new GridBagConstraints(2, 1, 1, 1, 1D, 1D,
+					GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+
+			String[] prefixes = combinedPrefixes.toString().split(":");
+			for (String prefix : prefixes) {
+				if (prefix.length() > 0) {
+					try {
+						ChartFunction cFunction = ChartFunction.valueOf(prefix.split("\\.")[0]);
+						tabbedPane.add(cFunction.name(), getPanelComponent(cFunction, prefix + ":"));
+					} catch (Exception e) {
+						// ignore.
+					}
+				}
+			}
+		    panel.add(editorType, BorderLayout.NORTH);
+		    panel.add(tabbedPane, BorderLayout.CENTER);
+		}		
+	}
+	private class PanelComponent extends JScrollPane {
+		final String prefix;
+		public PanelComponent(String prefix, Component view) {
+			super(view);
+			this.prefix = prefix;
+		}
+	}
+	private PanelComponent getPanelComponent(ChartFunction chartFunction, String prefix) {
 		JPanel editor = new JPanel();
 		editor.setLayout(new BorderLayout());
 		
@@ -183,14 +271,17 @@ public class PropertyChartPropertyDomainStep extends PanelWizardStep implements 
 		valueEditor.add(propValue, new GridBagConstraints(0, 0, 1, 1, 1D, 1D,
 				GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 0, 0), 0, 0));
 		
-		ChartColumn[] valueColumns = getChartFunction().getValueColumnDesc();
+		ChartColumn[] valueColumns = chartFunction.getValueColumnDesc();
 		for (int i = 0; i < valueColumns.length; i++) {
 			ChartColumn chartColumn = valueColumns[i];
-			PropertyEditorString propValueEditor = new PropertyEditorString(chartColumn.property,
+			PropertyEditorString propValueEditor = new PropertyEditorString(prefix + chartColumn.property,
 					getFittingFieldnames(wysiwygChart.getEntityName(), chartColumn.clazz), true);
-			propValueEditor.setEditorValue(getChartProperty(chartColumn.property));
-			valueEditor.add(propValueEditor.getComponent(true), new GridBagConstraints(0, i+1, 1, 1, 1D, 1D,
-					GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));	
+			propValueEditor.setEditorValue(getChartProperty(prefix + chartColumn.property));
+			valueEditor.add(new JLabel(SpringLocaleDelegate.getInstance().getMessage("wysiwyg.chart.wizard.domain.column."
+					+ chartColumn.property, "")), new GridBagConstraints(0, i+1, 1, 1, 1D, 1D,
+							GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));
+			valueEditor.add(propValueEditor.getComponent(true), new GridBagConstraints(1, i+1, 1, 1, 1D, 1D,
+					GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(10, -152, 10, 0), 0, 0));	
 			propertyEditorList.add(propValueEditor);
 		}
 		
@@ -203,41 +294,43 @@ public class PropertyChartPropertyDomainStep extends PanelWizardStep implements 
                 "Domain"
             )
         );
-		
-		JLabel propDomain = new JLabel(
-				SpringLocaleDelegate.getInstance().getMessage("wysiwyg.chart.wizard.domain.compare",
-						"Geben Sie hier die Spalte(n) für die vergleichenden Werte an:"));
-		domainEditor.add(propDomain, new GridBagConstraints(0, 0, 1, 1, 1D, 1D,
-				GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 0, 0), 0, 0));
-		
-		int glue = 185;
-		ChartColumn[] domainColumns = getChartFunction().getDomainColumnDesc();
-		for (int i = 0; i < domainColumns.length; i++) {
-			ChartColumn chartColumn = domainColumns[i];
-			PropertyEditorString propDomainEditor = new PropertyEditorString(chartColumn.property,
-					getFittingFieldnames(wysiwygChart.getEntityName(), chartColumn.clazz), true);
-			propDomainEditor.setEditorValue(getChartProperty(chartColumn.property));
-			domainEditor.add(propDomainEditor.getComponent(true), new GridBagConstraints(0, i+1, 1, 1, 1D, 1D,
-					GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));
-			glue -= propDomainEditor.comboBox.getPreferredSize().height + 10; // add size.
-			propertyEditorList.add(propDomainEditor);
-		}
 
-		domainEditor.add(new JPanel(), new GridBagConstraints(0,3, 1, 1, 1D, 1D,
-				GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(glue < 0 ? 0: glue, 0, 10, 0), 0, 0));
-
-		editor.add(domainEditor, BorderLayout.CENTER);
-		
+		ChartColumn[] domainColumns = chartFunction.getDomainColumnDesc();
+		if (domainColumns.length > 0) {
+			JLabel propDomain = new JLabel(
+					SpringLocaleDelegate.getInstance().getMessage("wysiwyg.chart.wizard.domain.compare",
+							"Geben Sie hier die Spalte(n) für die vergleichenden Werte oder weitere Angaben an:"));
+			domainEditor.add(propDomain, new GridBagConstraints(0, 0, 1, 1, 1D, 1D,
+					GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 0, 0), 0, 0));
+			
+			int glue = 185;
+			for (int i = 0; i < domainColumns.length; i++) {
+				ChartColumn chartColumn = domainColumns[i];
+				PropertyEditorString propDomainEditor = new PropertyEditorString(prefix + chartColumn.property,
+						getFittingFieldnames(wysiwygChart.getEntityName(), chartColumn.clazz), true);
+				propDomainEditor.setEditorValue(getChartProperty(prefix + chartColumn.property));
+				domainEditor.add(new JLabel(SpringLocaleDelegate.getInstance().getMessage("wysiwyg.chart.wizard.domain.column."
+						+ chartColumn.property, "")), new GridBagConstraints(0, i+1, 1, 1, 1D, 1D,
+								GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));
+				domainEditor.add(propDomainEditor.getComponent(true), new GridBagConstraints(1, i+1, 1, 1, 1D, 1D,
+						GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(10, -240, 10, 0), 0, 0));
+				glue -= propDomainEditor.comboBox.getPreferredSize().height + 10; // add size.
+				propertyEditorList.add(propDomainEditor);
+			}
+	
+			domainEditor.add(new JPanel(), new GridBagConstraints(0,3, 1, 1, 1D, 1D,
+					GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(glue < 0 ? 0: glue, 0, 10, 0), 0, 0));
+	
+			editor.add(domainEditor, BorderLayout.CENTER);
+		}		
         editor.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        
-        JScrollPane pnlScroller = new JScrollPane(editor);
+
+        PanelComponent pnlScroller = new PanelComponent(prefix, editor);
         pnlScroller.setPreferredSize(new Dimension(250, 80));
         pnlScroller.setAlignmentX(LEFT_ALIGNMENT);
-        
-        panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(pnlScroller, BorderLayout.CENTER);
-		
+        pnlScroller.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+
+        return pnlScroller;
 	}
 	
 	@Override
@@ -297,12 +390,16 @@ public class PropertyChartPropertyDomainStep extends PanelWizardStep implements 
 		
 		wysiwygChart.setChartFromProperties(); // refresh
 		
-		List<Pair<String, String>> chartProperties = getChartFunction().getChartProperties(wysiwygChart.getChart().getChartPanel().getChart());
+		List<Pair<String, String>> chartProperties = getChartFunction().getChartProperties(wysiwygChart.getChart(), wysiwygChart.getChart().getChartPanel().getChart());
 		for (Pair<String, String> property : chartProperties) {
-			if (!property.getX().equals(Chart.PROPERTY_TYPE))
+			if (!property.getX().equals(Chart.PROPERTY_TYPE)) {
 				wysiywygProperty.addWYSIYWYGPropertySet(
 						new WYSIYWYGPropertySet(property.getX(), property.getY()));
+			}
 		}
+		wysiywygProperty.addWYSIYWYGPropertySet(
+				new WYSIYWYGPropertySet(Chart.PROPERTY_COMBINED_PREFIXES, combinedPrefixes.toString()));
+		
 		WYSIWYGChart c = new WYSIWYGChart(wysiwygChart.getMetaInformation());
 		c.setProperties(wysiwygChart.getProperties());
 		c.setProperties(new PropertyChartProperty(c, wysiywygProperty));

@@ -43,6 +43,8 @@ public class WYSIYWYGPropertySet implements Cloneable, Serializable{
 	public WYSIYWYGPropertySet(String propertyName, String propertyValue){
 		this.propertyName = propertyName;
 		this.propertyValue = propertyValue;
+		if (propertyValue != null && propertyValue.equals("null"))
+			this.propertyValue = null;
 	}
 
 	/**
@@ -75,6 +77,8 @@ public class WYSIYWYGPropertySet implements Cloneable, Serializable{
 	 * @param propertyValue to set
 	 */
 	public void setPropertyValue(String propertyValue) {
+		if (propertyValue != null && propertyValue.equals("null"))
+			System.err.println("sss");
 		this.propertyValue = propertyValue;
 	}
 	
@@ -85,7 +89,7 @@ public class WYSIYWYGPropertySet implements Cloneable, Serializable{
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		String cloneName = new String(propertyName);
-		String cloneValue = new String(propertyValue);
+		String cloneValue = new String(propertyValue == null ? "" : propertyValue);
 		WYSIYWYGPropertySet clonedProperty = new WYSIYWYGPropertySet(cloneName, cloneValue);
 		
 		return clonedProperty ;

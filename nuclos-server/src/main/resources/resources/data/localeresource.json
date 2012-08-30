@@ -33721,6 +33721,81 @@
     "text": "Diagramm speichern"
   },
   {
+    "resourceID": "Chart.dialChart.properties.ticksInner",
+    "locale": "i-default",
+    "text": "Ticks (Inner)"
+  },
+  {
+    "resourceID": "Chart.dialChart.properties.ticksInner",
+    "locale": "en",
+    "text": "Ticks (Inner)"
+  },
+  {
+    "resourceID": "Chart.dialChart.properties.ticksInner",
+    "locale": "de",
+    "text": "Markierungen (Innen)"
+  },
+  {
+    "resourceID": "Chart.dialChart.properties.ticksOuter",
+    "locale": "i-default",
+    "text": "Ticks (Outer)"
+  },
+  {
+    "resourceID": "Chart.dialChart.properties.ticksOuter",
+    "locale": "en",
+    "text": "Ticks (Outer)"
+  },
+  {
+    "resourceID": "Chart.dialChart.properties.ticksOuter",
+    "locale": "de",
+    "text": "Markierungen (Aussen)"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.name",
+    "locale": "i-default",
+    "text": "Plot Marker"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.name",
+    "locale": "en",
+    "text": "Plot Marker"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.name",
+    "locale": "de",
+    "text": "Plot Markierungen"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.domain",
+    "locale": "i-default",
+    "text": "Plot Marker (domain)"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.domain",
+    "locale": "en",
+    "text": "Plot Marker (domain)"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.name",
+    "locale": "de",
+    "text": "Plot Markierungen (Rubrik)"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.range",
+    "locale": "i-default",
+    "text": "Plot Marker (range)"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.range",
+    "locale": "en",
+    "text": "Plot Marker (range)"
+  },
+  {
+    "resourceID": "Chart.plotMarker.properties.range",
+    "locale": "de",
+    "text": "Plot Markierungen (Wertebereich)"
+  },
+  {
     "resourceID": "MetaDataCollectController.9",
     "locale": "i-default",
     "text": "The field ''DB-column'' of the subform may not be empty"
@@ -54137,12 +54212,212 @@
   {
     "resourceID": "wysiwyg.chart.wizard.domain.compare",
     "locale": "i-default",
-    "text": "Select the column(s), that contains the comparable values of the chart:"
+    "text": "Select the column(s), that contains the comparable values or other values of the chart:"
   },
   {
     "resourceID": "wysiwyg.chart.wizard.domain.compare",
     "locale": "de",
-    "text": "Geben Sie hier die Spalte(n) für die vergleichenden Werte an:"
+    "text": "Geben Sie hier die Spalte(n) für die vergleichenden Werte oder weitere Angaben an:"
+  },  
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.valueColumn",
+    "locale": "i-default",
+    "text": "value column:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.valueColumn",
+    "locale": "de",
+    "text": "Wertespalte:"
+  },  
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.valueColumnInner",
+    "locale": "i-default",
+    "text": "value column (inner):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.valueColumnInner",
+    "locale": "de",
+    "text": "Wertespalte (Innen):"
+  },  
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.valueColumnOuter",
+    "locale": "i-default",
+    "text": "value column (outer):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.valueColumnOuter",
+    "locale": "de",
+    "text": "Wertespalte (Aussen):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.barWidthColumn",
+    "locale": "i-default",
+    "text": "bar width:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.barWidthColumn",
+    "locale": "de",
+    "text": "Breite eines Bars:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.domainColumn",
+    "locale": "i-default",
+    "text": "domain axis:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.domainColumn",
+    "locale": "de",
+    "text": "Rubrikachse:"
+  },  
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeColumn",
+    "locale": "i-default",
+    "text": "range axis:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeColumn",
+    "locale": "de",
+    "text": "Werteachse:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeLowerBoundColumn",
+    "locale": "i-default",
+    "text": "lower bound column:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeLowerBoundColumn",
+    "locale": "de",
+    "text": "Wertebereich untere Grenze:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeUpperBoundColumn",
+    "locale": "i-default",
+    "text": "upper bound column:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeUpperBoundColumn",
+    "locale": "de",
+    "text": "Wertebereich obere Grenze:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMajorTickIncrementColumn",
+    "locale": "i-default",
+    "text": "major tick increment:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMajorTickIncrementColumn",
+    "locale": "de",
+    "text": "Markierungsschrittgröße:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeLowerBoundColumnInner",
+    "locale": "i-default",
+    "text": "lower bound column (inner):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeLowerBoundColumnInner",
+    "locale": "de",
+    "text": "Wertebereich untere Grenze (Innen):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeUpperBoundColumnInner",
+    "locale": "i-default",
+    "text": "upper bound column (inner):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeUpperBoundColumnInner",
+    "locale": "de",
+    "text": "Wertebereich obere Grenze (Innen):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMajorTickIncrementColumnInner",
+    "locale": "i-default",
+    "text": "major tick increment (inner):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMajorTickIncrementColumnInner",
+    "locale": "de",
+    "text": "Markierungsschrittgröße (Innen):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeLowerBoundColumnOuter",
+    "locale": "i-default",
+    "text": "lower bound column (outer):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeLowerBoundColumnOuter",
+    "locale": "de",
+    "text": "Wertebereich untere Grenze (Aussen):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeUpperBoundColumnOuter",
+    "locale": "i-default",
+    "text": "upper bound column (outer):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeUpperBoundColumnOuter",
+    "locale": "de",
+    "text": "Wertebereich obere Grenze (Aussen):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMajorTickIncrementColumnOuter",
+    "locale": "i-default",
+    "text": "major tick increment (outer):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMajorTickIncrementColumnOuter",
+    "locale": "de",
+    "text": "Markierungsschrittgröße (Aussen):"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeStandardRangeColumn",
+    "locale": "i-default",
+    "text": "standard range mark:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeStandardRangeColumn",
+    "locale": "de",
+    "text": "Markierung - Standardbereich:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMediumRangeColumn",
+    "locale": "i-default",
+    "text": "medium range mark:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMediumRangeColumn",
+    "locale": "de",
+    "text": "Markierung - Mediumbereich:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeCriticalRangeColumn",
+    "locale": "i-default",
+    "text": "critical range mark:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeCriticalRangeColumn",
+    "locale": "de",
+    "text": "Markierung - kritischer Bereich:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.domainMarkerColumn",
+    "locale": "i-default",
+    "text": "plot mark domain:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.domainMarkerColumn",
+    "locale": "de",
+    "text": "Plot Markierung - Rubrik:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMarkerColumn",
+    "locale": "i-default",
+    "text": "plot mark range:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.column.rangeMarkerColumn",
+    "locale": "de",
+    "text": "Plot Markierung - Wertebereich:"
   },
   {
     "resourceID": "action.RelationEditor",
