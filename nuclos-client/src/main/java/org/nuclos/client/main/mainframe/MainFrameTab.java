@@ -42,6 +42,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -485,7 +486,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 *
 	 * @param lockableUI
 	 */
-	protected void lockLayer(LockableUI lockableUI) {
+	protected void lockLayer(final LockableUI lockableUI) {
 		if (layer != null) {
 			LayerUI<?> currentUI = layer.getUI();
 			if (currentUI instanceof LockableUI && ((LockableUI) currentUI).isLocked()) {
@@ -494,6 +495,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 			layer.setUI(lockableUI);
 			lockableUI.setLocked(true);
+			layer.paintImmediately(layer.getBounds());
 		}
 	}
 
@@ -507,6 +509,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				((LockableUI) currentUI).setLocked(false);
 			}
 			try {layer.setUI(null);} catch (Exception ignore) {}
+			layer.paintImmediately(layer.getBounds());
 		}
 	}
 
