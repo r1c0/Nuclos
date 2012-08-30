@@ -46,6 +46,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -333,9 +334,9 @@ public class Chart extends JPanel
 									vDomainAxis == null || vDomainAxis.getValue() == null ? "" : (Comparable)vDomainAxis.getValue(), vRangeAxis == null || vRangeAxis.getValue() == null ? "" : (Comparable)vRangeAxis.getValue());
 								
 								CollectableField vDomainMarker= cDomainMarker == null ? null : (CollectableField)tbl.getValueAt(j, cDomainMarker.getModelIndex());
-								chart.setProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (String)vDomainMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (String)vDomainMarker.getValue()); 
 								CollectableField vRangeMarker= cRangeMarker == null ? null : (CollectableField)tbl.getValueAt(j, cRangeMarker.getModelIndex());
-								chart.setProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
 							}
 						}
 				} catch (Exception e) {
@@ -383,7 +384,7 @@ public class Chart extends JPanel
 				
 				// set markers.
 				Comparable cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, String.class);
-				if (cDomainMarker != null) {
+				if (cDomainMarker != null && cDomainMarker instanceof Comparable) {
 					CategoryMarker marker1 = new CategoryMarker(cDomainMarker, Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setDrawAsLine(true);
 					marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
@@ -412,9 +413,9 @@ public class Chart extends JPanel
 					}
 					((CategoryPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
 				}
-				Number cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
-				if (cRangeMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+				if (cRangeMarker != null && cRangeMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_RANGE_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -426,7 +427,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((CategoryPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);	
@@ -538,9 +539,9 @@ public class Chart extends JPanel
 								}
 
 								CollectableField vDomainMarker= cDomainMarker == null ? null : (CollectableField)tbl.getValueAt(j, cDomainMarker.getModelIndex());
-								chart.setProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
 								CollectableField vRangeMarker= cRangeMarker == null ? null : (CollectableField)tbl.getValueAt(j, cRangeMarker.getModelIndex());
-								chart.setProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
 							}
 							
 							xyseriesdataset.addSeries(xySeries);
@@ -603,8 +604,8 @@ public class Chart extends JPanel
 				
 				// set markers.
 				Number cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, Number.class);
-				if (cDomainMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				if (cDomainMarker != null && cDomainMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -616,7 +617,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);
@@ -630,9 +631,9 @@ public class Chart extends JPanel
 					}
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
 				}
-				Number cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
-				if (cRangeMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+				if (cRangeMarker != null && cRangeMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_RANGE_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -644,7 +645,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);	
@@ -832,9 +833,9 @@ public class Chart extends JPanel
 									vDomainAxis == null || vDomainAxis.getValue() == null ? "" : (Comparable)vDomainAxis.getValue(), vRangeAxis == null || vRangeAxis.getValue() == null ? "" : (Comparable)vRangeAxis.getValue());
 
 								CollectableField vDomainMarker= cDomainMarker == null ? null : (CollectableField)tbl.getValueAt(j, cDomainMarker.getModelIndex());
-								chart.setProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (String)vDomainMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (String)vDomainMarker.getValue()); 
 								CollectableField vRangeMarker= cRangeMarker == null ? null : (CollectableField)tbl.getValueAt(j, cRangeMarker.getModelIndex());
-								chart.setProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
 							}
 						}
 				} catch (Exception e) {
@@ -881,7 +882,7 @@ public class Chart extends JPanel
 				
 				// set markers.
 				Comparable cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, String.class);
-				if (cDomainMarker != null) {
+				if (cDomainMarker != null && cDomainMarker instanceof Number) {
 					CategoryMarker marker1 = new CategoryMarker(cDomainMarker, Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setDrawAsLine(true);
 					marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
@@ -910,9 +911,9 @@ public class Chart extends JPanel
 					}
 					((CategoryPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
 				}
-				Number cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
-				if (cRangeMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+				if (cRangeMarker != null && cRangeMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_RANGE_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -924,7 +925,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((CategoryPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);	
@@ -1008,13 +1009,13 @@ public class Chart extends JPanel
 							for (int j = 0; j < tbl.getRowCount(); j++) {
 								CollectableField vValue = (CollectableField)tbl.getValueAt(j, cValue.getModelIndex());
 								CollectableField vXAxis = (CollectableField)tbl.getValueAt(j, cDomainAxis.getModelIndex());
-								if (vXAxis != null || vXAxis.getValue() != null)
+								if (vXAxis != null && vXAxis.getValue() != null)
 									timeSeries.addOrUpdate(new Second((Date)vXAxis.getValue()), vValue == null || vValue.getValue() == null ? 0 : (Number)vValue.getValue());
 		
 								CollectableField vDomainMarker= cDomainMarker == null ? null : (CollectableField)tbl.getValueAt(j, cDomainMarker.getModelIndex());
-								chart.setProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Date)vDomainMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Date)vDomainMarker.getValue()); 
 								CollectableField vRangeMarker= cRangeMarker == null ? null : (CollectableField)tbl.getValueAt(j, cRangeMarker.getModelIndex());
-								chart.setProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
 							}
 							
 							timeseriesdataset.addSeries(timeSeries);
@@ -1063,9 +1064,9 @@ public class Chart extends JPanel
 				}
 				
 				// set markers.
-				Date cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, Date.class);
-				if (cDomainMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cDomainMarker.getTime(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, Date.class);
+				if (cDomainMarker != null && cDomainMarker instanceof Date) {
+					ValueMarker marker1 = new ValueMarker(((Date)cDomainMarker).getTime(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1077,7 +1078,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cDomainMarker.getTime(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Date)cDomainMarker).getTime(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Date.class).format(null, cDomainMarker));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);
@@ -1091,9 +1092,9 @@ public class Chart extends JPanel
 					}
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
 				}
-				Number cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
-				if (cRangeMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+				if (cRangeMarker != null && cRangeMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_RANGE_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1105,7 +1106,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);	
@@ -1207,9 +1208,9 @@ public class Chart extends JPanel
 								xySeries.addOrUpdate(vXAxis == null || vXAxis.getValue() == null ? 0 : (Number)vXAxis.getValue(),vValue == null || vValue.getValue() == null ? 0 : (Number)vValue.getValue());
 
 								CollectableField vDomainMarker= cDomainMarker == null ? null : (CollectableField)tbl.getValueAt(j, cDomainMarker.getModelIndex());
-								chart.setProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
 								CollectableField vRangeMarker= cRangeMarker == null ? null : (CollectableField)tbl.getValueAt(j, cRangeMarker.getModelIndex());
-								chart.setProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
 							}
 							
 							xyseriesdataset.addSeries(xySeries);
@@ -1264,8 +1265,8 @@ public class Chart extends JPanel
 
 				// set markers.
 				Number cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, Number.class);
-				if (cDomainMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				if (cDomainMarker != null && cDomainMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1277,7 +1278,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);
@@ -1291,9 +1292,9 @@ public class Chart extends JPanel
 					}
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
 				}
-				Number cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
-				if (cRangeMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+				if (cRangeMarker != null && cRangeMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_RANGE_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1305,7 +1306,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);	
@@ -1410,9 +1411,9 @@ public class Chart extends JPanel
 								xySeries.addOrUpdate(vXAxis == null || vXAxis.getValue() == null ? 0 : (Number)vXAxis.getValue(),vValue == null || vValue.getValue() == null ? 0 : (Number)vValue.getValue());
 
 								CollectableField vDomainMarker= cDomainMarker == null ? null : (CollectableField)tbl.getValueAt(j, cDomainMarker.getModelIndex());
-								chart.setProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
 								CollectableField vRangeMarker= cRangeMarker == null ? null : (CollectableField)tbl.getValueAt(j, cRangeMarker.getModelIndex());
-								chart.setProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
 							}
 							
 							xyseriesdataset.addSeries(xySeries);
@@ -1467,8 +1468,8 @@ public class Chart extends JPanel
 
 				// set markers.
 				Number cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, Number.class);
-				if (cDomainMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				if (cDomainMarker != null && cDomainMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1480,7 +1481,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);
@@ -1494,9 +1495,9 @@ public class Chart extends JPanel
 					}
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
 				}
-				Number cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
-				if (cRangeMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+				if (cRangeMarker != null && cRangeMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_RANGE_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1508,7 +1509,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);	
@@ -1613,9 +1614,9 @@ public class Chart extends JPanel
 								xySeries.addOrUpdate(vXAxis == null || vXAxis.getValue() == null ? 0 : (Number)vXAxis.getValue(),vValue == null || vValue.getValue() == null ? 0 : (Number)vValue.getValue());
 
 								CollectableField vDomainMarker= cDomainMarker == null ? null : (CollectableField)tbl.getValueAt(j, cDomainMarker.getModelIndex());
-								chart.setProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, vDomainMarker == null || vDomainMarker.getValue() == null ? "" : (Number)vDomainMarker.getValue()); 
 								CollectableField vRangeMarker= cRangeMarker == null ? null : (CollectableField)tbl.getValueAt(j, cRangeMarker.getModelIndex());
-								chart.setProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
+								chart.setProperty(prefix + PROPERTY_RANGE_MARKER_COLUMN_VALUE, vRangeMarker == null || vRangeMarker.getValue() == null ? "" : (Number)vRangeMarker.getValue()); 
 							}
 							
 							xyseriesdataset.addSeries(xySeries);
@@ -1677,8 +1678,8 @@ public class Chart extends JPanel
 
 				// set markers.
 				Number cDomainMarker = chart.getProperty(PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, Number.class);
-				if (cDomainMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				if (cDomainMarker != null && cDomainMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1690,7 +1691,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cDomainMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);
@@ -1704,9 +1705,9 @@ public class Chart extends JPanel
 					}
 					((XYPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
 				}
-				Number cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
-				if (cRangeMarker != null) {
-					ValueMarker marker1 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+				Object cRangeMarker = chart.getProperty(PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+				if (cRangeMarker != null && cRangeMarker instanceof Number) {
+					ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker1.setLabel(chart.getProperty(PROPERTY_RANGE_MARKER_LABEL, String.class));
 					marker1.setLabelFont(new Font("Dialog", 0, 11));
 					marker1.setLabelPaint(Color.DARK_GRAY);
@@ -1718,7 +1719,7 @@ public class Chart extends JPanel
 					}
 					marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
 					((XYPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
-					ValueMarker marker2 = new ValueMarker(cRangeMarker.doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+					ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
 					marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
 					marker2.setLabelFont(new Font("Dialog", 0, 11));
 					marker2.setLabelPaint(Color.DARK_GRAY);	
@@ -2694,8 +2695,11 @@ public class Chart extends JPanel
 				if (jfreechart.getPlot() == null || !(jfreechart.getPlot() instanceof CategoryPlot))
 					return jfreechart;
 
-				categoryPlot.setRangeGridlinesVisible(true);
-				categoryPlot.setDomainGridlinesVisible(true);
+				// set properties for category plot
+				((CategoryPlot)jfreechart.getPlot()).setOrientation(
+						chart.getProperty(PROPERTY_PLOT_ORIENTATION, String.class, PlotOrientation.HORIZONTAL.toString())
+							.equals(PlotOrientation.VERTICAL.toString()) ? PlotOrientation.VERTICAL : PlotOrientation.HORIZONTAL);
+
 				String combinedPrefixes = chart.getProperty(PROPERTY_COMBINED_PREFIXES, String.class);
 				String[] prefixes = combinedPrefixes.split(":");
 				for (int i = 0; i < prefixes.length; i++) {
@@ -2735,17 +2739,73 @@ public class Chart extends JPanel
 					if (!((CategoryPlot)jfreechart.getPlot()).getRangeAxis(i).isAutoRange()) {
 						((CategoryPlot)jfreechart.getPlot()).getRangeAxis(i).setLowerBound(chart.getProperty(prefix + PROPERTY_RANGE_LOWERBOUND, Double.class, 0D));
 						((CategoryPlot)jfreechart.getPlot()).getRangeAxis(i).setUpperBound(chart.getProperty(prefix + PROPERTY_RANGE_UPPERBOUND, Double.class, 0D));
-					}				
+					}
+					
+					// set markers.
+					Comparable cDomainMarker = chart.getProperty(prefix + ":" + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, String.class);
+					if (cDomainMarker != null && cDomainMarker instanceof Comparable) {
+						CategoryMarker marker1 = new CategoryMarker(cDomainMarker, Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker1.setDrawAsLine(true);
+						marker1.setLabel(chart.getProperty(PROPERTY_DOMAIN_MARKER_LABEL, String.class));
+						marker1.setLabelFont(new Font("Dialog", 0, 11));
+						marker1.setLabelPaint(Color.DARK_GRAY);
+						if (((CategoryPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.VERTICAL) {
+							marker1.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+						} else {
+							marker1.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker1.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+						}
+						marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
+						((CategoryPlot)jfreechart.getPlot()).addDomainMarker(marker1, Layer.BACKGROUND);
+						CategoryMarker marker2 = new CategoryMarker(cDomainMarker, Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker2.setDrawAsLine(true);
+						marker2.setLabel("" + marker2.getKey());
+						marker2.setLabelFont(new Font("Dialog", 0, 11));
+						marker2.setLabelPaint(Color.DARK_GRAY);
+						if (((CategoryPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.VERTICAL) {
+							marker2.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(15D, 5D, 2D, 5D));
+						} else {
+							marker2.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker2.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(-25D, 5D, 2D, 5D));
+						}
+						((CategoryPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
+					}
+					Object cRangeMarker = chart.getProperty(prefix + ":" + PROPERTY_RANGE_MARKER_COLUMN_VALUE, Number.class);
+					if (cRangeMarker != null && cRangeMarker instanceof Number) {
+						ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker1.setLabel(chart.getProperty(prefix + PROPERTY_RANGE_MARKER_LABEL, String.class));
+						marker1.setLabelFont(new Font("Dialog", 0, 11));
+						marker1.setLabelPaint(Color.DARK_GRAY);
+						if (((CategoryPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.HORIZONTAL) {
+							marker1.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+						} else {
+							marker1.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker1.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+						}
+						marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
+						((CategoryPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
+						ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
+						marker2.setLabelFont(new Font("Dialog", 0, 11));
+						marker2.setLabelPaint(Color.DARK_GRAY);	
+						if (((CategoryPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.HORIZONTAL) {
+							marker2.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(15D, 5D, 2D, 5D));
+						} else {
+							marker2.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker2.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(-25D, 5D, 2D, 5D));
+						}
+						((CategoryPlot)jfreechart.getPlot()).addRangeMarker(marker2, Layer.BACKGROUND);
+					}
 				}
+				
 				categoryPlot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 				ChartUtilities.applyCurrentTheme(jfreechart);
 			    
 				setCommonChartProperties(chart, jfreechart);
-
-				// set properties for category plot
-				((CategoryPlot)jfreechart.getPlot()).setOrientation(
-						chart.getProperty(PROPERTY_PLOT_ORIENTATION, String.class, PlotOrientation.HORIZONTAL.toString())
-							.equals(PlotOrientation.VERTICAL.toString()) ? PlotOrientation.VERTICAL : PlotOrientation.HORIZONTAL);
 				
 				return jfreechart;
 			}
@@ -2848,6 +2908,11 @@ public class Chart extends JPanel
 				if (jfreechart.getPlot() == null || !(jfreechart.getPlot() instanceof XYPlot))
 					return jfreechart;
 				
+				// set properties for xy plot
+				((XYPlot)jfreechart.getPlot()).setOrientation(
+						chart.getProperty(PROPERTY_PLOT_ORIENTATION, String.class, PlotOrientation.HORIZONTAL.toString())
+							.equals(PlotOrientation.VERTICAL.toString()) ? PlotOrientation.VERTICAL : PlotOrientation.HORIZONTAL);
+
 				String combinedPrefixes = chart.getProperty(PROPERTY_COMBINED_PREFIXES, String.class);
 				String[] prefixes = combinedPrefixes.split(":");
 				for (int i = 0; i < prefixes.length; i++) {
@@ -2871,12 +2936,10 @@ public class Chart extends JPanel
 
 					xyPlot.setRenderer(i, renderer);
 					
-					if (cFunction == XYBarChart
-							|| cFunction == XYSeriesChart
-							|| cFunction == XYScatterChart) {
-						xyPlot.setDomainAxis(i, new NumberAxis());
-					} else if (cFunction == TimeSeriesChart) {
+					if (cFunction == TimeSeriesChart) {
 						xyPlot.setDomainAxis(i, new DateAxis());
+					} else {
+						xyPlot.setDomainAxis(i, new NumberAxis());
 					}
 					xyPlot.setRangeAxis(i, new NumberAxis());
 					xyPlot.mapDatasetToRangeAxis(i, i);
@@ -2884,34 +2947,88 @@ public class Chart extends JPanel
 					xyPlot.setDataset(i, (XYDataset)datasets[i]);
 					
 					// set properties for domain axis
-					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setLabel(chart.getProperty(PROPERTY_DOMAIN_LABEL, String.class));
-					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setLabelFont(chart.getProperty(PROPERTY_DOMAIN_LABEL_FONT, Font.class));
-					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setLabelPaint(chart.getProperty(PROPERTY_DOMAIN_LABEL_COLOR, Color.class, Color.BLACK));
-					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setTickLabelFont(chart.getProperty(PROPERTY_DOMAIN_TICK_LABELS_FONT, Font.class));
-					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setTickLabelsVisible(chart.getProperty(PROPERTY_DOMAIN_TICK_LABELS_VISIBLE, Boolean.class, Boolean.TRUE));
-					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setTickMarksVisible(chart.getProperty(PROPERTY_DOMAIN_TICK_MARKS_VISIBLE, Boolean.class, Boolean.TRUE));
+					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setLabel(chart.getProperty(prefix + PROPERTY_DOMAIN_LABEL, String.class));
+					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setLabelFont(chart.getProperty(prefix + PROPERTY_DOMAIN_LABEL_FONT, Font.class));
+					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setLabelPaint(chart.getProperty(prefix + PROPERTY_DOMAIN_LABEL_COLOR, Color.class, Color.BLACK));
+					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setTickLabelFont(chart.getProperty(prefix + PROPERTY_DOMAIN_TICK_LABELS_FONT, Font.class));
+					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setTickLabelsVisible(chart.getProperty(prefix + PROPERTY_DOMAIN_TICK_LABELS_VISIBLE, Boolean.class, Boolean.TRUE));
+					((XYPlot)jfreechart.getPlot()).getDomainAxis(i).setTickMarksVisible(chart.getProperty(prefix + PROPERTY_DOMAIN_TICK_MARKS_VISIBLE, Boolean.class, Boolean.TRUE));
 					// set properties for range axis
-					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLabel(chart.getProperty(PROPERTY_RANGE_LABEL, String.class));
-					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLabelFont(chart.getProperty(PROPERTY_RANGE_LABEL_FONT, Font.class));
-					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLabelPaint(chart.getProperty(PROPERTY_RANGE_LABEL_COLOR, Color.class, Color.BLACK));
-					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setTickLabelFont(chart.getProperty(PROPERTY_RANGE_TICK_LABELS_FONT, Font.class));
-					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setTickLabelsVisible(chart.getProperty(PROPERTY_RANGE_TICK_LABELS_VISIBLE, Boolean.class, Boolean.TRUE));
-					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setTickMarksVisible(chart.getProperty(PROPERTY_RANGE_TICK_MARKS_VISIBLE, Boolean.class, Boolean.TRUE));
-					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setAutoRange(chart.getProperty(PROPERTY_RANGE_AUTORANGE, Boolean.class, Boolean.TRUE));
+					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLabel(chart.getProperty(prefix + PROPERTY_RANGE_LABEL, String.class));
+					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLabelFont(chart.getProperty(prefix + PROPERTY_RANGE_LABEL_FONT, Font.class));
+					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLabelPaint(chart.getProperty(prefix + PROPERTY_RANGE_LABEL_COLOR, Color.class, Color.BLACK));
+					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setTickLabelFont(chart.getProperty(prefix + PROPERTY_RANGE_TICK_LABELS_FONT, Font.class));
+					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setTickLabelsVisible(chart.getProperty(prefix + PROPERTY_RANGE_TICK_LABELS_VISIBLE, Boolean.class, Boolean.TRUE));
+					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setTickMarksVisible(chart.getProperty(prefix + PROPERTY_RANGE_TICK_MARKS_VISIBLE, Boolean.class, Boolean.TRUE));
+					((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setAutoRange(chart.getProperty(prefix + PROPERTY_RANGE_AUTORANGE, Boolean.class, Boolean.TRUE));
 					if (!((XYPlot)jfreechart.getPlot()).getRangeAxis(i).isAutoRange()) {
-						((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLowerBound(chart.getProperty(PROPERTY_RANGE_LOWERBOUND, Double.class, 0D));
-						((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setUpperBound(chart.getProperty(PROPERTY_RANGE_UPPERBOUND, Double.class, 0D));
+						((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setLowerBound(chart.getProperty(prefix + PROPERTY_RANGE_LOWERBOUND, Double.class, 0D));
+						((XYPlot)jfreechart.getPlot()).getRangeAxis(i).setUpperBound(chart.getProperty(prefix + PROPERTY_RANGE_UPPERBOUND, Double.class, 0D));
+					}
+					
+					// set markers.
+					Object cDomainMarker = chart.getProperty(prefix + ":" + PROPERTY_DOMAIN_MARKER_COLUMN_VALUE, Number.class);
+					if (cDomainMarker != null && cDomainMarker instanceof Number) {
+						ValueMarker marker1 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker1.setLabel(chart.getProperty(prefix + PROPERTY_DOMAIN_MARKER_LABEL, String.class));
+						marker1.setLabelFont(new Font("Dialog", 0, 11));
+						marker1.setLabelPaint(Color.DARK_GRAY);
+						if (((XYPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.VERTICAL) {
+							marker1.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+						} else {
+							marker1.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker1.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+						}
+						marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
+						((XYPlot)jfreechart.getPlot()).addDomainMarker(marker1, Layer.BACKGROUND);
+						ValueMarker marker2 = new ValueMarker(((Number)cDomainMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
+						marker2.setLabelFont(new Font("Dialog", 0, 11));
+						marker2.setLabelPaint(Color.DARK_GRAY);
+						if (((XYPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.VERTICAL) {
+							marker2.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(15D, 5D, 2D, 5D));
+						} else {
+							marker2.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker2.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(-25D, 5D, 2D, 5D));
+						}
+						((XYPlot)jfreechart.getPlot()).addDomainMarker(marker2, Layer.BACKGROUND);
+					}
+					Object cRangeMarker = chart.getProperty(prefix + ":" + PROPERTY_RANGE_MARKER_COLUMN_VALUE, Double.class);
+					if (cRangeMarker != null && cRangeMarker instanceof Number) {
+						ValueMarker marker1 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker1.setLabel(chart.getProperty(prefix + PROPERTY_RANGE_MARKER_LABEL, String.class));
+						marker1.setLabelFont(new Font("Dialog", 0, 11));
+						marker1.setLabelPaint(Color.DARK_GRAY);
+						if (((XYPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.HORIZONTAL) {
+							marker1.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+						} else {
+							marker1.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker1.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+						}
+						marker1.setLabelOffset(new RectangleInsets(2D, 5D, 2D, 5D));
+						((XYPlot)jfreechart.getPlot()).addRangeMarker(marker1, Layer.BACKGROUND);
+						ValueMarker marker2 = new ValueMarker(((Number)cRangeMarker).doubleValue(), Color.LIGHT_GRAY, new BasicStroke(1.0F));
+						marker2.setLabel("" + CollectableFieldFormat.getInstance(Double.class).format("#,##0.00", marker2.getValue()));
+						marker2.setLabelFont(new Font("Dialog", 0, 11));
+						marker2.setLabelPaint(Color.DARK_GRAY);	
+						if (((XYPlot)jfreechart.getPlot()).getOrientation() == PlotOrientation.HORIZONTAL) {
+							marker2.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(15D, 5D, 2D, 5D));
+						} else {
+							marker2.setLabelAnchor(RectangleAnchor.RIGHT);
+							marker2.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+							marker2.setLabelOffset(new RectangleInsets(-25D, 5D, 2D, 5D));
+						}
+						((XYPlot)jfreechart.getPlot()).addRangeMarker(marker2, Layer.BACKGROUND);
 					}
 				}
+
 				xyPlot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 				ChartUtilities.applyCurrentTheme(jfreechart);
 			    
 				setCommonChartProperties(chart, jfreechart);
-
-				// set properties for xy plot
-				((XYPlot)jfreechart.getPlot()).setOrientation(
-						chart.getProperty(PROPERTY_PLOT_ORIENTATION, String.class, PlotOrientation.HORIZONTAL.toString())
-							.equals(PlotOrientation.VERTICAL.toString()) ? PlotOrientation.VERTICAL : PlotOrientation.HORIZONTAL);
 
 				return jfreechart;
 			}
@@ -2936,22 +3053,22 @@ public class Chart extends JPanel
 					}
 					
 					// set properties for domain axis
-					result.add(new Pair<String, String>(Chart.PROPERTY_DOMAIN_LABEL, "" + ((XYPlot)chart.getPlot()).getDomainAxis(i).getLabel()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_DOMAIN_LABEL_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getDomainAxis(i).getLabelFont())));
-					result.add(new Pair<String, String>(Chart.PROPERTY_DOMAIN_LABEL_COLOR, "" + ((Color)((XYPlot)chart.getPlot()).getDomainAxis(i).getLabelPaint()).getRGB()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_DOMAIN_TICK_LABELS_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getDomainAxis(i).getTickLabelFont())));
-					result.add(new Pair<String, String>(Chart.PROPERTY_DOMAIN_TICK_LABELS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getDomainAxis(i).isTickLabelsVisible()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_DOMAIN_TICK_MARKS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getDomainAxis(i).isTickMarksVisible()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_DOMAIN_LABEL, "" + ((XYPlot)chart.getPlot()).getDomainAxis(i).getLabel()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_DOMAIN_LABEL_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getDomainAxis(i).getLabelFont())));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_DOMAIN_LABEL_COLOR, "" + ((Color)((XYPlot)chart.getPlot()).getDomainAxis(i).getLabelPaint()).getRGB()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_DOMAIN_TICK_LABELS_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getDomainAxis(i).getTickLabelFont())));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_DOMAIN_TICK_LABELS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getDomainAxis(i).isTickLabelsVisible()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_DOMAIN_TICK_MARKS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getDomainAxis(i).isTickMarksVisible()));
 					// set properties for range axis
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_LABEL, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).getLabel()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_LABEL_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getRangeAxis(i).getLabelFont())));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_LABEL_COLOR, "" + ((Color)((XYPlot)chart.getPlot()).getRangeAxis(i).getLabelPaint()).getRGB()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_TICK_LABELS_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getRangeAxis(i).getTickLabelFont())));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_TICK_LABELS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).isTickLabelsVisible()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_TICK_MARKS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).isTickMarksVisible()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_AUTORANGE, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).isAutoRange()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_LOWERBOUND, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).getLowerBound()));
-					result.add(new Pair<String, String>(Chart.PROPERTY_RANGE_UPPERBOUND, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).getUpperBound()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_LABEL, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).getLabel()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_LABEL_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getRangeAxis(i).getLabelFont())));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_LABEL_COLOR, "" + ((Color)((XYPlot)chart.getPlot()).getRangeAxis(i).getLabelPaint()).getRGB()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_TICK_LABELS_FONT, "" + fontToString(((XYPlot)chart.getPlot()).getRangeAxis(i).getTickLabelFont())));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_TICK_LABELS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).isTickLabelsVisible()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_TICK_MARKS_VISIBLE, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).isTickMarksVisible()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_AUTORANGE, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).isAutoRange()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_LOWERBOUND, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).getLowerBound()));
+					result.add(new Pair<String, String>(prefix + Chart.PROPERTY_RANGE_UPPERBOUND, "" + ((XYPlot)chart.getPlot()).getRangeAxis(i).getUpperBound()));
 				}
 				
 				return result;
@@ -3321,8 +3438,8 @@ public class Chart extends JPanel
 						ChartFunction cFunction = ChartFunction.valueOf(prefix.split("\\.")[0]);
 						customPlotEditors = cFunction.getCustomPlotEditorPanels(chart, prefix);
 						for (int j = 0; j < customPlotEditors.length; j++) {
-							JTabbedPanel customEditor = customPlotEditors[i];
-							tabsAxis.add(customEditor.getName(), customEditor);
+							JTabbedPanel customEditor = customPlotEditors[j];
+							tabsAxis.add(customEditor.getTitle(), customEditor);
 						}
 						plotEditors[i] = new JPanel[] {domainAxisPropertyPanel, rangeAxisPropertyPanel};
 						
@@ -3374,16 +3491,16 @@ public class Chart extends JPanel
 							rangeAxisEditorInstanceMethod.invoke(((JPanel[])plotEditors[i])[1], rangeAxis);
 			            }
 					} catch (Exception e) {
-						e.printStackTrace();
 						// ignore...
 					}	
 				}
 				
+				List<Pair<String, String>> result = new ArrayList<Pair<String,String>>();
 				for (int i = 0; i < customPlotEditors.length; i++) {
 					JTabbedPanel customEditor = customPlotEditors[i];
-					customEditor.applyChartProperties(chart);
+					result.addAll(customEditor.applyChartProperties(chart));
 				}
-				return Collections.EMPTY_LIST;
+				return result;
 			}
 		}
 		static class DefaultCombinedPlotAppearanceEditor extends CustomChartEditor implements ActionListener {
@@ -3643,6 +3760,15 @@ public class Chart extends JPanel
 			
 			final Plot plot = jfreechart.getPlot();
 	        plot.setBackgroundPaint(chart.getProperty(PROPERTY_PLOT_BACKGROUND, Color.class));
+	        
+	        if (plot instanceof XYPlot) {
+	        	((XYPlot)plot).setRangeGridlinesVisible(true);
+	        	((XYPlot)plot).setDomainGridlinesVisible(true);
+	        }
+	        if (plot instanceof CategoryPlot) {
+	        	((CategoryPlot)plot).setRangeGridlinesVisible(true);
+	        	((CategoryPlot)plot).setDomainGridlinesVisible(true);
+	        }
 
 	        //LegendTitle legendtitle = new LegendTitle(plot);
 			//legendtitle.setBackgroundPaint(Color.white);
@@ -4262,9 +4388,9 @@ public class Chart extends JPanel
 			}
 		});
 
-		panel = new ChartPanel(chart, true, false, true, false, false);
+		panel = new ChartPanel(chart, false, false, true, false, false);
 		if (bFromProperties) {
-			//panel.setPopupMenu(null);
+			panel.setPopupMenu(null);
 		}
 		
 		if (iScrollPane == -1)

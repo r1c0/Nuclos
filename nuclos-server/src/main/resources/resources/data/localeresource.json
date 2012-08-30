@@ -33776,7 +33776,7 @@
     "text": "Plot Marker (domain)"
   },
   {
-    "resourceID": "Chart.plotMarker.properties.name",
+    "resourceID": "Chart.plotMarker.properties.domain",
     "locale": "de",
     "text": "Plot Markierungen (Rubrik)"
   },
