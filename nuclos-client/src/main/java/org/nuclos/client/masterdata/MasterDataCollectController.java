@@ -54,6 +54,7 @@ import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
+import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.MultiUpdateOfDependants;
 import org.nuclos.client.common.NuclosCollectableListOfValues;
@@ -114,6 +115,7 @@ import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -295,7 +297,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		// CompleteCollectableMasterDataStrategy(this));
 		final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
 		this.detailsWithScrollbar = detailsWithScrollbar;
-		final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
+		final Long entityId = MetaDataClientProvider.getInstance().getEntity(sEntityName).getId();
+		final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(entityId, bSearchPanelAvailable, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay, entityId));
 		getTab().setLayeredComponent(pnlCollect);
 		this.initialize(pnlCollect);
 		this.setupEditPanelForDetailsTab();
@@ -1589,24 +1592,24 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 	class MasterDataCollectPanel extends CollectPanel<CollectableMasterDataWithDependants> {
 
-		MasterDataCollectPanel(boolean bSearchPanelAvailable, boolean bDetailsInOverlay) {
-			super(bSearchPanelAvailable, bDetailsInOverlay);
+		MasterDataCollectPanel(Long entityId, boolean bSearchPanelAvailable, boolean bDetailsInOverlay) {
+			super(entityId, bSearchPanelAvailable, bDetailsInOverlay);
 		}
 
 		@Override
-		public SearchPanel newSearchPanel() {
+		public SearchPanel newSearchPanel(Long entityId) {
 			/** @todo creating an empty search panel is just a workaround! */
-			return new MasterDataSearchPanel(this.containsSearchPanel() ? newLayoutRoot(true) : LayoutRoot.newEmptyLayoutRoot(true));
+			return new MasterDataSearchPanel(entityId, this.containsSearchPanel() ? newLayoutRoot(true) : LayoutRoot.newEmptyLayoutRoot(true));
 		}
 
 		@Override
-		public DetailsPanel newDetailsPanel() {
-			return LayoutComponentUtils.setPreferences(getEntityPreferences(), new MasterDataDetailsPanel(detailsWithScrollbar));
+		public DetailsPanel newDetailsPanel(Long entityId) {
+			return LayoutComponentUtils.setPreferences(getEntityPreferences(), new MasterDataDetailsPanel(entityId, detailsWithScrollbar));
 		}
 
 		@Override
-		public ResultPanel<CollectableMasterDataWithDependants> newResultPanel() {
-			return new NuclosResultPanel<CollectableMasterDataWithDependants>();
+		public ResultPanel<CollectableMasterDataWithDependants> newResultPanel(Long entityId) {
+			return new NuclosResultPanel<CollectableMasterDataWithDependants>(entityId);
 		}
 	}
 
@@ -1614,12 +1617,12 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 		private final JCheckBoxMenuItem chkbxHideInvalid = new JCheckBoxMenuItem();
 
-		MasterDataSearchPanel() {
-			this(newLayoutRoot(true));
+		MasterDataSearchPanel(Long entityId) {
+			this(entityId, newLayoutRoot(true));
 		}
 
-		MasterDataSearchPanel(LayoutRoot layoutroot) {
-			super();
+		MasterDataSearchPanel(Long entityId, LayoutRoot layoutroot) {
+			super(entityId);
 
 			/** @todo this could be done in super(...) */
 			this.setEditView(new LayoutMLEditView(layoutroot));
@@ -1667,22 +1670,22 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		@Deprecated
 		private final LayoutRoot layoutroot;
 
-		public MasterDataDetailsPanel() {
-			this(newLayoutRoot(false));
+		public MasterDataDetailsPanel(Long entityId) {
+			this(entityId, newLayoutRoot(false));
 		}
 
-		public MasterDataDetailsPanel(boolean withScrollbar) {
-			this(newLayoutRoot(false), withScrollbar);
-		}
-
-		@Deprecated
-		private MasterDataDetailsPanel(LayoutRoot layoutroot) {
-			this(layoutroot, true);
+		public MasterDataDetailsPanel(Long entityId, boolean withScrollbar) {
+			this(entityId, newLayoutRoot(false), withScrollbar);
 		}
 
 		@Deprecated
-		private MasterDataDetailsPanel(LayoutRoot layoutroot, boolean withScrollbar) {
-			super(withScrollbar);
+		private MasterDataDetailsPanel(Long entityId, LayoutRoot layoutroot) {
+			this(entityId, layoutroot, true);
+		}
+
+		@Deprecated
+		private MasterDataDetailsPanel(Long entityId, LayoutRoot layoutroot, boolean withScrollbar) {
+			super(entityId, withScrollbar);
 
 			this.layoutroot = layoutroot;
 

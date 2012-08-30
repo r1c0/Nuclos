@@ -75,6 +75,8 @@ import org.jdesktop.swingx.JXBusyLabel;
 import org.jfree.util.Log;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.EnabledListener;
+import org.nuclos.client.common.LafParameterHelper;
+import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
@@ -101,6 +103,7 @@ import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.Actions;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -193,7 +196,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JButton btnPointer = new JButton();
 	
 	public final ToggleSelectionModeButton btnToggleSelectionMode = new ToggleSelectionModeButton(
-			Main.getInstance().isMacOSX()?"\uf8ff":localeDelegate.getMessage("ResultPanel.18","Strg"),
+			Main.getInstance().isMacOSX()?"\u2318":localeDelegate.getMessage("ResultPanel.18","Strg"),
 			Icons.getInstance().getIconDeSelectAll12(), Icons.getInstance().getIconDeSelectAllHover12(),
 			Icons.getInstance().getIconSelectAll12(), Icons.getInstance().getIconSelectAllHover12());
 	public final IResultButton btnSelectAllRows;
@@ -210,9 +213,12 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	private final JScrollPane scrlpnResult = new JScrollPane();
 	private final JTable tblResult;
 	
-	protected int dynActionsFixedHeight = ClientParameterProvider.getInstance().getIntValue(ParameterProvider.NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_FIXED_HEIGHT, -1);
-	protected boolean dynActionsOnTop = "top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_POSITION));
-	protected boolean selectionButtonsOnTop = "top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_SELECTION_BUTTONS_POSITION));
+	protected int dynActionsFixedHeight = 0;
+			//ClientParameterProvider.getInstance().getIntValue(ParameterProvider.NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_FIXED_HEIGHT, -1);
+	protected boolean dynActionsOnTop = false;
+			//"top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_POSITION));
+	protected boolean selectionButtonsOnTop = false; 
+			//"top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_SELECTION_BUTTONS_POSITION));
 	
 	protected final JPanel pnlTopResult;
 	protected final JPanel pnlDynamicActions;
@@ -251,8 +257,15 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenu miGenerations = new JMenu(localeDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
 	public final JMenu miStates = new JMenu(localeDelegate.getMessage("ResultPanel.15","Statuswechsel"));
 	
-	public ResultPanel() {
+	protected final Long entityId;
+	
+	public ResultPanel(Long entityId) {
 		super(new BorderLayout());
+		this.entityId = entityId;
+		
+		dynActionsFixedHeight = LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Result_Dynamic_Actions_Fixed_Height, entityId);
+		dynActionsOnTop = LafParameter.VALUE_POSITION_TOP.equals(LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Result_Dynamic_Actions_Position, entityId));
+		selectionButtonsOnTop = LafParameter.VALUE_POSITION_TOP.equals(LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Result_Selection_Buttons_Position, entityId));
 		
 		this.pnlTopResult = new JPanel();
 		this.pnlTopResult.setLayout(new BoxLayout(this.pnlTopResult, BoxLayout.X_AXIS));
@@ -283,10 +296,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				return result;
 			}
 		};
-		this.pnlActions.setOpaque(false);
+//		this.pnlActions.setOpaque(false);
 		
 		this.pnlDynamicActions = new JPanel(new BorderLayout());
-		this.pnlDynamicActions.setOpaque(false);
+//		this.pnlDynamicActions.setOpaque(false);
 		
 		if (dynActionsOnTop) {
 			this.pnlDynamicActions.add(pnlActions, BorderLayout.CENTER);
@@ -312,10 +325,14 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			pnlTopResult.add(Box.createHorizontalGlue());
 			pnlTopResult.add(pnlTopButtons);
 			this.setSouthComponent(UIUtils.newStatusBar(btnToggleSelectionMode, Box.createHorizontalStrut(10), tfStatusBar));
+			LafParameterHelper.installPopup((ResultButton)btnSelectAllRows, LafParameter.nuclos_LAF_Result_Selection_Buttons_Position, entityId);
+			LafParameterHelper.installPopup((ResultButton)btnDeSelectAllRows, LafParameter.nuclos_LAF_Result_Selection_Buttons_Position, entityId);
 		} else {
 			btnSelectAllRows = new StatusBarButton(localeDelegate.getMessage("ResultPanel.16","Alles auswählen"));
 			btnDeSelectAllRows = new StatusBarButton(localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
 			this.setSouthComponent(UIUtils.newStatusBar(btnToggleSelectionMode, Box.createHorizontalStrut(10), tfStatusBar, Box.createHorizontalGlue(), (Component)btnSelectAllRows, (Component)btnDeSelectAllRows));
+			LafParameterHelper.installPopup((StatusBarButton)btnSelectAllRows, LafParameter.nuclos_LAF_Result_Selection_Buttons_Position, entityId);
+			LafParameterHelper.installPopup((StatusBarButton)btnDeSelectAllRows, LafParameter.nuclos_LAF_Result_Selection_Buttons_Position, entityId);
 		}
 
 		this.btnDelete = getDeleteButton();
@@ -365,6 +382,14 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		
 		this.busyActions.getBusyPainter().setBaseColor(NuclosThemeSettings.BACKGROUND_COLOR3);
 		this.busyActions.getBusyPainter().setHighlightColor(Color.WHITE);
+		
+//		LafParameterHelper.installPopup(this.pnlDynamicActions, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Position, entityId);
+//		LafParameterHelper.installPopup(this.pnlActions, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Position, entityId);
+		LafParameterHelper.installPopup(toolBar, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Position, entityId);
+		
+//		LafParameterHelper.installPopup(this.pnlDynamicActions, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Fixed_Height, entityId);
+//		LafParameterHelper.installPopup(this.pnlActions, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Fixed_Height, entityId);
+		LafParameterHelper.installPopup(toolBar, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Fixed_Height, entityId);
 		
 		init();
 	}
@@ -710,7 +735,14 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			result.add(pnlDynamicActions, BorderLayout.SOUTH);
 		}
 		
+		initNorthPanel(resultNorth);
+		
 		return result;
+	}
+	
+	protected void initNorthPanel(JPanel northPanel) {
+		LafParameterHelper.installPopup(northPanel, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Position, entityId);
+		LafParameterHelper.installPopup(northPanel, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Fixed_Height, entityId);
 	}
 
 	/**
@@ -1078,8 +1110,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			this.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					for (ActionListener al : listeners) {
-						al.actionPerformed(new ActionEvent(StatusBarButton.this, 1, "click"));
+					if (SwingUtilities.isLeftMouseButton(e)) {
+						for (ActionListener al : listeners) {
+							al.actionPerformed(new ActionEvent(StatusBarButton.this, 1, "click"));
+						}
 					}
 				}
 				@Override
@@ -1163,7 +1197,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				final boolean isEmpty = rac.getActions().isEmpty();
 				
 				JPanel jTitle = new JPanel(new BorderLayout());
-				jTitle.setOpaque(false);
+//				jTitle.setOpaque(false);
 				jTitle.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0), isEmpty?"":rac.getLabel()));
 				
 				double[] cols2 = new double[Math.max(0, rac.getActions().size()*2 -1)];
@@ -1178,7 +1212,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				tbllayCol.setColumn(cols2);
 				tbllayCol.setRow(new double[] {TableLayout.FILL, TableLayout.PREFERRED, 16d});
 				JPanel pnlCol = new JPanel(tbllayCol);
-				pnlCol.setOpaque(false);
+//				pnlCol.setOpaque(false);
 				heightCalc.add(pnlCol);
 				final JScrollPane scrollCol = new JScrollPane(pnlCol, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {
 					@Override
@@ -1218,6 +1252,9 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				jTitle.add(scrollCol);
 				
 				pnlActions.add(jTitle, new TableLayoutConstraints(i, 0, i, 0, TableLayout.FULL, TableLayout.TOP));
+				
+				LafParameterHelper.installPopup(pnlCol, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Position, entityId);
+				LafParameterHelper.installPopup(pnlCol, LafParameter.nuclos_LAF_Result_Dynamic_Actions_Fixed_Height, entityId);
 			}
 		} else {
 			setActionsPanelEmpty(MIN_ACTIONS_HEIGHT).addLabel("");

@@ -106,8 +106,8 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 	private Set<CollectableEntityField> stFixedColumns;
 
-	public NuclosResultPanel() {
-		super();
+	public NuclosResultPanel(Long entityId) {
+		super(entityId);
 		this.stFixedColumns = new HashSet<CollectableEntityField>();
 	}
 
@@ -172,6 +172,8 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		tblHeader.setName("tblHeader");
 		tblFixedResult.setTableHeader(tblHeader);
 		TableRowMouseOverAdapter.add(tblFixedResult);
+		
+		initNorthPanel(resultNorth);
 
 		return result;
 	}

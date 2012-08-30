@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.common.LafParameterMap;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
@@ -137,6 +138,16 @@ public class SystemMetaDataProvider implements MetaDataProvider<SystemEntityMeta
 				}
 			});
 		}
+	}
+
+	@Override
+	public Map<Long, LafParameterMap> getAllLafParameters() {
+		return null;
+	}
+
+	@Override
+	public LafParameterMap getLafParameters(Long entityId) {
+		return null;
 	}
 
 }

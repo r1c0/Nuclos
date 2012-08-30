@@ -133,8 +133,8 @@ public class SearchPanel extends SearchOrDetailsPanel {
 	/**
 	 * creates a new SearchPanel.
 	 */
-	public SearchPanel() {
-		super(true);
+	public SearchPanel(Long entityId) {
+		super(entityId, true);
 		super.init();
 
 		pnlTransparentImage = new TransparentImagePanel(NuclosIcons.getInstance().getSearchWatermarkIcon(), ALPHA_MAGNIFIER);

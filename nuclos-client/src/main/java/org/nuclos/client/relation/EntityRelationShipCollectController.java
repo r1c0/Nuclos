@@ -26,6 +26,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.LafParameterProvider;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.main.Main;
@@ -40,6 +42,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collection.Pair;
@@ -71,7 +74,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	final CollectableTextField clcttfDescription = new CollectableTextField(
 		EntityRelationshipModel.clcte.getEntityField("description"));
 
-	private final CollectPanel<EntityRelationshipModel> pnlCollect = new EntityRelationshipCollectPanel(false);
+	private final CollectPanel<EntityRelationshipModel> pnlCollect = new EntityRelationshipCollectPanel(MetaDataClientProvider.getInstance().getEntity(EntityRelationshipModel.clcte.getName()).getId(), false);
 	private final EntityRelationshipModelEditPanel pnlEdit;
 	
 	/**
@@ -277,13 +280,13 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
 
-		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
+		EntityRelationshipCollectPanel(Long entityId, boolean bSearchPanelAvailable) {
+			super(entityId, bSearchPanelAvailable, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay, entityId));
 		}
 
 		@Override
-		public ResultPanel<EntityRelationshipModel> newResultPanel() {
-			return new NuclosResultPanel<EntityRelationshipModel>();
+		public ResultPanel<EntityRelationshipModel> newResultPanel(Long entityId) {
+			return new NuclosResultPanel<EntityRelationshipModel>(entityId);
 		}
 	}
 	

@@ -41,6 +41,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.EntityTreeViewVO;
+import org.nuclos.common.LafParameterMap;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -1653,5 +1654,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@Override
 	public Collection<SystemEntityMetaDataVO> getSystemMetaData() {
 		return SystemMetaDataProvider.getInstance().getAllEntities();
+	}
+
+	@Override
+	public Map<Long, LafParameterMap> getLafParameters() {
+		return MetaDataServerProvider.getInstance().getAllLafParameters();
 	}
 }

@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.nuclos.common.EntityLafParameterVO;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
@@ -52,10 +53,12 @@ import org.nuclos.server.dal.processor.jdbc.impl.ChartEntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicEntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EOGenericObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityFieldMetaDataProcessor;
+import org.nuclos.server.dal.processor.jdbc.impl.EntityLafParameterProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.ImportObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.WorkspaceProcessor;
+import org.nuclos.server.dal.processor.nuclet.IEntityLafParameterProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.fileimport.ImportStructure;
@@ -411,6 +414,27 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRDBENTITY", "dbEntity", DT_STRING));
 
 		return new EntityMetaDataProcessor(allColumns, idColumn);
+	}
+	
+	public EntityLafParameterProcessor newEntityLafParameterProcessor() {
+		final Class<? extends IDalVO> type = EntityLafParameterVO.class;
+		final List<IColumnToVOMapping<? extends Object>> allColumns = new ArrayList<IColumnToVOMapping<? extends Object>>();
+		final IColumnToVOMapping<Long> idColumn = createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID", "id", DT_LONG);
+
+		allColumns.add(idColumn);
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "DATCREATED", "createdAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCREATED", "createdBy", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "DATCHANGED", "changedAt", DT_INTERNALTIMESTAMP));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRCHANGED", "changedBy", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTVERSION", "version", DT_INTEGER));
+
+//		allColumns.add(createBeanRefMapping("INTID_T_MD_ENTITY", "T_MD_ENTITY", "ENTITY", JoinType.LEFT, type, "STRENTITY", "STRVALUE_T_MD_ENTITY", "entity", DT_STRING));
+
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTID_T_MD_ENTITY", "entity", DT_LONG));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRPARAMETER", "parameter", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRVALUE", "value", DT_STRING));
+		
+		return new EntityLafParameterProcessor(allColumns, idColumn);
 	}
 
 	public EOGenericObjectProcessor newEOGenericObjectProcessor() {

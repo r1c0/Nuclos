@@ -365,6 +365,9 @@
 
   <bean id="jdbcEntityFieldMetaDataProcessor" factory-bean="processorFactorySingleton" factory-method="newEntityFieldMetaDataProcessor">
   </bean>
+  
+  <bean id="entityLafParameterProcessor" factory-bean="processorFactorySingleton" factory-method="newEntityLafParameterProcessor">
+  </bean>
 
   <bean id="genericObjectProcessor" factory-bean="processorFactorySingleton" factory-method="newEOGenericObjectProcessor">
   </bean>
@@ -399,6 +402,7 @@
   	init-method="buildEOProcessors" depends-on="nuclosDalProvider">
   	<property name="entityMetaDataProcessor"><ref bean="jdbcEntityMetaDataProcessor"/></property>
   	<property name="entityFieldMetaDataProcessor"><ref bean="jdbcEntityFieldMetaDataProcessor"/></property>
+  	<property name="entityLafParameterProcessor"><ref bean="entityLafParameterProcessor"/></property>
   	<property name="genericObjectProcessor"><ref bean="genericObjectProcessor"/></property>
   	<property name="workspaceProcessor"><ref bean="workspaceProcessor"/></property>
   	<property name="processorFactorySingleton"><ref bean="processorFactorySingleton"/></property>

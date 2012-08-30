@@ -273,6 +273,7 @@
 		<constructor-arg type="java.lang.Class" value="org.nuclos.client.genericobject.GenericObjectLayoutCache" />
 		<property name="genericObjectMetaDataCache" ref="genericObjectMetaDataCache"/>
 	</bean>
+	<bean id="lafParameterProvider" class="org.nuclos.client.common.LafParameterProvider"/>
 	
 	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
 	<bean id="appSubContext" class="org.nuclos.common.SpringApplicationSubContextsHolder"/>

@@ -50,6 +50,7 @@ public enum NuclosEntity {
 	ENTITYMENU("entitymenu"),
 	ENTITYSUBNODES("entitysubnodes"),
 	ENTITYRELATION("entityrelation"),
+	ENTITYLAFPARAMETER("entitylafparameter"),
 	EVENT("event"),
 	EVENTSUPPORTTRANSITION("eventsupporttransition"),
 	EVENTSUPPORTJOB("eventsupportjobs"),

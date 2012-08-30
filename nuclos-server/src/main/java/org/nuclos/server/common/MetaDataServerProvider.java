@@ -28,7 +28,11 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.CommonMetaDataServerProvider;
+import org.nuclos.common.EntityLafParameterVO;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.LafParameter;
+import org.nuclos.common.LafParameterHashMap;
+import org.nuclos.common.LafParameterMap;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -280,6 +284,20 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 				return fieldMeta;
 		throw new CommonFatalException("entity field with id=" + fieldId + " in " + entity + " does not exists.");
 	}
+	
+	@Override
+	public Map<Long, LafParameterMap> getAllLafParameters() {
+		final Map<Long, LafParameterMap> result = dataCache.getMapLafParameters();
+		if (result == null) {
+			return Collections.emptyMap();
+		}
+		return result;
+	}
+
+	@Override
+	public LafParameterMap getLafParameters(Long entityId) {
+		return getAllLafParameters().get(entityId);
+	}
 
 	public synchronized void revalidate(boolean otherCaches) {
 		dataCache.buildMaps();
@@ -316,6 +334,8 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 		private Map<Long, EntityMetaDataVO> mapMetaDataById = null;
 		private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = null;
 		private ConcurrentHashMap<PivotInfo, Map<String, EntityFieldMetaDataVO>> mapPivotMetaData = new ConcurrentHashMap<PivotInfo, Map<String,EntityFieldMetaDataVO>>();
+		
+		private Map<Long, LafParameterMap> mapLafParameter = null;
 
 		private DataCache() {
 		}
@@ -400,6 +420,14 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 				return mapPivotMetaData;
 			}
 		}
+		
+		public Map<Long, LafParameterMap> getMapLafParameters() {
+			if (isRevalidating()) {
+				return getMapLafParameters();
+			} else {
+				return mapLafParameter;
+			}
+		}
 
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Map<String, EntityMetaDataVO> mapMetaDataByEntity) {
 			Map<String, Map<String, EntityFieldMetaDataVO>> result = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
@@ -466,6 +494,24 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 
 			return entitiesByNuclets;
 		}
+		
+		@SuppressWarnings("unchecked")
+		private Map<Long, LafParameterMap> buildMapLafParameters() {
+			Map<Long, LafParameterMap> result = new HashMap<Long, LafParameterMap>();
+			for (EntityLafParameterVO vo : nucletDalProvider.getEntityLafParameterProcessor().getAll()) {
+				if (LafParameter.PARAMETERS.containsKey(vo.getParameter())) {
+					@SuppressWarnings("rawtypes")
+					LafParameter lafParameter = LafParameter.PARAMETERS.get(vo.getParameter());					
+					if (!result.containsKey(vo.getEntity())) {
+						result.put(vo.getEntity(), new LafParameterHashMap());
+					}
+					result.get(vo.getEntity()).putValue(lafParameter, lafParameter.parse(vo.getValue()));
+				} else {
+					LOG.warn(String.format("LafParameter %s unkonwn. (entityId=%s)", vo.getParameter(), vo.getEntity()));
+				}
+			}
+			return result;
+		}
 
 		public synchronized void buildMaps() {
 			startRevalidating = System.currentTimeMillis();
@@ -474,6 +520,7 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 			mapMetaDataByEntity = Collections.unmodifiableMap(buildMapMetaDataByEntity());
 			mapMetaDataById = Collections.unmodifiableMap(buildMapMetaDataById(mapMetaDataByEntity));
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(mapMetaDataByEntity));
+			mapLafParameter = Collections.unmodifiableMap(buildMapLafParameters());
 			mapPivotMetaData.clear();
 			revalidating = false;
 		}

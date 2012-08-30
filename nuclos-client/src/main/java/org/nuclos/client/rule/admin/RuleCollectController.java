@@ -41,6 +41,8 @@ import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
+import org.nuclos.client.common.LafParameterProvider;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.SubFormController;
 import org.nuclos.client.common.security.SecurityCache;
@@ -75,6 +77,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -107,7 +110,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 	private static final Logger LOG = Logger.getLogger(RuleCollectController.class);
 
-	private final CollectPanel<CollectableRule> pnlCollect = new RuleCollectPanel(false);
+	private final CollectPanel<CollectableRule> pnlCollect = new RuleCollectPanel(MetaDataClientProvider.getInstance().getEntity(NuclosEntity.RULE.getEntityName()).getId(), false);
 
 	private final RuleDelegate ruledelegate = RuleDelegate.getInstance();
 	private SubForm subform = new SubForm(NuclosEntity.RULEUSAGE.getEntityName(), JToolBar.VERTICAL);
@@ -592,13 +595,13 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 	private class RuleCollectPanel extends CollectPanel<CollectableRule> {
 
-		RuleCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
+		RuleCollectPanel(Long entityId, boolean bSearchPanelAvailable) {
+			super(entityId, bSearchPanelAvailable, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay, entityId));
 		}
 
 		@Override
-		public ResultPanel<CollectableRule> newResultPanel() {
-			return new NuclosResultPanel<CollectableRule>() {
+		public ResultPanel<CollectableRule> newResultPanel(Long entityId) {
+			return new NuclosResultPanel<CollectableRule>(entityId) {
 
 				@Override
 				protected void postXMLImport(final CollectController<CollectableRule> clctctl) {
@@ -616,8 +619,8 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		}
 
 		@Override
-		public DetailsPanel newDetailsPanel() {
-			return new DetailsPanel(false);
+		public DetailsPanel newDetailsPanel(Long entityId) {
+			return new DetailsPanel(entityId, false);
 		}
 
 

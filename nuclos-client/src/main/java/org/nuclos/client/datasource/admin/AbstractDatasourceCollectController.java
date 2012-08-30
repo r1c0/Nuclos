@@ -35,6 +35,8 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.LafParameterProvider;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.security.SecurityCache;
@@ -59,6 +61,7 @@ import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -84,7 +87,7 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 	protected final DatasourceDelegate datasourcedelegate = DatasourceDelegate.getInstance();
 
 	protected DatasourceEditPanel pnlEdit;
-	protected CollectPanel<CollectableDataSource<T>> pnlCollect = new DatasourceCollectPanel(false);
+	protected CollectPanel<CollectableDataSource<T>> pnlCollect;
 
 	protected JButton btnImport;
 	protected JButton btnExport;
@@ -103,6 +106,7 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 	 */
 	protected AbstractDatasourceCollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
 		super(clcte, tabIfAny);
+		pnlCollect = new DatasourceCollectPanel(MetaDataClientProvider.getInstance().getEntity(clcte.getName()).getId(), false);
 	}
 
 	protected void initializeDatasourceCollectController(DatasourceEditPanel pnlEdit) {
@@ -624,13 +628,13 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 
 	private class DatasourceCollectPanel<T> extends CollectPanel {
 
-		DatasourceCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
+		DatasourceCollectPanel(Long entityId, boolean bSearchPanelAvailable) {
+			super(entityId, bSearchPanelAvailable, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay, entityId));
 		}
 
 		@Override
-		public ResultPanel<CollectableDataSource> newResultPanel() {
-			return new NuclosResultPanel<CollectableDataSource>() {
+		public ResultPanel<CollectableDataSource> newResultPanel(Long entityId) {
+			return new NuclosResultPanel<CollectableDataSource>(entityId) {
 				@Override
 				protected void postXMLImport(final CollectController<CollectableDataSource> clctctl) {
 					// initialize attribute cache on server side
@@ -648,8 +652,8 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 		}
 
 		@Override
-		public DetailsPanel newDetailsPanel() {
-			return new DetailsPanel(false);
+		public DetailsPanel newDetailsPanel(Long entityId) {
+			return new DetailsPanel(entityId, false);
 		}
 
 

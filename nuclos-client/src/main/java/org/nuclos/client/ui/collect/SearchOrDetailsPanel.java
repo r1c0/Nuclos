@@ -28,12 +28,14 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import org.nuclos.client.common.LafParameterHelper;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.CenteringPanel;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.model.EditModel;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
@@ -78,8 +80,14 @@ public abstract class SearchOrDetailsPanel extends MainFrameTab {
 	 * @todo encapsulate
 	 */
 	public final StatusBarTextField tfStatusBar = new StatusBarTextField(" ");
+	
+	protected final Long entityId;
+	
+	protected final boolean searchPanel;
 
-	protected SearchOrDetailsPanel(boolean bForSearch) {
+	protected SearchOrDetailsPanel(Long entityId, boolean bForSearch) {
+		this.entityId = entityId;
+		this.searchPanel = bForSearch;
 		main = new JPanel(new BorderLayout());
 		setLayeredComponent(main);
 
@@ -97,6 +105,9 @@ public abstract class SearchOrDetailsPanel extends MainFrameTab {
 	 * init after construct...
 	 */
 	protected void init() {
+		if (!searchPanel) {
+			LafParameterHelper.installPopup(toolBar, LafParameter.nuclos_LAF_Details_Overlay, entityId);
+		}
 		setupDefaultToolBarActions(toolBar);
 		setNorthComponent(toolBar);
 		popbtnExtraIndex = getToolBarNextIndex();

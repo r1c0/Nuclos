@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.CommonMetaDataServerProvider;
+import org.nuclos.common.LafParameterMap;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -302,6 +303,10 @@ public class MetaDataDelegate implements CommonMetaDataServerProvider {
 	
 	public Collection<SystemEntityMetaDataVO> getSystemMetaData() {
 		return getMetaDataFacade().getSystemMetaData();
+	}
+	
+	public Map<Long, LafParameterMap> getLafParameters() {
+		return getMetaDataFacade().getLafParameters();
 	}
 
 }

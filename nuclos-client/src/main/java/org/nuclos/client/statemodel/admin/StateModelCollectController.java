@@ -43,7 +43,9 @@ import javax.swing.event.ChangeListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
+import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.LocaleDelegate;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.security.SecurityCache;
@@ -77,6 +79,7 @@ import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.valuelistprovider.EntityCollectableIdFieldsProvider;
 import org.nuclos.common.Actions;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.exception.CollectableValidationException;
@@ -101,7 +104,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	private static final Logger LOG = Logger.getLogger(StateModelCollectController.class);
 
-	private final CollectPanel<CollectableStateModel> pnlCollect = new StateModelCollectPanel(false);
+	private final CollectPanel<CollectableStateModel> pnlCollect = new StateModelCollectPanel(MetaDataClientProvider.getInstance().getEntity(NuclosEntity.STATEMODEL.getEntityName()).getId(), false);
 
 	private final MasterDataSubFormController subformctlUsages;
 	private final StateModelEditPanel pnlEdit;
@@ -525,18 +528,18 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	private class StateModelCollectPanel extends CollectPanel<CollectableStateModel> {
 
-		StateModelCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
+		StateModelCollectPanel(Long entityId, boolean bSearchPanelAvailable) {
+			super(entityId, bSearchPanelAvailable, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay, entityId));
 		}
 
 		@Override
-		public ResultPanel<CollectableStateModel> newResultPanel() {
-			return new NuclosResultPanel<CollectableStateModel>();
+		public ResultPanel<CollectableStateModel> newResultPanel(Long entityId) {
+			return new NuclosResultPanel<CollectableStateModel>(entityId);
 		}
 
 		@Override
-		public DetailsPanel newDetailsPanel() {
-			return new DetailsPanel(false);
+		public DetailsPanel newDetailsPanel(Long entityId) {
+			return new DetailsPanel(entityId, false);
 		}
 
 

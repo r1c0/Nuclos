@@ -153,4 +153,14 @@ public class StaticMetaDataProvider implements MetaDataProvider<EntityMetaDataVO
 			return Collections.emptyList();
 		}
 	}
+
+	@Override
+	public Map<Long, LafParameterMap> getAllLafParameters() {
+		return null;
+	}
+
+	@Override
+	public LafParameterMap getLafParameters(Long entityId) {
+		return null;
+	}
 }

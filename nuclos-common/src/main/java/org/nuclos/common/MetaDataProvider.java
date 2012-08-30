@@ -47,6 +47,10 @@ public interface MetaDataProvider<S extends EntityMetaDataVO, T extends EntityFi
 	T getEntityField(String entity, Long fieldId);
 
 	T getRefField(String baseEntity, String subform);
+	
+	Map<Long, LafParameterMap> getAllLafParameters();
+	
+	LafParameterMap getLafParameters(Long entityId);
 
 	/**
 	 * Get the base entity name of a dynamic entity.

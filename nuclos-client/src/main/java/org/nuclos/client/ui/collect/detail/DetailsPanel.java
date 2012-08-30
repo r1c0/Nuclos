@@ -145,18 +145,18 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 	/**
 	 * constructs the details panel
 	 */
-	public DetailsPanel() {
-		this(true);
+	public DetailsPanel(Long entityId) {
+		this(entityId, true);
 	}
 
 	/**
 	 * constructs the details panel
 	 */
-	public DetailsPanel(boolean withScrollbar) {
-		super(false);
+	public DetailsPanel(Long entityId, boolean withScrollbar) {
+		super(entityId, false);
 		btnDelete = getDeleteButton();
 		super.init();
-
+		
 		//this.add(pnlToolBar, BorderLayout.NORTH);
 		
 		if (withScrollbar) {

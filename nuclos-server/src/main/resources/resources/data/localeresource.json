@@ -56507,12 +56507,12 @@
   {
     "resourceID": "nuclos.preferences.entity.layoutconfig",
     "locale": "i-default",
-    "text": "From settings for entities"
+    "text": "Form settings for entities"
   },
   {
     "resourceID": "nuclos.preferences.entity.layoutconfig",
     "locale": "en",
-    "text": "From settings for entities"
+    "text": "Form settings for entities"
   },
   {
     "resourceID": "nuclos.preferences.entity.layoutconfig",
@@ -67498,5 +67498,335 @@
     "resourceID": "nuclos.entityfield.localcaches.revalidation.description",
     "locale": "de",
     "text": "Revalidation"
+  },
+  {
+    "resourceID": "nuclos.entity.entityParameter.label",
+    "locale": "i-default",
+    "text": "Entity Parameter"
+  },
+  {
+    "resourceID": "nuclos.entity.entityParameter.label",
+    "locale": "en",
+    "text": "Entity Parameter"
+  },
+  {
+    "resourceID": "nuclos.entity.entityParameter.label",
+    "locale": "de",
+    "text": "Entitäts Parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.entity.label",
+    "locale": "i-default",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.entity.label",
+    "locale": "en",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.entity.label",
+    "locale": "de",
+    "text": "Entität"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.entity.description",
+    "locale": "i-default",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.entity.description",
+    "locale": "en",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.entity.description",
+    "locale": "de",
+    "text": "Entität"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.parameter.label",
+    "locale": "i-default",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.parameter.label",
+    "locale": "en",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.parameter.label",
+    "locale": "de",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.parameter.description",
+    "locale": "i-default",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.parameter.description",
+    "locale": "en",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.parameter.description",
+    "locale": "de",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.value.label",
+    "locale": "i-default",
+    "text": "Value"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.value.label",
+    "locale": "en",
+    "text": "Value"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.value.label",
+    "locale": "de",
+    "text": "Wert"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.value.description",
+    "locale": "i-default",
+    "text": "Value"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.value.description",
+    "locale": "en",
+    "text": "Value"
+  },
+  {
+    "resourceID": "nuclos.entityfield.entityParameter.value.description",
+    "locale": "de",
+    "text": "Wert"
+  },
+  {
+    "resourceID": "LafParameterEditor.1",
+    "locale": "i-default",
+    "text": "Change L&F Parameter"
+  },
+  {
+    "resourceID": "LafParameterEditor.1",
+    "locale": "en",
+    "text": "Change L&F Parameter"
+  },
+  {
+    "resourceID": "LafParameterEditor.1",
+    "locale": "de",
+    "text": "L&F Parameter ändern"
+  },
+  {
+    "resourceID": "LafParameterEditor.2",
+    "locale": "i-default",
+    "text": "Where do you want to change the value?"
+  },
+  {
+    "resourceID": "LafParameterEditor.2",
+    "locale": "en",
+    "text": "Where do you want to change the value?"
+  },
+  {
+    "resourceID": "LafParameterEditor.2",
+    "locale": "de",
+    "text": "Wo möchten Sie den Wert ändern?"
+  },
+  {
+    "resourceID": "LafParameterEditor.3",
+    "locale": "i-default",
+    "text": "You may need to open the form again, or restart the client so that the setting takes effect!"
+  },
+  {
+    "resourceID": "LafParameterEditor.3",
+    "locale": "en",
+    "text": "You may need to open the form again, or restart the client so that the setting takes effect!"
+  },
+  {
+    "resourceID": "LafParameterEditor.3",
+    "locale": "de",
+    "text": "Möglicherweise müssen Sie die Maske erneut öffnen, oder den Client neu starten damit die Einstellung wirksam wird!"
+  },
+  {
+    "resourceID": "LafParameterEditor.4",
+    "locale": "i-default",
+    "text": "Systemparameter"
+  },
+  {
+    "resourceID": "LafParameterEditor.4",
+    "locale": "en",
+    "text": "Systemparameter"
+  },
+  {
+    "resourceID": "LafParameterEditor.4",
+    "locale": "de",
+    "text": "Systemparameter"
+  },
+  {
+    "resourceID": "LafParameterEditor.5",
+    "locale": "i-default",
+    "text": "Workspace"
+  },
+  {
+    "resourceID": "LafParameterEditor.5",
+    "locale": "en",
+    "text": "Workspace"
+  },
+  {
+    "resourceID": "LafParameterEditor.5",
+    "locale": "de",
+    "text": "Arbeitsumgebung"
+  },
+  {
+    "resourceID": "LafParameterEditor.6",
+    "locale": "i-default",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "LafParameterEditor.6",
+    "locale": "en",
+    "text": "Entity"
+  },
+  {
+    "resourceID": "LafParameterEditor.6",
+    "locale": "de",
+    "text": "Entität"
+  },
+  {
+    "resourceID": "LafParameterEditor.7",
+    "locale": "i-default",
+    "text": "Yes"
+  },
+  {
+    "resourceID": "LafParameterEditor.7",
+    "locale": "en",
+    "text": "Yes"
+  },
+  {
+    "resourceID": "LafParameterEditor.7",
+    "locale": "de",
+    "text": "Ja"
+  },
+  {
+    "resourceID": "LafParameterEditor.8",
+    "locale": "i-default",
+    "text": "No"
+  },
+  {
+    "resourceID": "LafParameterEditor.8",
+    "locale": "en",
+    "text": "No"
+  },
+  {
+    "resourceID": "LafParameterEditor.8",
+    "locale": "de",
+    "text": "Nein"
+  },
+  {
+    "resourceID": "LafParameterAction.1",
+    "locale": "i-default",
+    "text": "Change parameter \"%s\""
+  },
+  {
+    "resourceID": "LafParameterAction.1",
+    "locale": "en",
+    "text": "Change parameter \"%s\""
+  },
+  {
+    "resourceID": "LafParameterAction.1",
+    "locale": "de",
+    "text": "Parameter \"%s\" ändern"
+  },
+  {
+    "resourceID": "nuclos_LAF_Details_Overlay",
+    "locale": "i-default",
+    "text": "Details in popup"
+  },
+  {
+    "resourceID": "nuclos_LAF_Details_Overlay",
+    "locale": "en",
+    "text": "Details in popup"
+  },
+  {
+    "resourceID": "nuclos_LAF_Details_Overlay",
+    "locale": "de",
+    "text": "Details im Popup"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Dynamic_Actions_Fixed_Height",
+    "locale": "i-default",
+    "text": "Fixed height of the action bar"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Dynamic_Actions_Fixed_Height",
+    "locale": "en",
+    "text": "Fixed height of the action bar"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Dynamic_Actions_Fixed_Height",
+    "locale": "de",
+    "text": "Feste Höhe der Aktionsleiste"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Dynamic_Actions_Position",
+    "locale": "i-default",
+    "text": "Position of the action bar"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Dynamic_Actions_Position",
+    "locale": "en",
+    "text": "Position of the action bar"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Dynamic_Actions_Position",
+    "locale": "de",
+    "text": "Position der Aktionsleiste"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Selection_Buttons_Position",
+    "locale": "i-default",
+    "text": "Position of the selection buttons"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Selection_Buttons_Position",
+    "locale": "en",
+    "text": "Position of the selection buttons"
+  },
+  {
+    "resourceID": "nuclos_LAF_Result_Selection_Buttons_Position",
+    "locale": "de",
+    "text": "Position der Auswahl Buttons"
+  },
+  {
+    "resourceID": "nuclos_LAF_Position_top",
+    "locale": "i-default",
+    "text": "Top"
+  },
+  {
+    "resourceID": "nuclos_LAF_Position_top",
+    "locale": "en",
+    "text": "Top"
+  },
+  {
+    "resourceID": "nuclos_LAF_Position_top",
+    "locale": "de",
+    "text": "Oben"
+  },
+  {
+    "resourceID": "nuclos_LAF_Position_bottom",
+    "locale": "i-default",
+    "text": "Bottom"
+  },
+  {
+    "resourceID": "nuclos_LAF_Position_bottom",
+    "locale": "en",
+    "text": "Bottom"
+  },
+  {
+    "resourceID": "nuclos_LAF_Position_bottom",
+    "locale": "de",
+    "text": "Unten"
   }
 ]

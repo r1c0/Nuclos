@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.CommonMetaDataServerProvider;
+import org.nuclos.common.LafParameterMap;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -188,4 +189,7 @@ public interface MetaDataFacadeRemote extends CommonMetaDataServerProvider {
 	
 	@RolesAllowed("Login")
 	Collection<SystemEntityMetaDataVO> getSystemMetaData();
+
+	@RolesAllowed("Login")
+	Map<Long, LafParameterMap> getLafParameters();
 }

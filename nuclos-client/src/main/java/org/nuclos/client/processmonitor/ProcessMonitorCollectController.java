@@ -23,6 +23,7 @@ import javax.swing.JToolBar;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.console.NuclosConsole;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -30,6 +31,7 @@ import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -45,7 +47,7 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 	
 	private static final Logger LOG = Logger.getLogger(ProcessMonitorCollectController.class);
 
-	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(false, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
+	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(-1l, false, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay));
 	// @SuppressWarnings("unused")
 	private final MasterDataSubFormController subformctlUsages;	
 	private final ProcessMonitorEditPanel pnlEdit;

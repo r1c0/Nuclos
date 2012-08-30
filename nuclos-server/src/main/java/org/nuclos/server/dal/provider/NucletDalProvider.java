@@ -27,6 +27,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
+import org.nuclos.server.dal.processor.nuclet.IEntityLafParameterProcessor;
 import org.nuclos.server.dal.processor.nuclet.IWorkspaceProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
@@ -49,6 +50,7 @@ public class NucletDalProvider extends AbstractDalProvider {
 	
 	private JdbcEntityMetaDataProcessor entityMetaDataProcessor;
 	private JdbcEntityFieldMetaDataProcessor entityFieldMetaDataProcessor;
+	private IEntityLafParameterProcessor entityLafParameterProcessor;
 	private IEOGenericObjectProcessor eoGenericObjectProcessor;
 	private IWorkspaceProcessor workspaceProcessor;
 	private ProcessorFactorySingleton processorFac;
@@ -76,6 +78,13 @@ public class NucletDalProvider extends AbstractDalProvider {
 	 */
 	public void setEntityFieldMetaDataProcessor(JdbcEntityFieldMetaDataProcessor processor) {
 		this.entityFieldMetaDataProcessor = processor;
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setEntityLafParameterProcessor(IEntityLafParameterProcessor processor) {
+		this.entityLafParameterProcessor = processor;
 	}
 	
 	/**
@@ -155,6 +164,10 @@ public class NucletDalProvider extends AbstractDalProvider {
 	
 	public JdbcEntityFieldMetaDataProcessor getEntityFieldMetaDataProcessor() {
 		return entityFieldMetaDataProcessor;
+	}
+	
+	public IEntityLafParameterProcessor getEntityLafParameterProcessor() {
+		return entityLafParameterProcessor;
 	}
 	
 	public JdbcEntityObjectProcessor getEntityObjectProcessor(NuclosEntity entity) {

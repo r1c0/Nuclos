@@ -37,6 +37,7 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.common.CommonMetaDataClientProvider;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.LafParameterMap;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -320,6 +321,20 @@ public class MetaDataClientProvider extends AbstractLocalUserCache implements Me
 	public List<EntityObjectVO> getAllEntityMenus() {
 		return dataCache.getListEntityMenus();
 	}
+	
+	@Override
+	public Map<Long, LafParameterMap> getAllLafParameters() {
+		final Map<Long, LafParameterMap> result = dataCache.getMapLafParameters();
+		if (result == null) {
+			return Collections.emptyMap();
+		}
+		return result;
+	}
+
+	@Override
+	public LafParameterMap getLafParameters(Long entityId) {
+		return getAllLafParameters().get(entityId);
+	}
 
 	public synchronized void revalidate(){
 		dataCache.buildMaps();
@@ -344,6 +359,8 @@ public class MetaDataClientProvider extends AbstractLocalUserCache implements Me
 		private List<EntityObjectVO> lstEntityMenus = null;
 
 		private Map<String, DynamicEntityVO> mapDynamicEntities;
+		
+		private Map<Long, LafParameterMap> mapLafParameter = null;
 
 		public Map<String, List<String>> getMapEntitiesByNuclets() {
 			if (isRevalidating()) {
@@ -401,6 +418,14 @@ public class MetaDataClientProvider extends AbstractLocalUserCache implements Me
 			}
 		}
 
+		public Map<Long, LafParameterMap> getMapLafParameters() {
+			if (isRevalidating()) {
+				return getMapLafParameters();
+			} else {
+				return mapLafParameter;
+			}
+		}
+
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Collection<EntityMetaDataVO> allEntities) {
 			return MetaDataDelegate.getInstance().getAllEntityFieldsByEntitiesGz(
 				CollectionUtils.transform(allEntities, DalTransformations.getEntity()));
@@ -436,6 +461,8 @@ public class MetaDataClientProvider extends AbstractLocalUserCache implements Me
 			mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(DatasourceDelegate.getInstance().getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
 			
 			lstEntityMenus = MetaDataDelegate.getInstance().getEntityMenus();
+			
+			mapLafParameter = Collections.unmodifiableMap(MetaDataDelegate.getInstance().getLafParameters());
 			
 			revalidating = false;
 		}
@@ -480,4 +507,5 @@ public class MetaDataClientProvider extends AbstractLocalUserCache implements Me
 	public List<String> getEntities(String nuclet) {
 		return dataCache.mapEntitiesByNuclets.get(nuclet);
 	}
+	
 }

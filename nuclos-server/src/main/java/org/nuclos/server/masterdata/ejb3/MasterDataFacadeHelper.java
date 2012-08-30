@@ -494,6 +494,9 @@ public class MasterDataFacadeHelper {
 			case CHARTUSAGE:
 				MetaDataServerProvider.getInstance().revalidate(true);
 				break;
+			case ENTITYLAFPARAMETER:
+				MetaDataServerProvider.getInstance().revalidate(false);
+				break;
 			default:
 				LOG.info("invalidateCaches: Nothing to do for " + sEntityName);
 			}

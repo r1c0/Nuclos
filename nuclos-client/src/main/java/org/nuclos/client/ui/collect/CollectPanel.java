@@ -116,7 +116,7 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	 * @see #newResultPanel()
 	 * @see #newDetailsPanel()
 	 */
-	public CollectPanel(boolean bSearchPanelAvailable, boolean bDetailsInOverlay) {
+	public CollectPanel(Long entityId, boolean bSearchPanelAvailable, boolean bDetailsInOverlay) {
 		super(new BorderLayout(0,0));
 
 		this.bContainsSearchPanel = bSearchPanelAvailable;
@@ -124,9 +124,9 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 
 		// Note that the search panel is always created, even if it isn't visible.
 		// @todo That is for compatibility reasons, but shouldn't be.
-		pnlSearch = newSearchPanel();
-		pnlResult = newResultPanel();
-		pnlDetails = newDetailsPanel();
+		pnlSearch = newSearchPanel(entityId);
+		pnlResult = newResultPanel(entityId);
+		pnlDetails = newDetailsPanel(entityId);
 		pnlDetails.addMainFrameTabListener(new MainFrameTabAdapter() {
 			
 			@Override
@@ -223,8 +223,8 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	 * @return a new SearchPanel which will be part of this panel.
 	 * @postcondition result != null
 	 */
-	public SearchPanel newSearchPanel() {
-		return new SearchPanel();
+	public SearchPanel newSearchPanel(Long entityId) {
+		return new SearchPanel(entityId);
 	}
 
 	/**
@@ -233,8 +233,8 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	 * @return a new ResultPanel which will be part of this panel.
 	 * @postcondition result != null
 	 */
-	public ResultPanel<Clct> newResultPanel() {
-		return new ResultPanel<Clct>();
+	public ResultPanel<Clct> newResultPanel(Long entityId) {
+		return new ResultPanel<Clct>(entityId);
 	}
 
 	/**
@@ -243,8 +243,8 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	 * @return a new DetailsPanel which will be part of this panel.
 	 * @postcondition result != null
 	 */
-	public DetailsPanel newDetailsPanel() {
-		return new DetailsPanel();
+	public DetailsPanel newDetailsPanel(Long entityId) {
+		return new DetailsPanel(entityId);
 	}
 
 	/**

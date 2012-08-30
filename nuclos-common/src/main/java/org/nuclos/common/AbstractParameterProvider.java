@@ -73,17 +73,4 @@ public abstract class AbstractParameterProvider implements ParameterProvider {
 		return new String[0];
 	}
 
-	public boolean isNuclosUIDetailsOverlay(String sEntityName) {
-		if (isEnabled(NUCLOS_UI_DETAILS_OVERLAY)) {
-			for (String sIgnore : getList(NUCLOS_UI_DETAILS_OVERLAY_IGNORE_LIST)) {
-				if (sIgnore.equals(sEntityName)) {
-					return false;
-				}
-			}
-			return true;
-		}
-		
-		return false;
-	}
-
 }	// class AbstractParameterProvider

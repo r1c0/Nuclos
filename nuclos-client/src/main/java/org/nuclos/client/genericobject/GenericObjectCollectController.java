@@ -89,6 +89,7 @@ import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.KeyBindingProvider;
+import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.MultiUpdateOfDependants;
 import org.nuclos.client.common.NuclosCollectableStateComboBox;
@@ -190,6 +191,7 @@ import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.valuelistprovider.cache.ManagedCollectableFieldsProvider;
 import org.nuclos.common.Actions;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
@@ -678,7 +680,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * TODO: Make this protected again.
 	 */
 	public void init() {
-		_setCollectPanel(newCollectPanel());
+		_setCollectPanel(newCollectPanel(getModuleId().longValue()));
 		super.init();
 
 		final CollectPanel<CollectableGenericObjectWithDependants> collectPanel = getCollectPanel();
@@ -1791,10 +1793,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/** @todo pull down to CollectController */
-	protected WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> newCollectPanel() {
+	protected WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> newCollectPanel(Long entityId) {
 		boolean bSearch = MetaDataClientProvider.getInstance().getEntity(this.sEntity).isSearchable();
 		return new WeakReference<CollectPanel<CollectableGenericObjectWithDependants>>(
-				new GenericObjectCollectPanel(getSearchStateBox(), bSearch, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity())));
+				new GenericObjectCollectPanel(entityId, getSearchStateBox(), bSearch, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay, entityId)));
 	}
 
 	@Override
@@ -5792,6 +5794,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	protected static class GenericObjectDetailsPanel extends DetailsPanel {
 
+		public GenericObjectDetailsPanel(Long entityId) {
+			super(entityId);
+		}
+
 		/**
 		 * @param compRoot the edit component according to the LayoutML
 		 * @return the edit component to be used in the Details panel. Default is <code>compRoot</code> itself.
@@ -5811,6 +5817,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	protected static class GenericObjectResultPanel extends NuclosResultPanel<CollectableGenericObjectWithDependants> {
 
+		public GenericObjectResultPanel(Long entityId) {
+			super(entityId);
+		}
+
 		@Override
 		protected AbstractButton getDeleteButton() {
 			return new JToggleButton();
@@ -5822,28 +5832,28 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		private final CollectableComboBox searchStateBox;
 
-		protected GenericObjectCollectPanel(CollectableComboBox searchStateBox, boolean bSearch, boolean bDetailsInOverlay) {
-			super(bSearch, bDetailsInOverlay);
+		protected GenericObjectCollectPanel(Long entityId, CollectableComboBox searchStateBox, boolean bSearch, boolean bDetailsInOverlay) {
+			super(entityId, bSearch, bDetailsInOverlay);
 			this.searchStateBox = searchStateBox;
 		}
 
 		@Override
-		public SearchPanel newSearchPanel() {
+		public SearchPanel newSearchPanel(Long entityId) {
 			final Collection<CollectableComponent> additionalSearchComponents = new ArrayList<CollectableComponent>();
 			if (searchStateBox != null) {
 				additionalSearchComponents.add(searchStateBox);
 			}
-			return new GenericObjectSearchPanel(additionalSearchComponents);
+			return new GenericObjectSearchPanel(entityId, additionalSearchComponents);
 		}
 
 		@Override
-		public ResultPanel<CollectableGenericObjectWithDependants> newResultPanel() {
-			return new GenericObjectResultPanel();
+		public ResultPanel<CollectableGenericObjectWithDependants> newResultPanel(Long entityId) {
+			return new GenericObjectResultPanel(entityId);
 		}
 
 		@Override
-		public DetailsPanel newDetailsPanel() {
-			return LayoutComponentUtils.setPreferences(getEntityPreferences(), new GenericObjectDetailsPanel());
+		public DetailsPanel newDetailsPanel(Long entityId) {
+			return LayoutComponentUtils.setPreferences(getEntityPreferences(), new GenericObjectDetailsPanel(entityId));
 		}
 	}
 

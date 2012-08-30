@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -37,6 +38,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
+import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common2.DateTime;
@@ -56,7 +58,7 @@ import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
  */
 public class InstanceCollectController extends NuclosCollectController<CollectableInstanceModel> {
 	
-	private final CollectPanel<CollectableInstanceModel> pnlCollect = new CollectPanel<CollectableInstanceModel>(false, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
+	private final CollectPanel<CollectableInstanceModel> pnlCollect = new CollectPanel<CollectableInstanceModel>(-1l, false, LafParameterProvider.getInstance().getValue(LafParameter.nuclos_LAF_Details_Overlay));
 	private final InstanceViewPanel pnlView;
 
 	private JButton btnStart;
