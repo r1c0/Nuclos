@@ -487,6 +487,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 			layer.setUI(lockableUI);
 			lockableUI.setLocked(true);
+			layer.paintImmediately(layer.getBounds());
 		}
 	}
 
@@ -500,6 +501,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				((LockableUI) currentUI).setLocked(false);
 			}
 			try {layer.setUI(null);} catch (Exception ignore) {}
+			layer.paintImmediately(layer.getBounds());
 		}
 	}
 
