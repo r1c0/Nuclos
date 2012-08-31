@@ -43,7 +43,6 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.mortbay.log.Log;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LocaleDelegate;
@@ -56,7 +55,6 @@ import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.rule.RuleCache;
-import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.tasklist.TasklistCache;
 import org.nuclos.common.ApplicationProperties;
@@ -250,7 +248,7 @@ public class LocalUserCaches extends java.util.Properties {
             	storeObject(MasterDataCache.getInstance());
             	storeObject(MetaDataCache.getInstance());
             	storeObject(GenericObjectLayoutCache.getInstance());
-            	storeObject(SearchFilterCache.getInstance());
+            	//storeObject(SearchFilterCache.getInstance());
             	storeObject(CustomComponentCache.getInstance());
             	storeObject(ClientParameterProvider.getInstance());
             	storeObject(LocaleDelegate.getInstance());

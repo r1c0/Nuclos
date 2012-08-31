@@ -166,9 +166,7 @@
 	<bean id="invokeWithInputRequiredSupport" class="org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport" lazy-init="true">
 		<property name="nuclosHttpInvokerAttributeContext" ref="nuclosHttpInvokerAttributeContext"/>
 	</bean>
-	<bean id="searchFilterCache" class="org.nuclos.client.searchfilter.SearchFilterCache" lazy-init="true"
-		factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.searchfilter.SearchFilterCache" />
+	<bean id="searchFilterCache" class="org.nuclos.client.searchfilter.SearchFilterCache" lazy-init="true">
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 	</bean>
 	<bean id="customComponentCache" class="org.nuclos.client.customcomp.CustomComponentCache" lazy-init="true"

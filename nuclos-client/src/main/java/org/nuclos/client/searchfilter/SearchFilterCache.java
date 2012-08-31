@@ -24,13 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
@@ -45,7 +45,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * SearchFilterCache containing all searchfilters (entity + global searchfilters)
@@ -57,8 +57,8 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:martin.weber@novabit.de">Martin Weber</a>
  * @version 00.01.000
  */
-//@Configurable
-public class SearchFilterCache extends AbstractLocalUserCache implements InitializingBean {
+@Configurable
+public class SearchFilterCache {
 
 	private static final Logger LOG = Logger.getLogger(SearchFilterCache.class);
 
@@ -74,13 +74,7 @@ public class SearchFilterCache extends AbstractLocalUserCache implements Initial
 	private SearchFilterCache() {
 		INSTANCE = this;
 	}
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-			//if (!wasDeserialized() || !isValid()) //@todo. this cache is user dependant. we need something like 'hasUserChanged(...)'
-			loadSearchFilters();	
-	}
-	
+		
 	public final void initMessageListener() {
 		if (messageListener != null)
 			return;
@@ -126,7 +120,6 @@ public class SearchFilterCache extends AbstractLocalUserCache implements Initial
 		tnr.subscribe(getCachingTopic(), messageListener);	
 	}
 	
-	@Override
 	public String getCachingTopic() {
 		return JMSConstants.TOPICNAME_SEARCHFILTERCACHE;
 	}
@@ -160,6 +153,11 @@ public class SearchFilterCache extends AbstractLocalUserCache implements Initial
 			}
 		}
 		LOG.info("Filled cache " + this);
+	}
+	
+	@PostConstruct
+	void init() {
+		loadSearchFilters();		
 	}
 
 	/**
