@@ -2325,7 +2325,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// iterate over the models rather than over the components:
 				final CollectableComponentModel clctcompmodel = layoutrootDetails.getCollectableComponentModelFor(sFieldName);
 				final CollectableField clctfShown = clct.getField(sFieldName);
-				clctcompmodel.setFieldInitial(clctfShown);
+				clctcompmodel.setFieldInitial(clctfShown, false); // @see NUCLOS-1065
 
 				markFieldInHistoricalView(lowdCurrent, sFieldName, clctfShown);
 			}
@@ -2506,7 +2506,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			@Override
 			public void init() throws CommonBusinessException {
 				if(!interrupted) {
+					setDetailsChangedIgnored(true);
 					mdsubformctl.clear();
+					setDetailsChangedIgnored(false);
 					mdsubformctl.getSubForm().setLockedLayer();
 				}
 			}
