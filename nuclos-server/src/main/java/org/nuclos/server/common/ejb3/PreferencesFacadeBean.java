@@ -201,6 +201,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 					boolean assigned = false;
 					for (WorkspaceVO wsvoAssigned : lstAssignedByRole) {
 						if (wsvo.getAssignedWorkspace().equals(wsvoAssigned.getId())) {
+							wsvo.setName(wsvoAssigned.getName());
+							wsvo.getWoDesc().setName(wsvo.getName());
 							assigned = true;
 							break;
 						}
