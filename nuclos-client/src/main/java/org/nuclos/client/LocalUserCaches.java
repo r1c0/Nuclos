@@ -253,7 +253,7 @@ public class LocalUserCaches extends java.util.Properties {
             	storeObject(MasterDataCache.getInstance());
             	storeObject(MetaDataCache.getInstance());
             	storeObject(GenericObjectLayoutCache.getInstance());
-            	storeObject(SearchFilterCache.getInstance());
+            	//storeObject(SearchFilterCache.getInstance());
             	storeObject(CustomComponentCache.getInstance());
             	storeObject(ClientParameterProvider.getInstance());
             	storeObject(LocaleDelegate.getInstance());
