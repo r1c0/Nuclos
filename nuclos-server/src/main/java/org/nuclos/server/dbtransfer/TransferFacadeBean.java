@@ -217,6 +217,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		contents.add(new DefaultNucletContent(NuclosEntity.ENTITYFIELDGROUP, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ENTITYRELATION, null, contents));
 		contents.add(new EntityMenuNucletContent(contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.ENTITYLAFPARAMETER, NuclosEntity.ENTITY, contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUPTYPE, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.GROUP, NuclosEntity.GROUPTYPE, contents));
