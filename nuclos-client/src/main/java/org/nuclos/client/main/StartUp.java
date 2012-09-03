@@ -210,130 +210,121 @@ public class StartUp  {
 		startupContext.refresh();
 		startupContext.registerShutdownHook();
 		
-		final Runnable run1 = new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					// Time zone stuff
-			        final ServerMetaFacadeRemote sm = startupContext.getBean(ServerMetaFacadeRemote.class);
-			        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
-			        final StringBuilder msg = new StringBuilder(); 
-			        msg.append("Default local  time zone is: ").append(TimeZone.getDefault().getID()).append("\n");
-			        msg.append("Default server time zone is: ").append(serverDefaultTimeZone.getID()).append("\n");
-					if (!LangUtils.equals(TimeZone.getDefault(), serverDefaultTimeZone)) {
-						TimeZone.setDefault(serverDefaultTimeZone);
-						msg.append("Local default time zone is set to server default!\n");
-					}
-					msg.append("Initial local  time zone is: " + Main.getInitialTimeZone().getID());
-					LOG.info(msg);
-					
-					// Scanning context
-					clientContext = new ClassPathXmlApplicationContext(CLIENT_SPRING_BEANS, false, startupContext);
-					final StartUpApplicationListener clientListener = new StartUpApplicationListener(clientContextCondition);
-					clientContext.addApplicationListener(clientListener);
-					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
-					clientContext.setClassLoader(cl);
-					Thread.yield();					
-					clientContext.refresh();
-					clientContext.registerShutdownHook();
-					
-					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
-					final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/nuclos-theme.properties");
-					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
-					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
-					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
-					Thread.yield();
-					
-					for (Resource r : themes) {
-						if (!r.exists()) {
-							log.error("theme properties not found: " + r);
-							continue;
-						}
-						log.info("Processing theme properties: " + r);
-						Properties p = new Properties();
-						p.load(r.getInputStream());
-
-						for (Object key : p.keySet()) {
-							if (key instanceof String && p.get(key) != null && p.get(key) instanceof String) {
-
-								String sKey = (String) key;
-								if (sKey.startsWith("name")) {
-									String xmlKey = "xml";
-									if (sKey.length() > 4) {
-										String sNumber = sKey.substring(4);
-										xmlKey = xmlKey + sNumber;
-									}
-									Object xml = p.get(xmlKey);
-									if (xml != null && xml instanceof String) {
-										NuclosSyntheticaUtils.registerNuclosTheme((String) p.get(key), (String) xml);
-									}
-								}
-							}
-						}
-					}
-					
-					final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
-					holder.setClientContext(clientContext);
-
-					final int size = extensions.length;
-					if (size == 0) {
-						// propagate clientContextCondition to lastContextCondition
-						synchronized (clientContextCondition) {
-							clientContextCondition.waitFor();
-						}
-						synchronized (lastContextCondition) {
-							lastContextCondition.refreshed();
-						}
-						log.info("no extension contexts found, all spring contexts refreshed");
-					}
-					else {
-						Thread.yield();
-						for (int i = 0; i < size; ++i) {
-							final Resource r = extensions[i];
-							final boolean last = (i + 1 == size);
-							if (!r.exists()) {
-								log.error("spring sub context xml not found: " + r);
-								if (last) {
-									throw new IllegalStateException();
-								}
-								continue;
-							}
-							log.info("Processing sub context xml: " + r);
-							final AbstractXmlApplicationContext ctx;
-							if (r instanceof ClassPathResource) {
-								ctx = new ClassPathXmlApplicationContext(new String[] { ((ClassPathResource)r).getPath() }, false, clientContext);
-							} 
-							else if (r instanceof UrlResource) {
-								ctx = new ResourceXmlApplicationContext(r, Collections.EMPTY_LIST, clientContext, Collections.EMPTY_LIST, false);
-							}
-							else {
-								ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
-							}
-							if (last) {
-								final StartUpApplicationListener lastListener = new StartUpApplicationListener(lastContextCondition);
-								ctx.addApplicationListener(lastListener);
-								log.info("last extension context " + r + " used as condition variable");
-							}
-							// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
-							ctx.setClassLoader(cl);
-							// clientContext.addApplicationListener(refreshListener);
-							log.info("before refreshing spring context " + r);
-							ctx.refresh();
-							holder.registerSubContext(ctx);
-							
-							log.info("after refreshing spring context " + r);
-						}
-					}
+		try {
+			// Time zone stuff
+	        final ServerMetaFacadeRemote sm = startupContext.getBean(ServerMetaFacadeRemote.class);
+	        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
+	        final StringBuilder msg = new StringBuilder(); 
+	        msg.append("Default local  time zone is: ").append(TimeZone.getDefault().getID()).append("\n");
+	        msg.append("Default server time zone is: ").append(serverDefaultTimeZone.getID()).append("\n");
+			if (!LangUtils.equals(TimeZone.getDefault(), serverDefaultTimeZone)) {
+				TimeZone.setDefault(serverDefaultTimeZone);
+				msg.append("Local default time zone is set to server default!\n");
+			}
+			msg.append("Initial local  time zone is: " + Main.getInitialTimeZone().getID());
+			LOG.info(msg);
+			
+			// Scanning context
+			clientContext = new ClassPathXmlApplicationContext(CLIENT_SPRING_BEANS, false, startupContext);
+			final StartUpApplicationListener clientListener = new StartUpApplicationListener(clientContextCondition);
+			clientContext.addApplicationListener(clientListener);
+			// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
+			clientContext.setClassLoader(cl);
+			Thread.yield();					
+			clientContext.refresh();
+			clientContext.registerShutdownHook();
+			
+			log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
+			final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/nuclos-theme.properties");
+			log.info("loading themes properties from the following files: " + Arrays.asList(themes));
+			final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
+			log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
+			Thread.yield();
+			
+			for (Resource r : themes) {
+				if (!r.exists()) {
+					log.error("theme properties not found: " + r);
+					continue;
 				}
-				catch (IOException e1) {
-					log.error(e1.getMessage(), e1);
+				log.info("Processing theme properties: " + r);
+				Properties p = new Properties();
+				p.load(r.getInputStream());
+
+				for (Object key : p.keySet()) {
+					if (key instanceof String && p.get(key) != null && p.get(key) instanceof String) {
+
+						String sKey = (String) key;
+						if (sKey.startsWith("name")) {
+							String xmlKey = "xml";
+							if (sKey.length() > 4) {
+								String sNumber = sKey.substring(4);
+								xmlKey = xmlKey + sNumber;
+							}
+							Object xml = p.get(xmlKey);
+							if (xml != null && xml instanceof String) {
+								NuclosSyntheticaUtils.registerNuclosTheme((String) p.get(key), (String) xml);
+							}
+						}
+					}
 				}
 			}
-		};
-		final Thread thread1 = new Thread(run1, "Startup.init.run1");
-		thread1.setPriority(Thread.NORM_PRIORITY - 1);
-		thread1.start();
+			
+			final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
+			holder.setClientContext(clientContext);
+
+			final int size = extensions.length;
+			if (size == 0) {
+				// propagate clientContextCondition to lastContextCondition
+				synchronized (clientContextCondition) {
+					clientContextCondition.waitFor();
+				}
+				synchronized (lastContextCondition) {
+					lastContextCondition.refreshed();
+				}
+				log.info("no extension contexts found, all spring contexts refreshed");
+			}
+			else {
+				Thread.yield();
+				for (int i = 0; i < size; ++i) {
+					final Resource r = extensions[i];
+					final boolean last = (i + 1 == size);
+					if (!r.exists()) {
+						log.error("spring sub context xml not found: " + r);
+						if (last) {
+							throw new IllegalStateException();
+						}
+						continue;
+					}
+					log.info("Processing sub context xml: " + r);
+					final AbstractXmlApplicationContext ctx;
+					if (r instanceof ClassPathResource) {
+						ctx = new ClassPathXmlApplicationContext(new String[] { ((ClassPathResource)r).getPath() }, false, clientContext);
+					} 
+					else if (r instanceof UrlResource) {
+						ctx = new ResourceXmlApplicationContext(r, Collections.EMPTY_LIST, clientContext, Collections.EMPTY_LIST, false);
+					}
+					else {
+						ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
+					}
+					if (last) {
+						final StartUpApplicationListener lastListener = new StartUpApplicationListener(lastContextCondition);
+						ctx.addApplicationListener(lastListener);
+						log.info("last extension context " + r + " used as condition variable");
+					}
+					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
+					ctx.setClassLoader(cl);
+					// clientContext.addApplicationListener(refreshListener);
+					log.info("before refreshing spring context " + r);
+					ctx.refresh();
+					holder.registerSubContext(ctx);
+					
+					log.info("after refreshing spring context " + r);
+				}
+			}
+		}
+		catch (IOException e1) {
+			log.error(e1.getMessage(), e1);
+		}
 		
 		// set the default locale:
 		// this makes sure the client is independent of the host's locale.
