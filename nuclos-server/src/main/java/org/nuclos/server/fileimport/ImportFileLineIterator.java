@@ -20,10 +20,14 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Iterator;
 
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.csvparser.CSVParser;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 
 /**
@@ -43,7 +47,19 @@ public class ImportFileLineIterator implements Iterator<String[]> {
 
 	public ImportFileLineIterator(GenericObjectDocumentFile importfile, int headerlines, String delimiter) throws IOException {
 		this.lineCount = ImportUtils.countLines(importfile, delimiter);
-		reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(importfile.getContents()), "UTF8"));
+		
+		// @see NUCLOS-620
+		String encoding = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_DEFAULT_ENCODING);
+		if (encoding == null) 
+			encoding = "Cp1252";
+		// test encoding.
+		try {
+			Charset.forName(encoding);
+		} catch (UnsupportedCharsetException e) {
+			encoding = "Cp1252";
+		}
+
+		reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(importfile.getContents()), encoding));
 
 		if (!StringUtils.looksEmpty(delimiter)) {
 			parser = new CSVParser(reader, delimiter.charAt(0));
