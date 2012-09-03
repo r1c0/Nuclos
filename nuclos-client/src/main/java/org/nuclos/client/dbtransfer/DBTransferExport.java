@@ -174,6 +174,7 @@ public class DBTransferExport {
 		final JButton btnBrowse = new JButton("...");
 		final JCheckBox chbxIsNuclonImportAllowed = new JCheckBox(localeDelegate.getMessage(
 				"configuration.transfer.export.option.isnuclonallowed", "Import als Nuclon gestatten"));
+		chbxIsNuclonImportAllowed.setSelected(false);
 		final JCheckBox chbxIncludeUser = new JCheckBox(localeDelegate.getMessage(
 				"configuration.transfer.export.option.user", "Benutzer exportieren"));
 		final JCheckBox chbxIncludeLdap = new JCheckBox(localeDelegate.getMessage(
@@ -204,7 +205,7 @@ public class DBTransferExport {
 		ActionListener al = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				chbxIsNuclonImportAllowed.setSelected(comboNuclet.getSelectedIndex()!=0);
+//				chbxIsNuclonImportAllowed.setSelected(comboNuclet.getSelectedIndex()!=0);
 				chbxIsNuclonImportAllowed.setEnabled(comboNuclet.getSelectedIndex()!=0);
 				chbxIncludeUser.setSelected(comboNuclet.getSelectedIndex()==0);
 				chbxIncludeUser.setEnabled(comboNuclet.getSelectedIndex()==0);
