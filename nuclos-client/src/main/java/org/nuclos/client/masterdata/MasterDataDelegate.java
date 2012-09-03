@@ -783,7 +783,7 @@ public class MasterDataDelegate {
 		  public String get(String sEntityName, boolean bSearchMode, String sCustom) {
 			  Pair<Integer, String> p = mpUsages.get(new Key(sEntityName, bSearchMode, sCustom));
 			  if (sCustom != null && p == null) {
-				  mpUsages.get(new Key(sEntityName, bSearchMode, null));
+				  p = mpUsages.get(new Key(sEntityName, bSearchMode, null));
 			  }
 			  return p != null ? p.y : null;
 		  }
@@ -791,7 +791,7 @@ public class MasterDataDelegate {
 		  public Integer getLayoutId(String sEntityName, boolean bSearchMode, String sCustom) {
 			  Pair<Integer, String> p = mpUsages.get(new Key(sEntityName, bSearchMode, sCustom));
 			  if (sCustom != null && p == null) {
-				  mpUsages.get(new Key(sEntityName, bSearchMode, null));
+				  p = mpUsages.get(new Key(sEntityName, bSearchMode, null));
 			  }
 			  return p != null ? p.x : null;
 		  }
