@@ -57,7 +57,7 @@ public abstract class LayoutMLButtonActionListener implements ActionListener {
 					public void actionPerformed(ActionEvent e) {
 						if (parent.isEnabled())
 							LayoutMLButtonActionListener.this.actionPerformed(
-									new ActionEvent(e.getSource(), e.getID(), sActionCommand, e.getWhen(), e.getModifiers()));
+									new ActionEvent(parent, e.getID(), sActionCommand, e.getWhen(), e.getModifiers()));
 					}
 				};
 				
