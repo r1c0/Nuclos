@@ -191,7 +191,7 @@ public class ImportUtils {
 			MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			MasterDataWithDependantsVO importstructure = null;
 			try {
-				importstructure = mdFacade.getWithDependants(NuclosEntity.IMPORT.getEntityName(), importstructureId);
+				importstructure = mdFacade.getWithDependants(NuclosEntity.IMPORT.getEntityName(), importstructureId, null);
 				importDefinitions.add(new ImportStructure(importstructureId));
 			}
 			catch(Exception e) {

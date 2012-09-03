@@ -114,12 +114,8 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	 * @ejb.interface-method view-type="remote"
 	 * @ejb.permission role-name="Login"
 	 */
-	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(String sEntity,Integer iLayoutId) {
-		if(Modules.getInstance().isModuleEntity(sEntity)){
-			return ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class).getSubFormEntityAndParentSubFormEntityNamesById(iLayoutId);
-		} else {
-			return ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class).getSubFormEntityAndParentSubFormEntityNames(sEntity, iLayoutId, false);
-		}
+	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(Integer iLayoutId) {
+		return ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class).getSubFormEntityAndParentSubFormEntityNamesByLayoutId(iLayoutId);
 	}
 
 	/**

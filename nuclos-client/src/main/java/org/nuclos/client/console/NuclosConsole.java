@@ -935,7 +935,7 @@ public class NuclosConsole extends ConsoleConstants {
 			for (EntityObjectVO mdvoAttribute : coll) {
 				if (!collAttributeNames.contains(mdvoAttribute.getField("attribute", String.class))) {
 					try {
-						MasterDataDelegate.getInstance().remove(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), DalSupportForMD.wrapEntityObjectVO(mdvoAttribute));
+						MasterDataDelegate.getInstance().remove(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), DalSupportForMD.wrapEntityObjectVO(mdvoAttribute), null);
 					}
 					catch (CommonBusinessException e) {
 						// Ok! (tp)

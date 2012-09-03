@@ -79,7 +79,7 @@ public interface GenericObjectFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO getWithDependants(
-		Integer iGenericObjectId, Set<String> stRequiredSubEntityNames)
+		Integer iGenericObjectId, Set<String> stRequiredSubEntityNames, String customUsage)
 		throws CommonPermissionException, CommonFinderException;
 
 	/**
@@ -102,7 +102,7 @@ public interface GenericObjectFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	DependantMasterDataMap reloadDependants(
-		GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bAll)
+		GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bAll, String customUsage)
 		throws CommonFinderException;
 
 	/**
@@ -117,7 +117,7 @@ public interface GenericObjectFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO getHistorical(
-		int iGenericObjectId, Date dateHistorical) throws CommonFinderException,
+		int iGenericObjectId, Date dateHistorical, String customUsage) throws CommonFinderException,
 		CommonPermissionException;
 
 	/**
@@ -131,7 +131,7 @@ public interface GenericObjectFacadeRemote {
 	@RolesAllowed("Login")
 	List<GenericObjectWithDependantsVO> getGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
-		Set<Integer> stRequiredAttributeIds);
+		Set<Integer> stRequiredAttributeIds, String customUsage);
 
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition
@@ -150,7 +150,7 @@ public interface GenericObjectFacadeRemote {
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
-		boolean bIncludeSubModules);
+		boolean bIncludeSubModules, String customUsage);
 
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition, but
@@ -171,7 +171,7 @@ public interface GenericObjectFacadeRemote {
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
-		boolean bIncludeSubModules);
+		boolean bIncludeSubModules, String customUsage);
 
 	/**
 	 * gets all generic objects that match a given search condition
@@ -189,7 +189,7 @@ public interface GenericObjectFacadeRemote {
 	TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
-		Set<String> stRequiredSubEntityNames,
+		Set<String> stRequiredSubEntityNames, String customUsage,
 		int iMaxRowCount);
 
 	/**
@@ -217,7 +217,7 @@ public interface GenericObjectFacadeRemote {
 	Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(
 		Integer iModuleId, List<Integer> lstIds,
 		Set<Integer> stRequiredAttributeIds,
-		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
+		Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects);
 
 	/**
 	 * creates a new generic object, along with its dependants.
@@ -234,7 +234,7 @@ public interface GenericObjectFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO create(
-		GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames)
+		GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames, String customUsage)
 		throws CommonPermissionException, NuclosBusinessRuleException,
 		CommonCreateException, CommonFinderException;
 
@@ -253,7 +253,7 @@ public interface GenericObjectFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@RolesAllowed("Login")
-	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
+	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo, String customUsage)
 		throws CommonPermissionException, NuclosBusinessRuleException,
 		CommonCreateException;
 
@@ -268,7 +268,7 @@ public interface GenericObjectFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO modify(Integer iModuleId,
-		GenericObjectWithDependantsVO lowdcvo) throws CommonCreateException,
+		GenericObjectWithDependantsVO lowdcvo, String customUsage) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonPermissionException, CommonStaleVersionException,
 		NuclosBusinessException, CommonValidationException;
@@ -283,7 +283,7 @@ public interface GenericObjectFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	void remove(GenericObjectWithDependantsVO gowdvo,
-		boolean bDeletePhysically) throws NuclosBusinessException,
+		boolean bDeletePhysically, String customUsage) throws NuclosBusinessException,
 		CommonFinderException,
 		CommonRemoveException, CommonPermissionException,
 		CommonStaleVersionException, NuclosBusinessRuleException,
@@ -299,7 +299,7 @@ public interface GenericObjectFacadeRemote {
 	 * @throws NuclosBusinessRuleException
 	 * @throws CommonCreateException
 	 */
-	void restore(Integer iId) throws CommonFinderException,
+	void restore(Integer iId, String customUsage) throws CommonFinderException,
 		CommonPermissionException, CommonBusinessException;
 
 	/**
@@ -497,7 +497,7 @@ public interface GenericObjectFacadeRemote {
 	 */
 	@RolesAllowed("ExecuteRulesManually")
 	void executeBusinessRules(List<RuleVO> lstRuleVO,
-		GenericObjectWithDependantsVO govo, boolean bSaveAfterRuleExecution)
+		GenericObjectWithDependantsVO govo, boolean bSaveAfterRuleExecution, String customUsage)
 		throws CommonBusinessException;
 
 }

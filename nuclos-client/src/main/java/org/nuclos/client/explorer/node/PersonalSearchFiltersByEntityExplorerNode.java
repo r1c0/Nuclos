@@ -23,6 +23,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerNode;
@@ -35,6 +36,7 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -109,7 +111,7 @@ public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<Pers
 			UIUtils.runCommand(getJTree(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonBusinessException {
-					NuclosCollectControllerFactory.getInstance().newCollectController(getTreeNode().getEntity(), null).run();
+					NuclosCollectControllerFactory.getInstance().newCollectController(getTreeNode().getEntity(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).run();
 				}
 			});
 		}

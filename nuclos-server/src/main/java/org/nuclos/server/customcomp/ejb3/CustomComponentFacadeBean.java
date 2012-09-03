@@ -91,7 +91,7 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 
 	public void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CUSTOMCOMPONENT);
-		MasterDataVO result = getMasterDataFacade().create(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
+		MasterDataVO result = getMasterDataFacade().create(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null, null);
 
 		setResources(getCustomComponentVO(result), translations);
 		notifyClients();
@@ -99,14 +99,14 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 
 	public void modify(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CUSTOMCOMPONENT);
-		getMasterDataFacade().modify(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
+		getMasterDataFacade().modify(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null, null);
 
 		setResources(vo, translations);
 		notifyClients();
 	}
 
 	public void remove(CustomComponentVO vo) throws CommonBusinessException {
-		getMasterDataFacade().remove(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), true);
+		getMasterDataFacade().remove(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), true, null);
 
 		notifyClients();
 	}

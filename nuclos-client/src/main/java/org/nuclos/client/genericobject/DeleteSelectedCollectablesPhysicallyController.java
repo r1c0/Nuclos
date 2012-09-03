@@ -46,7 +46,7 @@ public class DeleteSelectedCollectablesPhysicallyController
 				throw new CommonPermissionException(SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectCollectController.41","Endg\u00fcltiges L\u00f6schen ist nicht erlaubt."));
 
-			GenericObjectDelegate.getInstance().remove(clct.getGenericObjectWithDependantsCVO(), true);
+			GenericObjectDelegate.getInstance().remove(clct.getGenericObjectWithDependantsCVO(), true, ctl.getCustomUsage());
 			return null;
 		}
 

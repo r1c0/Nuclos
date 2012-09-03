@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
@@ -38,6 +39,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.MutableBoolean;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.SubFormTreeNode;
@@ -89,7 +91,7 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 				final String sTargetSubFormEntity = getTreeNode().getMasterDataVO().getField("entity", String.class);
 				String sTargetSubFormForeignField = getTreeNode().getMasterDataVO().getField("field", String.class);
 
-				final GenericObjectCollectController goController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iTargetModuleId, null);
+				final GenericObjectCollectController goController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iTargetModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 				goController.runViewSingleCollectable(
 					CollectableGenericObjectWithDependants.newCollectableGenericObject(

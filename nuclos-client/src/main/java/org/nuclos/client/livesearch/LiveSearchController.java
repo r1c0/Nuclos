@@ -53,6 +53,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -73,6 +74,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
@@ -437,7 +439,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
     				NuclosCollectController<?> collectController
     				= NuclosCollectControllerFactory.getInstance()
-    					.newCollectController(entity, null);
+    					.newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
     				collectController.runViewResults(cond);
     			}
     		}
@@ -485,7 +487,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
         				NuclosCollectController<?> collectController
         				= NuclosCollectControllerFactory.getInstance()
-        					.newCollectController(fm.getForeignEntity(), null);
+        					.newCollectController(fm.getForeignEntity(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
         				collectController.runViewResults(cond);
     				}
     				else {
@@ -528,7 +530,6 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     				// Check, whether the layout contains the row's entity
 	                Map<EntityAndFieldName, String> subStuff
 	                = EntityFacadeDelegate.getInstance().getSubFormEntityAndParentSubFormEntityNames(
-	                		fieldMeta.getForeignEntity(),
 	                		MasterDataDelegate.getInstance().getLayoutId(fieldMeta.getForeignEntity(), false));
 	                for(EntityAndFieldName ef : subStuff.keySet())
 	                	if(ef.getEntityName().equals(row.entityName)) {
@@ -550,7 +551,6 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         			// Check, whether the layout contains the row's entity
 	                Map<EntityAndFieldName, String> subStuff
 	                = EntityFacadeDelegate.getInstance().getSubFormEntityAndParentSubFormEntityNames(
-	                		sForeignEntity,
 	                		MasterDataDelegate.getInstance().getLayoutId(sForeignEntity, false));
 	                for(EntityAndFieldName ef : subStuff.keySet())
 	                	if(ef.getEntityName().equals(row.entityName)) {
@@ -884,7 +884,6 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                     			// Check, whether the layout contains the row's entity
             	                Map<EntityAndFieldName, String> subStuff
             	                = EntityFacadeDelegate.getInstance().getSubFormEntityAndParentSubFormEntityNames(
-            	                		sForeignEntity,
             	                		MasterDataDelegate.getInstance().getLayoutId(sForeignEntity, false));
             	                for(EntityAndFieldName ef : subStuff.keySet())
             	                	if(ef.getEntityName().equals(searchDef.entity.getEntity())) {

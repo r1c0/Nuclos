@@ -43,7 +43,7 @@ public class RelationTypeCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public RelationTypeCollectController( MainFrameTab tabIfAny) {
-		super(NuclosEntity.RELATIONTYPE, tabIfAny);
+		super(NuclosEntity.RELATIONTYPE, tabIfAny, null);
 	}
 
 	@Override

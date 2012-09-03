@@ -399,7 +399,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 					/** is new allowed is defined in initial state model. */
 					if (!mpNewAllowedByModuleId.containsKey(iModuleId)) {
-						StateModelUsage smu = stateModelUsagesCache.getStateUsages().getStateModelUsage(new UsageCriteria(iModuleId, null, null));
+						StateModelUsage smu = stateModelUsagesCache.getStateUsages().getStateModelUsage(new UsageCriteria(iModuleId, null, null, null));
 						Boolean isNewAllowed = false;
 						if (smu != null) {
 							Integer iStateModelId = smu.getStateModelId();

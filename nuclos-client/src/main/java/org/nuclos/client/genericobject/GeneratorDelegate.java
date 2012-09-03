@@ -96,9 +96,9 @@ public class GeneratorDelegate {
 	 * @return id of generated leased object (if exactly one object was
 	 *         generated)
 	 */
-	public GenerationResult generateGenericObject(Long iSourceGenericObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
+	public GenerationResult generateGenericObject(Long iSourceGenericObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo, String customUsage) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
-			return generatorFacadeRemote.generateGenericObject(iSourceGenericObjectId, parameterObjectId, generatoractionvo);
+			return generatorFacadeRemote.generateGenericObject(iSourceGenericObjectId, parameterObjectId, generatoractionvo, customUsage);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -112,9 +112,9 @@ public class GeneratorDelegate {
 		}
 	}
 
-	public GenerationResult generateGenericObject(Collection<EntityObjectVO> sources, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
+	public GenerationResult generateGenericObject(Collection<EntityObjectVO> sources, Long parameterObjectId, GeneratorActionVO generatoractionvo, String customUsage) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
-			return generatorFacadeRemote.generateGenericObject(sources, parameterObjectId, generatoractionvo);
+			return generatorFacadeRemote.generateGenericObject(sources, parameterObjectId, generatoractionvo, customUsage);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}

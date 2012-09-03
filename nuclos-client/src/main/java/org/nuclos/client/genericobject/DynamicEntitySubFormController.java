@@ -30,6 +30,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
@@ -46,6 +47,7 @@ import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -227,7 +229,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 			private void showMasterDataInResult(
 				final CollectableSearchCondition cond, String entityName)
 				throws CommonBusinessException {
-				MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entityName, null);
+				MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entityName, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 				ctlMasterdata.runViewResults(cond);
 			}
 
@@ -236,7 +238,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 				try {
 					final Integer iModuleId = getCommonModuleId(collclct);
 					final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-							newGenericObjectCollectController(iModuleId, null);
+							newGenericObjectCollectController(iModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					ctlGenericObject.setSearchDeleted(CollectableGenericObjectSearchExpression.SEARCH_BOTH);
 					ctlGenericObject.runViewResults(cond);
 				}

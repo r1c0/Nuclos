@@ -1386,7 +1386,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 	private void viewList(String entity, List<Object> ids) {
 		try {
-			NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+			NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			controller.runViewResults(ids);
 		}
 		catch (CommonBusinessException ex) {

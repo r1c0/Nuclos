@@ -136,7 +136,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	 * </code></pre>
 	 */
 	public RuleCollectController(MainFrameTab tabIfAny) {
-		super(CollectableRule.clcte, tabIfAny);
+		super(CollectableRule.clcte, tabIfAny, null);
 
 		//this.transferhandler = new RuleTransferHandler(parent);
 

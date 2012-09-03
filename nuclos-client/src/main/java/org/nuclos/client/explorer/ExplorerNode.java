@@ -46,6 +46,7 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -63,6 +64,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.ChainedTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
@@ -837,7 +839,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 					for (String entity : toOpen.keySet()) {
 						try {
-							NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+							NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 							controller.runViewResults(toOpen.getValues(entity));
 						}
 						catch (CommonBusinessException ex) {

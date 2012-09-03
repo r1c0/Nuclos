@@ -189,7 +189,7 @@ public class DbImport extends AbstractImport {
 
 						// Set initial state if necessary
 						if (meta.isStateModel() && !io.getAttributes().containsKey(ATTRIBUTENAME_STATE)) {
-							StateVO statevo = getStateFacade().getInitialState(new UsageCriteria(IdUtils.unsafeToId(meta.getId()), process, null));
+							StateVO statevo = getStateFacade().getInitialState(new UsageCriteria(IdUtils.unsafeToId(meta.getId()), process, null, null));
 							io.getAttributes().put(ATTRIBUTENAME_STATE, statevo.getStatename());
 						}
 

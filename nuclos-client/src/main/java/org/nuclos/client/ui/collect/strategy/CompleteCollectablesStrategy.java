@@ -62,6 +62,6 @@ public interface CompleteCollectablesStrategy<Clct extends Collectable> {
 	 * @postcondition result != null
 	 * @postcondition result.size() == collclct.size()
 	 */
-	Collection<Clct> getCompleteCollectables(Collection<Clct> collclct) throws CommonBusinessException;
+	Collection<Clct> getCompleteCollectables(Collection<Clct> collclct, String customUsage) throws CommonBusinessException;
 
 }	// interface CompleteCollectablesStrategy

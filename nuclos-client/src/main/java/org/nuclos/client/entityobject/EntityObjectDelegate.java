@@ -50,14 +50,14 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 
 	@Override
 	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Collection<EntityFieldMetaDataVO> fields) {
-		return entityObjectFacadeRemote.getEntityObjectProxyList(id, clctexpr, fields);
+			Collection<EntityFieldMetaDataVO> fields, String customUsage) {
+		return entityObjectFacadeRemote.getEntityObjectProxyList(id, clctexpr, fields, customUsage);
 	}
 
 	@Override
 	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds,
-			Collection<EntityFieldMetaDataVO> fields) {
-		return entityObjectFacadeRemote.getEntityObjectsMore(id, lstIds, fields);
+			Collection<EntityFieldMetaDataVO> fields, String customUsage) {
+		return entityObjectFacadeRemote.getEntityObjectsMore(id, lstIds, fields, customUsage);
 	}
 
 	@Override

@@ -90,14 +90,14 @@ public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFaca
 		checkWriteAllowed(NuclosEntity.LDAPSERVER);
 		validate(vo, mpDependants);
 
-		return masterDataFacade.create(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants);
+		return masterDataFacade.create(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants, null);
 	}
 
 	public MasterDataVO modify(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.LDAPSERVER);
 		validate(vo, mpDependants);
 
-		Integer id = (Integer) masterDataFacade.modify(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants);
+		Integer id = (Integer) masterDataFacade.modify(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants, null);
 		return masterDataFacade.get(NuclosEntity.LDAPSERVER.getEntityName(), id);
 	}
 

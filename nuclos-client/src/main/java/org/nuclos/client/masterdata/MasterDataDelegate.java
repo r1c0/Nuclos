@@ -24,9 +24,11 @@ import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -37,6 +39,7 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -134,6 +137,14 @@ public class MasterDataDelegate {
 	public void revalidateMasterDataMetaCache() {
 		getMasterDataFacade().revalidateMasterDataMetaCache();
 	}
+	
+	public String getLayoutML(String sEntityName, boolean bSearchMode, String sCustom) {
+		 return getLayoutCache().get(sEntityName, bSearchMode, sCustom);
+	 }
+
+	 public Integer getLayoutId(String entityName, boolean searchMode, String sCustom) {
+		 return getLayoutCache().getLayoutId(entityName, searchMode, sCustom);
+	 }
 
 	/**
 	 * @param sEntityName
@@ -141,11 +152,11 @@ public class MasterDataDelegate {
 	 * @return the (cached) layout ml document, if any, for the given entity and mode.
 	 */
 	 public String getLayoutML(String sEntityName, boolean bSearchMode) {
-		 return getLayoutCache().get(sEntityName, bSearchMode);
+		 return getLayoutML(sEntityName, bSearchMode, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 	 }
 
 	 public Integer getLayoutId(String entityName, boolean searchMode) {
-		 return getLayoutCache().getLayoutId(entityName, searchMode);
+		 return getLayoutId(entityName, searchMode, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 	 }
 
 
@@ -487,14 +498,14 @@ public class MasterDataDelegate {
 	  * @precondition mdvo.getId() != null
 	  * @precondition mpDependants != null --> for(m : mpDependants.values()) { m.getId() == null }
 	  */
-	 public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
+	 public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, String customUsage)
 	 throws CommonBusinessException {
 		 try {
 			 if (mdvo.getId() != null) {
 				 throw new IllegalArgumentException("mdvo");
 			 }
 			 checkDependantsAreNew(mpDependants);
-			 return this.getMasterDataFacade().create(sEntityName, mdvo, mpDependants);
+			 return this.getMasterDataFacade().create(sEntityName, mdvo, mpDependants, customUsage);
 		 }
 		 catch (RuntimeException ex) {
 			// RuntimeException has the BAD habit to include its cause' message in its own message.
@@ -516,7 +527,7 @@ public class MasterDataDelegate {
 	  * @throws CommonBusinessException
 	  * @precondition mdvo.getId() != null
 	  */
-	 public Object update(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
+	 public Object update(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, String customUsage)
 	 throws CommonBusinessException {
 		 if (mdvo.getId() == null) {
 			 throw new IllegalArgumentException("mdvo");
@@ -533,7 +544,7 @@ public class MasterDataDelegate {
 			 }
 		 }
 		 try {
-			 return this.getMasterDataFacade().modify(sEntityName, mdvo, mpDependants);
+			 return this.getMasterDataFacade().modify(sEntityName, mdvo, mpDependants, customUsage);
 		 }
 		 catch (RuntimeException ex) {
 			// RuntimeException has the BAD habit to include its cause' message in its own message.
@@ -543,23 +554,23 @@ public class MasterDataDelegate {
 		 }
 	 }
 
-	 public void remove(String sEntityName, MasterDataVO mdvo) throws CommonBusinessException {
+	 public void remove(String sEntityName, MasterDataVO mdvo, String customUsage) throws CommonBusinessException {
 		 try {
-			 this.getMasterDataFacade().remove(sEntityName, mdvo, true);
+			 this.getMasterDataFacade().remove(sEntityName, mdvo, true, customUsage);
 		 }
 		 catch (RuntimeException ex) {
 			 throw new CommonFatalException(ex);
 		 }
 	 }
 
-	public Set<String> getSubFormEntityNamesByMasterDataEntity(String sEntityName) {
-		return CollectionUtils.transformIntoSet(getSubFormEntitiesByMasterDataEntity(sEntityName),
+	public Set<String> getSubFormEntityNamesByMasterDataEntity(String sEntityName, String customUsage) {
+		return CollectionUtils.transformIntoSet(getSubFormEntitiesByMasterDataEntity(sEntityName, customUsage),
 			new EntityAndFieldName.GetEntityName());
 	}
 
-	public Set<EntityAndFieldName> getSubFormEntitiesByMasterDataEntity(String sEntityName) {
+	public Set<EntityAndFieldName> getSubFormEntitiesByMasterDataEntity(String sEntityName, String customUsage) {
 		try {
-			return this.getMasterDataFacade().getSubFormEntitiesByMasterDataEntity(sEntityName);
+			return this.getMasterDataFacade().getSubFormEntitiesByMasterDataEntity(sEntityName, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -567,7 +578,7 @@ public class MasterDataDelegate {
 	}
 	
 	public boolean isSubformEntity(String sEntity) {
-		return getLayoutCache().getLayoutId(sEntity, false) == null;
+		return getLayoutCache().getLayoutId(sEntity, false, null) == null;
 	}
 
 	 /**
@@ -583,9 +594,9 @@ public class MasterDataDelegate {
 		 }
 	 }
 
-	 public void executeBusinessRules(String sEntityName, List<RuleVO>lstRuleVO, MasterDataWithDependantsVO mdvo, boolean bSaveAfterRuleExecution) throws CommonBusinessException {
+	 public void executeBusinessRules(String sEntityName, List<RuleVO>lstRuleVO, MasterDataWithDependantsVO mdvo, boolean bSaveAfterRuleExecution, String customUsage) throws CommonBusinessException {
 		 try {
-			 this.getMasterDataFacade().executeBusinessRules(sEntityName, lstRuleVO, mdvo, bSaveAfterRuleExecution);
+			 this.getMasterDataFacade().executeBusinessRules(sEntityName, lstRuleVO, mdvo, bSaveAfterRuleExecution, customUsage);
 		 }
 		 catch (RuntimeException ex) {
 			 throw new CommonFatalException(ex);
@@ -688,10 +699,12 @@ public class MasterDataDelegate {
 
 		private final String sEntityName;
 		private final boolean bSearch;
+		private final String sCustom;
 
-		private Key(String sEntityName, boolean bSearch) {
+		private Key(String sEntityName, boolean bSearch, String sCustom) {
 			this.sEntityName = sEntityName;
 			this.bSearch = bSearch;
+			this.sCustom = sCustom;
 		}
 
 		@Override
@@ -711,13 +724,16 @@ public class MasterDataDelegate {
 			if (!sEntityName.equals(key.sEntityName)) {
 				return false;
 			}
+			if (!LangUtils.equals(sCustom, key.sCustom)) {
+				return false;
+			}
 
 			return true;
 		}
 
 		@Override
 		public int hashCode() {
-			return 29 * sEntityName.hashCode() + (bSearch ? 1 : 0);
+			return 29 * (sEntityName+sCustom).hashCode() + (bSearch ? 1 : 0);
 		}
 	}
 
@@ -740,8 +756,9 @@ public class MasterDataDelegate {
 				  final String sEntityName = mdvoUsage.getField("entity", String.class);
 				  final boolean bSearch = mdvoUsage.getField("searchScreen", Boolean.class);
 				  final Integer iLayoutId = mdvoUsage.getField("layoutId", Integer.class);
+				  final String sCustom = mdvoUsage.getField("custom", String.class);
 				  result.put(
-					  new Key(sEntityName, bSearch),
+					  new Key(sEntityName, bSearch, sCustom),
 					  new Pair<Integer, String>(iLayoutId, mpLayouts.get(iLayoutId)));
 			  }
 			  return result;
@@ -763,13 +780,19 @@ public class MasterDataDelegate {
 		   * @param bSearchMode Search mode? Otherwise: Details mode.
 		   * @return the layout ml document, if any, for the given entity and mode.
 		   */
-		  public String get(String sEntityName, boolean bSearchMode) {
-			  Pair<Integer, String> p = mpUsages.get(new Key(sEntityName, bSearchMode));
+		  public String get(String sEntityName, boolean bSearchMode, String sCustom) {
+			  Pair<Integer, String> p = mpUsages.get(new Key(sEntityName, bSearchMode, sCustom));
+			  if (sCustom != null && p == null) {
+				  mpUsages.get(new Key(sEntityName, bSearchMode, null));
+			  }
 			  return p != null ? p.y : null;
 		  }
 
-		  public Integer getLayoutId(String sEntityName, boolean bSearchMode) {
-			  Pair<Integer, String> p = mpUsages.get(new Key(sEntityName, bSearchMode));
+		  public Integer getLayoutId(String sEntityName, boolean bSearchMode, String sCustom) {
+			  Pair<Integer, String> p = mpUsages.get(new Key(sEntityName, bSearchMode, sCustom));
+			  if (sCustom != null && p == null) {
+				  mpUsages.get(new Key(sEntityName, bSearchMode, null));
+			  }
 			  return p != null ? p.x : null;
 		  }
 		  

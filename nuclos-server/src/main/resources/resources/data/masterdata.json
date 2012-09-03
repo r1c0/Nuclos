@@ -7121,7 +7121,8 @@
         "entity",
         "process",
         "state",
-        "searchScreen"
+        "searchScreen",
+        "custom"
       ]
     ],
     "nuclos_entityfield": [
@@ -7197,6 +7198,18 @@
         "unique": false,
         "labelres": "nuclos.entityfield.layoutUsage.searchScreen.label",
         "descriptionres": "nuclos.entityfield.layoutUsage.searchScreen.description"
+      },
+      {
+        "name": "custom",
+        "dbfield": "STRCUSTOM",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.layoutUsage.custom.label",
+        "descriptionres": "nuclos.entityfield.layoutUsage.custom.description"
       }
     ]
   },

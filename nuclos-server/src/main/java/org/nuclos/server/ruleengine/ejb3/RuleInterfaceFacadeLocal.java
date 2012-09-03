@@ -57,13 +57,13 @@ public interface RuleInterfaceFacadeLocal {
 		String sMessage) throws NuclosBusinessRuleException;
 
 	Integer createObject(Integer iGenericObjectId,
-		String sGenerator) throws NuclosBusinessRuleException;
+		String sGenerator, String customUsage) throws NuclosBusinessRuleException;
 
 	Integer createObject(String sEntityName, Integer iObjectId,
-		String sGenerator) throws NuclosBusinessRuleException;
+		String sGenerator, String customUsage) throws NuclosBusinessRuleException;
 
 	public abstract Integer createObject(RuleObjectContainerCVO loccvo,
-		String sGenerator) throws NuclosBusinessRuleException;
+		String sGenerator, String customUsage) throws NuclosBusinessRuleException;
 
 	/**
 	 * retrieves the attribute value with the given name in the leased object with the given id.
@@ -79,7 +79,7 @@ public interface RuleInterfaceFacadeLocal {
 	 * @precondition iGenericObjectId != null
 	 */
 	void setAttribute(RuleVO ruleVO, Integer iGenericObjectId,
-		String sAttribute, Integer iValueId, Object oValue)
+		String sAttribute, Integer iValueId, Object oValue, String customUsage)
 		throws NuclosBusinessRuleException;
 
 	/**
@@ -108,13 +108,13 @@ public interface RuleInterfaceFacadeLocal {
 	 * @precondition iGenericObjectId != null
 	 */
 	GenericObjectVO changeState(GenericObjectVO govoCurrent,
-		Integer iGenericObjectId, int iNumeral)
+		Integer iGenericObjectId, int iNumeral, String customUsage)
 		throws NuclosBusinessRuleException;
 
 	/**
 	 * @precondition iGenericObjectId != null
 	 */
-	void changeState(Integer iGenericObjectId, int iNumeral)
+	void changeState(Integer iGenericObjectId, int iNumeral, String customUsage)
 		throws NuclosBusinessRuleException;
 
 	/**
@@ -130,7 +130,7 @@ public interface RuleInterfaceFacadeLocal {
 	 */
 	GenericObjectVO scheduleStateChange(
 		GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNewState,
-		Date dateToSchedule) throws NuclosBusinessRuleException,
+		Date dateToSchedule, String customUsage) throws NuclosBusinessRuleException,
 		CommonFinderException;
 
 	/**

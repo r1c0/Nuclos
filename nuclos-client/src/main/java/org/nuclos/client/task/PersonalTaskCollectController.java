@@ -96,7 +96,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public PersonalTaskCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.TODOLIST, tabIfAny);
+		super(NuclosEntity.TODOLIST, tabIfAny, null);
 		setupDetailsToolBar();
 		if(SecurityCache.getInstance().isSuperUser()){
 			List<CollectableComponent> delegatorCollectableComponents = getDetailCollectableComponentsFor("taskdelegator");

@@ -78,7 +78,7 @@ public class ExportImportCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public ExportImportCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.IMPORTEXPORT, tabIfAny);
+		super(NuclosEntity.IMPORTEXPORT, tabIfAny, null);
 		this.setupDetailsToolBar();
 	}
 	

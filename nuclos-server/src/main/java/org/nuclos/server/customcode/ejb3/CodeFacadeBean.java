@@ -86,7 +86,7 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 		getNameFromSource(codevo);
 		codevo.validate();
 
-		MasterDataVO mdvo = getMasterDataFacade().create(NuclosEntity.CODE.getEntityName(), MasterDataWrapper.wrapCodeVO(codevo), null);
+		MasterDataVO mdvo = getMasterDataFacade().create(NuclosEntity.CODE.getEntityName(), MasterDataWrapper.wrapCodeVO(codevo), null, null);
 		RuleCache.getInstance().invalidate();
 		return mdvo;
 	}
@@ -100,7 +100,7 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 		getNameFromSource(codevo);
 		codevo.validate();
 
-		Integer id = (Integer)getMasterDataFacade().modify(NuclosEntity.CODE.getEntityName(), MasterDataWrapper.wrapCodeVO(codevo), null);
+		Integer id = (Integer)getMasterDataFacade().modify(NuclosEntity.CODE.getEntityName(), MasterDataWrapper.wrapCodeVO(codevo), null, null);
 		MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.CODE.getEntityName(), id);
 		RuleCache.getInstance().invalidate();
 		return mdVO;
@@ -114,7 +114,7 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 			nuclosJavaCompilerComponent.check(new PlainCodeGenerator(cvo), true);
 		}
 
-		getMasterDataFacade().remove(NuclosEntity.CODE.getEntityName(), vo, false);
+		getMasterDataFacade().remove(NuclosEntity.CODE.getEntityName(), vo, false, null);
 		RuleCache.getInstance().invalidate();
 	}
 

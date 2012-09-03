@@ -45,11 +45,13 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 	private final Integer iModuleId;
 	private final Integer iProcessId;
 	private final Integer iStatusId;
-
-	public UsageCriteria(Integer iModuleId, Integer iProcessId, Integer iStatusId) {
+	private final String sCustom;
+	
+	public UsageCriteria(Integer iModuleId, Integer iProcessId, Integer iStatusId, String sCustom) {
 		this.iModuleId = iModuleId;
 		this.iProcessId = iProcessId;
 		this.iStatusId = iStatusId;
+		this.sCustom = sCustom;
 	}
 
 	public Integer getModuleId() {
@@ -62,6 +64,10 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 
 	public Integer getStatusId() {
 		return iStatusId;
+	}
+
+	public String getCustom() {
+		return sCustom;
 	}
 
 	@Override
@@ -77,7 +83,8 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 			final UsageCriteria that = (UsageCriteria) o;
 			result = LangUtils.equals(this.getModuleId(), that.getModuleId())
 					&& LangUtils.equals(this.getProcessId(), that.getProcessId())
-							&& LangUtils.equals(this.getStatusId(), that.getStatusId());
+							&& LangUtils.equals(this.getStatusId(), that.getStatusId())
+								&& LangUtils.equals(this.getCustom(), that.getCustom());
 		}
 		return result;
 	}
@@ -86,19 +93,18 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 	public int hashCode() {
 		return LangUtils.hashCode(getModuleId())
 				^ LangUtils.hashCode(getProcessId())
-				^ LangUtils.hashCode(getStatusId());
+				^ LangUtils.hashCode(getStatusId())
+				^ LangUtils.hashCode(getCustom());
 	}
 
 	@Override
 	public String toString() {
-		return "(ModuleId: " + getModuleId() + ", ProcessId: " + getProcessId() + ", StatusId: " + getStatusId() + ")";
+		return "(ModuleId: " + getModuleId() + ", ProcessId: " + getProcessId() + ", StatusId: " + getStatusId() + ", Custom: " + getCustom() + ")";
 	}
 
 	/**
 	 * @param paramprovider
-	 * @return the names for the attributes contained in a quintuple. Note that there is no attribute for "module",
-	 * so the result contains only four elements.
-	 * @postcondition result.size() == 4
+	 * @return the names for the attributes contained in a quintuple. 
 	 */
 	public static Collection<String> getContainedAttributeNames() {
 		return Arrays.asList(
@@ -144,7 +150,8 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 		}
 		return isComparable(this.getModuleId(), that.getModuleId())
 				&& isComparable(this.getProcessId(), that.getProcessId())
-				&& isComparable(this.getStatusId(), that.getStatusId());
+				&& isComparable(this.getStatusId(), that.getStatusId())
+				&& isComparable(this.getCustom(), that.getCustom());
 	}
 
 	/**
@@ -169,15 +176,23 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 	}
 
 	private int asBinary() {
-		return (binary(this.getModuleId()) << 2) | (binary(this.getProcessId()) << 1) | (binary(this.getStatusId()));
+		return ((binary(this.getModuleId()) << 3) | (binary(this.getProcessId()) << 2) | (binary(this.getStatusId()) << 1 | (binary(this.getCustom()))));
 	}
 
 	private static int binary(Integer i) {
 		return i == null ? 0 : 1;
 	}
+	
+	private static int binary(String s) {
+		return s == null ? 0 : 1;
+	}
 
 	private static boolean isComparable(Integer i1, Integer i2) {
 		return i1 == null || i2 == null || i1.equals(i2);
+	}
+	
+	private static boolean isComparable(String s1, String s2) {
+		return s1 == null || s2 == null || s1.equals(s2);
 	}
 
 	/**
@@ -248,7 +263,7 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 	 */
 	public static UsageCriteria getGreatestCommonUsageCriteria(UsageCriteria q1, UsageCriteria q2) {
 		final UsageCriteria result = new UsageCriteria(gcf(q1.getModuleId(), q2.getModuleId()),
-				gcf(q1.getProcessId(), q2.getProcessId()), gcf(q1.getStatusId(), q2.getStatusId()));
+				gcf(q1.getProcessId(), q2.getProcessId()), gcf(q1.getStatusId(), q2.getStatusId()), gcf(q1.getCustom(), q2.getCustom()));
 		assert result.isLessOrEqual(q1) && result.isLessOrEqual(q2);
 		return result;
 	}
@@ -267,6 +282,11 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 		assert !(i1 == null || i2 == null) || result == null;
 		assert !LangUtils.equals(i1, i2) || LangUtils.equals(result, i1);
 
+		return result;
+	}
+	
+	private static String gcf(String s1, String s2) {
+		final String result = (LangUtils.equals(s1, s2) ? s1 : null);
 		return result;
 	}
 

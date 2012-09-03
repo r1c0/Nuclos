@@ -127,7 +127,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	 * </code></pre>
 	 */
 	public GenericObjectImportCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny);
+		super(NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny, null);
 	}
 	
 	@Override

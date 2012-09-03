@@ -86,7 +86,7 @@ public interface GenericObjectFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO getWithDependants(
-		Integer iGenericObjectId, Set<String> stRequiredSubEntityNames)
+		Integer iGenericObjectId, Set<String> stRequiredSubEntityNames, String customUsage)
 		throws CommonPermissionException, CommonFinderException;
 
 	/**
@@ -109,7 +109,7 @@ public interface GenericObjectFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	DependantMasterDataMap reloadDependants(
-		GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bAll)
+		GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bAll, String customUsage)
 		throws CommonFinderException;
 
 	/**
@@ -122,7 +122,7 @@ public interface GenericObjectFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	RuleObjectContainerCVO getRuleObjectContainerCVO(Event event,
-		Integer iGenericObjectId) throws CommonPermissionException,
+		Integer iGenericObjectId, String customUsage) throws CommonPermissionException,
 		CommonFinderException;
 
 	/**
@@ -136,7 +136,7 @@ public interface GenericObjectFacadeLocal {
 	@RolesAllowed("Login")
 	List<GenericObjectWithDependantsVO> getGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
-		Set<Integer> stRequiredAttributeIds);
+		Set<Integer> stRequiredAttributeIds, String customUsage);
 
 	/**
 	 * gets all generic objects that match a given search condition
@@ -151,7 +151,7 @@ public interface GenericObjectFacadeLocal {
 	List<GenericObjectWithDependantsVO> getGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
-		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
+		Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects);
 
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition
@@ -170,7 +170,7 @@ public interface GenericObjectFacadeLocal {
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
-		boolean bIncludeSubModules);
+		boolean bIncludeSubModules, String customUsage);
 
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition, but
@@ -191,7 +191,7 @@ public interface GenericObjectFacadeLocal {
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
-		boolean bIncludeSubModules);
+		boolean bIncludeSubModules, String customUsage);
 
 	/**
 	 * gets all generic objects that match a given search condition
@@ -209,7 +209,7 @@ public interface GenericObjectFacadeLocal {
 	TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
-		Set<String> stRequiredSubEntityNames,
+		Set<String> stRequiredSubEntityNames, String customUsage,
 		int iMaxRowCount);
 
 	/**
@@ -236,7 +236,7 @@ public interface GenericObjectFacadeLocal {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	@RolesAllowed("Login")
-	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
+	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo, String customUsage)
 		throws CommonPermissionException, NuclosBusinessRuleException,
 		CommonCreateException;
 
@@ -251,7 +251,7 @@ public interface GenericObjectFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO modify(Integer iModuleId,
-		GenericObjectWithDependantsVO lowdcvo) throws CommonCreateException,
+		GenericObjectWithDependantsVO lowdcvo, String customUsage) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonPermissionException, CommonStaleVersionException,
 		NuclosBusinessException, CommonValidationException;
@@ -268,7 +268,7 @@ public interface GenericObjectFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	GenericObjectVO modify(GenericObjectVO govo,
-		DependantMasterDataMap mpDependants, boolean bFireSaveEvent)
+		DependantMasterDataMap mpDependants, boolean bFireSaveEvent, String customUsage)
 		throws CommonPermissionException, CommonStaleVersionException,
 		NuclosBusinessException, CommonValidationException,
 		CommonCreateException, CommonFinderException, CommonRemoveException;
@@ -283,7 +283,7 @@ public interface GenericObjectFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	void remove(GenericObjectWithDependantsVO gowdvo,
-		boolean bDeletePhysically) throws NuclosBusinessException,
+		boolean bDeletePhysically, String customUsage) throws NuclosBusinessException,
 		CommonFinderException,
 		CommonRemoveException, CommonPermissionException,
 		CommonStaleVersionException, NuclosBusinessRuleException,
@@ -299,7 +299,7 @@ public interface GenericObjectFacadeLocal {
 	 * @throws NuclosBusinessRuleException
 	 * @throws CommonCreateException
 	 */
-	void restore(Integer iId) throws CommonFinderException,
+	void restore(Integer iId, String customUsage) throws CommonFinderException,
 		CommonPermissionException, CommonBusinessException;
 
 	/**
@@ -465,7 +465,7 @@ public interface GenericObjectFacadeLocal {
 		throws CommonFinderException;
 
 	Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(Integer iModuleId, List<Integer> lstIds,
-		Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
+		Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects);
 
 	List<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchExpression cse);
 	
@@ -481,7 +481,7 @@ public interface GenericObjectFacadeLocal {
 	 * @todo change signature into GenericObjectVO modify(GenericObjectWithDependantsVO lowdcvo, boolean bFireSaveEvent)
 	 */
 	@RolesAllowed("Login")
-	GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission)
+	GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission, String customUsage)
 			throws CommonPermissionException, CommonStaleVersionException,
 			NuclosBusinessException, CommonValidationException,
 			CommonCreateException, CommonFinderException, CommonRemoveException;

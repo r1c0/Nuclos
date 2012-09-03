@@ -100,7 +100,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		ImportUtils.validateImportStructure(importStructure);
 
 		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-		return mdfacade.create(NuclosEntity.IMPORT.getEntityName(), importStructure, importStructure.getDependants());
+		return mdfacade.create(NuclosEntity.IMPORT.getEntityName(), importStructure, importStructure.getDependants(), null);
 	}
 
 	public Object modifyImportStructure(MasterDataWithDependantsVO importStructure) throws CommonBusinessException {
@@ -108,14 +108,14 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		ImportUtils.validateImportStructure(importStructure);
 
 		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-		return mdfacade.modify(NuclosEntity.IMPORT.getEntityName(), importStructure, importStructure.getDependants());
+		return mdfacade.modify(NuclosEntity.IMPORT.getEntityName(), importStructure, importStructure.getDependants(), null);
 	}
 
 	public void removeImportStructure(MasterDataVO importStructure) throws CommonBusinessException {
 		checkDeleteAllowed(NuclosEntity.IMPORT);
 
 		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-		mdfacade.remove(NuclosEntity.IMPORT.getEntityName(), importStructure, true);
+		mdfacade.remove(NuclosEntity.IMPORT.getEntityName(), importStructure, true, null);
 	}
 
 	public MasterDataVO createFileImport(MasterDataWithDependantsVO fileImport) throws CommonBusinessException {
@@ -123,7 +123,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		ImportUtils.validateFileImport(fileImport);
 
 		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-		return mdfacade.create(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, fileImport.getDependants());
+		return mdfacade.create(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, fileImport.getDependants(), null);
 	}
 
 	public Object modifyFileImport(MasterDataWithDependantsVO fileImport) throws CommonBusinessException {
@@ -132,7 +132,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 
 		if (getImportCorrelationId(fileImport.getIntId()) == null) {
 			MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-			return mdfacade.modify(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, fileImport.getDependants());
+			return mdfacade.modify(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, fileImport.getDependants(), null);
 		}
 		else {
 			throw new CommonValidationException("import.exception.modify.running");
@@ -144,7 +144,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 
 		if (getImportCorrelationId(fileImport.getIntId()) == null) {
 			MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-			mdfacade.remove(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, true);
+			mdfacade.remove(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, true, null);
 		}
 		else {
 			throw new CommonRemoveException("import.exception.remove.running");
@@ -157,7 +157,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 
 		MasterDataWithDependantsVO importfilevo;
 		try {
-			importfilevo = getMasterDataFacade().getWithDependants(NuclosEntity.IMPORTFILE.getEntityName(), context.getImportfileId());
+			importfilevo = getMasterDataFacade().getWithDependants(NuclosEntity.IMPORTFILE.getEntityName(), context.getImportfileId(), null);
 		}
 		catch(Exception e) {
 			throw new NuclosFatalException(e);
@@ -170,7 +170,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		try {
 			GenericObjectDocumentFile logFile = new GenericObjectDocumentFile(file.getFilename().substring(0, file.getFilename().lastIndexOf(".")) + ".log", new byte[]{});
 			importfilevo.setField("log", logFile);
-			getMasterDataFacade().modify(NuclosEntity.IMPORTFILE.getEntityName(), importfilevo, importfilevo.getDependants());
+			getMasterDataFacade().modify(NuclosEntity.IMPORTFILE.getEntityName(), importfilevo, importfilevo.getDependants(), null);
 
 	        // get path for log file
 	        java.io.File f = new java.io.File(NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH), importfilevo.getIntId() + "." + logFile.getFilename());
@@ -259,7 +259,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    String correlationId = getImportCorrelationId(importfileId);
 
 	    try {
-	    	MasterDataWithDependantsVO importfile = getMasterDataFacade().getWithDependants(NuclosEntity.IMPORTFILE.getEntityName(), importfileId);
+	    	MasterDataWithDependantsVO importfile = getMasterDataFacade().getWithDependants(NuclosEntity.IMPORTFILE.getEntityName(), importfileId, null);
 	    	ImportUtils.validateFileImport(importfile);
 
 	    	// reset state
@@ -268,7 +268,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 			importfile.setField("log", logFile);
 			importfile.setField("laststate", null);
 			importfile.setField("result", null);
-			getMasterDataFacade().modify(NuclosEntity.IMPORTFILE.getEntityName(), importfile, importfile.getDependants());
+			getMasterDataFacade().modify(NuclosEntity.IMPORTFILE.getEntityName(), importfile, importfile.getDependants(), null);
 	    }
 	    catch (Exception ex) {
 	    	throw new NuclosFileImportException(ex.getMessage(), ex);
@@ -318,10 +318,10 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
 	public void setImportResult(Integer importfileId, ImportResult result, String summary) {
 		try {
-	    	MasterDataWithDependantsVO importfile = getMasterDataFacade().getWithDependants(NuclosEntity.IMPORTFILE.getEntityName(), importfileId);
+	    	MasterDataWithDependantsVO importfile = getMasterDataFacade().getWithDependants(NuclosEntity.IMPORTFILE.getEntityName(), importfileId, null);
 			importfile.setField("laststate", result.getValue());
 			importfile.setField("result", summary);
-			getMasterDataFacade().modify(NuclosEntity.IMPORTFILE.getEntityName(), importfile, importfile.getDependants());
+			getMasterDataFacade().modify(NuclosEntity.IMPORTFILE.getEntityName(), importfile, importfile.getDependants(), null);
 	    }
 	    catch (Exception ex) {
 	    	// just log error as the user cannot react on it

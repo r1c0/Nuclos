@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
@@ -30,6 +31,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -65,7 +67,7 @@ public class LocaleCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public LocaleCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.LOCALE, tabIfAny);
+		super(NuclosEntity.LOCALE, tabIfAny, null);
 	}
 
 	/**
@@ -103,7 +105,7 @@ public class LocaleCollectController extends MasterDataCollectController {
 			throw new IllegalArgumentException("clctNew");
 		}
 
-		final MasterDataVO mdvoInserted = this.mddelegate.create(this.getEntityName(), clctNew.getMasterDataCVO(), new DependantMasterDataMap());
+		final MasterDataVO mdvoInserted = this.mddelegate.create(this.getEntityName(), clctNew.getMasterDataCVO(), new DependantMasterDataMap(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 		return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
 	}

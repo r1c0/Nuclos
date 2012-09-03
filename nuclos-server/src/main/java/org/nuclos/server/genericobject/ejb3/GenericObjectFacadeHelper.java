@@ -277,7 +277,7 @@ public class GenericObjectFacadeHelper {
 		return result;
 	}
 
-	public void createDependants(String entityname, int iGenericObjectId, DependantMasterDataMap mpDependants, Map<EntityAndFieldName, String> collSubEntities) throws CommonCreateException {
+	public void createDependants(String entityname, int iGenericObjectId, DependantMasterDataMap mpDependants, Map<EntityAndFieldName, String> collSubEntities, String customUsage) throws CommonCreateException {
 		if (!mpDependants.areAllDependantsNew()) {
 			throw new IllegalArgumentException("Dependants must be new (must have empty ids).");
 		}
@@ -285,7 +285,7 @@ public class GenericObjectFacadeHelper {
 
 		try {
 			// @todo: genericObjectId makes no sense as an entityName
-			this.getMasterDataFacade().modifyDependants(entityname,iGenericObjectId,false,mpDependants);
+			this.getMasterDataFacade().modifyDependants(entityname,iGenericObjectId,false,mpDependants, customUsage);
 		}
 		catch (CommonFinderException ex) {
 			// This must never happen when inserting a new object:
@@ -315,7 +315,7 @@ public class GenericObjectFacadeHelper {
 	 */
 	@Deprecated
 	public void _fillDependants(GenericObjectWithDependantsVO lowdcvo, UsageCriteria usage,
-			Set<String> stRequiredSubEntityNames, Map<EntityAndFieldName, String> subEntities, String username) throws CommonFinderException {
+			Set<String> stRequiredSubEntityNames, Map<EntityAndFieldName, String> subEntities, String username, String customUsage) throws CommonFinderException {
 
 		if (stRequiredSubEntityNames == null) {
 			throw new NullArgumentException("stRequiredSubEntityNames");
@@ -331,7 +331,7 @@ public class GenericObjectFacadeHelper {
 			stAttributeId.add(iAttributeId);
 
 			CollectableSearchExpression clctSearchExpression = new CollectableSearchExpression(new CollectableIdCondition(lowdcvo.getId()));
-			List<GenericObjectWithDependantsVO> lsgowdvo = getGenericObjects(lowdcvo.getModuleId(), clctSearchExpression, Collections.<String>emptySet(), username);
+			List<GenericObjectWithDependantsVO> lsgowdvo = getGenericObjects(lowdcvo.getModuleId(), clctSearchExpression, Collections.<String>emptySet(), username, customUsage);
 			if (lsgowdvo.size() == 1 && lsgowdvo.get(0).getAttribute(iAttributeId) != null) {
 				lowdcvo.setAttribute(lsgowdvo.get(0).getAttribute(iAttributeId));
 			}
@@ -376,7 +376,7 @@ public class GenericObjectFacadeHelper {
 	 * @postcondition result != null
 	 */
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr, 
-		Set<String> stRequiredSubEntityNames, String username) {
+		Set<String> stRequiredSubEntityNames, String username, String customUsage) {
 
 		final AttributeCache attributeCache = AttributeCache.getInstance();
 		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
@@ -388,7 +388,7 @@ public class GenericObjectFacadeHelper {
 			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(
 					DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
 			try {
-				_fillDependants(go, go.getUsageCriteria(attributeCache), stRequiredSubEntityNames, null, username);
+				_fillDependants(go, go.getUsageCriteria(attributeCache, customUsage), stRequiredSubEntityNames, null, username, customUsage);
 			}
 			catch(CommonFinderException e) {
 				throw new NuclosFatalException(e);
@@ -398,66 +398,6 @@ public class GenericObjectFacadeHelper {
 		
 		assert result != null;
 		return result;
-	}
-
-	// copied from the formerly ejbPostCreate from GenericObjectBean
-	public void postCreate(GenericObjectVO govo) throws CommonCreateException {
-
-		final GenericObjectMetaDataCache lometacache = GenericObjectMetaDataCache.getInstance();
-
-		final Set<Integer> stExcludedAttributeIds = getAttributeIdsExcludedInCreate(lometacache);
-
-		// get set of attributes in the layout:
-		final Set<String> stAttributesInLayout;
-		try {
-			stAttributesInLayout = lometacache.getBestMatchingLayoutAttributeNames(govo.getUsageCriteria(lometacache));
-		}
-		catch (CommonFinderException ex) {
-			throw new CommonFatalException(ex);
-		}
-
-		// TODO: try to refactor - the following is nearly duplicated in setValueObject
-		final Collection<BadAttributeValueException> collex = new ArrayList<BadAttributeValueException>();
-		// create leased object attributes not in exclude list:
-		for (DynamicAttributeVO attrvo : govo.getAttributes()) {
-			final Integer iAttributeId = attrvo.getAttributeId();
-			if (!lometacache.getAttribute(iAttributeId).isCalculated() && !stExcludedAttributeIds.contains(iAttributeId)) {
-				final String sAttributeName = lometacache.getAttribute(iAttributeId).getName();
-				if (stAttributesInLayout.contains(sAttributeName)) {
-					final String sCanonicalValue = attrvo.getCanonicalValue(lometacache);
-
-					if (!StringUtils.isNullOrEmpty(sCanonicalValue)) {
-						// TODO:consider attribute group permissions here ! */
-						/*attrcvo = AttributeCache.getInstance().getAttribute(attrvo.getAttributeId());
-											if (!SecurityCache.getInstance().getAttributegroupsRW(entityContext.getCallerPrincipal().getName()).contains(attrcvo.getAttributegroupId())) {*/
-						// TODO: activate following line when client does not deliver readonly attributes anymore to server */
-						//throw new CreateException(attrcvo.getName()); //is a permission exception
-						/*}*/
-						
-						getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), iAttributeId, attrvo.getValueId(), sCanonicalValue, false);
-					}
-				}
-				else {
-					// attribute not in layout - issue message:
-					LOG.info("Es wird versucht, das Attribut " + sAttributeName +
-							" in das Objekt mit der ID " + govo.getId() + " zu schreiben; es ist im Layout aber nicht verf\u00fcgbar.");
-				}
-			}
-		}
-
-		if (!collex.isEmpty()) {
-			final BadGenericObjectException exCause = new BadGenericObjectException(govo.getId(), collex, govo.getAttributes().size());
-			throw new CommonFatalException(exCause);
-		}
-
-		// generate system identifier:
-		final String sCanonicalValueSystemIdentifier = BusinessIDFactory.generateSystemIdentifier(govo.getModuleId());
-		assert !StringUtils.isNullOrEmpty(sCanonicalValueSystemIdentifier);
-
-		getGenericObjectFacade().createGenericObjectAttribute(govo.getId(), NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getId().intValue(), null, sCanonicalValueSystemIdentifier, false);
-
-		// store system attributes:
-		this.storeSystemAttributes(govo, lometacache, false);
 	}
 
 	/**

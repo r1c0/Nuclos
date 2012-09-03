@@ -35,20 +35,22 @@ public class SearchExpressionReportSource implements ReportSource {
 	private final Integer iModuleId;
 	private final boolean bIncludeSubModules;
 	private final ReportOutputVO.Format format;
+	private final String customUsage;
 	
-	public SearchExpressionReportSource(CollectableSearchExpression expr, List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, Format format) {
+	public SearchExpressionReportSource(CollectableSearchExpression expr, List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, Format format, String customUsage) {
 		super();
 		this.expr = expr;
 		this.lstclctefweSelected = lstclctefweSelected;
 		this.iModuleId = iModuleId;
 		this.bIncludeSubModules = bIncludeSubModules;
 		this.format = format;
+		this.customUsage = customUsage;
 	}
 
 	@Override
 	public NuclosFile getReport() throws NuclosReportException {
 		try {
-			return ReportDelegate.getInstance().prepareSearchResult(expr, lstclctefweSelected, iModuleId, bIncludeSubModules, format);
+			return ReportDelegate.getInstance().prepareSearchResult(expr, lstclctefweSelected, iModuleId, bIncludeSubModules, format, customUsage);
 		}
 		catch (CommonBusinessException e) {
 			throw new NuclosReportException(e);

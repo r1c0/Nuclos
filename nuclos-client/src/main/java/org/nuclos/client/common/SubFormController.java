@@ -159,7 +159,7 @@ public abstract class SubFormController extends MainFrameTabController
 		if (tab == null) {
 			throw new IllegalArgumentException("tab must not be null");
 		}
-		
+
 		this.clcte = clcte;
 		this.clctcompmodelproviderParent = clctcompmodelproviderParent;
 		this.sParentEntityName = sParentEntityName;

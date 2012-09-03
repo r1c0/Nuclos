@@ -220,8 +220,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny) {
-		this(systemEntity.getEntityName(), tabIfAny);
+	public MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny, String customUsage) {
+		this(systemEntity.getEntityName(), tabIfAny, customUsage);
 	}
 
 	/**
@@ -234,8 +234,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-		this(systemEntity.getEntityName(), tabIfAny, detailsWithScrollbar);
+	protected MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar, String customUsage) {
+		this(systemEntity.getEntityName(), tabIfAny, detailsWithScrollbar, customUsage);
 	}
 
 	/**
@@ -248,8 +248,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny) {
-		this(sEntityName, tabIfAny, true);
+	public MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny, String customUsage) {
+		this(sEntityName, tabIfAny, true, customUsage);
 	}
 
 	/**
@@ -262,8 +262,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-		this(sEntityName, tabIfAny, detailsWithScrollbar, new NuclosResultController<CollectableMasterDataWithDependants>(sEntityName, new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
+	protected MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar, String customUsage) {
+		this(sEntityName, tabIfAny, detailsWithScrollbar, new NuclosResultController<CollectableMasterDataWithDependants>(sEntityName, new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()), customUsage);
 	}
 
 	/**
@@ -277,8 +277,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * @param parent
 	 * @param sEntityName
 	 */
-	protected MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny, ResultController<CollectableMasterDataWithDependants> rc) {
-		this(systemEntity.getEntityName(), tabIfAny, true, rc);
+	protected MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny, ResultController<CollectableMasterDataWithDependants> rc, String customUsage) {
+		this(systemEntity.getEntityName(), tabIfAny, true, rc, customUsage);
 	}
 
 	/**
@@ -291,8 +291,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar, ResultController<CollectableMasterDataWithDependants> rc) {
-		super(sEntityName, tabIfAny, rc);
+	protected MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar, ResultController<CollectableMasterDataWithDependants> rc, String customUsage) {
+		super(sEntityName, tabIfAny, rc, customUsage);
 		// getSearchStrategy().setCompleteCollectablesStrategy(new
 		// CompleteCollectableMasterDataStrategy(this));
 		final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
@@ -734,7 +734,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 					readValuesFromEditPanel(clct, false);
 					prepareCollectableForSaving(clct, getCollectableEntityForDetails());
 					final MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(clct.getMasterDataCVO(), getAllSubFormData(clct.getId()).toDependantMasterDataMap());
-					mddelegate.executeBusinessRules(getEntityName(), lstRuleVO, md, bSaveAfterRuleExecution);
+					mddelegate.executeBusinessRules(getEntityName(), lstRuleVO, md, bSaveAfterRuleExecution, getCustomUsage());
 
 					broadcastCollectableEvent(clct, MessageType.EDIT_DONE);
 				}
@@ -1444,7 +1444,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				mdvoInserted.set(mddelegate.create(getEntityName(), clctNew.getMasterDataCVO(), mpmdvoDependants));
+				mdvoInserted.set(mddelegate.create(getEntityName(), clctNew.getMasterDataCVO(), mpmdvoDependants, getCustomUsage()));
 			}
 		});
 
@@ -1464,7 +1464,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				oId.set(mddelegate.update(getEntityName(), clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap()));
+				oId.set(mddelegate.update(getEntityName(), clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap(), getCustomUsage()));
 			}
 		});
 
@@ -1482,7 +1482,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				mddelegate.remove(getEntityName(), clct.getMasterDataCVO());
+				mddelegate.remove(getEntityName(), clct.getMasterDataCVO(), getCustomUsage());
 			}
 		});
 	}
@@ -1931,7 +1931,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	@Override
 	public Collection<RuleVO> getUserRules() {
 		Integer entityId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getEntity()).getId());
-		UsageCriteria uc = new UsageCriteria(entityId, null, null);
+		UsageCriteria uc = new UsageCriteria(entityId, null, null, getCustomUsage());
 
 		final Collection<RuleVO> collRules = RuleDelegate.getInstance().findRulesByUsageAndEvent(RuleEventUsageVO.USER_EVENT, uc);
 		// remove inactive rules

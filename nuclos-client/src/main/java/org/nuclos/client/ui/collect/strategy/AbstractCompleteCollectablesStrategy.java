@@ -59,7 +59,7 @@ public abstract class AbstractCompleteCollectablesStrategy<Clct extends Collecta
 	 * @postcondition result.size() == collclct.size()
 	 */
 	@Override
-    public Collection<Clct> getCompleteCollectables(Collection<Clct> collclct) throws CommonBusinessException {
+    public Collection<Clct> getCompleteCollectables(Collection<Clct> collclct, String customUsage) throws CommonBusinessException {
 		if (collclct == null) {
 			throw new NullArgumentException("collclct");
 		}

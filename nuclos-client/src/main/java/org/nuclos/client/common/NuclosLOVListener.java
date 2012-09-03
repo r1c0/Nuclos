@@ -32,6 +32,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentEvent;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -82,7 +83,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 			public void run() throws CommonBusinessException {
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
 				final MainFrameTab overlay = new MainFrameTab();
-				final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, overlay);
+				final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, overlay, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 				Main.getInstance().getMainController().initMainFrameTab(ctl, overlay);
 				tab.add(overlay);
 				ctl.runLookupCollectable(ev.getCollectableListOfValues());
@@ -123,7 +124,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 	}
 
 	private static CollectController<? extends Collectable> newCollectController(String sEntityName) throws CommonBusinessException {
-		return NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
+		return NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 	}
 
 	@Override

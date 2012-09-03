@@ -91,7 +91,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 	 * </code></pre>
 	 */
 	public DataTypeCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.DATATYP, tabIfAny);
+		super(NuclosEntity.DATATYP, tabIfAny, null);
 		// this.init();
 		this.getCollectStateModel().addCollectStateListener(new DataTypeCollectStateListener());
 		lstChangeListener = new ArrayList<ChangeListener>();

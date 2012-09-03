@@ -97,7 +97,7 @@ public class SearchFilterCollectController extends MasterDataCollectController {
 	public SearchFilterCollectController(MainFrameTab tabIfAny){
 		super(NuclosEntity.SEARCHFILTER, tabIfAny, 
 				new SearchFilterResultController<CollectableMasterDataWithDependants>(NuclosEntity.SEARCHFILTER.getEntityName(),
-						new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
+						new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()), null);
 
 		// a searchfilter can only be created via a searchpanel of a collectcontroller
 		getNewAction().setEnabled(false);
@@ -271,7 +271,7 @@ public class SearchFilterCollectController extends MasterDataCollectController {
 	@Override
 	protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
 		String name = (String) clct.getMasterDataWithDependantsCVO().getField("name");
-		mddelegate.remove(getEntityName(), clct.getMasterDataCVO());
+		mddelegate.remove(getEntityName(), clct.getMasterDataCVO(), getCustomUsage());
 		if(!StringUtils.isNullOrEmpty(name))
 			SearchFilterCache.getInstance().removeFilter(name, null);
 	}

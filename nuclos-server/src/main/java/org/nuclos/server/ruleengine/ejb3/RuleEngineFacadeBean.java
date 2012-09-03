@@ -154,7 +154,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @precondition iModuleId != null
 	 * @precondition Modules.getInstance().getUsesRuleEngine(iModuleId.intValue())
 	 */
-	public RuleObjectContainerCVO fireRule(String sEntity, String sEventName, RuleObjectContainerCVO loccvoCurrent) throws NuclosBusinessRuleException {
+	public RuleObjectContainerCVO fireRule(String sEntity, String sEventName, RuleObjectContainerCVO loccvoCurrent, String customUsage) throws NuclosBusinessRuleException {
 		if (sEntity == null) {
 			throw new NullArgumentException("sEntity");
 		}
@@ -165,22 +165,22 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		UsageCriteria uc;
 		if (loccvoCurrent.getMasterData() != null) {
 			Integer entityId = IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntity(sEntity).getId());
-			uc = new UsageCriteria(entityId, null, null);
+			uc = new UsageCriteria(entityId, null, null, null);
 		} else {
 			Integer iProcessId = loccvoCurrent.getGenericObject().getProcessId();
 			Integer iStatusId = loccvoCurrent.getGenericObject().getStatusId();
 			if (iStatusId == null) {
 				StateFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
-				iStatusId = facade.getInitialState(new UsageCriteria(loccvoCurrent.getGenericObject().getModuleId(), iProcessId, null)).getId();
+				iStatusId = facade.getInitialState(new UsageCriteria(loccvoCurrent.getGenericObject().getModuleId(), iProcessId, null, null)).getId();
 			}
-			uc = new UsageCriteria(loccvoCurrent.getGenericObject().getModuleId(), iProcessId, iStatusId);
+			uc = new UsageCriteria(loccvoCurrent.getGenericObject().getModuleId(), iProcessId, iStatusId, null);
 		}
 		
 		final List<RuleVO> lstRules = new ArrayList<RuleVO>(findRulesByUsageAndEvent(sEventName, uc));
 		
 		// We can now execute the rules in their order
 		info("BEGIN    executing business rules for event \"" + sEventName + "\" and entity " + sEntity + "..."); //Modules.getInstance().getEntityNameByModuleId(iModuleId)
-		final RuleObjectContainerCVO result = this.executeBusinessRules(lstRules, loccvoCurrent, false);
+		final RuleObjectContainerCVO result = this.executeBusinessRules(lstRules, loccvoCurrent, false, customUsage);
 		info("FINISHED executing business rules for event \"" + sEventName + "\" and entity " + sEntity + "..."); //Modules.getInstance().getEntityNameByModuleId(iModuleId)
 		return result;
 	}
@@ -193,7 +193,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @param loccvoCurrent current leased object as parameter for rules
 	 * @return the possibly change current object.
 	 */
-	public RuleObjectContainerCVO fireRule(Integer sourceStateId, Integer targetStateId, RuleObjectContainerCVO ruleContainer, Boolean after) 
+	public RuleObjectContainerCVO fireRule(Integer sourceStateId, Integer targetStateId, RuleObjectContainerCVO ruleContainer, Boolean after, String customUsage) 
 			throws NuclosBusinessRuleException {
 		
 		StateFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
@@ -201,7 +201,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			facade.findStateTransitionByNullAndTargetState(targetStateId) :
 				facade.findStateTransitionBySourceAndTargetState(sourceStateId, targetStateId);
 
-			return stVO != null ? fireRule(stVO.getId(), ruleContainer, after) : ruleContainer;
+			return stVO != null ? fireRule(stVO.getId(), ruleContainer, after, customUsage) : ruleContainer;
 	}
 
 	/**
@@ -211,7 +211,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @param loccvoCurrent current leased object as parameter for rules
 	 * @return the possibly change current object.
 	 */
-	private RuleObjectContainerCVO fireRule(Integer transitionId, RuleObjectContainerCVO ruleContainer, Boolean after) throws NuclosBusinessRuleException {
+	private RuleObjectContainerCVO fireRule(Integer transitionId, RuleObjectContainerCVO ruleContainer, Boolean after, String customUsage) throws NuclosBusinessRuleException {
 		final List<RuleVO> rules = new ArrayList<RuleVO>();
 
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -231,7 +231,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		// We can now execute the rules in their order:
 		info("BEGIN    executing business rules for transition id " + transitionId + "...");
-		final RuleObjectContainerCVO result = this.executeBusinessRules(rules, ruleContainer, false);
+		final RuleObjectContainerCVO result = this.executeBusinessRules(rules, ruleContainer, false, customUsage);
 		info("FINISHED executing business rules for transition id " + transitionId + "...");
 		return result;
 	}
@@ -241,7 +241,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 */
 	public RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, 
 			Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, 
-			List<String> actions, PropertiesMap properties, Boolean after) 
+			List<String> actions, PropertiesMap properties, Boolean after, String customUsage) 
 			throws NuclosBusinessRuleException {
 		
 		RuleObjectContainerCVO result = null;
@@ -251,7 +251,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 			// We can now execute the rules in their order:
 			info("BEGIN executing business rules for generator id " + iGenerationId + "...");
-			result = this.executeBusinessRules(rules, tgtRuleObject, srcRuleObjects, parameterRuleObject, false, actions, properties);
+			result = this.executeBusinessRules(rules, tgtRuleObject, srcRuleObjects, parameterRuleObject, false, actions, properties, customUsage);
 			info("FINISHED executing business rules for generator id " + iGenerationId + "...");
 		}
 		catch (CommonPermissionException e) {
@@ -269,18 +269,18 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return the possibly change current object.
 	 * @throws NuclosBusinessRuleException
 	 */
-	public RuleObjectContainerCVO executeBusinessRules(List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, boolean bIgnoreExceptions) 
+	public RuleObjectContainerCVO executeBusinessRules(List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, boolean bIgnoreExceptions, String customUsage) 
 			throws NuclosBusinessRuleException {
 		
-		return this.executeBusinessRules(lstRules, loccvoCurrent, null, bIgnoreExceptions, null);
+		return this.executeBusinessRules(lstRules, loccvoCurrent, null, bIgnoreExceptions, null, customUsage);
 	}
 
 	/**
 	 * Convenience method for preserving calls without mpProperties
 	 */
 	private RuleObjectContainerCVO executeBusinessRules(List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects,
-		boolean bIgnoreExceptions, List<String> lstActions) throws NuclosBusinessRuleException {
-		return executeBusinessRules(lstRules, loccvoCurrent, roccvoSourceObjects, null, bIgnoreExceptions, lstActions, null);
+		boolean bIgnoreExceptions, List<String> lstActions, String customUsage) throws NuclosBusinessRuleException {
+		return executeBusinessRules(lstRules, loccvoCurrent, roccvoSourceObjects, null, bIgnoreExceptions, lstActions, null, customUsage);
 	}
 
 	/**
@@ -305,7 +305,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return the possibly change current object.
 	 * @throws NuclosBusinessRuleException
 	 */
-	private RuleObjectContainerCVO executeBusinessRules(Collection<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects, RuleObjectContainerCVO loccvoParameterObject, boolean bIgnoreExceptions, List<String> lstActions, PropertiesMap mpProperties) throws NuclosBusinessRuleException {
+	private RuleObjectContainerCVO executeBusinessRules(Collection<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects, RuleObjectContainerCVO loccvoParameterObject, boolean bIgnoreExceptions, List<String> lstActions, PropertiesMap mpProperties, String customUsage) throws NuclosBusinessRuleException {
 		RuleObjectContainerCVO result = loccvoCurrent;
 		if (!lstRules.isEmpty()) {
 			final Iterator<RuleVO> iter = lstRules.iterator();
@@ -324,7 +324,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 						final NuclosRule ruleInstance = ccm.getInstance(generator);
 						iHeaderLinesCount = generator.getPrefixAndHeaderLineCount();
 
-						final RuleInterface ri = new RuleInterface(rulevo, loccvoCurrent, roccvoSourceObjects, loccvoParameterObject, lstActions);
+						final RuleInterface ri = new RuleInterface(rulevo, loccvoCurrent, roccvoSourceObjects, loccvoParameterObject, lstActions, customUsage);
 						ri.setProperties(mpProperties);
 						ruleInstance.rule(ri);
 						result = ri.getRuleObjectContainerCVOIfAny();
@@ -532,7 +532,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			}
 
 			RuleEventUsageVO reUsageVO = new RuleEventUsageVO(sEventname, sEntity, processId, statusId, ruleToInsertId, iNewRuleOrder);
-			getMasterDataFacade().create(NuclosEntity.RULEUSAGE.getEntityName(), MasterDataWrapper.wrapREUsageVO(reUsageVO),null);
+			getMasterDataFacade().create(NuclosEntity.RULEUSAGE.getEntityName(), MasterDataWrapper.wrapREUsageVO(reUsageVO),null, null);
 
 			RuleCache.getInstance().invalidate();
 		}
@@ -586,7 +586,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		if (usageToRemove != null) {
 			//usageToRemove.remove();
-			getMasterDataFacade().remove(NuclosEntity.RULEUSAGE.getEntityName(), usageToRemove, true);
+			getMasterDataFacade().remove(NuclosEntity.RULEUSAGE.getEntityName(), usageToRemove, true, null);
 			RuleCache.getInstance().invalidate();
 		}
 		else {
@@ -1022,7 +1022,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 				mdvo.getFieldIds().put("ruleId", IdUtils.toLongId(rulevo.getId()));
 			}
 
-			MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), mpDependants);
+			MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), mpDependants, null);
 
 			final RuleVO result = MasterDataWrapper.getRuleVO(mdVO);
 			if (result.isActive()) {
@@ -1059,7 +1059,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		try {
 			validateUniqueConstraint(rulevo);
 
-			Integer id = (Integer)getMasterDataFacade().modify(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), mpDependants);
+			Integer id = (Integer)getMasterDataFacade().modify(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), mpDependants, null);
 			MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.RULE.getEntityName(), id);
 
 			RuleCache.getInstance().invalidate();
@@ -1111,7 +1111,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		}
 		//mdVO.remove();
 
-		getMasterDataFacade().remove(NuclosEntity.RULE.getEntityName(), mdVO, true);
+		getMasterDataFacade().remove(NuclosEntity.RULE.getEntityName(), mdVO, true, null);
 		RuleCache.getInstance().invalidate();
 	}
 
@@ -1153,11 +1153,11 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		if (mdVOList != null && mdVOList.size() > 0) {
 			final RuleVO rulevo = MasterDataWrapper.getRuleVO(mdVOList.iterator().next());
 			rulevo.setSource(rulevoNew.getSource());
-			getMasterDataFacade().modify(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), null);
+			getMasterDataFacade().modify(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), null, null);
 			RuleCache.getInstance().invalidate();
 		}
 		else {
-			getMasterDataFacade().create(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevoNew), null);
+			getMasterDataFacade().create(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevoNew), null, null);
 			RuleCache.getInstance().invalidate();
 		}
 

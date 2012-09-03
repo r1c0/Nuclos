@@ -264,11 +264,11 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	 * @throws NuclosSubsequentStateNotLegalException
 	 * @see StateFacadeRemote#changeStateByUser(Integer, Integer, Integer)
 	 */
-	public void changeState(int iModuleId, int iGenericObjectId, int iNewStateId)
+	public void changeState(int iModuleId, int iGenericObjectId, int iNewStateId, String customUsage)
 			throws CommonPermissionException, NuclosSubsequentStateNotLegalException, NuclosNoAdequateStatemodelException,
 			CommonFinderException, NuclosBusinessException {
 		try {
-			stateFacadeRemote.changeStateByUser(iModuleId, iGenericObjectId, iNewStateId);
+			stateFacadeRemote.changeStateByUser(iModuleId, iGenericObjectId, iNewStateId, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -310,11 +310,11 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 	 * @param iNewStateId legal subsequent status id to set for given object
 	 * @see StateFacadeRemote# changeStateAndModifyByUser(Integer, GenericObjectWithDependantsVO, Integer)
 	 */
-	public void changeStateAndModify(int iModuleId,GenericObjectWithDependantsVO gowdvo, int iNewStateId)
+	public void changeStateAndModify(int iModuleId,GenericObjectWithDependantsVO gowdvo, int iNewStateId, String customUsage)
 	throws NuclosNoAdequateStatemodelException, NuclosSubsequentStateNotLegalException, NuclosBusinessException,
 	CommonPermissionException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException {
 		try {
-			stateFacadeRemote.changeStateAndModifyByUser(iModuleId, gowdvo, iNewStateId);
+			stateFacadeRemote.changeStateAndModifyByUser(iModuleId, gowdvo, iNewStateId, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

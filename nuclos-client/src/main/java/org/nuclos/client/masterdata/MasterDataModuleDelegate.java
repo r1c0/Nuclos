@@ -79,10 +79,10 @@ public class MasterDataModuleDelegate {
 	 * @precondition mdvo.getId() != null
 	 * @precondition mpDependants != null --> for(m : mpDependants.values()) { m.getId() == null }
 	 */
-	public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
+	public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, String customUsage)
 			throws CommonBusinessException {
 		try {
-			return this.getFacade().create(sEntityName, mdvo, mpDependants);
+			return this.getFacade().create(sEntityName, mdvo, mpDependants, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -98,20 +98,20 @@ public class MasterDataModuleDelegate {
 	 * @throws CommonBusinessException
 	 * @precondition mdvo.getId() != null
 	 */
-	public Object update(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
+	public Object update(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, String customUsage)
 			throws CommonBusinessException {
 		try {
-			return this.getFacade().modify(sEntityName, mdvo, mpDependants);
+			return this.getFacade().modify(sEntityName, mdvo, mpDependants, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
 	}
 
-	public void remove(String sEntityName, MasterDataVO mdvo)
+	public void remove(String sEntityName, MasterDataVO mdvo, String customUsage)
 				throws CommonBusinessException{
 		try {
-			this.getFacade().remove(sEntityName, mdvo, true);
+			this.getFacade().remove(sEntityName, mdvo, true, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

@@ -163,7 +163,7 @@ public interface MasterDataFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	MasterDataVO create(String sEntityName, MasterDataVO mdvo,
-		DependantMasterDataMap mpDependants) throws CommonCreateException,
+		DependantMasterDataMap mpDependants, String customUsage) throws CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
 	/**
@@ -176,7 +176,7 @@ public interface MasterDataFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	Object modify(String sEntityName, MasterDataVO mdvo,
-		DependantMasterDataMap mpDependants) throws CommonCreateException,
+		DependantMasterDataMap mpDependants, String customUsage) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException;
@@ -191,7 +191,7 @@ public interface MasterDataFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	void remove(String sEntityName, MasterDataVO mdvo,
-		boolean bRemoveDependants) throws CommonFinderException,
+		boolean bRemoveDependants, String customUsage) throws CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
@@ -213,7 +213,7 @@ public interface MasterDataFacadeLocal {
 	 * @precondition mpDependants != null
 	 */
 	void modifyDependants(String entityName, Integer id,
-		Boolean removed, DependantMasterDataMap dependants)
+		Boolean removed, DependantMasterDataMap dependants, String customUsage)
 		throws CommonCreateException, CommonFinderException, CommonPermissionException,
 		CommonRemoveException, CommonStaleVersionException;
 
@@ -246,7 +246,7 @@ public interface MasterDataFacadeLocal {
 	 * @throws NuclosBusinessException
 	 */
 	RuleObjectContainerCVO getRuleObjectContainerCVO(Event event,
-		String sEntityName, Integer iObjectId) throws CommonPermissionException,
+		String sEntityName, Integer iObjectId, String customUsage) throws CommonPermissionException,
 		CommonFinderException, NuclosBusinessException;
 
 	/**
@@ -257,7 +257,7 @@ public interface MasterDataFacadeLocal {
 	 * @throws CommonPermissionException
 	 */
 	MasterDataWithDependantsVO getWithDependants(
-		String sEntityName, Integer iId) throws CommonFinderException,
+		String sEntityName, Integer iId, String customUsage) throws CommonFinderException,
 		NuclosBusinessException, CommonPermissionException;
 
 	/**
@@ -268,7 +268,7 @@ public interface MasterDataFacadeLocal {
 	 * @throws CommonPermissionException
 	 */
 	Collection<MasterDataWithDependantsVO> getWithDependantsByCondition(
-		String sEntityName, CollectableSearchCondition cond) ;
+		String sEntityName, CollectableSearchCondition cond, String customUsage) ;
 
 	/**
 	 * @param sEntityName

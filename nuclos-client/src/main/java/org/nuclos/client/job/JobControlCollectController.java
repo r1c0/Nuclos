@@ -247,7 +247,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public JobControlCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.JOBCONTROLLER, tabIfAny);
+		super(NuclosEntity.JOBCONTROLLER, tabIfAny, null);
 
 		this.setupDetailsToolBar();
 

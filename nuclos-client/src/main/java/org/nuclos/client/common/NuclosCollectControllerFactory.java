@@ -100,7 +100,7 @@ public class NuclosCollectControllerFactory {
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
 	 */	
-	public NuclosCollectController<?> newCollectController(String sEntityName, MainFrameTab tabIfAny) throws NuclosBusinessException, CommonPermissionException, CommonFatalException {
+	public NuclosCollectController<?> newCollectController(String sEntityName, MainFrameTab tabIfAny, String customUsage) throws NuclosBusinessException, CommonPermissionException, CommonFatalException {
 		if (sEntityName == null) {
 			throw new NullArgumentException("sEntityName");
 		}
@@ -115,7 +115,7 @@ public class NuclosCollectControllerFactory {
 		}
 
 		if (iModuleId != null) {
-			Statemodel sm = StateDelegate.getInstance().getStatemodel(new UsageCriteria(iModuleId, null, null));
+			Statemodel sm = StateDelegate.getInstance().getStatemodel(new UsageCriteria(iModuleId, null, null, null));
 			if(sm == null) {
 				JOptionPane.showMessageDialog(
 					Main.getInstance().getMainFrame(),
@@ -125,7 +125,7 @@ public class NuclosCollectControllerFactory {
 					JOptionPane.WARNING_MESSAGE);
 				return null;
 			}
-			return newGenericObjectCollectController(iModuleId, tabIfAny);
+			return newGenericObjectCollectController(iModuleId, tabIfAny, customUsage);
 		} else {
 			if(SecurityCache.getInstance().isReadAllowedForMasterData(sEntityName)) {
 
@@ -182,7 +182,7 @@ public class NuclosCollectControllerFactory {
 
 				// try general masterdata factory method:
 				// if there is no MasterDataCollectController for this entity, an exception will be thrown here.
-				return newMasterDataCollectController(sEntityName, tabIfAny);
+				return newMasterDataCollectController(sEntityName, tabIfAny, customUsage);
 			} else {
 				throw new CommonPermissionException(SpringLocaleDelegate.getInstance().getMessage(
 						"NuclosCollectControllerFactory.1", "Sie haben kein Recht in der Entit\u00e4t ''{0}'' zu lesen.", 
@@ -199,10 +199,10 @@ public class NuclosCollectControllerFactory {
 	 * @return a new GenericObjectCollectController for the given module id.
 	 * @postcondition result != null
 	 */
-	public GenericObjectCollectController newGenericObjectCollectController(Integer iModuleId, MainFrameTab tabIfAny) {
+	public GenericObjectCollectController newGenericObjectCollectController(Integer iModuleId, MainFrameTab tabIfAny, String customUsage) {
 		final GenericObjectCollectController result;
 		final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-		result = factory.newGenericObjectCollectController(iModuleId, true, tabIfAny);
+		result = factory.newGenericObjectCollectController(iModuleId, true, tabIfAny, customUsage);
 
 		assert result != null;
 		return result;
@@ -214,7 +214,7 @@ public class NuclosCollectControllerFactory {
 	 * @return a new MasterDataCollectController for the given entity.
 	 * @postcondition result != null
 	 */
-	public MasterDataCollectController newMasterDataCollectController(String sEntityName, MainFrameTab tabIfAny) {
+	public MasterDataCollectController newMasterDataCollectController(String sEntityName, MainFrameTab tabIfAny, String customUsage) {
 		final NuclosEntity systemEntity = NuclosEntity.getByName(sEntityName);
 		final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 		if (systemEntity != null) {
@@ -249,7 +249,7 @@ public class NuclosCollectControllerFactory {
 				return factory.newPersonalTaskCollectController(tabIfAny);
 			}
 		}
-		return factory.newMasterDataCollectController(sEntityName, tabIfAny);
+		return factory.newMasterDataCollectController(sEntityName, tabIfAny, customUsage);
 	}
 
 	/**

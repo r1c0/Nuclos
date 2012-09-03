@@ -60,6 +60,7 @@ import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.jdesktop.swingx.painter.Painter;
 import org.jdesktop.swingx.renderer.ComponentProvider;
 import org.jdesktop.swingx.search.SearchFactory;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -87,6 +88,7 @@ import org.nuclos.client.ui.resplan.ResPlanModel;
 import org.nuclos.client.ui.resplan.header.JHeaderGrid;
 import org.nuclos.client.ui.util.Orientation;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
@@ -535,7 +537,7 @@ public class ResPlanPanel extends JPanel {
 
 		try {
 			final NuclosCollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
-					resPlanModel.getResourceEntity().getEntityName(), null);
+					resPlanModel.getResourceEntity().getEntityName(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			ctl.getSearchPanel().btnSearch.setAction(new CommonAbstractAction(Icons.getInstance().getIconFind16(), 
 					SpringLocaleDelegate.getInstance().getText("CollectController.30")) {
 				@Override
@@ -905,7 +907,7 @@ public class ResPlanPanel extends JPanel {
 				public void run() throws CommonBusinessException {
 					final MainFrameTab tabIfAny = new MainFrameTab();
 					final NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
-							resPlanModel.getEntryEntity().getCollectableEntity().getName(), tabIfAny);
+							resPlanModel.getEntryEntity().getCollectableEntity().getName(), tabIfAny, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					Main.getInstance().getMainController().initMainFrameTab(controller, tabIfAny);
 					controller.getTab().add(tabIfAny);
 					
@@ -929,7 +931,7 @@ public class ResPlanPanel extends JPanel {
 			public void run() throws CommonBusinessException {
 				final MainFrameTab tabIfAny = new MainFrameTab();
 				final NuclosCollectController<?> cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
-						entityName, tabIfAny);
+						entityName, tabIfAny, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 				
 				Main.getInstance().getMainController().initMainFrameTab(cntrl, tabIfAny);
 				controller.getTab().add(tabIfAny);

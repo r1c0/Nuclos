@@ -74,7 +74,7 @@ public class GenerationCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public GenerationCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.GENERATION, tabIfAny);
+		super(NuclosEntity.GENERATION, tabIfAny, null);
 	}
 
 	@Override

@@ -80,7 +80,7 @@ public class CodeCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public CodeCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.CODE, tabIfAny, false);
+		super(NuclosEntity.CODE, tabIfAny, false, null);
 
 		this.setupDetailsToolBar();
 

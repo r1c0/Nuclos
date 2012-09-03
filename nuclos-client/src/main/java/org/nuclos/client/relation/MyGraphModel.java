@@ -393,7 +393,7 @@ public class MyGraphModel extends mxGraphModel {
 						
 						if(org.apache.commons.lang.StringUtils.equals(sSource, sSourceModule) && 
 							org.apache.commons.lang.StringUtils.equals(sTarget, sTargetModule)){
-							GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null);
+							GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null, null);
 							gcc.runViewSingleCollectableWithId(voGeneration.getId());
 							blnFound = true;
 							break;
@@ -401,7 +401,7 @@ public class MyGraphModel extends mxGraphModel {
 						
 					}					
 					if(!blnFound) {
-						GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null);
+						GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null, null);
 						Map<String, Object> mp = new HashMap<String, Object>();
 						mp.put("sourceModule", sSourceModule);
 						mp.put("sourceModuleId", new Integer(MetaDataClientProvider.getInstance().getEntity(sSourceModule).getId().intValue()));

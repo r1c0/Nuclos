@@ -100,7 +100,7 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		if (resourceFile != null && resourceFile.getContents() != null ) {
 			storeResource(resourceFile);
 		}
-		return super.create(sEntityName, mdvo, mpDependants);
+		return super.create(sEntityName, mdvo, mpDependants, null);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		if (resourceFile != null && resourceFile.getContents() != null ) {
 			storeResource(resourceFile);
 		}
-		return super.modify(sEntityName, mdvo, mpDependants);
+		return super.modify(sEntityName, mdvo, mpDependants, null);
 	}
 
     public void remove(String sEntityName, MasterDataVO mdvo)throws CommonFinderException, CommonRemoveException,
@@ -122,7 +122,7 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		if (resourceFile != null) {
 			removeResource(resourceFile.getFilename());
 		}
-		super.remove(sEntityName, mdvo, true);
+		super.remove(sEntityName, mdvo, true, null);
 	}
 
 

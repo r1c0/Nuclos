@@ -97,7 +97,7 @@ public interface StateFacadeLocal {
 	 * @param iNumeral legal subsequent status numeral to set for given leased object
 	 */
 	void changeStateByRule(Integer iModuleId,
-		Integer iGenericObjectId, int iNumeral)
+		Integer iGenericObjectId, int iNumeral, String customUsage)
 		throws NuclosNoAdequateStatemodelException,
 		NuclosSubsequentStateNotLegalException, NuclosBusinessException,
 		CommonFinderException, CommonPermissionException,
@@ -110,7 +110,7 @@ public interface StateFacadeLocal {
 	 * @param iTargetStateId legal subsequent status id to set for given leased object
 	 */
 	void changeStateByRule(Integer iModuleId,
-		Integer iGenericObjectId, Integer iTargetStateId)
+		Integer iGenericObjectId, Integer iTargetStateId, String customUsage)
 		throws NuclosNoAdequateStatemodelException,
 		NuclosSubsequentStateNotLegalException, NuclosBusinessException,
 		CommonFinderException, CommonPermissionException,
@@ -124,7 +124,7 @@ public interface StateFacadeLocal {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	void changeStateByUser(Integer iModuleId,
-		Integer iGenericObjectId, Integer iTargetStateId)
+		Integer iGenericObjectId, Integer iTargetStateId, String customUsage)
 		throws NuclosBusinessException, CommonPermissionException,
 		CommonPermissionException, CommonCreateException,
 		NuclosNoAdequateStatemodelException,

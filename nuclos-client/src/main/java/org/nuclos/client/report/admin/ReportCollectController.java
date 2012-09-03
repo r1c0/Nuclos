@@ -140,7 +140,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public ReportCollectController(NuclosEntity entity, MainFrameTab tabIfAny) {
-		super(entity, tabIfAny);
+		super(entity, tabIfAny, null);
 
 		if (entity.equals(NuclosEntity.REPORT)) {
 			outputEntity = NuclosEntity.REPORTOUTPUT;

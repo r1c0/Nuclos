@@ -218,7 +218,7 @@ public interface MasterDataFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	MasterDataVO create(String sEntityName, MasterDataVO mdvo,
-		DependantMasterDataMap mpDependants) throws CommonCreateException,
+		DependantMasterDataMap mpDependants, String customUsage) throws CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
 	/**
@@ -231,7 +231,7 @@ public interface MasterDataFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	Object modify(String sEntityName, MasterDataVO mdvo,
-		DependantMasterDataMap mpDependants) throws CommonCreateException,
+		DependantMasterDataMap mpDependants, String customUsage) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException;
@@ -246,7 +246,7 @@ public interface MasterDataFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	void remove(String sEntityName, MasterDataVO mdvo,
-		boolean bRemoveDependants) throws CommonFinderException,
+		boolean bRemoveDependants, String customUsage) throws CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
@@ -268,7 +268,7 @@ public interface MasterDataFacadeRemote {
 	@RolesAllowed("ExecuteRulesManually")
 	void executeBusinessRules(String sEntityName,
 		List<RuleVO> lstRuleVO, MasterDataWithDependantsVO mdvo,
-		boolean bSaveAfterRuleExecution) throws CommonBusinessException;
+		boolean bSaveAfterRuleExecution, String customUsage) throws CommonBusinessException;
 
 	/**
 	 * Get all subform entities of a masterdata entity
@@ -276,7 +276,7 @@ public interface MasterDataFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	Set<EntityAndFieldName> getSubFormEntitiesByMasterDataEntity(
-		String entityName);
+		String entityName, String customUsage);
 
 	/**
 	 * revalidates the cache. This may be used for development purposes only, in order to rebuild the cache

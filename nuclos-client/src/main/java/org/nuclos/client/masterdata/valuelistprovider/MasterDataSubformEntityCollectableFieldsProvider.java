@@ -22,15 +22,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
+import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MetaDataCache;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
 /**
@@ -59,7 +60,7 @@ public class MasterDataSubformEntityCollectableFieldsProvider implements Collect
 		
 		Collection<MasterDataMetaVO> collmdmetavo = new ArrayList<MasterDataMetaVO>();
 		
-		for(String sSubform : MasterDataDelegate.getInstance().getSubFormEntityNamesByMasterDataEntity(masterdata)) {
+		for(String sSubform : MasterDataDelegate.getInstance().getSubFormEntityNamesByMasterDataEntity(masterdata, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY))) {
 			collmdmetavo.add(MetaDataCache.getInstance().getMetaData(sSubform));				
 		}				
 

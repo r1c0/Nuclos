@@ -71,7 +71,7 @@ public class GenericObjectImportStructureCollectController extends MasterDataCol
 	 * </code></pre>
 	 */
 	public GenericObjectImportStructureCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.IMPORT, tabIfAny);
+		super(NuclosEntity.IMPORT, tabIfAny, null);
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter(){
 			@Override
             public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {

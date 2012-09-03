@@ -29,6 +29,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerNode;
@@ -43,6 +44,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -113,7 +115,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		if (lstActions.size() > 0) {
 			for (Iterator<GeneratorActionVO> iterator = lstActions.iterator(); iterator.hasNext();) {
 				GeneratorActionVO generatorActionVO = iterator.next();
-				result.add(new GeneratorAction(tree, generatorActionVO, new UsageCriteria(iModuleId, null, null)));
+				result.add(new GeneratorAction(tree, generatorActionVO, new UsageCriteria(iModuleId, null, null, null)));
 			}
 		}
 		return result;
@@ -149,7 +151,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 						final String sEntity = getTreeNode().getEntityName();
 						final Object oId = getTreeNode().getId();
 						final MasterDataVO mdvo = MasterDataDelegate.getInstance().get(sEntity, oId);
-						MasterDataDelegate.getInstance().remove(sEntity, mdvo);
+						MasterDataDelegate.getInstance().remove(sEntity, mdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						final DefaultTreeModel dtm = (DefaultTreeModel) getJTree().getModel();
 						final MasterDataExplorerNode<TN> explorernodeThis = MasterDataExplorerNode.this;
 						if (explorernodeThis.getParent() != null) {

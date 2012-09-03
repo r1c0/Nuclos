@@ -125,7 +125,6 @@ import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
-import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.relation.EntityRelationShipCollectController;
 import org.nuclos.client.report.admin.ReportExecutionCollectController;
@@ -161,6 +160,7 @@ import org.nuclos.common.CommandInformationMessage;
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common.SpringApplicationContextHolder;
@@ -1685,13 +1685,13 @@ public class MainController {
 							if (Modules.getInstance().isModuleEntity(entity)) {
 								final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(entity);
 								final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-								newGenericObjectCollectController(iModuleId, null);
+								newGenericObjectCollectController(iModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 								ctlGenericObject.setSelectedSearchFilter(searchfilter);
 								ctlGenericObject.runViewResults(searchfilter.getSearchCondition());
 							}
 							else {
 								final MasterDataCollectController ctlMasterData = NuclosCollectControllerFactory.getInstance().
-								newMasterDataCollectController(entity, null);
+								newMasterDataCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 								ctlMasterData.setSelectedSearchFilter(searchfilter);
 								ctlMasterData.runViewResults(searchfilter.getSearchCondition());
 							}
@@ -2132,7 +2132,7 @@ public class MainController {
 						@Override
 						public void done(Boolean result) {
 							if (Boolean.TRUE.equals(result)) {
-								_showDetails(ctlFinal, activateOnlyFinal, sEntityName, oId, newTab, listeningController, componentListener);
+								_showDetails(ctlFinal, activateOnlyFinal, sEntityName, oId, newTab, listeningController, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), componentListener);
 							}
 						}
 					});
@@ -2148,14 +2148,14 @@ public class MainController {
 		if (stop) {
 			return; 
 		} else {
-			_showDetails(ctl, activateOnly, sEntityName, oId, newTab, listeningController, componentListener);
+			_showDetails(ctl, activateOnly, sEntityName, oId, newTab, listeningController, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), componentListener);
 		}
 	}
 	
-	private void _showDetails(CollectController<?> ctl, boolean activateOnly, String sEntityName, Object oId, boolean newTab, CollectController<?> listeningController, CollectableEventListener... componentListener) {
+	private void _showDetails(CollectController<?> ctl, boolean activateOnly, String sEntityName, Object oId, boolean newTab, CollectController<?> listeningController, String customUsage, CollectableEventListener... componentListener) {
 		try {
 			if (ctl == null) {
-				ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
+				ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null, customUsage);
 			}
 	
 			if (listeningController != null) {
@@ -2181,7 +2181,7 @@ public class MainController {
 	}
 
 	public void showList(String entity, List<Object> ids) throws CommonBusinessException {
-		NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+		NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		controller.runViewResults(ids);
 	}
 
@@ -2206,7 +2206,7 @@ public class MainController {
 								CollectController<?> ctl2 = ctlFinal;
 								try {
 									if (ctl2 == null) {
-										ctl2 = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+										ctl2 = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 									}
 									ctl2.runViewMultipleCollectablesWithIds(ids);
 								} catch (Exception ex) {
@@ -2220,7 +2220,7 @@ public class MainController {
 			
 			if (!askAndWait) {
 				if (ctl == null) {
-					ctl = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+					ctl = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 				}
 				ctl.runViewMultipleCollectablesWithIds(ids);
 			}
@@ -2239,7 +2239,7 @@ public class MainController {
 	 */
 	public void showNew(String entityname, MainFrameTab parent, CollectableEventListener listener) throws CommonBusinessException {
 		MainFrameTab tabIfAny = new MainFrameTab();
-		final NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entityname, tabIfAny);
+		final NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entityname, tabIfAny, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		Main.getInstance().getMainController().initMainFrameTab(controller, tabIfAny);
 		parent.add(tabIfAny);
 
@@ -2266,7 +2266,7 @@ public class MainController {
 	 * @precondition sEntityName != null
 	 */
 	public CollectController<? extends Collectable> showDetails(String sEntityName) throws CommonBusinessException {
-		CollectController<? extends Collectable> clctcontroller = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
+		CollectController<? extends Collectable> clctcontroller = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		clctcontroller.runNew();
 		return clctcontroller;
 	}
@@ -2316,7 +2316,7 @@ public class MainController {
 			public void run() {
 				try {
 					String entity = ev.getActionCommand();
-					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					if(ncc != null) {
 						if (processId != null && ncc instanceof GenericObjectCollectController) {
 							GenericObjectCollectController gcc = (GenericObjectCollectController) ncc;

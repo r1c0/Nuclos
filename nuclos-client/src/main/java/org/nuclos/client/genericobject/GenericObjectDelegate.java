@@ -120,10 +120,10 @@ public class GenericObjectDelegate {
 	 * @param clctcond May be <code>null</code>.
 	 * @return list of leased object value objects including dependants, but excluding parent objects
 	 */
-	public List<GenericObjectWithDependantsVO> getCompleteGenericObjectsWithDependants(Integer iModuleId, CollectableSearchCondition clctcond, Set<String> stRequiredSubEntityNames) {
+	public List<GenericObjectWithDependantsVO> getCompleteGenericObjectsWithDependants(Integer iModuleId, CollectableSearchCondition clctcond, Set<String> stRequiredSubEntityNames, String customUsage) {
 		try {
 			LOG.debug("START getCompleteGenericObjectsWithDependants");
-			return this.getGenericObjectFacade().getGenericObjectsWithDependants(iModuleId, new CollectableSearchExpression(clctcond), null, stRequiredSubEntityNames, false, true);
+			return this.getGenericObjectFacade().getGenericObjectsWithDependants(iModuleId, new CollectableSearchExpression(clctcond), null, stRequiredSubEntityNames, false, true, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -143,10 +143,10 @@ public class GenericObjectDelegate {
 	 * @return List<GenericObjectWithDependantsVO> a proxy list that loads the result lazily (chunkwise).
 	 */
 	public ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
-			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntities, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntities, boolean bIncludeParentObjects, boolean bIncludeSubModules, String customUsage) {
 		try {
 			LOG.debug("START getGenericObjects");
-			return this.getGenericObjectFacade().getGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects, bIncludeSubModules);
+			return this.getGenericObjectFacade().getGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects, bIncludeSubModules, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -168,10 +168,10 @@ public class GenericObjectDelegate {
 	 * @return List<GenericObjectWithDependantsVO> a proxy list that loads the result lazily (chunkwise).
 	 */
 	public ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
-			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntities, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntities, boolean bIncludeParentObjects, boolean bIncludeSubModules, String customUsage) {
 		try {
 			LOG.debug("START getGenericObjects");
-			return this.getGenericObjectFacade().getPrintableGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects, bIncludeSubModules);
+			return this.getGenericObjectFacade().getPrintableGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntities, bIncludeParentObjects, bIncludeSubModules, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -209,11 +209,11 @@ public class GenericObjectDelegate {
 	 */
 	public TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(Integer iModuleId,
 			CollectableSearchExpression clctexpr, Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames,
-			int iMaxRowCount) {
+			String customUsage, int iMaxRowCount) {
 		try {
 			final TruncatableCollection<GenericObjectWithDependantsVO> result =
 					this.getGenericObjectFacade().getRestrictedNumberOfGenericObjects(iModuleId,
-							clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, iMaxRowCount);
+							clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, customUsage, iMaxRowCount);
 			assert result != null;
 			assert result.size() <= iMaxRowCount;
 			return result;
@@ -250,10 +250,10 @@ public class GenericObjectDelegate {
 	 * @return
 	 * @throws CommonFinderException
 	 */
-	public GenericObjectWithDependantsVO getWithDependants(int iGenericObjectId) throws CommonBusinessException {
+	public GenericObjectWithDependantsVO getWithDependants(int iGenericObjectId, String customUsage) throws CommonBusinessException {
 		try {
 			LOG.debug("get start");
-			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().getWithDependants(iGenericObjectId, null);
+			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().getWithDependants(iGenericObjectId, null, customUsage);
 			LOG.debug("get done");
 			return result;
 		}
@@ -286,14 +286,14 @@ public class GenericObjectDelegate {
 	 * @postcondition result != null
 	 * @throws CommonFinderException if the given object didn't exist at the given point in time.
 	 */
-	public GenericObjectWithDependantsVO getHistorical(int iGenericObjectId, Date dateHistorical)
+	public GenericObjectWithDependantsVO getHistorical(int iGenericObjectId, Date dateHistorical, String customUsage)
 			throws CommonFinderException, CommonPermissionException {
 
 		if (dateHistorical == null) {
 			throw new NullArgumentException("dateHistorical");
 		}
 		try {
-			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().getHistorical(iGenericObjectId, dateHistorical);
+			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().getHistorical(iGenericObjectId, dateHistorical, customUsage);
 			assert result != null;
 			return result;
 		}
@@ -312,13 +312,13 @@ public class GenericObjectDelegate {
 	 * @throws NuclosBusinessRuleException
 	 * @precondition lowdcvo.getId() != null
 	 */
-	public GenericObjectWithDependantsVO update(GenericObjectWithDependantsVO lowdcvo) throws CommonBusinessException {
+	public GenericObjectWithDependantsVO update(GenericObjectWithDependantsVO lowdcvo, String customUsage) throws CommonBusinessException {
 		if (lowdcvo.getId() == null) {
 			throw new IllegalArgumentException("lowdcvo");
 		}
 		try {
 			LOG.debug("update start");
-			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().modify(lowdcvo.getModuleId(), lowdcvo);
+			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().modify(lowdcvo.getModuleId(), lowdcvo, customUsage);
 			LOG.debug("update done");
 			return result;
 		}
@@ -342,7 +342,7 @@ public class GenericObjectDelegate {
 	 * @precondition mpDependants != null --> for(m : mpDependants.values()) { m.getId() == null }
 	 * @precondition stRequiredSubEntityNames != null
 	 */
-	public GenericObjectWithDependantsVO create(GenericObjectWithDependantsVO lowdcvo, Set<String> stRequiredSubEntityNames) throws CommonBusinessException {
+	public GenericObjectWithDependantsVO create(GenericObjectWithDependantsVO lowdcvo, Set<String> stRequiredSubEntityNames, String customUsage) throws CommonBusinessException {
 		if (lowdcvo.getId() != null) {
 			throw new IllegalArgumentException("lowdcvo");
 		}
@@ -353,7 +353,7 @@ public class GenericObjectDelegate {
 		debug(lowdcvo);
 		try {
 			LOG.debug("create start");
-			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().create(lowdcvo, stRequiredSubEntityNames);
+			final GenericObjectWithDependantsVO result = this.getGenericObjectFacade().create(lowdcvo, stRequiredSubEntityNames, customUsage);
 			LOG.debug("create done");
 			return result;
 		}
@@ -382,7 +382,7 @@ public class GenericObjectDelegate {
 	 * @precondition lowdcvo.getId() == null
 	 * @precondition mpDependants != null --> for(m : mpDependants.values()) { m.getId() == null }
 	 */
-	public GenericObjectVO create(GenericObjectWithDependantsVO lowdcvo) throws CommonBusinessException {
+	public GenericObjectVO create(GenericObjectWithDependantsVO lowdcvo, String customUsage) throws CommonBusinessException {
 		if (lowdcvo.getId() != null) {
 			throw new IllegalArgumentException("lowdcvo");
 		}
@@ -391,7 +391,7 @@ public class GenericObjectDelegate {
 		debug(lowdcvo);
 		try {
 			LOG.debug("create start");
-			final GenericObjectVO result = this.getGenericObjectFacade().create(lowdcvo);
+			final GenericObjectVO result = this.getGenericObjectFacade().create(lowdcvo, customUsage);
 			LOG.debug("create done");
 			return result;
 		}
@@ -435,9 +435,9 @@ public class GenericObjectDelegate {
 	 * @param bDeletePhysically Remove from DB?
 	 * @throws CommonPermissionException if we have no permission to remove the object
 	 */
-	public void remove(GenericObjectWithDependantsVO gowdvo, boolean bDeletePhysically) throws CommonBusinessException {
+	public void remove(GenericObjectWithDependantsVO gowdvo, boolean bDeletePhysically, String customUsage) throws CommonBusinessException {
 		try {
-			this.getGenericObjectFacade().remove(gowdvo, bDeletePhysically);
+			this.getGenericObjectFacade().remove(gowdvo, bDeletePhysically, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -449,9 +449,9 @@ public class GenericObjectDelegate {
 	 * @param gowdvo
 	 * @throws CommonPermissionException if we have no permission to restore the object
 	 */
-	public void restore(GenericObjectWithDependantsVO gowdvo) throws CommonBusinessException {
+	public void restore(GenericObjectWithDependantsVO gowdvo, String customUsage) throws CommonBusinessException {
 		try {
-			this.getGenericObjectFacade().restore(gowdvo.getId());
+			this.getGenericObjectFacade().restore(gowdvo.getId(), customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -625,9 +625,9 @@ public class GenericObjectDelegate {
 		}
 	}
 
-	public void executeBusinessRules(List<RuleVO>lstRuleVO, GenericObjectWithDependantsVO govo, boolean bSaveAfterRuleExecution) throws CommonBusinessException {
+	public void executeBusinessRules(List<RuleVO>lstRuleVO, GenericObjectWithDependantsVO govo, boolean bSaveAfterRuleExecution, String customUsage) throws CommonBusinessException {
 		try {
-			this.getGenericObjectFacade().executeBusinessRules(lstRuleVO, govo, bSaveAfterRuleExecution);
+			this.getGenericObjectFacade().executeBusinessRules(lstRuleVO, govo, bSaveAfterRuleExecution, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

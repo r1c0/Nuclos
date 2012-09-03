@@ -400,9 +400,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public MasterDataCollectController newMasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny) {
+	public MasterDataCollectController newMasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny, String customUsage) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final MasterDataCollectController result = new MasterDataCollectController(systemEntity, tabIfAny);
+		final MasterDataCollectController result = new MasterDataCollectController(systemEntity, tabIfAny, customUsage);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -412,9 +412,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public MasterDataCollectController newMasterDataCollectController(String entity, MainFrameTab tabIfAny) {
+	public MasterDataCollectController newMasterDataCollectController(String entity, MainFrameTab tabIfAny, String customUsage) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final MasterDataCollectController result = new MasterDataCollectController(entity, tabIfAny);
+		final MasterDataCollectController result = new MasterDataCollectController(entity, tabIfAny, customUsage);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -428,14 +428,14 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public GenericObjectCollectController newGenericObjectCollectController(Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
+	public GenericObjectCollectController newGenericObjectCollectController(Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny, String customUsage) {
 		final ISearchStrategy<CollectableGenericObjectWithDependants> ss;
 		final EntityMetaDataVO mdvo = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 		final CollectableEntityProvider cep = CollectableEOEntityClientProvider.getInstance();
 		ss = new GenericObjectViaEntityObjectSearchStrategy((CollectableEOEntity) cep.getCollectableEntity(mdvo.getEntity()));
 		// Old (pre-pivot) search strategy
 		// ss = new GenericObjectSearchStrategy();
-		final GenericObjectCollectController result = new GenericObjectCollectController(iModuleId, false, tabIfAny);
+		final GenericObjectCollectController result = new GenericObjectCollectController(iModuleId, false, tabIfAny, customUsage);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		ss.setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());

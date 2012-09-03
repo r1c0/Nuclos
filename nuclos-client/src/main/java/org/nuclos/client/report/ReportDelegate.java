@@ -223,9 +223,9 @@ public class ReportDelegate {
 	 * Refer to {@link org.nuclos.common.CollectableEntityFieldWithEntity#readObject(ObjectInputStream)} for details.
 	 */
 	public NuclosFile prepareSearchResult(CollectableSearchExpression clctexpr,
-		List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format) throws NuclosReportException {
+		List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format, String customUsage) throws NuclosReportException {
 		try {
-			return reportFacadeRemote.prepareSearchResult(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules, format);
+			return reportFacadeRemote.prepareSearchResult(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules, format, customUsage);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

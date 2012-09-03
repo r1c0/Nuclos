@@ -38,6 +38,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.AbstractDetailsSubFormController;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MetaDataClientProvider;
@@ -71,6 +72,7 @@ import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -311,7 +313,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	private void showMasterData(final Object iMasterdataId,	String entityName) throws CommonBusinessException {
 		if(LayoutUtils.isSubformEntity(entityName))
 			return;
-		MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entityName, null);
+		MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entityName, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		ctlMasterdata.runViewSingleCollectableWithId(iMasterdataId);
 	}
 
@@ -320,7 +322,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		try {
 			final GenericObjectVO govo = GenericObjectDelegate.getInstance().get((Integer) iGenericObjectId);
 			final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-					newGenericObjectCollectController(govo.getModuleId(), null);
+					newGenericObjectCollectController(govo.getModuleId(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 			ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 		}

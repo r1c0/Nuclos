@@ -37,7 +37,7 @@ public interface EntityFacadeRemote {
 	 * @throws RemoteException
 	 */
 	@RolesAllowed("Login")
-	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(String sEntity,Integer ilaoyutId) throws RemoteException;
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(Integer ilaoyutId) throws RemoteException;
 
 	/**
 	 * @param sEntityName

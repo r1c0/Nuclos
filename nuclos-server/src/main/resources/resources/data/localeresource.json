@@ -53590,6 +53590,36 @@
     "text": "Suchmaske"
   },
   {
+    "resourceID": "nuclos.entityfield.layoutUsage.custom.label",
+    "locale": "i-default",
+    "text": "Custom key"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.custom.label",
+    "locale": "en",
+    "text": "Custom key"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.custom.label",
+    "locale": "de",
+    "text": "Benutzerdefinierter Schlüssel"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.custom.description",
+    "locale": "i-default",
+    "text": "Custom key from actions or system parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.custom.description",
+    "locale": "en",
+    "text": "Custom key from actions or system parameter"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.custom.description",
+    "locale": "de",
+    "text": "Benutzerdefinierter Schlüssel einer Aktion oder Systemparameter"
+  },
+  {
     "resourceID": "nuclos.entityfield.event.description.label",
     "locale": "i-default",
     "text": "Layout"

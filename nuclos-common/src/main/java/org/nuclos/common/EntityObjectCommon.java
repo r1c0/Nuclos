@@ -65,7 +65,7 @@ public interface EntityObjectCommon {
 	 */
 	@RolesAllowed("Login")
 	ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr,
-			Collection<EntityFieldMetaDataVO> fields);
+			Collection<EntityFieldMetaDataVO> fields, String customUsage);
 
 	/**
 	 * gets more leased objects that match a given search condition
@@ -81,7 +81,7 @@ public interface EntityObjectCommon {
 	 * @precondition stRequiredSubEntityNames != null
 	 */
 	@RolesAllowed("Login")
-	Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields);
+	Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields, String customUsage);
 
 
 	/**

@@ -150,7 +150,7 @@ public interface StateFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	void changeStateByUser(Integer iModuleId,
-		Integer iGenericObjectId, Integer iTargetStateId)
+		Integer iGenericObjectId, Integer iTargetStateId, String customUsage)
 		throws NuclosBusinessException, CommonPermissionException,
 		CommonPermissionException, CommonCreateException,
 		NuclosNoAdequateStatemodelException,
@@ -164,7 +164,7 @@ public interface StateFacadeRemote {
 	 * @nucleus.permission mayWrite(module)
 	 */
 	void changeStateAndModifyByUser(Integer iModuleId, 
-		GenericObjectWithDependantsVO gowdvo, Integer iTargetStateId)
+		GenericObjectWithDependantsVO gowdvo, Integer iTargetStateId, String customUsage)
 		throws NuclosBusinessException, CommonPermissionException,
 		CommonPermissionException, CommonCreateException, NuclosNoAdequateStatemodelException,
 		NuclosSubsequentStateNotLegalException, CommonFinderException, CommonRemoveException, 

@@ -2304,7 +2304,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 								MainFrameTab tab = new MainFrameTab();
 								openInTabbed.add(tab);
 
-								NuclosCollectController<?> clct = NuclosCollectControllerFactory.getInstance().newCollectController(getEntityName(), tab);
+								NuclosCollectController<?> clct = NuclosCollectControllerFactory.getInstance().newCollectController(getEntityName(), tab, getCustomUsage());
 								getMainController().initMainFrameTab(clct, tab);
 								tab.postAdd();
 
@@ -2499,7 +2499,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @see #isCollectableComplete(Collectable)
 	 */
 	public final List<Clct> getCompleteSelectedCollectables() throws CommonBusinessException {
-		final List<Clct> result = new ArrayList<Clct>(getSearchStrategy().getCompleteCollectablesStrategy().getCompleteCollectables(this.getSelectedCollectables()));
+		final List<Clct> result = new ArrayList<Clct>(getSearchStrategy().getCompleteCollectablesStrategy().getCompleteCollectables(this.getSelectedCollectables(), getCustomUsage()));
 		getResultController().replaceCollectablesInTableModel(result);
 
 		assert result != null;
@@ -4786,5 +4786,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private void cmdResetMainFilter() {
 		getResultPanel().getSearchFilterBar().setSelected(null);
 	}
+
+	public abstract String getCustomUsage();
 
 }	// class CollectController

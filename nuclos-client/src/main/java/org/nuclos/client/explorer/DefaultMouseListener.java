@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.explorer.node.GenericObjectExplorerNode;
@@ -44,6 +45,7 @@ import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collection.CollectionUtils;
@@ -200,7 +202,7 @@ public class DefaultMouseListener extends MouseAdapter {
                         public void run() throws CommonBusinessException {
 							final Integer iModuleId = getCommonModuleId(collloexplorernodeSelected);
 							final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-									newGenericObjectCollectController(iModuleId, null);
+									newGenericObjectCollectController(iModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 							ctlGenericObject.setSearchDeleted(CollectableGenericObjectSearchExpression.SEARCH_BOTH);
 							ctlGenericObject.runViewResults(cond);
 						}

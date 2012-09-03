@@ -75,7 +75,7 @@ public class ProzessWizardPanel extends JPanel {
 			
 			//@TODO find a better way... modules are no longer supported for writing!
 			try {
-				MasterDataModuleDelegate.getInstance().update(NuclosEntity.MODULE.getEntityName(), voSourceModule, null);
+				MasterDataModuleDelegate.getInstance().update(NuclosEntity.MODULE.getEntityName(), voSourceModule, null, null);
 			}
 			catch(CommonBusinessException e) {
 				LOG.warn("buildTrees failed: " + e);

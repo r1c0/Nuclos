@@ -90,7 +90,7 @@ public class WikiCollectController extends MasterDataCollectController{
 	 * </code></pre>
 	 */
 	public WikiCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.WIKI, tabIfAny);
+		super(NuclosEntity.WIKI, tabIfAny, null);
 		
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter () {
 			@Override

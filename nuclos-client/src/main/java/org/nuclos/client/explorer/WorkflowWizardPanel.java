@@ -152,7 +152,7 @@ public class WorkflowWizardPanel extends JPanel {
 							
 							DependantMasterDataMap mp = voSearchFilter.getDependants();
 							mp.addValue(NuclosEntity.SEARCHFILTERUSER.getEntityName(), mdvo);					
-							MasterDataDelegate.getInstance().update(NuclosEntity.SEARCHFILTER.getEntityName(), voSearchFilter, mp);
+							MasterDataDelegate.getInstance().update(NuclosEntity.SEARCHFILTER.getEntityName(), voSearchFilter, mp, null);
 							
 						}
 						catch(Exception e) {

@@ -178,7 +178,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 					MasterDataVO mdGaVO = getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), transition.getGenerationId());
 					GeneratorActionVO gaVO = MasterDataWrapper.getGeneratorActionVO(mdGaVO, 
 							ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(mdGaVO.getIntId()));
-					final GenericObjectVO createdGoVO = getGenericObjectFacade().get(IdUtils.unsafeToId(this.getGeneratorFacade().generateGenericObject(IdUtils.toLongId(genericObjectId), gaVO.getName())));
+					final GenericObjectVO createdGoVO = getGenericObjectFacade().get(IdUtils.unsafeToId(this.getGeneratorFacade().generateGenericObject(IdUtils.toLongId(genericObjectId), gaVO.getName(), null)));
 					// instance would be automaticly transfered to target
 					// but we have to set the attributes
 					setInstanceAttributes(genericObjectId, createdGoVO.getId(), targetStateId, transition);
@@ -214,7 +214,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 						MasterDataVO mdGaVO = getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), transition.getGenerationId());
 						GeneratorActionVO gaVO = MasterDataWrapper.getGeneratorActionVO(mdGaVO, 
 								ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(mdGaVO.getIntId()));
-						final GenericObjectVO createdGoVO = getGenericObjectFacade().get(IdUtils.unsafeToId(this.getGeneratorFacade().generateGenericObject(IdUtils.toLongId(genericObjectId), gaVO.getName())));
+						final GenericObjectVO createdGoVO = getGenericObjectFacade().get(IdUtils.unsafeToId(this.getGeneratorFacade().generateGenericObject(IdUtils.toLongId(genericObjectId), gaVO.getName(), null)));
 
 						// instance would be automaticly transfered to target
 						// but we have to set the attributes
@@ -335,7 +335,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 					sourceGoVO.setAttribute(new DynamicAttributeVO(iRealRuntimeId, null, new Double(realEndMillis-realStartMillis)));
 				}
 
-				getGenericObjectFacade().modify(sourceGoVO, null, false, false);
+				getGenericObjectFacade().modify(sourceGoVO, null, false, false, null);
 
 				return dateRealEnd;
 			}
@@ -406,7 +406,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 			targetGoVO.setAttribute(new DynamicAttributeVO(iPlanRuntimeId, null, new Double(calendar.getTimeInMillis() - planStartMillis)));
 			targetGoVO.setAttribute(new DynamicAttributeVO(iRealStartId,   null, new DateTime(targetGoVO.getCreatedAt())));
 
-			getGenericObjectFacade().modify(targetGoVO, null, false, false);
+			getGenericObjectFacade().modify(targetGoVO, null, false, false, null);
 
 		} catch (CommonFinderException e) {
 			throw new CommonFatalException(e);
@@ -438,7 +438,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 			try {
 				MasterDataVO instanceVO = getMasterDataFacade().get(NuclosEntity.INSTANCE.getEntityName(), goVO.getInstanceId());
 				instanceVO.setField("realend", dateRealEnd);
-				getMasterDataFacade().modify(NuclosEntity.INSTANCE.getEntityName(), instanceVO, null);
+				getMasterDataFacade().modify(NuclosEntity.INSTANCE.getEntityName(), instanceVO, null, null);
 
 			} catch (CommonFinderException e) {
 				throw new CommonFatalException(e);
@@ -495,7 +495,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 		mdvo.setField("generationId", iGenerationId);
 		mdvo.setField("objectgenerated", bResult);
 		try {
-			getMasterDataFacade().create(NuclosEntity.INSTANCEOBJECTGENERATION.getEntityName(), mdvo, null);
+			getMasterDataFacade().create(NuclosEntity.INSTANCEOBJECTGENERATION.getEntityName(), mdvo, null, null);
 		}
 		catch(NuclosBusinessRuleException e) {
 			throw new CommonFatalException(e);
@@ -523,7 +523,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 			DynamicAttributeVO dynProzess = new DynamicAttributeVO(AttributeCache.getInstance().getAttribute(goVO.getModuleId(), NuclosEOField.PROCESS.getMetaData().getField()).getId(), (Integer) stateModelUsage.getField("processId"), stateModelUsage.getField("process"));
 			goVO.setAttribute(dynProzess);
 		}
-		goVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(goVO, new DependantMasterDataMap()));
+		goVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(goVO, new DependantMasterDataMap()), null);
 
 //		Integer iGOProcessId = (Integer)stateModelUsage.getField("processId");
 //		if (iGOProcessId != null){
@@ -535,7 +535,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 		this.setInstanceAttributesInTarget(goVO, startSubProcess, (DateTime) instanceVO.getField("planstart"), true);
 
 		instanceVO.setField("realstart", new DateTime(goVO.getCreatedAt()));
-		getMasterDataFacade().modify(NuclosEntity.INSTANCE.getEntityName(), instanceVO, null);
+		getMasterDataFacade().modify(NuclosEntity.INSTANCE.getEntityName(), instanceVO, null, null);
 	}
 
 	public Integer getObjectId(Integer iInstanceId, Integer iStateModelUsageId){

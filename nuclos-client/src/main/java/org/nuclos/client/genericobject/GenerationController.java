@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -69,6 +70,7 @@ import org.nuclos.client.ui.multiaction.MultiActionProgressResultHandler;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.UsageCriteria;
@@ -262,7 +264,7 @@ public class GenerationController {
 
 					final MainFrameTab lookupParent = getParentForLookup() != null ? getParentForLookup() : parent;
 					final ICollectableListOfValues lov = new EntityListOfValues(lookupParent);
-					final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(pEntityStr, null);
+					final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(pEntityStr, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					if (vlp != null) {
 						ctl.getSearchStrategy().setValueListProviderDatasource(vlp);
 						ctl.getSearchStrategy().setValueListProviderDatasourceParameter(params);
@@ -422,7 +424,7 @@ public class GenerationController {
 							invokeWithInputRequiredSupport.invoke(new CommonRunnable() {
 								@Override
 								public void run() throws CommonBusinessException {
-									result.set(GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action));
+									result.set(GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 								}
 							}, context, parent);
 							fireGenerationSucessfulEvent(result.get());
@@ -478,7 +480,7 @@ public class GenerationController {
 								else {
 									// dead code
 									assert false;
-									showIncompleteGenericObject(null, result.getGeneratedObject(), action, result.getError(), null);
+									showIncompleteGenericObject(null, result.getGeneratedObject(), action, result.getError(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 								}
 							}
 						}	
@@ -486,7 +488,7 @@ public class GenerationController {
 					catch (GeneratorFailedException e) {
 						final GenerationResult result = e.getGenerationResult();
 						try {
-							showIncompleteGenericObject(null, result.getGeneratedObject(), action, result.getError(), null);
+							showIncompleteGenericObject(null, result.getGeneratedObject(), action, result.getError(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						}
 						catch (CommonBusinessException e2) {
 							Errors.getInstance().showExceptionDialog(parent, e2);
@@ -545,7 +547,7 @@ public class GenerationController {
 				else {
 					// dead code
 					assert false;
-					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), null);
+					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 				}
 			}
 		}
@@ -560,7 +562,7 @@ public class GenerationController {
 			EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getTargetModuleId()));
 			if ((meta.isStateModel() && SecurityCache.getInstance().isNewAllowedForModule(meta.getEntity()))
 					|| (!meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForMasterData(meta.getEntity())) ) {
-				showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), ex.getCause());
+				showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), ex.getCause(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			}
 		}
 		catch (CommonBusinessException e) {
@@ -586,7 +588,7 @@ public class GenerationController {
 	 * @param cause 
 	 * @throws CommonBusinessException
 	 */
-	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, GeneratorActionVO action, final String message, final Throwable cause) throws CommonBusinessException {
+	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, GeneratorActionVO action, final String message, final Throwable cause, String customUsage) throws CommonBusinessException {
 		String entity = result.getEntity();
 		MainFrameTabbedPane pane;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity)) {
@@ -599,7 +601,7 @@ public class GenerationController {
 		Map<String, EntityFieldMetaDataVO> mpFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entity);
 
 		if (metaVO.isStateModel()) {
-			final GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(IdUtils.unsafeToId(metaVO.getId()), null);
+			final GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(IdUtils.unsafeToId(metaVO.getId()), null, customUsage);
 			goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
 			goclct.setGenerationSource(sourceIds, action);
 			
@@ -609,7 +611,7 @@ public class GenerationController {
 				UsageCriteria usagecriteria = new UsageCriteria(
 						IdUtils.unsafeToId(metaVO.getId()), 
 						IdUtils.unsafeToId(result.getFieldId(NuclosEOField.PROCESS.getName())), 
-						null);
+						null, customUsage);
 				result.getFieldIds().put(NuclosEOField.STATE.getName(), 
 						IdUtils.toLongId(StateDelegate.getInstance().getStatemodel(usagecriteria).getInitialStateId()));
 			}
@@ -632,7 +634,7 @@ public class GenerationController {
 			});
 		}
 		else {
-			final MasterDataCollectController mdclct = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(metaVO.getEntity(), null);
+			final MasterDataCollectController mdclct = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(metaVO.getEntity(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
 			CollectableMasterDataWithDependants clctmdwd = new CollectableMasterDataWithDependants(meta, DalSupportForMD.getMasterDataWithDependantsVO(result));
 			final DependantMasterDataMap deps = result.getDependants();

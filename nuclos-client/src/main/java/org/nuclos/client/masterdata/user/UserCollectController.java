@@ -166,7 +166,7 @@ public class UserCollectController extends MasterDataCollectController {
 	public UserCollectController(MainFrameTab tabIfAny) {
 		super(NuclosEntity.USER, tabIfAny,
 				new UserResultController<CollectableMasterDataWithDependants>(NuclosEntity.USER.getEntityName(),
-				new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
+				new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()), null);
 		this.setupDetailsToolBar();
 		if(this.ldapSynchronization){
 			this.ldapdelegate = LDAPDataDelegate.getInstance();
@@ -382,14 +382,14 @@ public class UserCollectController extends MasterDataCollectController {
 							if (selectedWrapper.getField("superuser") == null) {
 								selectedWrapper.setField("superuser", false);
 							}
-							clctctl.mddelegate.create(NuclosEntity.USER.getEntityName(), selectedWrapper, selectedWrapper.getDependants());
+							clctctl.mddelegate.create(NuclosEntity.USER.getEntityName(), selectedWrapper, selectedWrapper.getDependants(), null);
 						} else {
 							if(selectedWrapper.isMapped()){
 								selectedWrapper.replaceNativeFields();
-								clctctl.mddelegate.update(NuclosEntity.USER.getEntityName(), selectedWrapper, selectedWrapper.getDependants());
+								clctctl.mddelegate.update(NuclosEntity.USER.getEntityName(), selectedWrapper, selectedWrapper.getDependants(), null);
 							} else {
 								if(selectedWrapper.isNative()){
-									clctctl.mddelegate.remove(NuclosEntity.USER.getEntityName(), selectedWrapper);
+									clctctl.mddelegate.remove(NuclosEntity.USER.getEntityName(), selectedWrapper, null);
 								}
 							}
 						}

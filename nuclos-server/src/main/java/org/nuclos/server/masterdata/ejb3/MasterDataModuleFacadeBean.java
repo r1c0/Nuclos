@@ -83,10 +83,10 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
+	public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, String customUsage)
 			throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 
-		MasterDataVO result = masterDataFacade.create(sEntityName, mdvo, mpDependants);
+		MasterDataVO result = masterDataFacade.create(sEntityName, mdvo, mpDependants, customUsage);
 
 		LocaleFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
@@ -112,10 +112,10 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
+	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, String customUsage)
 			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException,
 			CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
-		Object result = masterDataFacade.modify(sEntityName, mdvo, mpDependants);
+		Object result = masterDataFacade.modify(sEntityName, mdvo, mpDependants, customUsage);
 
 		
 		for (String resFieldName : MODULE_RESOURCE_FIELDNAMES) {
@@ -168,7 +168,7 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
 	@RolesAllowed("Login")
-	public void remove(String sEntityName, MasterDataVO mdvo, boolean bRemoveDependants) throws NuclosBusinessRuleException, CommonPermissionException,
+	public void remove(String sEntityName, MasterDataVO mdvo, boolean bRemoveDependants, String customUsage) throws NuclosBusinessRuleException, CommonPermissionException,
 								CommonStaleVersionException, CommonRemoveException, CommonFinderException {
 
 		LocaleFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
@@ -179,7 +179,7 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 		facade.deleteResource(getResourceSIdForTreeViewDescription(mdvo.getIntId()));
 		facade.deleteResource(getResourceSIdForMenuPath(mdvo.getIntId()));
 
-		masterDataFacade.remove(sEntityName, mdvo, bRemoveDependants);
+		masterDataFacade.remove(sEntityName, mdvo, bRemoveDependants, customUsage);
 	}
 
 	public String getResourceSIdForLabel(Integer iId) {

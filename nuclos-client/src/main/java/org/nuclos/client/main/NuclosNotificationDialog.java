@@ -50,11 +50,13 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -315,7 +317,7 @@ public class NuclosNotificationDialog extends JDialog {
 		try {
 			final GenericObjectVO govo = GenericObjectDelegate.getInstance().get(iGenericObjectId);
 			final GenericObjectCollectController ctlGenericObject =
-					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(govo.getModuleId(), null);
+					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(govo.getModuleId(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 		}
 		catch (CommonBusinessException ex) {

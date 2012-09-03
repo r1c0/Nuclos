@@ -59,7 +59,7 @@ public class ResourceCollectController extends MasterDataCollectController{
 	 * </code></pre>
 	 */
 	public ResourceCollectController(MainFrameTab tabIfAny){
-		super(NuclosEntity.RESOURCE, tabIfAny);
+		super(NuclosEntity.RESOURCE, tabIfAny, null);
 
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
 			@Override

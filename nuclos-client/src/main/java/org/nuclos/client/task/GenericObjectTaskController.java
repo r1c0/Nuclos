@@ -384,7 +384,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		
 		final int iMaxRowCount = ClientParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_MAX_ROWCOUNT_FOR_SEARCHRESULT_IN_TASKLIST, 500);
 
-		final TruncatableCollection<GenericObjectWithDependantsVO> trunccollgovo = GenericObjectDelegate.getInstance().getRestrictedNumberOfGenericObjects(Modules.getInstance().getModuleIdByEntityName(filter.getEntityName()), clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, iMaxRowCount);
+		final TruncatableCollection<GenericObjectWithDependantsVO> trunccollgovo = GenericObjectDelegate.getInstance().getRestrictedNumberOfGenericObjects(Modules.getInstance().getModuleIdByEntityName(filter.getEntityName()), clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), iMaxRowCount);
 		String sLabel = getSpringLocaleDelegate().getMessage(
 				"GenericObjectTaskController.2", "{0} Datens\u00e4tze gefunden.", trunccollgovo.totalSize());
 		if (trunccollgovo.isTruncated()) {
@@ -534,13 +534,13 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 				if (Modules.getInstance().isModuleEntity(gotaskview.getFilter().getEntityName())) {
 					final Integer iModuleId = getCommonModuleId(collclct);
 					final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-							newGenericObjectCollectController(iModuleId, null);
+							newGenericObjectCollectController(iModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					ctlGenericObject.setSearchDeleted(CollectableGenericObjectSearchExpression.SEARCH_BOTH);
 					ctlGenericObject.runViewResults(cond);
 				}
 				else {
 					MasterDataCollectController ctlMasterData = NuclosCollectControllerFactory.getInstance().
-						newMasterDataCollectController(gotaskview.getFilter().getEntityName(), null);
+						newMasterDataCollectController(gotaskview.getFilter().getEntityName(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					ctlMasterData.runViewResults(cond);
 				}				
 			}

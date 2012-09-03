@@ -58,6 +58,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.nuclos.client.attribute.AttributeDelegate;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
@@ -96,6 +97,7 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.client.wizard.util.NumericFormatDocument;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosScript;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
@@ -184,7 +186,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 						public void run() throws CommonBusinessException {
 								final String sReferencedEntityName = efMeta.getForeignEntity();
 								final MainFrameTab overlay = new MainFrameTab();
-								final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, overlay);
+								final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, overlay, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 								Main.getInstance().getMainController().initMainFrameTab(ctl, overlay);
 								tab.add(overlay);
 								ctl.runLookupCollectable(ListOfValues.this);

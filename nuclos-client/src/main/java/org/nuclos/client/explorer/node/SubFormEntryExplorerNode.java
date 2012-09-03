@@ -33,6 +33,7 @@ import javax.swing.JTree;
 import javax.swing.KeyStroke;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerNode;
@@ -47,6 +48,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonRunnable;
@@ -164,13 +166,13 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 	    private void remove(JTree tree){
 			if (iObjectId != null && iModuleId != null && sSubFormEntity != null) {
 				try {
-					GenericObjectWithDependantsVO gowdVO = GenericObjectDelegate.getInstance().getWithDependants(iObjectId);
+					GenericObjectWithDependantsVO gowdVO = GenericObjectDelegate.getInstance().getWithDependants(iObjectId, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					for (EntityObjectVO mdVO : gowdVO.getDependants().getData(sSubFormEntity)) {
 						if (mdVO.getId().equals(getTreeNode().getId())) {
 							mdVO.flagRemove();
 						}
 					}
-					GenericObjectDelegate.getInstance().update(gowdVO);
+					GenericObjectDelegate.getInstance().update(gowdVO, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					javax.swing.tree.TreeNode tnParent = SubFormEntryExplorerNode.this.getParent();
 					if (tnParent instanceof SubFormExplorerNode){
 						((SubFormExplorerNode)tnParent).refresh(tree);

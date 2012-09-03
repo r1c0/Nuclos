@@ -271,7 +271,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 			entity = NuclosEntity.FORM;
 
 		this.checkReadAllowed(entity);
-		final MasterDataVO result = getMasterDataFacade().create(entity.getEntityName(), mdvo, mpDependants);
+		final MasterDataVO result = getMasterDataFacade().create(entity.getEntityName(), mdvo, mpDependants, null);
 		compileAndSaveAllXML(entity, result);
 		SecurityCache.getInstance().invalidate();
 		return result;
@@ -292,7 +292,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 			entity = NuclosEntity.FORM;
 
 		this.checkReadAllowed(entity);
-		final Integer result = (Integer) getMasterDataFacade().modify(entity.getEntityName(), mdvo, mpDependants);
+		final Integer result = (Integer) getMasterDataFacade().modify(entity.getEntityName(), mdvo, mpDependants, null);
 		this.compileAndSaveAllXML(entity, mdvo);
 
 		return result;
@@ -311,7 +311,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 			entity = NuclosEntity.FORM;
 
 		this.checkReadAllowed(entity);
-		getMasterDataFacade().remove(entity.getEntityName(), mdvo, true);
+		getMasterDataFacade().remove(entity.getEntityName(), mdvo, true, null);
 		SecurityCache.getInstance().invalidate();
 	}
 
@@ -356,7 +356,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 		MasterDataVO mdvo = MasterDataWrapper.wrapReportOutputVO(reportOutput);
 
 		try {
-			getMasterDataFacade().modify(entity.equals(NuclosEntity.REPORT) ? NuclosEntity.REPORTOUTPUT.getEntityName() : NuclosEntity.FORMOUTPUT.getEntityName(), mdvo, null);
+			getMasterDataFacade().modify(entity.equals(NuclosEntity.REPORT) ? NuclosEntity.REPORTOUTPUT.getEntityName() : NuclosEntity.FORMOUTPUT.getEntityName(), mdvo, null, null);
 		}
 		catch (Exception e) {
 			throw new NuclosReportException(e);
@@ -377,7 +377,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 		MasterDataVO mdvo = MasterDataWrapper.wrapSubreportVO(entity, subreport);
 
 		try {
-			getMasterDataFacade().modify(entity.equals(NuclosEntity.REPORT) ? NuclosEntity.SUBREPORT.getEntityName() : NuclosEntity.SUBFORM.getEntityName(), mdvo, null);
+			getMasterDataFacade().modify(entity.equals(NuclosEntity.REPORT) ? NuclosEntity.SUBREPORT.getEntityName() : NuclosEntity.SUBFORM.getEntityName(), mdvo, null, null);
 		}
 		catch (Exception e) {
 			throw new NuclosReportException(e);
@@ -583,7 +583,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 	 * @return search result report filled with data
 	 */
 	@RolesAllowed("Login")
-	public NuclosFile prepareSearchResult(CollectableSearchExpression clctexpr, List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format) throws NuclosReportException {
+	public NuclosFile prepareSearchResult(CollectableSearchExpression clctexpr, List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format, String customUsage) throws NuclosReportException {
 		final String entity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId)).getEntity();
 		final List<Integer> lstAttributeIds = GenericObjectUtils.getAttributeIds(lstclctefweSelected, entity, AttributeCache.getInstance());
 		final Set<String> subentities = new HashSet<String>();
@@ -593,7 +593,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 			}
 		}
 		final List<GenericObjectWithDependantsVO> lstlowdcvo = getGenericObjectFacade().getPrintableGenericObjectsWithDependants(iModuleId,
-				clctexpr, new HashSet<Integer>(lstAttributeIds), subentities, false, bIncludeSubModules);
+				clctexpr, new HashSet<Integer>(lstAttributeIds), subentities, false, bIncludeSubModules, customUsage);
 		final ResultVO resultvo = convertGenericObjectListToResultVO(entity, lstclctefweSelected, lstlowdcvo);
 		final List<ReportFieldDefinition> fields = ReportFieldDefinitionFactory.getFieldDefinitions(lstclctefweSelected);
 		final Export export = getExportInstance(format);

@@ -26,6 +26,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -38,6 +39,7 @@ import org.nuclos.client.task.TaskController;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -190,14 +192,14 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 					if (Modules.getInstance().isModuleEntity(treenode.getEntity())) {
 						final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(treenode.getEntity());
 						final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-						newGenericObjectCollectController(iModuleId, null);
+						newGenericObjectCollectController(iModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						final SearchFilter searchfilter = treenode.getSearchFilter();
 						ctlGenericObject.setSelectedSearchFilter(searchfilter);
 						ctlGenericObject.runViewResults(searchfilter.getSearchCondition());
 					}
 					else {
 						final MasterDataCollectController ctlMasterData = NuclosCollectControllerFactory.getInstance().
-						newMasterDataCollectController(treenode.getEntity(), null);
+						newMasterDataCollectController(treenode.getEntity(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						final SearchFilter searchfilter = treenode.getSearchFilter();
 						ctlMasterData.setSelectedSearchFilter(searchfilter);
 						ctlMasterData.runViewResults(searchfilter.getSearchCondition());

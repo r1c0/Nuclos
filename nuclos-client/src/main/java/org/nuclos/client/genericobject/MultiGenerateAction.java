@@ -23,14 +23,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JComponent;
 
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.GeneratorFailedException;
@@ -76,14 +78,14 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 				try {
 					if (generatoractionvo.isGroupAttributes()) {
 						result.set(GeneratorDelegate.getInstance().generateGenericObject(
-								sources.x, sources.y, generatoractionvo));
+								sources.x, sources.y, generatoractionvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 					}
 					else {
 						if (sources.x.size() > 1) {
 							throw new NuclosFatalException();
 						}
 						result.set(GeneratorDelegate.getInstance().generateGenericObject(
-								sources.x.iterator().next().getId(), sources.y, generatoractionvo));
+								sources.x.iterator().next().getId(), sources.y, generatoractionvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 					}
 				}
 				catch (GeneratorFailedException e) {

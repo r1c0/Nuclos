@@ -72,8 +72,8 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -474,7 +474,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 									
 									if(org.apache.commons.lang.StringUtils.equals(sSource, sSourceModule) && 
 										org.apache.commons.lang.StringUtils.equals(sTarget, sTargetModule)){
-										GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null);
+										GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null, null);
 										gcc.runViewSingleCollectableWithId(voGeneration.getId());
 										blnFound = true;
 										break;
@@ -482,7 +482,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 									
 								}					
 								if(!blnFound) {
-									GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null);
+									GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null, null);
 									Map<String, Object> mp = new HashMap<String, Object>();
 									mp.put("sourceModule", sSourceModule);
 									mp.put("sourceModuleId", new Integer(MetaDataClientProvider.getInstance().getEntity(sSourceModule).getId().intValue()));
@@ -774,7 +774,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 						
 						if(org.apache.commons.lang.StringUtils.equals(sSource, sSourceModule) && 
 							org.apache.commons.lang.StringUtils.equals(sTarget, sTargetModule)){
-							GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null);
+							GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null, null);
 							gcc.runViewSingleCollectableWithId(voGeneration.getId());
 							blnFound = true;
 							break;
@@ -782,7 +782,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 						
 					}					
 					if(!blnFound) {
-						GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null);
+						GenerationCollectController gcc = (GenerationCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.GENERATION.getEntityName(), null, null);
 						Map<String, Object> mp = new HashMap<String, Object>();
 						mp.put("sourceModule", sSourceModule);
 						mp.put("sourceModuleId", new Integer(MetaDataClientProvider.getInstance().getEntity(sSourceModule).getId().intValue()));

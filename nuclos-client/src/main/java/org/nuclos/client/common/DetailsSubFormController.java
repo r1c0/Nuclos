@@ -90,6 +90,7 @@ import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -117,7 +118,6 @@ import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.DocumentFileBase;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Controller for collecting dependant data (in a one-to-many relationship) in a subform.
@@ -1215,7 +1215,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	            		entityname = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(entityId)).getEntity();
 
 	            		try {
-	            			clct = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId()));
+	            			clct = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 	                    }
 	                    catch(Exception e) {
 	                        LOG.error("visitDrop failed: " + e, e);

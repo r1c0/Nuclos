@@ -46,6 +46,7 @@ import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.StaticMetaDataProvider;
 import org.nuclos.common.TranslationVO;
@@ -81,6 +82,7 @@ import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.NuclosSystemParameters;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
@@ -468,7 +470,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			facade.deleteResource(metafieldvo.getResourceSIdForDescription());
 		}
 
-		masterDataFacade.remove(sEntityName, mdvo, bRemoveDependants);
+		masterDataFacade.remove(sEntityName, mdvo, bRemoveDependants, null);
 
 		MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
 	}
@@ -525,8 +527,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					for(Integer iId : local.getGenericObjectIds(IdUtils.unsafeToId(voEntity.getId()), new CollectableSearchExpression())) {
 						Set<String> setNames = new HashSet<String>();
 						try {
-							GenericObjectWithDependantsVO vo = local.getWithDependants(iId, setNames);
-							local.remove(vo, true);
+							GenericObjectWithDependantsVO vo = local.getWithDependants(iId, setNames, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+							local.remove(vo, true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						}
 						catch(CommonBusinessException e) {
 							throw new NuclosFatalException(e);
@@ -538,7 +540,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 					MasterDataFacadeLocal local = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 					for(MasterDataVO vo : local.getMasterData(voEntity.getEntity(), null, true)) {
 						try {
-							local.remove(voEntity.getEntity(), vo, false);
+							local.remove(voEntity.getEntity(), vo, false, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						}
 						catch(NuclosBusinessRuleException e) {
 							throw new NuclosFatalException(e);
@@ -566,7 +568,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		CompositeCollectableSearchCondition searchWorkflowSubEntity = SearchConditionUtils.or(compWorkflowSubEntity1, compWorkflowSubEntity2);
 		Collection<MasterDataVO> colWorkflowSubEntity = masterDataFacade.getMasterData("nuclos_generationSubentity", searchWorkflowSubEntity, true);
 		for(MasterDataVO voWorkflowSubEntity : colWorkflowSubEntity) {
-			masterDataFacade.remove("nuclos_generationSubentity", voWorkflowSubEntity, true);
+			masterDataFacade.remove("nuclos_generationSubentity", voWorkflowSubEntity, true, null);
 		}
 
 		// delete workflow
@@ -577,16 +579,16 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		for(MasterDataVO voWorkflow : colWorkflow) {
 			CollectableComparison compWorkflowRule = SearchConditionUtils.newEOComparison("nuclos_rulegeneration", "generation", ComparisonOperator.EQUAL, voWorkflow.getId(), MetaDataServerProvider.getInstance());
 			for(MasterDataVO voWorkflowRule : masterDataFacade.getMasterData("nuclos_rulegeneration", compWorkflowRule, true)) {
-				masterDataFacade.remove("nuclos_rulegeneration", voWorkflowRule, true);
+				masterDataFacade.remove("nuclos_rulegeneration", voWorkflowRule, true, null);
 			}
-			masterDataFacade.remove("nuclos_generation", voWorkflow, true);
+			masterDataFacade.remove("nuclos_generation", voWorkflow, true, null);
 		}
 
 		// delete import structure
 		CollectableComparison comp = SearchConditionUtils.newEOComparison("nuclos_import", "entity", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		Collection<MasterDataVO> colImportStructure = masterDataFacade.getMasterData("nuclos_import", comp, true);
 		for(MasterDataVO voImportStructure : colImportStructure) {
-			masterDataFacade.remove("nuclos_import", voImportStructure, true);
+			masterDataFacade.remove("nuclos_import", voImportStructure, true, null);
 		}
 
 		// delete statemodel
@@ -953,7 +955,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		CollectableSearchExpression exp = new CollectableSearchExpression();
 
 		for(Integer iId : getGenericObjectFacade().getGenericObjectIds(iModuleId, exp)) {
-			GenericObjectWithDependantsVO vo = getGenericObjectFacade().getWithDependants(iId, Collections.singleton("nuclos_generalsearchdocument"));
+			GenericObjectWithDependantsVO vo = getGenericObjectFacade().getWithDependants(iId, Collections.singleton("nuclos_generalsearchdocument"), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			if(vo.getDependants().getAllData().size() == 0)
 				continue;
 			boolean bModify = false;
@@ -976,7 +978,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				IOUtils.copyFile(file, new File(sBaseDir +"/" + newPath + "/" + sFilename));
 			}
 			if(bModify) {
-				getGenericObjectFacade().modify(vo, mp, false);
+				getGenericObjectFacade().modify(vo, mp, false, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			}
 			for(EntityObjectVO voDocument : mp.getData("nuclos_generalsearchdocument")) {
 				voDocument.getFields().put("path", newPath);

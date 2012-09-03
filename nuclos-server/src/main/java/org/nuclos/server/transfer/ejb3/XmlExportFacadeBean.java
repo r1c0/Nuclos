@@ -44,6 +44,7 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.EntityAndFieldName;
@@ -56,6 +57,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosSystemParameters;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
@@ -653,7 +655,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 		if (bExportDependants) {
 			if (!mpMdSubFormsWithForeignKeys.containsKey(sEntityName)) {
 				LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
-				mpMdSubFormsWithForeignKeys.put(sEntityName, layoutFacade.getSubFormEntityAndParentSubFormEntityNames(sEntityName,(Integer)entityId,true));
+				mpMdSubFormsWithForeignKeys.put(sEntityName, layoutFacade.getSubFormEntityAndParentSubFormEntityNames(sEntityName,(Integer)entityId,true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 			}
 
 			exportMDSubform(mpMdSubFormsWithForeignKeys.get(sEntityName), null, entityId, parent, deepexport);

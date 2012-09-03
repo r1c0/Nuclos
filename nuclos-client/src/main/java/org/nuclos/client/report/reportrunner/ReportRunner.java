@@ -162,8 +162,8 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		return new ReportThread(runner);
 	}
 
-	public static ReportThread createExportJob(Component parent, ReportOutputVO.Format format, CollectableSearchExpression expr, List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) {
-		final ReportSource source = new SearchExpressionReportSource(expr, lstclctefweSelected, iModuleId, bIncludeSubModules, format);
+	public static ReportThread createExportJob(Component parent, ReportOutputVO.Format format, CollectableSearchExpression expr, List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, String customUsage) {
+		final ReportSource source = new SearchExpressionReportSource(expr, lstclctefweSelected, iModuleId, bIncludeSubModules, format, customUsage);
 		final ReportRunner runner = new ReportRunner(parent, source, format, SpringLocaleDelegate.getInstance().getMessage("ReportRunner.2", "Suchergebnis"));
 		return new ReportThread(runner);
 	}

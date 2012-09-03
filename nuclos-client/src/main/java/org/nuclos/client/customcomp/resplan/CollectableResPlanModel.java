@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -37,6 +38,7 @@ import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.resplan.AbstractResPlanModel;
 import org.nuclos.client.ui.resplan.Interval;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
@@ -450,7 +452,7 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 						prepareCollectableRelation(clctRelation, clctFrom, clctTo);
 						final MainFrameTab tabIfAny = new MainFrameTab();
 						final NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
-								relationEntity.getCollectableEntity().getName(), tabIfAny);
+								relationEntity.getCollectableEntity().getName(), tabIfAny, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						Main.getInstance().getMainController().initMainFrameTab(controller, tabIfAny);
 						cntrl.addCollectableEventListener(new CollectControllerEventHandler(cntrl));
 						controller.getTab().add(tabIfAny);

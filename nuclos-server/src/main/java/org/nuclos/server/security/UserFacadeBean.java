@@ -83,7 +83,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 			mdvo = setPassword(vo);
 		}
 
-		mdvo = getMasterDataFacade().create(NuclosEntity.USER.getEntityName(), mdvo, mpDependants);
+		mdvo = getMasterDataFacade().create(NuclosEntity.USER.getEntityName(), mdvo, mpDependants, null);
 
 		if (vo.getSetPassword() && vo.getNotifyUser()) {
 			notifyUser(vo, "Nuclos - account created", "The password for your new Nuclos account is: {0}");
@@ -98,7 +98,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 		if (vo.getSetPassword()) {
 			mdvo = setPassword(vo);
 		}
-		Object id = getMasterDataFacade().modify(NuclosEntity.USER.getEntityName(), mdvo, mpDependants);
+		Object id = getMasterDataFacade().modify(NuclosEntity.USER.getEntityName(), mdvo, mpDependants, null);
 
 		if (vo.getSetPassword() && vo.getNotifyUser()) {
 			notifyUser(vo, "Nuclos - password notification", "The password for your Nuclos account has been reset to: {0}");
@@ -109,7 +109,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 	public void remove(UserVO vo) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.USER);
 		// clear password history
-		getMasterDataFacade().remove(NuclosEntity.USER.getEntityName(), vo.toMasterDataVO(), true);
+		getMasterDataFacade().remove(NuclosEntity.USER.getEntityName(), vo.toMasterDataVO(), true, null);
 	}
 
 	public void setPassword(String username, String password) throws CommonBusinessException {

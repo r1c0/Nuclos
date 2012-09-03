@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
@@ -33,6 +34,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -265,12 +267,12 @@ public class GenericObjectClientUtils {
 
 		if(collLeasedObjectIds.size() == 1) {
 			// One related object must have a defined module, so open it in its detail view of the GenericObjectCollectController
-			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iCommonModuleId, null);
+			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iCommonModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			ctlLeasedObject.runViewSingleCollectableWithId(collLeasedObjectIds.iterator().next());
 		}
 		else if(iCommonModuleId != null) {
 			// If more than one related objects share one module, open them in the result view of the GenericObjectCollectController
-			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iCommonModuleId, null);
+			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iCommonModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			ctlLeasedObject.runViewResults(getSearchConditionForRelatedObjects(collLeasedObjectIds));
 		}
 	}

@@ -20,10 +20,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
@@ -136,10 +138,10 @@ public class DefaultLayoutMLFactory extends AbstractLayoutMLFactory {
 			MasterDataVO voLayoutUsage = colLayout.iterator().next();
 			MasterDataVO voLayout = MasterDataDelegate.getInstance().get(sLayoutType, voLayoutUsage.getField("layoutId"));
 			voLayout.setField("layoutML", layoutml);
-			MasterDataDelegate.getInstance().update(sLayoutType, voLayout, voLayout.getDependants());
+			MasterDataDelegate.getInstance().update(sLayoutType, voLayout, voLayout.getDependants(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 		else {
-			MasterDataDelegate.getInstance().create(sLayoutType, mdLayout, dependMapLayoutUsage);
+			MasterDataDelegate.getInstance().create(sLayoutType, mdLayout, dependMapLayoutUsage, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 	}
 

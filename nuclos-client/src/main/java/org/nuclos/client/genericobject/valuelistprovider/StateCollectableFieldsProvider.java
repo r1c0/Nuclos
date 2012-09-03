@@ -58,7 +58,7 @@ public class StateCollectableFieldsProvider implements CollectableFieldsProvider
 	public void setParameter(String sName, Object oValue) {
 		StateCollectableFieldsProvider.log.debug("setParameter - sName = " + sName + " - oValue = " + oValue);
 		if (sName.equals("module")) {
-			this.usagecriteria = new UsageCriteria((Integer) oValue, null, null);
+			this.usagecriteria = new UsageCriteria((Integer) oValue, null, null, null);
 		} else if (sName.equals("usagecriteria")) {
 			this.usagecriteria = (UsageCriteria) oValue;
 		} else {

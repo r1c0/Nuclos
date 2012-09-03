@@ -818,7 +818,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					 DependantMasterDataMap mp = new DependantMasterDataMap(entity,
 						 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
 		
-					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
+					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp, null);
 				 }
 				 else {
 					 MasterDataVO voRole = null;
@@ -842,7 +842,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					 DependantMasterDataMap mp = new DependantMasterDataMap(
 							 entity, 
 							 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
-					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
+					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp, null);
 		
 				 }
 				 try {
@@ -863,7 +863,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				 Collection<EntityObjectVO> colVo = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.STATEMODELUSAGE.getEntityName(), "nuclos_module", iEntityId);
 				 if (!wizardModel.isStateModel()) {
 					 for(EntityObjectVO vo : colVo) {
-						 MasterDataDelegate.getInstance().remove(NuclosEntity.STATEMODELUSAGE.getEntityName(), DalSupportForMD.wrapEntityObjectVO(vo));
+						 MasterDataDelegate.getInstance().remove(NuclosEntity.STATEMODELUSAGE.getEntityName(), DalSupportForMD.wrapEntityObjectVO(vo), null);
 					 }
 				 }
 			 }
@@ -912,7 +912,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					if(sLayout != null) {
 						voLayout.setField("layoutML", sLayout);
 						try {
-							MasterDataDelegate.getInstance().update(NuclosEntity.LAYOUT.getEntityName(), voLayout, null);
+							MasterDataDelegate.getInstance().update(NuclosEntity.LAYOUT.getEntityName(), voLayout, null, null);
 						}
 						catch(CommonBusinessException e) {
 							throw new NuclosFatalException(e);
@@ -952,7 +952,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					if(sLayout != null) {
 						voLayout.setField("layoutML", sLayout);
 						try {
-							MasterDataDelegate.getInstance().update(NuclosEntity.LAYOUT.getEntityName(), voLayout, null);
+							MasterDataDelegate.getInstance().update(NuclosEntity.LAYOUT.getEntityName(), voLayout, null, null);
 						}
 						catch(CommonBusinessException e) {
 							throw new NuclosFatalException(e);
@@ -964,7 +964,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		for(MasterDataVO voParentLayout : lstLayoutToChange) {
 			try {
-	            MasterDataDelegate.getInstance().update(NuclosEntity.LAYOUT.getEntityName(), voParentLayout, null);
+	            MasterDataDelegate.getInstance().update(NuclosEntity.LAYOUT.getEntityName(), voParentLayout, null, null);
             }
             catch(CommonBusinessException e) {
             	throw new NuclosFatalException(e);
@@ -1488,11 +1488,11 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
             	try {
             		if(valueList.getId() != null) {
             			MasterDataVO vo = new MasterDataVO(valueList.getId().intValue(), new Date(), "nuclos", new Date(), "nuclos", valueList.getVersionId(), mpFields);
-            			MasterDataDelegate.getInstance().update(attr.getValueListName(), vo, null);
+            			MasterDataDelegate.getInstance().update(attr.getValueListName(), vo, null, null);
             		}
             		else {
             			MasterDataVO vo = new MasterDataVO(null, new Date(), "nuclos", new Date(), "nuclos", 1, mpFields);
-            			MasterDataDelegate.getInstance().create(attr.getValueListName(), vo, null);
+            			MasterDataDelegate.getInstance().create(attr.getValueListName(), vo, null, null);
             		}
                 }
                 catch(CommonBusinessException e) {

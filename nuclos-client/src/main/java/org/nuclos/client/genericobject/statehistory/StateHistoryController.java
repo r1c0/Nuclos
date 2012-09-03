@@ -30,6 +30,7 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -42,6 +43,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
@@ -127,10 +129,10 @@ public class StateHistoryController extends MainFrameTabController {
 			public void run() {
 				try {
 					final GenericObjectWithDependantsVO lowdcvo = GenericObjectDelegate.getInstance().getHistorical(iGenericObjectId,
-							dateHistorical);
+							dateHistorical, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 					final CollectableGenericObjectWithDependants clct = new CollectableGenericObjectWithDependants(lowdcvo);
-					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iModuleId, null).runViewSingleHistoricalCollectable(clct, dateHistorical);
+					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).runViewSingleHistoricalCollectable(clct, dateHistorical);
 				}
 				catch (/* CommonBusiness */ Exception ex) {
 					Errors.getInstance().showExceptionDialog(parent.getComponentPanel(), ex);

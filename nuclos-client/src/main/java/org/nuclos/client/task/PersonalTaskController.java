@@ -66,6 +66,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBinding;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
@@ -104,6 +105,7 @@ import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
@@ -902,7 +904,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						tabIfAny = new MainFrameTab();
 					}
 					PersonalTaskCollectController newCollectController =
-						(PersonalTaskCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.TODOLIST.getEntityName(), tabIfAny);
+						(PersonalTaskCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.TODOLIST.getEntityName(), tabIfAny, null);
 					
 					if (tabIfAny != null) {
 						Main.getInstance().getMainController().initMainFrameTab(newCollectController, tabIfAny);
@@ -929,7 +931,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						
 						if (tab != null && !bInNewTab) {
 							final MainFrameTab tabIfAny = new MainFrameTab();
-							final NuclosCollectController<?> ctrl = NuclosCollectControllerFactory.getInstance().newCollectController(NuclosEntity.TODOLIST.getEntityName(), tabIfAny);
+							final NuclosCollectController<?> ctrl = NuclosCollectControllerFactory.getInstance().newCollectController(NuclosEntity.TODOLIST.getEntityName(), tabIfAny, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 							
 							Main.getInstance().getMainController().initMainFrameTab(ctrl, tabIfAny);
 							tab.add(tabIfAny);
@@ -999,10 +1001,10 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						final EntityMetaDataVO mdEntity = mdProv.getEntity(entity);
 						final CollectController<?> newCollectController;
 						if (mdEntity.isStateModel().booleanValue()) {
-							newCollectController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(IdUtils.unsafeToId(mdEntity.getId()), null);
+							newCollectController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(IdUtils.unsafeToId(mdEntity.getId()), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						}
 						else {
-							newCollectController = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entity, null);
+							newCollectController = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						}
 						final List<Long> oIds = eObjectIds.get(entity);
 						switch(oIds.size()){

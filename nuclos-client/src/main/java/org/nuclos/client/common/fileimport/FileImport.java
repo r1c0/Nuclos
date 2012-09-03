@@ -25,16 +25,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.ui.CommonInterruptibleProcess;
+import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.fileimport.CommonParseException;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.ui.CommonInterruptibleProcess;
-import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -153,7 +155,7 @@ public class FileImport implements CommonInterruptibleProcess {
 				if (collmdvoRecordExisting == null || collmdvoRecordExisting.isEmpty()) {
 					//insert the new md record
 					try {
-						MasterDataDelegate.getInstance().create(this.sEntity, mdvoRecord, null);
+						MasterDataDelegate.getInstance().create(this.sEntity, mdvoRecord, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						iCountCreated++;
 					}
 					catch (NuclosBusinessException ex) {
@@ -167,7 +169,7 @@ public class FileImport implements CommonInterruptibleProcess {
 					for (MasterDataVO mdvoRecordExisting : collmdvoRecordExisting) {
 						mdvoRecordExisting.setFields(mdvoRecord.getFields());
 						try {
-							MasterDataDelegate.getInstance().update(this.sEntity, mdvoRecordExisting, null);
+							MasterDataDelegate.getInstance().update(this.sEntity, mdvoRecordExisting, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 							iCountUpdated++;
 						}
 						catch (NuclosBusinessException ex) {

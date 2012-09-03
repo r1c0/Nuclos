@@ -81,6 +81,7 @@ import org.nuclos.client.valuelistprovider.EntityCollectableIdFieldsProvider;
 import org.nuclos.common.Actions;
 import org.nuclos.common.LafParameter;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common2.CommonRunnable;
@@ -327,7 +328,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	
 				CollectableGenericObjectEntity e = new CollectableGenericObjectEntity(sModuleName, sModuleName, Collections.singletonList(""));
 				LayoutRoot lRoot = GenericObjectLayoutCache.getInstance().getLayout(e
-					, new UsageCriteria(iModule, iProcess, iStatus), false, null, valueListProviderCache);
+					, new UsageCriteria(iModule, iProcess, iStatus, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)), false, null, valueListProviderCache);
 	
 				JComponent jcomp = lRoot.getRootComponent();
 	

@@ -113,7 +113,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		
 		MasterDataVO mdVO = new MasterDataVO(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.PROCESSMONITOR), true);
 		mdVO.setFields(mpFields);
-		getMasterDataFacade().create(NuclosEntity.PROCESSMONITOR.getEntityName(), mdVO, null);
+		getMasterDataFacade().create(NuclosEntity.PROCESSMONITOR.getEntityName(), mdVO, null, null);
 		
 		return graphvo.getStateModel();
 	}
@@ -239,7 +239,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		ProcessMonitorVO processmonitorvo = stategraphvo.getStateModel();
 		// process itself
 //		final ProcessMonitorModelLocal pmlocal = monitorHome.create(processmonitorvo);
-		final MasterDataVO createdVO = getMasterDataFacade().create(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(processmonitorvo), null);
+		final MasterDataVO createdVO = getMasterDataFacade().create(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(processmonitorvo), null, null);
 		processmonitorvo = MasterDataWrapper.getProcessMonitorVO(createdVO);
 		final Integer processMonitorId = createdVO.getIntId();
 		
@@ -252,7 +252,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 //			mpStates.put(statevo.getWorkingId(), processstatemodelHome.create(pmlocal.getId(), statevo.getStateModelVO().getId(), statevo.getGuarantor(), statevo.getSecondGuarator(), statevo.getSupervisor(), statevo.getOriginalSystem(), statevo.getPlanStartSeries(), statevo.getPlanEndSeries(), statevo.getRuntime(), statevo.getRuntimeFormat()).getId());
 //			layoutinfo.updateStateId(statevo.getWorkingId(), mpStates.get(statevo.getWorkingId()));
 			statevo.setProcessMonitorId(processMonitorId);
-			MasterDataVO createdMDStateVO = getMasterDataFacade().create(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), MasterDataWrapper.wrapSubProcessVO(statevo), null);
+			MasterDataVO createdMDStateVO = getMasterDataFacade().create(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), MasterDataWrapper.wrapSubProcessVO(statevo), null, null);
 			
 			mpStates.put(statevo.getWorkingId(), (Integer) createdMDStateVO.getId());		//prepare mapping table for state transition inserts/updates
 			layoutinfo.updateStateId(statevo.getWorkingId(), mpStates.get(statevo.getWorkingId()));
@@ -264,14 +264,14 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 //			layoutinfo.updateTransitionId(processtransitionvo.getClientId(), mpTransitions.get(processtransitionvo.getClientId()));
 			
 			processtransitionvo.setProcessMonitorId(processMonitorId);
-			MasterDataVO createdMDTransitionVO = getMasterDataFacade().create(NuclosEntity.PROCESSTRANSITION.getEntityName(), MasterDataWrapper.wrapProcessTransitionVO(processtransitionvo), null);
+			MasterDataVO createdMDTransitionVO = getMasterDataFacade().create(NuclosEntity.PROCESSTRANSITION.getEntityName(), MasterDataWrapper.wrapProcessTransitionVO(processtransitionvo), null, null);
 			
 			mpTransitions.put(processtransitionvo.getClientId(), (Integer) createdMDTransitionVO.getId());		//prepare mapping table for state transition inserts/updates
 			layoutinfo.updateTransitionId(processtransitionvo.getId(), mpTransitions.get(processtransitionvo.getId()));
 		}
 		
 		processmonitorvo.setLayout(layoutinfo);
-		getMasterDataFacade().modify(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(processmonitorvo), null);
+		getMasterDataFacade().modify(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(processmonitorvo), null, null);
 		
 		
 		return processMonitorId;
@@ -288,16 +288,16 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		try {
 		for (ProcessTransitionVO processtransitionvo : stategraphvo.getTransitions()) {
 			if (processtransitionvo.getId() != null) {
-				getMasterDataFacade().remove(NuclosEntity.PROCESSTRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSTRANSITION.getEntityName(), processtransitionvo.getId()), false);
+				getMasterDataFacade().remove(NuclosEntity.PROCESSTRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSTRANSITION.getEntityName(), processtransitionvo.getId()), false, null);
 			}
 		}
 		for (SubProcessVO statevo : stategraphvo.getStates()) {
 			if (statevo.getId() != null) {
-				getMasterDataFacade().remove(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), statevo.getId()), false);
+				getMasterDataFacade().remove(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), statevo.getId()), false, null);
 			}
 		}
 		//StateCache.getInstance().invalidate();
-		getMasterDataFacade().remove(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(stategraphvo.getStateModel()), false);
+		getMasterDataFacade().remove(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(stategraphvo.getStateModel()), false, null);
 		}
 		catch(Exception e) {
 			throw new CommonFatalException(e);
@@ -323,14 +323,14 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 				if (statevo.getId() == null) {
 					// insert state:
 					statevo.setProcessMonitorId(processMonitorId);
-					MasterDataVO createdMDStateVO = getMasterDataFacade().create(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), MasterDataWrapper.wrapSubProcessVO(statevo), null);
+					MasterDataVO createdMDStateVO = getMasterDataFacade().create(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), MasterDataWrapper.wrapSubProcessVO(statevo), null, null);
 					
 					mpStates.put(statevo.getWorkingId(), (Integer) createdMDStateVO.getId());		//prepare mapping table for state transition inserts/updates
 					layoutinfo.updateStateId(statevo.getWorkingId(), mpStates.get(statevo.getWorkingId()));
 				}
 				else {
 					// update state:
-					getMasterDataFacade().modify(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), MasterDataWrapper.wrapSubProcessVO(statevo), null);
+					getMasterDataFacade().modify(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), MasterDataWrapper.wrapSubProcessVO(statevo), null, null);
 					mpStates.put(statevo.getId(), statevo.getId());	//prepare mapping table for state transition inserts/updates
 
 				}
@@ -357,7 +357,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 				if (processtransitionvo.getId() == null) {
 					// insert transition:
 					processtransitionvo.setProcessMonitorId(processMonitorId);
-					MasterDataVO createdMDTransitionVO = getMasterDataFacade().create(NuclosEntity.PROCESSTRANSITION.getEntityName(), MasterDataWrapper.wrapProcessTransitionVO(processtransitionvo), null);
+					MasterDataVO createdMDTransitionVO = getMasterDataFacade().create(NuclosEntity.PROCESSTRANSITION.getEntityName(), MasterDataWrapper.wrapProcessTransitionVO(processtransitionvo), null, null);
 					
 					mpTransitions.put(processtransitionvo.getClientId(), (Integer) createdMDTransitionVO.getId());		//prepare mapping table for state transition inserts/updates
 					layoutinfo.updateTransitionId(processtransitionvo.getClientId(), mpTransitions.get(processtransitionvo.getClientId()));
@@ -432,7 +432,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 										// remove...
 										processtransitionvo.setGenerationId(null);
 //										oldGenerationLocal.remove();
-										getMasterDataFacade().remove(NuclosEntity.GENERATION.getEntityName(), getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), processtransitionvo.getGenerationId()), false);
+										getMasterDataFacade().remove(NuclosEntity.GENERATION.getEntityName(), getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), processtransitionvo.getGenerationId()), false, null);
 									} 
 								}
 								
@@ -440,7 +440,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 								if (processtransitionvo.getGenerationId() == null){
 									MasterDataVO newMDGenerationVO = MasterDataWrapper.wrapGeneratorActionVO(newGenerationVO);
 									newMDGenerationVO.setField("ruleonly", Boolean.TRUE);
-									MasterDataVO createdMDNewGenerationVO = getMasterDataFacade().create(NuclosEntity.GENERATION.getEntityName(), newMDGenerationVO, null);
+									MasterDataVO createdMDNewGenerationVO = getMasterDataFacade().create(NuclosEntity.GENERATION.getEntityName(), newMDGenerationVO, null, null);
 									Integer iGenerationId = (Integer) createdMDNewGenerationVO.getId();
 									processtransitionvo.setGenerationId(iGenerationId);
 								}
@@ -512,7 +512,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			if (processtransitionvo.isRemoved() && processtransitionvo.getId() != null) {
 //				final ProcessTransitionLocal processtransition = transitionHome.findByPrimaryKey(processtransitionvo.getId());
 //				processtransition.remove();
-				getMasterDataFacade().remove(NuclosEntity.PROCESSTRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSTRANSITION.getEntityName(), processtransitionvo.getId()), false);
+				getMasterDataFacade().remove(NuclosEntity.PROCESSTRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSTRANSITION.getEntityName(), processtransitionvo.getId()), false, null);
 			}
 		}
 		
@@ -523,14 +523,14 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			if (statevo.isRemoved() && statevo.getId() != null) {
 //				final ProcessStateModelLocal localProcessState = processstatemodelHome.findByPrimaryKey(statevo.getId());
 //				localProcessState.remove();
-				getMasterDataFacade().remove(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), statevo.getId()), false);
+				getMasterDataFacade().remove(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), getMasterDataFacade().get(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), statevo.getId()), false, null);
 			}
 		}
 		//StateCache.getInstance().invalidate();
 		
 		statemodelvo.setLayout(layoutinfo);
 //		statemodel.setValueObject(statemodelvo);
-		getMasterDataFacade().modify(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(statemodelvo), null);
+		getMasterDataFacade().modify(NuclosEntity.PROCESSMONITOR.getEntityName(), MasterDataWrapper.wrapProcessMonitorVO(statemodelvo), null, null);
 		}
 		catch (Exception e) {
 			throw new CommonFatalException(e);
@@ -694,7 +694,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	
 	public void modifyProcessTransition(ProcessTransitionVO ptVO) {
 		try {
-			getMasterDataFacade().modify(NuclosEntity.PROCESSTRANSITION.getEntityName(), MasterDataWrapper.wrapProcessTransitionVO(ptVO), null);
+			getMasterDataFacade().modify(NuclosEntity.PROCESSTRANSITION.getEntityName(), MasterDataWrapper.wrapProcessTransitionVO(ptVO), null, null);
 			
 			//add rules to transition
 //			for (Iterator i = getRuleTransitionHome().findByTransition(this.getId()).iterator(); i.hasNext();) {
@@ -708,7 +708,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 //			}
 			for (Object id : getMasterDataFacade().getMasterDataIds(NuclosEntity.RULETRANSITION.getEntityName(), new CollectableSearchExpression(
 				SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.RULETRANSITION), "transition", ComparisonOperator.EQUAL, ptVO.getId())))) {
-				getMasterDataFacade().remove(NuclosEntity.RULETRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.RULETRANSITION.getEntityName(), id), false);
+				getMasterDataFacade().remove(NuclosEntity.RULETRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.RULETRANSITION.getEntityName(), id), false, null);
 			}
 			int iOrderId = 1;
 			for (Integer iRuleId : ptVO.getRuleIds()) {
@@ -717,7 +717,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 				mpFields.put("ruleId", iRuleId);
 				mpFields.put("order", iOrderId);
 				MasterDataVO newRuleTransistionVO = new MasterDataVO(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.RULETRANSITION), false);
-				getMasterDataFacade().create(NuclosEntity.RULETRANSITION.getEntityName(), newRuleTransistionVO, null);
+				getMasterDataFacade().create(NuclosEntity.RULETRANSITION.getEntityName(), newRuleTransistionVO, null, null);
 				
 				iOrderId++;
 			}
@@ -732,14 +732,14 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 //			}
 			for (Object id : getMasterDataFacade().getMasterDataIds(NuclosEntity.ROLETRANSITION.getEntityName(), new CollectableSearchExpression(
 				SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.ROLETRANSITION), "transition", ComparisonOperator.EQUAL, ptVO.getId())))) {
-				getMasterDataFacade().remove(NuclosEntity.ROLETRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.ROLETRANSITION.getEntityName(), id), false);
+				getMasterDataFacade().remove(NuclosEntity.ROLETRANSITION.getEntityName(), getMasterDataFacade().get(NuclosEntity.ROLETRANSITION.getEntityName(), id), false, null);
 			}
 			for (Integer iRoleId : ptVO.getRoleIds()) {
 				Map<String, Object> mpFields = new HashMap<String,Object>();
 				mpFields.put("transitionId", ptVO.getId());
 				mpFields.put("roleId", iRoleId);
 				MasterDataVO newRoleTransistionVO = new MasterDataVO(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.ROLETRANSITION), false);
-				getMasterDataFacade().create(NuclosEntity.ROLETRANSITION.getEntityName(), newRoleTransistionVO, null);
+				getMasterDataFacade().create(NuclosEntity.ROLETRANSITION.getEntityName(), newRoleTransistionVO, null, null);
 			}
 			
 			
@@ -904,7 +904,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		for (Object id : getMasterDataFacade().getMasterDataIds(NuclosEntity.STATETRANSITION.getEntityName(), new CollectableSearchExpression(
 			SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.STATETRANSITION), "state1", ComparisonOperator.EQUAL, stateId)))) {
 			try {
-				result.add(MasterDataWrapper.getStateTransitionVO(getMasterDataFacade().getWithDependants(NuclosEntity.PROCESSTRANSITION.getEntityName(), (Integer) id)));
+				result.add(MasterDataWrapper.getStateTransitionVO(getMasterDataFacade().getWithDependants(NuclosEntity.PROCESSTRANSITION.getEntityName(), (Integer) id, null)));
 			}
 			catch(CommonFinderException nfe) {
 				throw nfe;

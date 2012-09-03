@@ -92,6 +92,7 @@ import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -524,7 +525,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		}
 
 		try {
-			final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(sEntity, null);
+			final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(sEntity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 			final int iCollectState = result.restoreStateFromPreferences(prefs);
 
@@ -578,7 +579,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					"NuclosCollectController.17", "Sie haben kein Recht die Entit\u00e4t ''{0}'' zu verwenden.", rp.entity));
 		}
 
-		final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(rp.entity, tabIfAny);
+		final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(rp.entity, tabIfAny, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 		final int cs = result.restoreStateFromPreferences(rp.iCollectState, rp.searchCondition);
 
@@ -1497,5 +1498,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	@Override
 	public Pair<IconResolver, String> getIconAndResolver() {
 		return Main.getInstance().getMainFrame().getEntityIconAndResolver(getEntityName());
+	}
+	
+	@Override
+	public String getCustomUsage() {
+		return null;
 	}
 }	// class NuclosCollectController

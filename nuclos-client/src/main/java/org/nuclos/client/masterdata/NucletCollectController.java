@@ -66,7 +66,7 @@ public class NucletCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public NucletCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.NUCLET.getEntityName(), tabIfAny);
+		super(NuclosEntity.NUCLET.getEntityName(), tabIfAny, null);
 	}
 
 	@Override

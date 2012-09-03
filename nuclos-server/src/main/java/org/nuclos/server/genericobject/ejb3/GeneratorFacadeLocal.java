@@ -43,7 +43,7 @@ public interface GeneratorFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	Long generateGenericObject(
-			Long iSourceObjectId, String sGenerator)
+			Long iSourceObjectId, String sGenerator, String customUsage)
 		throws CommonFinderException, CommonPermissionException,
 		CommonStaleVersionException, CommonValidationException;
 
@@ -56,7 +56,7 @@ public interface GeneratorFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	Long generateGenericObject(
-		RuleObjectContainerCVO loccvoSource, String sGenerator)
+		RuleObjectContainerCVO loccvoSource, String sGenerator, String customUsage)
 		throws CommonFinderException, CommonPermissionException,
 		CommonStaleVersionException, CommonValidationException;
 
@@ -73,7 +73,7 @@ public interface GeneratorFacadeLocal {
 	 * @precondition asAttributes != null
 	 */
 	void transferGenericObjectData(GenericObjectVO govoSource,
-		Integer iTargetGenericObjectId, String[][] asAttributes);
+		Integer iTargetGenericObjectId, String[][] asAttributes, String customUsage);
 
 	/**
 	 * get generator usages for specified GeneratorId
@@ -84,7 +84,7 @@ public interface GeneratorFacadeLocal {
 	Collection<GeneratorUsageVO> getGeneratorUsages(Integer id)
 		throws CommonFatalException;
 
-	EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo)
+	EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo, String customUsage)
 		throws CommonFinderException, CommonPermissionException,
 		CommonStaleVersionException, CommonValidationException ;
 }

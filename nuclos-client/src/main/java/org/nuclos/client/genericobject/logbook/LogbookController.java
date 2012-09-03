@@ -44,6 +44,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
@@ -59,6 +60,7 @@ import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -389,10 +391,10 @@ public class LogbookController extends MainFrameTabController {
 			public void run() {
 				try {
 					final GenericObjectWithDependantsVO lowdcvo = GenericObjectDelegate.getInstance().getHistorical(iGenericObjectId,
-							dateHistorical);
+							dateHistorical, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 					final CollectableGenericObjectWithDependants clct = new CollectableGenericObjectWithDependants(lowdcvo);
-					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iModuleId, null).
+					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).
 							runViewSingleHistoricalCollectable(clct, dateHistorical);
 					}
 				catch (/* CommonBusiness */ Exception ex) {

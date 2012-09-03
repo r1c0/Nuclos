@@ -157,10 +157,10 @@ public class LafParameterProvider {
 				case 1:
 					MasterDataVO mdParameter = colParamter.iterator().next();
 					if (value == null) {
-						MasterDataDelegate.getInstance().remove(entity, mdParameter);
+						MasterDataDelegate.getInstance().remove(entity, mdParameter, null);
 					} else {
 						mdParameter.setField("value", value);
-						MasterDataDelegate.getInstance().update(entity, mdParameter, null);
+						MasterDataDelegate.getInstance().update(entity, mdParameter, null, null);
 					}
 					break;
 				default:
@@ -173,7 +173,7 @@ public class LafParameterProvider {
 						eoParameter.getFields().put("value", value);
 						eoParameter.getFieldIds().put("entity", entityId);
 						mdParameter = DalSupportForMD.getMasterDataWithDependantsVO(eoParameter);
-						MasterDataDelegate.getInstance().create(entity, mdParameter, null);
+						MasterDataDelegate.getInstance().create(entity, mdParameter, null, null);
 					}
 				}
 				break;
@@ -185,10 +185,10 @@ public class LafParameterProvider {
 				case 1:
 					MasterDataVO mdParameter = colParamter.iterator().next();
 					if (value == null) {
-						MasterDataDelegate.getInstance().remove(entity, mdParameter);
+						MasterDataDelegate.getInstance().remove(entity, mdParameter, null);
 					} else {
 						mdParameter.setField("value", value);
-						MasterDataDelegate.getInstance().update(entity, mdParameter, null);
+						MasterDataDelegate.getInstance().update(entity, mdParameter, null, null);
 					}
 					break;
 				default:
@@ -201,7 +201,7 @@ public class LafParameterProvider {
 						eoParameter.getFields().put("description", parameter.getName());
 						eoParameter.getFields().put("value", value);
 						mdParameter = DalSupportForMD.getMasterDataWithDependantsVO(eoParameter);
-						MasterDataDelegate.getInstance().create(entity, mdParameter, null);
+						MasterDataDelegate.getInstance().create(entity, mdParameter, null, null);
 					}
 				}
 				break;

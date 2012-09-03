@@ -327,7 +327,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		// TODO: OPTIMIZATION: only selected and/or required attributes should be loaded here!
 		final ProxyList<EntityObjectVO> proxylstlovwdvo = lodelegate.getEntityObjectProxyList(
 				IdUtils.toLongId(getGenericObjectController().getModuleId()),
-				clctexprInternal, fields);
+				clctexprInternal, fields, getCollectController().getCustomUsage());
 
 		return new MyProxyListAdapter(new CollectableEntityObjectProxyListAdapter(proxylstlovwdvo, meta));
 	}

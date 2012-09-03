@@ -91,7 +91,7 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 		mdvo.setField("entity", sImportEntityName);
 		mdvo.setField("filename", sImportFileName);
 
-		return getMasterDataFacade().create(NuclosEntity.IMPORTEXPORT.getEntityName(), mdvo, null).getIntId();
+		return getMasterDataFacade().create(NuclosEntity.IMPORTEXPORT.getEntityName(), mdvo, null, null).getIntId();
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 		mdvo.setField("message", sImportMessage);
 		mdvo.setField("actionnumber", iActionNumber);
 
-		getMasterDataFacade().create(NuclosEntity.IMPORTEXPORTMESSAGES.getEntityName(), mdvo, null);
+		getMasterDataFacade().create(NuclosEntity.IMPORTEXPORTMESSAGES.getEntityName(), mdvo, null, null);
 	}
 
 	/**

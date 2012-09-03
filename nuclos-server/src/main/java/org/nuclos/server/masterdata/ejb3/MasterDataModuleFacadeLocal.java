@@ -44,7 +44,7 @@ public interface MasterDataModuleFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	Object modify(String sEntityName, MasterDataVO mdvo,
-		DependantMasterDataMap mpDependants) throws CommonCreateException,
+		DependantMasterDataMap mpDependants, String customUsage) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException;
@@ -59,7 +59,7 @@ public interface MasterDataModuleFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	void remove(String sEntityName, MasterDataVO mdvo,
-		boolean bRemoveDependants) throws NuclosBusinessRuleException,
+		boolean bRemoveDependants, String customUsage) throws NuclosBusinessRuleException,
 		CommonPermissionException, CommonStaleVersionException,
 		CommonRemoveException, CommonFinderException;
 

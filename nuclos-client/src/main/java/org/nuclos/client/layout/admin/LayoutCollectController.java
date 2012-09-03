@@ -137,7 +137,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
      */
 	protected LayoutCollectController(NuclosEntity entity, MainFrameTab tabIfAny) {
 		super(entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>(
-				entity.getEntityName(), new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
+				entity.getEntityName(), new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()), null);
 
 		/** @todo The old temp files will be deleted by a shutdown hook. */
 		// this.getFrame().addInternalFrameListener(new InternalFrameAdapter() {

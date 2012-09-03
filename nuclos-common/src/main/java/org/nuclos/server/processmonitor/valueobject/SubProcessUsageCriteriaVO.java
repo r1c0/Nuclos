@@ -20,12 +20,12 @@ import org.nuclos.common.UsageCriteria;
 
 public class SubProcessUsageCriteriaVO extends UsageCriteria {
 
-	public SubProcessUsageCriteriaVO(Integer moduleId, Integer processId, Integer statusId) {
-		super(moduleId, processId, statusId);
+	public SubProcessUsageCriteriaVO(Integer moduleId, Integer processId, Integer statusId, String customUsage) {
+		super(moduleId, processId, statusId, customUsage);
 	}
 	
 	public SubProcessUsageCriteriaVO(UsageCriteria ucSuper) {
-		this(ucSuper.getModuleId(), ucSuper.getProcessId(), ucSuper.getStatusId());
+		this(ucSuper.getModuleId(), ucSuper.getProcessId(), ucSuper.getStatusId(), ucSuper.getCustom());
 	}
 	
 }

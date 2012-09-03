@@ -42,7 +42,7 @@ public class GroupCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public GroupCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.GROUP, tabIfAny);
+		super(NuclosEntity.GROUP, tabIfAny, null);
 	}
 
 	@Override

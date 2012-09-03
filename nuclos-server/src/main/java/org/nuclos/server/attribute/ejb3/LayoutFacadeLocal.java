@@ -73,7 +73,7 @@ public interface LayoutFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(
-		String entityName, Integer id, boolean forImportOrExport);
+		String entityName, Integer id, boolean forImportOrExport, String customUsage);
 
 	@RolesAllowed("Login")
 	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByGO(UsageCriteria usage)

@@ -229,7 +229,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 				SearchConditionUtils.getCollectableSearchConditionForIds(Collections.singletonList(iGenericObjectId)));
 
 		final List<GenericObjectWithDependantsVO> lstlowdcvo = lofacade.getGenericObjects(iModuleId, clctexpr,
-				getAttributeIdsRequiredForGenericObjectTreeNode(iModuleId), getSubEntityNamesRequiredForGenericObjectTreeNode(iModuleId), true);
+				getAttributeIdsRequiredForGenericObjectTreeNode(iModuleId), getSubEntityNamesRequiredForGenericObjectTreeNode(iModuleId), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), true);
 
 		switch (lstlowdcvo.size()) {
 			case 0:
@@ -981,7 +981,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(node.getEntity());
 			final TruncatableCollection<GenericObjectWithDependantsVO> collgowdvo =
 					this.getGenericObjectFacade().getRestrictedNumberOfGenericObjects(iModuleId, appendRecordGrants(node.getSearchExpression(), node.getEntity()),
-							getAttributeIdsRequiredForGenericObjectTreeNode(iModuleId), getSubEntityNamesRequiredForGenericObjectTreeNode(iModuleId), iMaxRowCount);
+							getAttributeIdsRequiredForGenericObjectTreeNode(iModuleId), getSubEntityNamesRequiredForGenericObjectTreeNode(iModuleId), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), iMaxRowCount);
 
 			for (GenericObjectWithDependantsVO gowdvo : collgowdvo) {
 				result.add(GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, attrprovider, serverParameterProvider, null, null, null, getCurrentUserName(), null));

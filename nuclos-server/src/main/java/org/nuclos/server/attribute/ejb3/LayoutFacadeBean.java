@@ -119,13 +119,13 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 			mdvoNew.setField("name", sLayoutName);
 			mdvoNew.setField("description", layoutvo.getDescription());
 			mdvoNew.setField("layoutML", layoutvo.getLayoutML());
-			create(entity.getEntityName(), mdvoNew, null);
+			create(entity.getEntityName(), mdvoNew, null, null);
 		}
 		else {
 			final MasterDataVO mdvo = collmdvo.iterator().next();
 			mdvo.setField("layoutML", layoutvo.getLayoutML());
 			try {
-				modify(entity.getEntityName(), mdvo, null);
+				modify(entity.getEntityName(), mdvo, null, null);
 			}
 			catch (CommonFinderException ex) {
 				throw new CommonFatalException(ex);
@@ -243,7 +243,7 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	// Prozess-ID) verwendet, um das "am besten passende" Layout zu ermitteln (s.
 	// GenericObjectMetaDataCache.getBestMatchingLayoutId().
 	@RolesAllowed("Login")
-	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(String entityName, Integer id, boolean forImportOrExport) {
+	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(String entityName, Integer id, boolean forImportOrExport, String customUsage) {
 
 		Map<EntityAndFieldName, String> result = new HashMap<EntityAndFieldName, String>();
 
@@ -253,7 +253,7 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 				final AttributeProvider attrprovider = AttributeCache.getInstance();
 				final GenericObjectVO govo = genericObjectFacade.get(id);
 				
-				result = getSubFormEntityAndParentSubFormEntityNamesByGO(govo.getUsageCriteria(attrprovider));
+				result = getSubFormEntityAndParentSubFormEntityNamesByGO(govo.getUsageCriteria(attrprovider, customUsage));
 			}
 			catch (CommonFinderException e) {
 				throw new CommonFatalException(e);

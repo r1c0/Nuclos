@@ -149,14 +149,14 @@ public class WebAccessBean implements WebAccessWS {
 	        RuleObjectContainerCVO ruleContainer;
 	        EntityMetaDataVO meta = MetaDataServerProvider.getInstance().getEntity(entityName);
 	        if(meta.isStateModel())
-	        	ruleContainer = genericObjectFacade.getRuleObjectContainerCVO(Event.INTERFACE, id.intValue());
+	        	ruleContainer = genericObjectFacade.getRuleObjectContainerCVO(Event.INTERFACE, id.intValue(), null);
 	        else
-	        	ruleContainer = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).getRuleObjectContainerCVO(Event.INTERFACE, entityName, id.intValue());
+	        	ruleContainer = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).getRuleObjectContainerCVO(Event.INTERFACE, entityName, id.intValue(), null);
 	        
 	        ruleEngineFacade.executeBusinessRules(
 	        	CollectionUtils.asList(rule),
 	        	ruleContainer,
-	        	false);
+	        	false, null);
         }
         catch(NuclosBusinessRuleException e) {
         	throw new CommonFatalException(e);

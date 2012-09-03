@@ -172,7 +172,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	@Override
 	protected void deleteCollectable(EntityRelationshipModel clct)	throws CommonBusinessException {
 		
-		MasterDataDelegate.getInstance().remove(NuclosEntity.ENTITYRELATION.getEntityName(), clct.getMasterDataVO());
+		MasterDataDelegate.getInstance().remove(NuclosEntity.ENTITYRELATION.getEntityName(), clct.getMasterDataVO(), getCustomUsage());
 		clcttfName.setField(new CollectableValueField(null));
 		clcttfDescription.setField(new CollectableValueField(null));
 		pnlEdit.getGraphModel().clear();
@@ -218,7 +218,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		
 		mdvo.setField("layout", xml.getBytes());		
 		
-		MasterDataVO vo = MasterDataDelegate.getInstance().create(NuclosEntity.ENTITYRELATION.getEntityName(), mdvo, null);
+		MasterDataVO vo = MasterDataDelegate.getInstance().create(NuclosEntity.ENTITYRELATION.getEntityName(), mdvo, null, getCustomUsage());
 		
 		pnlEdit.clearModel();
 		
@@ -250,7 +250,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		MasterDataVO mdvo = clct.getMasterDataVO();		
 		String xml = getXML();
 		mdvo.setField("layout", xml.getBytes());		
-		Integer iId = (Integer)MasterDataDelegate.getInstance().update(NuclosEntity.ENTITYRELATION.getEntityName(), mdvo, null);
+		Integer iId = (Integer)MasterDataDelegate.getInstance().update(NuclosEntity.ENTITYRELATION.getEntityName(), mdvo, null, getCustomUsage());
 		pnlEdit.clearModel();
 		EntityRelationshipModel model = findCollectableById(NuclosEntity.ENTITYRELATION.getEntityName(), iId);
 		return model;

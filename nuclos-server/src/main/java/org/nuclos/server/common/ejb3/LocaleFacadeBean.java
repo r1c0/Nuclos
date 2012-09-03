@@ -377,7 +377,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 			throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, 
 			CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		
-		Object oId = masterDataFacade.modify(NuclosEntity.LOCALE.getEntityName(), mdvo, new DependantMasterDataMap());
+		Object oId = masterDataFacade.modify(NuclosEntity.LOCALE.getEntityName(), mdvo, new DependantMasterDataMap(), null);
 		this.modifyDependants(mpDependants.getData(NuclosEntity.LOCALERESOURCE.getEntityName()), getLocaleInfoForId((Integer)mdvo.getField(R_PARENT + "Id")));
 
 		return oId;

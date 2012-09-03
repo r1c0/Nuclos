@@ -73,6 +73,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetListener;
@@ -89,6 +90,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -395,7 +397,7 @@ public class MainFrameTabbedPane {
 			@Override
 			public void run() {
 				try {
-					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					if(ncc != null) {
 						ncc.runViewSingleCollectableWithId(eb.getId());
 					}

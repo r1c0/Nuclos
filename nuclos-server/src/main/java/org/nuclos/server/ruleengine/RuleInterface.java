@@ -206,6 +206,8 @@ public class RuleInterface extends CustomCodeInterface {
 	private Integer iSessionId;
 	
 	private NuclosUserDetailsContextHolder userCtx;
+	
+	private String customUsage;
 
 	/**
 	 * Create a <code>RuleInterface</code> with the <code>RuleObjectContainerCVO</code> for which the rule is fired
@@ -213,8 +215,8 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param roccvoCurrent RuleObjectContainerCVO (RuleObjectContainerCVO)roccvo in the Rule
 	 * @param roccvoTargetObject if not null this one is the current object
 	 */
-	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent) {
-		this(ruleVO, roccvoCurrent, null, null, null);
+	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent, String customUsage) {
+		this(ruleVO, roccvoCurrent, null, null, null, customUsage);
 	}
 
 	/**
@@ -225,12 +227,13 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param roccvoCurrent GenericObjectContainerCVO (GenericObjectContainerCVO)roccvo in the Rule
 	 * @param roccvoTargetObject if not null this one is the current object
 	 */
-	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects, RuleObjectContainerCVO roccvoParameterObject, List<String> lstActions) {
+	public RuleInterface(RuleVO ruleVO, RuleObjectContainerCVO roccvoCurrent, Collection<RuleObjectContainerCVO> roccvoSourceObjects, RuleObjectContainerCVO roccvoParameterObject, List<String> lstActions, String customUsage) {
 		this.roccvo = roccvoCurrent;
 		this.roccvoSource = roccvoSourceObjects;
 		this.roccvoParameter = roccvoParameterObject;
 		this.lstActions = lstActions;
 		this.rulevo = ruleVO;
+		this.customUsage = customUsage;
 	}
 	
 	@Autowired
@@ -408,7 +411,7 @@ public class RuleInterface extends CustomCodeInterface {
 	private void setDependants(Integer iModuleId, Integer iGenericObjectId, String sEntity, Collection<MasterDataVO> collmdvoDependants) {
 		final RuleObjectContainerCVO roccvo;
 		try {
-			roccvo = getGenericObjectFacade().getRuleObjectContainerCVO(Event.UNDEFINED, iGenericObjectId);
+			roccvo = getGenericObjectFacade().getRuleObjectContainerCVO(Event.UNDEFINED, iGenericObjectId, customUsage);
 		}
 		catch (CommonPermissionException ex) {
 			throw new NuclosFatalRuleException(ex.getMessage(), ex);
@@ -419,7 +422,7 @@ public class RuleInterface extends CustomCodeInterface {
 
 		roccvo.setDependants(sEntity, collmdvoDependants);
 		try {
-			getGenericObjectFacade().modify(iModuleId, new GenericObjectWithDependantsVO(roccvo));
+			getGenericObjectFacade().modify(iModuleId, new GenericObjectWithDependantsVO(roccvo), customUsage);
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosFatalRuleException(ex.getMessage(), ex);
@@ -441,7 +444,7 @@ public class RuleInterface extends CustomCodeInterface {
 		else {
 			final RuleObjectContainerCVO roccvo;
 			try {
-				roccvo = getMasterDataFacade().getRuleObjectContainerCVO(Event.UNDEFINED, sEntityName, iObjectId);
+				roccvo = getMasterDataFacade().getRuleObjectContainerCVO(Event.UNDEFINED, sEntityName, iObjectId, customUsage);
 			}
 			catch (CommonPermissionException ex) {
 				throw new NuclosFatalRuleException(ex.getMessage(), ex);
@@ -456,7 +459,7 @@ public class RuleInterface extends CustomCodeInterface {
 			roccvo.setDependants(sDependantEntityName, collmdvoDependants);
 
 			try {
-				getMasterDataFacade().modify(sEntityName, roccvo.getMasterData(), roccvo.getDependants(true));
+				getMasterDataFacade().modify(sEntityName, roccvo.getMasterData(), roccvo.getDependants(true), customUsage);
 			}
 			catch (CommonBusinessException ex) {
 				throw new NuclosFatalRuleException(ex.getMessage(), ex);
@@ -894,7 +897,7 @@ public class RuleInterface extends CustomCodeInterface {
 		else {
 			if (Modules.getInstance().isModuleEntity(sEntityName)) {
 				try {
-					getRuleInterface().setAttribute(this.rulevo, iObjectId, sFieldName, iValueId, oValue);
+					getRuleInterface().setAttribute(this.rulevo, iObjectId, sFieldName, iValueId, oValue, customUsage);
 				}
 				catch (NuclosBusinessException ex) {
 					throw new NuclosBusinessRuleException(ex);
@@ -1095,10 +1098,10 @@ public class RuleInterface extends CustomCodeInterface {
 			throw new NuclosBusinessRuleException("rule.interface.error.5");//"Objektgenerierung bei den Stammdaten ist unzul\u00e4ssig");
 		}
 		if (this.getObjectId() != null) {
-			return getRuleInterface().createObject(this.getObjectId(), sGeneratorName);
+			return getRuleInterface().createObject(this.getObjectId(), sGeneratorName, customUsage);
 		}
 		else {
-			return getRuleInterface().createObject(this.getRuleObjectContainerCVO(), sGeneratorName);
+			return getRuleInterface().createObject(this.getRuleObjectContainerCVO(), sGeneratorName, customUsage);
 		}
 	}
 
@@ -1106,7 +1109,7 @@ public class RuleInterface extends CustomCodeInterface {
 		if (this.getMasterData() != null) {
 			throw new NuclosBusinessRuleException("rule.interface.error.5");//"Objektgenerierung bei den Stammdaten ist unzul\u00e4ssig");
 		}
-		return getRuleInterface().createObject(iId, sGeneratorName);
+		return getRuleInterface().createObject(iId, sGeneratorName, customUsage);
 	}
 
 	/**
@@ -1122,7 +1125,7 @@ public class RuleInterface extends CustomCodeInterface {
 		if (roccvo.getMasterData() != null) {
 			throw new NuclosBusinessRuleException("rule.interface.error.5");//"Objektgenerierung bei den Stammdaten ist unzul\u00e4ssig.");
 		}
-		return getRuleInterface().createObject(roccvo, sGeneratorName);
+		return getRuleInterface().createObject(roccvo, sGeneratorName, customUsage);
 	}
 
 	/**
@@ -1302,7 +1305,7 @@ public class RuleInterface extends CustomCodeInterface {
 		}
 
 		final StateFacadeLocal stateFacadeLocal = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
-		return stateFacadeLocal.getInitialState(this.getGenericObject().getUsageCriteria(AttributeCache.getInstance())).getNumeral();
+		return stateFacadeLocal.getInitialState(this.getGenericObject().getUsageCriteria(AttributeCache.getInstance(), null)).getNumeral();
 	}
 
 	/**
@@ -1347,7 +1350,7 @@ public class RuleInterface extends CustomCodeInterface {
 	public MasterDataWithDependantsVO getMasterDataWithDependants(String sEntityName, Integer iId){
 		try {
 			final MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-			return mdFacade.getWithDependants(sEntityName, iId);
+			return mdFacade.getWithDependants(sEntityName, iId, customUsage);
 		}
 		catch (Exception ex) {
 			throw new NuclosFatalRuleException(ex);
@@ -1422,7 +1425,7 @@ public class RuleInterface extends CustomCodeInterface {
 		 * analyzing the state history when changing the state within a rule that is executed within a manuel state change
 		 */
 		//this.sleep(1000);
-		final GenericObjectVO govo = getRuleInterface().changeState(this.getGenericObject(), this.getObjectId(), iNumeral);
+		final GenericObjectVO govo = getRuleInterface().changeState(this.getGenericObject(), this.getObjectId(), iNumeral, customUsage);
 		this.getRuleObjectContainerCVO().setGenericObject(govo);
 
 		if (bReloadDependants) {
@@ -1430,7 +1433,7 @@ public class RuleInterface extends CustomCodeInterface {
 			 * of the dependant data was changed while changing the status
 			 */
 			DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
-			getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
+			getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false, customUsage);
 			for(String sEntity : mpDependants.getEntityNames()) {
 				this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
 			}
@@ -1465,10 +1468,10 @@ public class RuleInterface extends CustomCodeInterface {
 		 */
 		//this.sleep(1000);
 		if (this.getRuleObjectContainerCVOIfAny() == null) {
-			this.getRuleInterface().changeState(iGenericObjectId, iNumeral);
+			this.getRuleInterface().changeState(iGenericObjectId, iNumeral, customUsage);
 		}
 		else {
-			final GenericObjectVO govo = this.getRuleInterface().changeState(this.getGenericObject(), iGenericObjectId, iNumeral);
+			final GenericObjectVO govo = this.getRuleInterface().changeState(this.getGenericObject(), iGenericObjectId, iNumeral, customUsage);
 			if (govo != null && this.getGenericObject() != null && LangUtils.equals(iGenericObjectId, this.getGenericObject().getId())) {
 				this.getRuleObjectContainerCVO().setGenericObject(govo);
 				if (bReloadDependants) {
@@ -1478,7 +1481,7 @@ public class RuleInterface extends CustomCodeInterface {
 					 * (but only if the affected object is the containers object)
 					 */
 					DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
-					getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
+					getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false, customUsage);
 					for(String sEntity : mpDependants.getEntityNames()) {
 						this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
 					}
@@ -1546,7 +1549,7 @@ public class RuleInterface extends CustomCodeInterface {
 
 		final GenericObjectVO govo;
 		try {
-			govo = this.getRuleInterface().scheduleStateChange(this.getGenericObject(), iGenericObjectId, iNewState, dateToSchedule);
+			govo = this.getRuleInterface().scheduleStateChange(this.getGenericObject(), iGenericObjectId, iNewState, dateToSchedule, customUsage);
 		}
 		catch (CommonFinderException ex) {
 			throw new NuclosBusinessRuleException(ex);
@@ -1585,7 +1588,7 @@ public class RuleInterface extends CustomCodeInterface {
 			throw new NullArgumentException("asAttributes");
 		}
 		final GeneratorFacadeLocal generatorFacade = ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
-		generatorFacade.transferGenericObjectData(govoSource, iGenericObjectTarget, asAttributes);
+		generatorFacade.transferGenericObjectData(govoSource, iGenericObjectTarget, asAttributes, customUsage);
 	}
 
 	/**

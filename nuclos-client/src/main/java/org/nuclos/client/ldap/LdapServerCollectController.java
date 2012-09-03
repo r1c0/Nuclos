@@ -68,7 +68,7 @@ public class LdapServerCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public LdapServerCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.LDAPSERVER.getEntityName(), tabIfAny);
+		super(NuclosEntity.LDAPSERVER.getEntityName(), tabIfAny, null);
 
 		this.setupDetailsToolBar();
 

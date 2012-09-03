@@ -131,14 +131,14 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	}
 
 	@Override
-	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Collection<EntityFieldMetaDataVO> fields) {
+	public ProxyList<EntityObjectVO> getEntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Collection<EntityFieldMetaDataVO> fields, String customUsage) {
 		final CollectableSearchCondition search = getSearchCondition(clctexpr.getSearchCondition(), fields);
 		clctexpr.setSearchCondition(search);
-		return new EntityObjectProxyList(id, clctexpr, fields);
+		return new EntityObjectProxyList(id, clctexpr, fields, customUsage);
 	}
 
 	@Override
-	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields) {
+	public Collection<EntityObjectVO> getEntityObjectsMore(Long id, List<Long> lstIds, Collection<EntityFieldMetaDataVO> fields, String customUsage) {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final EntityMetaDataVO eMeta = mdProv.getEntity(id);
 
@@ -174,7 +174,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		// fill in (dependent) subforms
 		for (EntityObjectVO eo : eos) {
 			try {
-				fillDependants(eo, subforms);
+				fillDependants(eo, subforms, customUsage);
 				// fillPivots(eo, pivots);
 			}
 			catch (CommonFinderException e) {
@@ -226,7 +226,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	 * @param subEntities
 	 * @precondition stRequiredSubEntityNames != null
 	 */
-	private void fillDependants(EntityObjectVO base, Set<String> stRequiredSubEntityNames)
+	private void fillDependants(EntityObjectVO base, Set<String> stRequiredSubEntityNames, String customUsage)
 			throws CommonFinderException {
 
 		if (stRequiredSubEntityNames == null) {
@@ -235,7 +235,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		// final String username = getCurrentUserName();
 		final DependantMasterDataMap dmdm = base.getDependants();
 		for (String s: stRequiredSubEntityNames) {
-			final String refField = findRefField(base, s);
+			final String refField = findRefField(base, s, customUsage);
 			if (refField == null) {
 				LOG.warn("Can't find ref field from " + s + " to " + base.getEntity());
 				continue;
@@ -249,7 +249,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 	/**
 	 * @deprecated Not in use any more.
 	 */
-	private void fillPivots(EntityObjectVO base, Collection<EntityFieldMetaDataVO> pivots)
+	private void fillPivots(EntityObjectVO base, Collection<EntityFieldMetaDataVO> pivots, String customUsage)
 			throws CommonFinderException {
 
 		if (pivots == null) {
@@ -261,7 +261,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		for (EntityFieldMetaDataVO p : pivots) {
 			final EntityMetaDataVO mdEntity = mdProv.getEntity(p.getEntityId());
 			final String subform = mdEntity.getEntity();
-			final String refField = findRefField(base, subform);
+			final String refField = findRefField(base, subform, customUsage);
 			if (refField == null) {
 				LOG.warn("Can't find ref field from " + p + " to " + base.getEntity());
 				continue;
@@ -272,10 +272,10 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		// base.setDependants(dmdm);
 	}
 
-	private String findRefField(EntityObjectVO base, String subform) throws CommonFinderException {
+	private String findRefField(EntityObjectVO base, String subform, String customUsage) throws CommonFinderException {
 		final Map<EntityAndFieldName, String> collSubEntities;
 		if (Modules.getInstance().isModuleEntity(base.getEntity()))
-			collSubEntities = getLayoutFacade().getSubFormEntityAndParentSubFormEntityNamesByGO(DalSupportForGO.getGenericObjectVO(base).getUsageCriteria(AttributeCache.getInstance()));
+			collSubEntities = getLayoutFacade().getSubFormEntityAndParentSubFormEntityNamesByGO(DalSupportForGO.getGenericObjectVO(base).getUsageCriteria(AttributeCache.getInstance(), customUsage));
 		else
 			collSubEntities = getLayoutFacade().getSubFormEntityAndParentSubFormEntityNamesMD(base.getEntity(), false);
 		

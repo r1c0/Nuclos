@@ -49,6 +49,8 @@ public class GenericObjectProxyList extends AbstractProxyList<Integer, GenericOb
 	private final Set<Integer> stRequiredAttributeIds;
 	private final Set<String> stRequiredSubEntities;
 	private final boolean bIncludeParentObjects;
+	
+	private final String customUsage;
 
 	/**
 	 * @param iModuleId
@@ -59,7 +61,7 @@ public class GenericObjectProxyList extends AbstractProxyList<Integer, GenericOb
 	 * @param bIncludeSubModules
 	 * @precondition stRequiredSubEntityNames != null
 	 */
-	public GenericObjectProxyList(Integer iModuleId, CollectableSearchExpression clctexpr, Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
+	public GenericObjectProxyList(Integer iModuleId, CollectableSearchExpression clctexpr, Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, String customUsage) {
 		super();
 
 		this.iModuleId = iModuleId;
@@ -67,6 +69,8 @@ public class GenericObjectProxyList extends AbstractProxyList<Integer, GenericOb
 		this.stRequiredAttributeIds = stRequiredAttributeIds;
 		this.stRequiredSubEntities = stRequiredSubEntityNames;
 		this.bIncludeParentObjects = bIncludeParentObjects;
+		
+		this.customUsage = customUsage;
 
 		this.initialize();
 	}
@@ -78,13 +82,14 @@ public class GenericObjectProxyList extends AbstractProxyList<Integer, GenericOb
 		this.stRequiredSubEntities = Collections.emptySet();
 		this.stRequiredAttributeIds = null;
 		this.iModuleId = null;
+		this.customUsage = null;
 
 		this.initialize();
 	}
 
 	@Override
 	protected Collection<GenericObjectWithDependantsVO> fetchNextChunk(List<Integer> lstIntIds) throws RuntimeException {
-		return this.getGenericObjectFacade().getGenericObjectsMore(this.iModuleId, lstIntIds, this.stRequiredAttributeIds, this.stRequiredSubEntities, this.bIncludeParentObjects);
+		return this.getGenericObjectFacade().getGenericObjectsMore(this.iModuleId, lstIntIds, this.stRequiredAttributeIds, this.stRequiredSubEntities, this.customUsage, this.bIncludeParentObjects);
 	}
 
 	@Override

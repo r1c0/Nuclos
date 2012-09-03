@@ -141,7 +141,7 @@ public interface ReportFacadeRemote {
 	@RolesAllowed("Login")
 	NuclosFile prepareSearchResult(CollectableSearchExpression clctexpr,
 		List<? extends CollectableEntityField> lstclctefweSelected,
-		Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format)
+		Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format, String customUsage)
 		throws NuclosReportException;
 
 	/**

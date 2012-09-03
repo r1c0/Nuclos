@@ -67,7 +67,7 @@ public class CompleteGenericObjectsStrategy implements
 	 */
 	@Override
 	public Collection<CollectableGenericObjectWithDependants> getCompleteCollectables(
-			Collection<CollectableGenericObjectWithDependants> collclctlo) throws CommonBusinessException {
+			Collection<CollectableGenericObjectWithDependants> collclctlo, String customUsage) throws CommonBusinessException {
 		if (collclctlo == null)
 			throw new NullArgumentException("collclctlo");
 		final Collection<CollectableGenericObjectWithDependants> result = new ArrayList<CollectableGenericObjectWithDependants>();
@@ -85,7 +85,7 @@ public class CompleteGenericObjectsStrategy implements
 					: GenericObjectMetaDataCache.getInstance().getSubFormEntityNamesByModuleId(iCommonModuleId);
 
 			final List<GenericObjectWithDependantsVO> lstlowdcvo = GenericObjectDelegate.getInstance()
-					.getCompleteGenericObjectsWithDependants(iCommonModuleId, cond, stRequiredSubEntityNames);
+					.getCompleteGenericObjectsWithDependants(iCommonModuleId, cond, stRequiredSubEntityNames, customUsage);
 			result.addAll(CollectionUtils.transform(lstlowdcvo,
 					new CollectableGenericObjectWithDependants.MakeCollectable()));
 		}

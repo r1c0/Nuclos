@@ -28,11 +28,12 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.security.Permission;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
@@ -85,7 +86,7 @@ public class GenericObjectTreeNodeFactory {
 			String sUserName, Integer parentId) {
 		String label = getIdentifier(gowdvo, attrprovider, sUserName);
 		String description = getDescription(gowdvo, attrprovider, gowdvo.getChangedAt(), sUserName);
-		return new GenericObjectTreeNode(gowdvo, attrprovider, iRelationId, relationtype, direction, sUserName, label, description, parentId);
+		return new GenericObjectTreeNode(gowdvo, attrprovider, iRelationId, relationtype, direction, sUserName, label, description, parentId, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 	}
 
 	/**

@@ -83,7 +83,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	 * </code></pre>
 	 */
 	public TimelimitRuleCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.TIMELIMITRULE, tabIfAny, false);
+		super(NuclosEntity.TIMELIMITRULE, tabIfAny, false, null);
 		this.setupDetailsToolBar();
 		this.getCollectStateModel().addCollectStateListener(new RuleCollectStateListener());
 	}

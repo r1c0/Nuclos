@@ -107,7 +107,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException,
 			CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
 
-		Object id = super.modify(sEntityName, mdvo, mpDependants);
+		Object id = super.modify(sEntityName, mdvo, mpDependants, null);
 		setResources(mdvo, resources);
 
 		Collection<MasterDataVO> colldep = this.getDependantMasterData(NuclosEntity.SEARCHFILTERUSER.getEntityName(), "searchfilter", id);
@@ -186,7 +186,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 		final String entity = NuclosEntity.SEARCHFILTERUSER.getEntityName();
 		dmdp.addData(entity, DalSupportForMD.getEntityObjectVO(entity, mdVO_searchfilteruser));
 
-		MasterDataVO mdVO_searchfilter_new = getMasterDataFacade().create(NuclosEntity.SEARCHFILTER.getEntityName(), mdVO_searchfilter, dmdp);
+		MasterDataVO mdVO_searchfilter_new = getMasterDataFacade().create(NuclosEntity.SEARCHFILTER.getEntityName(), mdVO_searchfilter, dmdp, null);
 		Collection<MasterDataVO> coll_searchfilteruser_new = getMasterDataFacade().getDependantMasterData(NuclosEntity.SEARCHFILTERUSER.getEntityName(), "searchfilter", mdVO_searchfilter_new.getId());
 
 		assert coll_searchfilteruser_new.size() == 1;
@@ -208,7 +208,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 */
     @RolesAllowed("Login")
 	public SearchFilterVO modifySearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
-		Object oId = getMasterDataFacade().modify(NuclosEntity.SEARCHFILTER.getEntityName(), SearchFilterVO.transformToMasterData(filterVO), null);
+		Object oId = getMasterDataFacade().modify(NuclosEntity.SEARCHFILTER.getEntityName(), SearchFilterVO.transformToMasterData(filterVO), null, null);
 		return SearchFilterVO.transformToSearchFilter(getMasterDataFacade().get(NuclosEntity.SEARCHFILTER.getEntityName(), oId), SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser()));
 	}
 
@@ -219,11 +219,11 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	public void removeSearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		// if the user is not the owner of the searchfilter, remove only the searchfilteruser record
 		if (!filterVO.getOwner().equals(getCurrentUserName())) {
-			getMasterDataFacade().remove(NuclosEntity.SEARCHFILTERUSER.getEntityName(), SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser()), false);
+			getMasterDataFacade().remove(NuclosEntity.SEARCHFILTERUSER.getEntityName(), SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser()), false, null);
 		}
 		// if the user is the owner of the searchfilter, remove the searchfilter and the assigned searchfilteruser records
 		else {
-			getMasterDataFacade().remove(NuclosEntity.SEARCHFILTER.getEntityName(), SearchFilterVO.transformToMasterData(filterVO), true);
+			getMasterDataFacade().remove(NuclosEntity.SEARCHFILTER.getEntityName(), SearchFilterVO.transformToMasterData(filterVO), true, null);
 		}
 	}
 

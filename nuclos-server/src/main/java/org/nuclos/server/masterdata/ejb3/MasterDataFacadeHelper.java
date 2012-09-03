@@ -852,20 +852,20 @@ public class MasterDataFacadeHelper {
 	 * @throws CommonRemoveException
 	 * @throws CommonStaleVersionException
 	 */
-	public void removeDependants(DependantMasterDataMap mpDependants)
+	public void removeDependants(DependantMasterDataMap mpDependants, String customUsage)
 			throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException {
 		for (String sDependantEntityName : mpDependants.getEntityNames()) {
 			if (!masterDataMetaCache.getMetaData(sDependantEntityName).isDynamic()
 				&& !MetaDataServerProvider.getInstance().getEntity(sDependantEntityName).isStateModel()) {
 				for (EntityObjectVO mdvoDependant : mpDependants.getData(sDependantEntityName)) {
 
-					removeDependants(mdvoDependant.getDependants());
+					removeDependants(mdvoDependant.getDependants(), customUsage);
 					if(MetaDataServerProvider.getInstance().getEntity(sDependantEntityName).isStateModel()) {
 						try {
 							mdvoDependant.setEntity(sDependantEntityName);
 							GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(mdvoDependant);
 							GenericObjectFacadeLocal goLocal = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
-							goLocal.remove(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()), true);
+							goLocal.remove(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()), true, customUsage);
 						}
 						catch(CommonCreateException ex) {
 							throw new NuclosFatalException(ex);
@@ -898,7 +898,7 @@ public class MasterDataFacadeHelper {
 	 * @throws CommonFinderException
 	 * @throws CommonStaleVersionException
 	 */
-	void createOrModifyDependants(DependantMasterDataMap mpDependants, String sEntityName, String sUserName, boolean bValidate, Map<MasterDataVO, Integer> mpDependantsWithId, Map<EntityAndFieldName, String> mpEntityAndParentEntityName)
+	void createOrModifyDependants(DependantMasterDataMap mpDependants, String sEntityName, String sUserName, boolean bValidate, Map<MasterDataVO, Integer> mpDependantsWithId, Map<EntityAndFieldName, String> mpEntityAndParentEntityName, String customUsage)
 			throws CommonCreateException, CommonValidationException, CommonFinderException, CommonStaleVersionException, CommonPermissionException {
 
 		for (String sDependantEntityName : mpDependants.getEntityNames()) {
@@ -915,13 +915,13 @@ public class MasterDataFacadeHelper {
 						GenericObjectFacadeLocal goLocal = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 						final DependantMasterDataMap deps = mdvoDependant.getDependants();
 						if(mdvoDependant.isFlagNew()) {
-							goLocal.create(new GenericObjectWithDependantsVO(govo, deps));
+							goLocal.create(new GenericObjectWithDependantsVO(govo, deps), customUsage);
 						}
 						else if(mdvoDependant.isFlagRemoved()) {
-							goLocal.remove(new GenericObjectWithDependantsVO(govo, deps), true);
+							goLocal.remove(new GenericObjectWithDependantsVO(govo, deps), true, customUsage);
 						}
 						else if (mdvoDependant.isFlagUpdated() || deps.getPendingChanges()) {
-							goLocal.modify(govo, deps, false);
+							goLocal.modify(govo, deps, false, customUsage);
 						}
 					}
 					catch(NuclosBusinessException ex) {
@@ -933,7 +933,7 @@ public class MasterDataFacadeHelper {
 				}
 				else {
 					MasterDataVO voDependant = DalSupportForMD.wrapEntityObjectVO(mdvoDependant);
-					Integer id = createOrModify(sDependantEntityName, voDependant, sEntityName, sUserName, bValidate, intid, mpEntityAndParentEntityName);
+					Integer id = createOrModify(sDependantEntityName, voDependant, sEntityName, sUserName, bValidate, intid, mpEntityAndParentEntityName, customUsage);
 					mdvoDependant.setId(IdUtils.toLongId(id));
 				}
 			}
@@ -951,7 +951,7 @@ public class MasterDataFacadeHelper {
 	 * @throws CommonValidationException
 	 * @throws CommonStaleVersionException
 	 */
-	private Integer createOrModify(String sDependantEntityName, MasterDataVO mdvoDependant, String sEntityName, String sUserName, boolean bValidate, Integer intid, Map<EntityAndFieldName, String> mpEntityAndParentEntityName)
+	private Integer createOrModify(String sDependantEntityName, MasterDataVO mdvoDependant, String sEntityName, String sUserName, boolean bValidate, Integer intid, Map<EntityAndFieldName, String> mpEntityAndParentEntityName, String customUsage)
 			throws CommonCreateException, CommonValidationException, CommonFinderException, CommonStaleVersionException, CommonPermissionException {
 
 		final String sIdFieldName = getForeignKeyFieldName(sEntityName, sDependantEntityName, mpEntityAndParentEntityName) + "Id";
@@ -993,7 +993,7 @@ public class MasterDataFacadeHelper {
 			}
 
 			//create or modify dependant data
-			createOrModifyDependants(mdvoDependant.getDependants(), sDependantEntityName, sUserName, bValidate, null, mpEntityAndParentEntityName);
+			createOrModifyDependants(mdvoDependant.getDependants(), sDependantEntityName, sUserName, bValidate, null, mpEntityAndParentEntityName, customUsage);
 			return iReferenceId;
 		}
 		else {

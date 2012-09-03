@@ -48,18 +48,21 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 	private final CollectableSearchExpression clctexpr;
 	private final Collection<EntityFieldMetaDataVO> fields;
 	
-	public EntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Collection<EntityFieldMetaDataVO> fields) {
+	private final String customUsage;
+	
+	public EntityObjectProxyList(Long id, CollectableSearchExpression clctexpr, Collection<EntityFieldMetaDataVO> fields, String customUsage) {
 		super();
 		this.id = id;
 		this.clctexpr = clctexpr;
 		this.fields = fields;
+		this.customUsage = customUsage;
 
 		this.initialize();		
 	}
 	
 	@Override
 	protected Collection<EntityObjectVO> fetchNextChunk(List<Long> lstIntIds) throws RuntimeException {
-		return getEntityObjectFacade().getEntityObjectsMore(id, lstIntIds, fields);
+		return getEntityObjectFacade().getEntityObjectsMore(id, lstIntIds, fields, customUsage);
 	}
 
 	@Override

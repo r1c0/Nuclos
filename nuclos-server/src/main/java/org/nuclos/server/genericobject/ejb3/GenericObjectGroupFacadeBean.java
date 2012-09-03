@@ -149,7 +149,7 @@ public class GenericObjectGroupFacadeBean implements GenericObjectGroupFacadeRem
 		MasterDataMetaVO mdmetavo = getMasterDataFacade().getMetaData(NuclosEntity.GENERICOBJECTGROUP.getEntityName());
 		Integer intId = findIntId(iGenericObjectId, iGroupId);
 		MasterDataVO mdvo = masterDataFacadeHelper.getMasterDataCVOById(mdmetavo, intId);
-		getMasterDataFacade().remove(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, false);
+		getMasterDataFacade().remove(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, false, null);
 	}
 
 	private static Integer findIntId(int genericObjectId, int groupId) {
@@ -183,6 +183,6 @@ public class GenericObjectGroupFacadeBean implements GenericObjectGroupFacadeRem
 		MasterDataVO mdvo = new MasterDataVO(mdmetavo, true);
 		mdvo.setField("groupId", iGroupId);
 		mdvo.setField("genericObjectId", iGenericObjectId);
-		mdvo = getMasterDataFacade().create(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, null);
+		mdvo = getMasterDataFacade().create(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, null, null);
 	}
 }

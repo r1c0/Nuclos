@@ -52,14 +52,14 @@ public interface GeneratorFacadeRemote {
     * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
     */
    @RolesAllowed("Login")
-   GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo)
+   GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo, String customUsage)
    	throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException;
 
    @RolesAllowed("Login")
    Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sourceIds, GeneratorActionVO generatoractionvo);
 
    @RolesAllowed("Login")
-   GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo)
+   GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo, String customUsage)
    	throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException;
 
 	/**

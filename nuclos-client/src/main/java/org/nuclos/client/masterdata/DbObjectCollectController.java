@@ -42,7 +42,7 @@ public class DbObjectCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public DbObjectCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.DBOBJECT.getEntityName(), tabIfAny);
+		super(NuclosEntity.DBOBJECT.getEntityName(), tabIfAny, null);
 		this.getCollectStateModel().addCollectStateListener(new CollectStateListener() {
 			
 			@Override

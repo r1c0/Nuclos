@@ -191,7 +191,7 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 
 	@Override
 	protected CollectableInstanceModel insertCollectable(CollectableInstanceModel clctNew) throws CommonBusinessException {
-		MasterDataVO newInstance =  MasterDataDelegate.getInstance().create(NuclosEntity.INSTANCE.getEntityName(), clctNew.getMasterDataVO(), null);
+		MasterDataVO newInstance =  MasterDataDelegate.getInstance().create(NuclosEntity.INSTANCE.getEntityName(), clctNew.getMasterDataVO(), null, getCustomUsage());
 		return new CollectableInstanceModel(newInstance);
 	}
 
@@ -202,7 +202,7 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 
 	@Override
 	protected CollectableInstanceModel updateCollectable(CollectableInstanceModel clct, Object additionalData) throws CommonBusinessException {
-		MasterDataDelegate.getInstance().update(NuclosEntity.INSTANCE.getEntityName(), clct.getMasterDataVO(), null);
+		MasterDataDelegate.getInstance().update(NuclosEntity.INSTANCE.getEntityName(), clct.getMasterDataVO(), null, getCustomUsage());
 		return findCollectableById(NuclosEntity.INSTANCE.getEntityName(), clct.getId());
 	}
 

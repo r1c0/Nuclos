@@ -63,10 +63,8 @@ public class EntityFacadeDelegate implements EntityFacadeRemote {
 		return facade.getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
 	}
 
-	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(
-		String sEntity, Integer ilaoyutId) throws RemoteException {
-		return facade.getSubFormEntityAndParentSubFormEntityNames(sEntity,
-			ilaoyutId);
+	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(Integer ilaoyutId) throws RemoteException {
+		return facade.getSubFormEntityAndParentSubFormEntityNames(ilaoyutId);
 	}
 
 	@Override

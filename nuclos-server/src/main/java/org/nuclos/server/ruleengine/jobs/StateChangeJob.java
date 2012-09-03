@@ -68,7 +68,7 @@ public class StateChangeJob extends NuclosQuartzJob {
 			logger.debug("Executing StateChangeJob(iGenericObjectId=" + iGenericObjectId + ", iNewState=" + iNewState + ")");
 
 			try {
-				ServerServiceLocator.getInstance().getFacade(RuleInterfaceFacadeLocal.class).changeState(null, iGenericObjectId, iNewState);
+				ServerServiceLocator.getInstance().getFacade(RuleInterfaceFacadeLocal.class).changeState(null, iGenericObjectId, iNewState, null);
 			}
 			catch (org.nuclos.server.ruleengine.NuclosBusinessRuleException ex) {
 				throw new JobExecutionException(ex);

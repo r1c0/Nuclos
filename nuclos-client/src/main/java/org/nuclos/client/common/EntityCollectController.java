@@ -122,6 +122,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected Map<String, SearchConditionSubFormController> mpsubformctlSearch;
 	
 	private ResultActionsWorker runningResultActionsWorker;
+	
+	private String customUsage;
 
 	/**
 	 * Don't make this public!
@@ -134,8 +136,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(String sEntityName, MainFrameTab tabIfAny) {
-		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny);
+	protected EntityCollectController(String sEntityName, MainFrameTab tabIfAny, String customUsage) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny, customUsage);
 	}
 
 	/**
@@ -149,8 +151,9 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
+	protected EntityCollectController(CollectableEntity clcte, MainFrameTab tabIfAny, String customUsage) {
 		super(clcte, tabIfAny);
+		this.customUsage = customUsage;
 		this.loadingLabel = new JLabel(notLoadingLabelText);
 		this.loadingLabel.setName("loadingLabel");
 		subFormsLoader = new SubFormsLoader();
@@ -174,8 +177,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(String sEntityName, MainFrameTab tabIfAny, ResultController<Clct> rc) {
-		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny, rc);
+	protected EntityCollectController(String sEntityName, MainFrameTab tabIfAny, ResultController<Clct> rc, String customUsage) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny, rc, customUsage);
 	}
 
 	/**
@@ -187,8 +190,9 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(CollectableEntity clcte, MainFrameTab tabIfAny, ResultController<Clct> rc) {
+	protected EntityCollectController(CollectableEntity clcte, MainFrameTab tabIfAny, ResultController<Clct> rc, String customUsage) {
 		super(clcte, tabIfAny, rc);
+		this.customUsage = customUsage;
 		this.loadingLabel = new JLabel(notLoadingLabelText);
 		this.loadingLabel.setName("loadingLabel");
 		subFormsLoader = new SubFormsLoader();
@@ -1382,4 +1386,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		}	
 		
 	}
+
+	@Override
+	public String getCustomUsage() {
+		return customUsage;
+	}
+	
 }

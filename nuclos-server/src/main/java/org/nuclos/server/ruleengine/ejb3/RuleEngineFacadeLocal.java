@@ -41,7 +41,7 @@ public interface RuleEngineFacadeLocal {
 	 * @precondition Modules.getInstance().getUsesRuleEngine(iModuleId.intValue())
 	 */
 	RuleObjectContainerCVO fireRule(String sEntity,
-		String sEventName, RuleObjectContainerCVO loccvoCurrent)
+		String sEventName, RuleObjectContainerCVO loccvoCurrent, String customUsage)
 		throws NuclosBusinessRuleException;
 
 	/**
@@ -53,7 +53,7 @@ public interface RuleEngineFacadeLocal {
 	 * @return the possibly change current object.
 	 */
 	RuleObjectContainerCVO fireRule(Integer sourceStateId,
-		Integer targetStateId, RuleObjectContainerCVO ruleContainer, Boolean after)
+		Integer targetStateId, RuleObjectContainerCVO ruleContainer, Boolean after, String customUsage)
 		throws NuclosBusinessRuleException;
 
 	/**
@@ -61,7 +61,7 @@ public interface RuleEngineFacadeLocal {
 	 */
 	RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, 
 			Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, 
-			List<String> actions, PropertiesMap properties, Boolean after) 
+			List<String> actions, PropertiesMap properties, Boolean after, String customUsage) 
 			throws NuclosBusinessRuleException;
 
 	/**
@@ -74,7 +74,7 @@ public interface RuleEngineFacadeLocal {
 	 */
 	RuleObjectContainerCVO executeBusinessRules(
 		List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent,
-		boolean bIgnoreExceptions) throws NuclosBusinessRuleException;
+		boolean bIgnoreExceptions, String customUsage) throws NuclosBusinessRuleException;
 
 	/**
 	 * Get all Rule Transition that have the given transition assigned.

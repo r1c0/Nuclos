@@ -54,6 +54,7 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBinding;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -81,6 +82,7 @@ import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
@@ -711,12 +713,12 @@ public class TimelimitTaskController extends RefreshableTaskController {
 					
 					if (collGenericObjectIds.size() == 1) {
 						final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-								newGenericObjectCollectController(iCommonModuleId, null);
+								newGenericObjectCollectController(iCommonModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						ctlGenericObject.runViewSingleCollectableWithId(collGenericObjectIds.iterator().next());						
 					}
 					else if (iCommonModuleId != null && iCommonModuleId != 0) {
 						final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-								newGenericObjectCollectController(iCommonModuleId, null);
+								newGenericObjectCollectController(iCommonModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						ctlGenericObject.runViewResults(getSearchConditionForRelatedObjects(collGenericObjectIds));
 					}
 				}

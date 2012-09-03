@@ -53,6 +53,7 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -601,7 +602,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 					//"Modul-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der ID ["+existingGO.getId()+"] ";
 				String sAction = XmlExportImportHelper.EXPIMP_ACTION_UPDATE;
 				if (bImportData) {
-					GenericObjectWithDependantsVO modifiedGO = getGenericObjectFacade().modify(iModuleId, new GenericObjectWithDependantsVO(govo, null));
+					GenericObjectWithDependantsVO modifiedGO = getGenericObjectFacade().modify(iModuleId, new GenericObjectWithDependantsVO(govo, null), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 					if ((modifiedGO.getId()).compareTo(existingGO.getId()) != 0) {
 						sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.module.entity.2", element.attribute("name").getValue(), existingGO.getId());
@@ -639,7 +640,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			else {
 				// create new GO
 				if (bImportData) {
-					GenericObjectVO newGoVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(govo, new DependantMasterDataMap()));
+					GenericObjectVO newGoVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(govo, new DependantMasterDataMap()), null);
 
 					// create old/new Id matching
 					idMap.put(new Pair<String, String>(element.attributeValue("name"),element.attribute("id").getValue()), String.valueOf(newGoVO.getId()));
@@ -861,7 +862,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 				if (!mpMdSubFormsWithForeignKeys.containsKey(sEntityName)) {
 					LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
-					mpMdSubFormsWithForeignKeys.put(sEntityName, layoutFacade.getSubFormEntityAndParentSubFormEntityNames(sEntityName,prepVO.getIntId(),true));
+					mpMdSubFormsWithForeignKeys.put(sEntityName, layoutFacade.getSubFormEntityAndParentSubFormEntityNames(sEntityName,prepVO.getIntId(),true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 				}
 
 				// if data was "imported" remove all dependant data, because the dependant data were exported as well
@@ -873,7 +874,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				String sMessage;// = "Stammdaten-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der ID ["+existingEntity.getId()+"] ";
 				String sAction = XmlExportImportHelper.EXPIMP_ACTION_UPDATE;
 				if (bImportData) {
-					Object modid = getMasterDataFacade().modify(element.attribute("name").getValue(), prepVO, dmdm);
+					Object modid = getMasterDataFacade().modify(element.attribute("name").getValue(), prepVO, dmdm, null);
 
 					if (((Integer)modid).compareTo((Integer)existingEntity.getId()) != 0) {
 						sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.masterdata.entity.2", element.attribute("name").getValue(), existingEntity.getId());
@@ -922,7 +923,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			try {
 				if (bImportData) {
 					// call create Method
-					MasterDataVO newVO = getMasterDataFacade().create(element.attribute("name").getValue(), prepVO, null);
+					MasterDataVO newVO = getMasterDataFacade().create(element.attribute("name").getValue(), prepVO, null, null);
 
 					// create old/new Id matching
 					idMap.put(new Pair<String, String>(element.attribute("name").getValue(), element.attribute("id").getValue()), String.valueOf(newVO.getId()));
@@ -1060,7 +1061,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 							if (layoutFacade.isMasterDataLayoutAvailable(entity)) {
 								mpMdSubFormsWithForeignKeys.put(entity, 
 										layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
-												entity,mdvo.getIntId(),true));
+												entity,mdvo.getIntId(),true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 							}
 						}
 
@@ -1229,7 +1230,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @return Process name
 	 */
 	private Integer getReferenecedStatusId(Integer iModuleId, Integer iProcessId, String status) {
-		UsageCriteria usagecriteria = new UsageCriteria(iModuleId, iProcessId, null);
+		UsageCriteria usagecriteria = new UsageCriteria(iModuleId, iProcessId, null, null);
 
 		Integer stateModelId = StateModelUsagesCache.getInstance().getStateUsages().getStateModel(usagecriteria);
 		Collection<StateVO> states = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class).getStatesByModel(stateModelId);
@@ -1300,7 +1301,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				removeReferenceToEntity(sEntity, mdvo);
 
 				// 2. finally remove current mdvo
-				getMasterDataFacade().remove(sEntity, mdvo, false);
+				getMasterDataFacade().remove(sEntity, mdvo, false, null);
 
 				//String sMessage = "Die Entit\u00e4t ["+sEntity+"] mit der ID ["+mdvo.getIntId()+"] wurde erfolgreich gel\u00f6scht.";
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -1367,7 +1368,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 							try {
 								mdvo_ref = getMasterDataFacade().get(mdmvo.getEntityName(), iIntid);
 								mdvo_ref.setField(sField+"Id", null);
-								getMasterDataFacade().modify(mdmvo.getEntityName(), mdvo_ref, null);
+								getMasterDataFacade().modify(mdmvo.getEntityName(), mdvo_ref, null, null);
 							}
 							catch (Exception e) {
 								String sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.masterdata.entity.14", sField, mdmvo.getEntityName(), mdvo_ref.getIntId(), e);   

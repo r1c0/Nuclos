@@ -620,12 +620,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 *
 	 * @deprecated bAutoInit is deprecated
 	 */
-	public GenericObjectCollectController(Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
+	public GenericObjectCollectController(Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny, String customUsage) {
 		super(CollectableGenericObjectEntity.getByModuleId(iModuleId),
 				tabIfAny,
 				new GenericObjectResultController<CollectableGenericObjectWithDependants>(
 						CollectableGenericObjectEntity.getByModuleId(iModuleId),
-						new NuclosSearchResultStrategy<CollectableGenericObjectWithDependants>()));
+						new NuclosSearchResultStrategy<CollectableGenericObjectWithDependants>()), customUsage);
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
 		if (bAutoInit)
@@ -642,9 +642,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * </code></pre>
 	 */
 	protected GenericObjectCollectController(Integer iModuleId, boolean bAutoInit,
-			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc)
+			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc, String customUsage)
 	{
-		super(CollectableGenericObjectEntity.getByModuleId(iModuleId), tabIfAny, rc);
+		super(CollectableGenericObjectEntity.getByModuleId(iModuleId), tabIfAny, rc, customUsage);
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
 		if (bAutoInit)
@@ -797,7 +797,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				getSpringLocaleDelegate().getMessage("nuclos.entityfield.eo.state.label","Status")), 6);
 
 		//pnlCustomToolBarAreaSearch.add(toolSearchState, gbc);
-		setSearchStatesAccordingToUsageCriteria(new UsageCriteria(iModuleId, null, null));
+		setSearchStatesAccordingToUsageCriteria(new UsageCriteria(iModuleId, null, null, getCustomUsage()));
 		//getSearchPanel().setCustomToolBarArea(pnlCustomToolBarAreaSearch);
 	}
 
@@ -1088,10 +1088,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							try {
 								assert GenericObjectCollectController.this.dateHistorical != null;
 								lowdcvoHistorical = lodelegate.getHistorical(
-									getSelectedGenericObjectId(), GenericObjectCollectController.this.dateHistorical);
+									getSelectedGenericObjectId(), GenericObjectCollectController.this.dateHistorical, getCustomUsage());
 
 								// remember if the layout needs to be reloaded afterwards:
-								if (lowdcvoHistorical.getUsageCriteria(AttributeCache.getInstance()).equals(getUsageCriteria(getSelectedCollectable())))
+								if (lowdcvoHistorical.getUsageCriteria(AttributeCache.getInstance(), getCustomUsage()).equals(getUsageCriteria(getSelectedCollectable())))
 									//GenericObjectCollectController.this.bReloadLayout = false;
 									removeUsageCriteriaFieldListeners(false);
 
@@ -1769,7 +1769,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(
 							clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
 					GenericObjectDelegate.getInstance().executeBusinessRules(
-							lstRuleVO, go, bSaveAfterRuleExecution);
+							lstRuleVO, go, bSaveAfterRuleExecution, getCustomUsage());
 
 					broadcastCollectableEvent(clct, MessageType.EDIT_DONE);
 				}
@@ -1922,7 +1922,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	@Override
 	protected LayoutRoot getInitialLayoutMLDefinitionForSearchPanel() {
-		final LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null, null),
+		final LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null, null, getCustomUsage()),
 			new CollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED));
 		getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 		
@@ -2319,7 +2319,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		try {
 			CollectableGenericObjectWithDependants lowdCurrent = null;
 			if (isHistoricalView())
-				lowdCurrent = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants((Integer) getSelectedCollectableId()));
+				lowdCurrent = new CollectableGenericObjectWithDependants(GenericObjectDelegate.getInstance().getWithDependants((Integer) getSelectedCollectableId(), getCustomUsage()));
 
 			for (String sFieldName : getOrderedFieldNamesInDetails()) {
 				// iterate over the models rather than over the components:
@@ -2768,7 +2768,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final GenericObjectVO govo = getSelectedGenericObjectCVO();
 			final int iGenericObjectId = govo.getId();
 			assert dateHistorical != null;
-			result = new CollectableGenericObjectWithDependants(lodelegate.getHistorical(iGenericObjectId, dateHistorical));
+			result = new CollectableGenericObjectWithDependants(lodelegate.getHistorical(iGenericObjectId, dateHistorical, getCustomUsage()));
 		}
 		else
 			result = super.readSelectedCollectable();
@@ -2793,7 +2793,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final int iGenericObjectId = (Integer) oId;
 
-		final CollectableGenericObjectWithDependants result = new CollectableGenericObjectWithDependants(lodelegate.getWithDependants(iGenericObjectId));
+		final CollectableGenericObjectWithDependants result = new CollectableGenericObjectWithDependants(lodelegate.getWithDependants(iGenericObjectId, getCustomUsage()));
 
 		assert getSearchStrategy().isCollectableComplete(result);
 		return result;
@@ -2869,7 +2869,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			invoke(new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					lowdcvoUpdated.set(lodelegate.update(lowdcvoCurrent));
+					lowdcvoUpdated.set(lodelegate.update(lowdcvoCurrent, getCustomUsage()));
 				}
 			});
 		}
@@ -2925,7 +2925,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				lowdcvoInserted.set(lodelegate.create(lowdcvoNew, getSelectedSubEntityNames()));
+				lowdcvoInserted.set(lodelegate.create(lowdcvoNew, getSelectedSubEntityNames(), getCustomUsage()));
 			}
 		});
 		return new CollectableGenericObjectWithDependants(lowdcvoInserted.get());
@@ -3068,7 +3068,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), false);
+				lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), false, getCustomUsage());
 			}
 		});
 	}
@@ -3084,7 +3084,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), true);
+				lodelegate.remove(clctlo.getGenericObjectWithDependantsCVO(), true, getCustomUsage());
 			}
 		});
 		broadcastCollectableEvent(clctlo, MessageType.DELETE_DONE);
@@ -3108,7 +3108,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				lodelegate.restore(clct.getGenericObjectWithDependantsCVO());
+				lodelegate.restore(clct.getGenericObjectWithDependantsCVO(), getCustomUsage());
 			}
 		});
 	}
@@ -4088,14 +4088,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						invoke(new CommonRunnable() {
 							@Override
 							public void run() throws CommonBusinessException {
-								StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId());
+								StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew.getId(), getCustomUsage());
 							}
 						});
 					} else {
 						invoke(new CommonRunnable() {
 							@Override
 							public void run() throws CommonBusinessException {
-								StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId());
+								StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew.getId(), getCustomUsage());
 							}
 						});
 					}
@@ -4183,14 +4183,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							invoke(new CommonRunnable() {
 								@Override
 								public void run() throws CommonBusinessException {
-									StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew);
+									StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew, getCustomUsage());
 								}
 							});
 						} else {
 							invoke(new CommonRunnable() {
 								@Override
 								public void run() throws CommonBusinessException {
-									StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew);
+									StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew, getCustomUsage());
 								}
 							});
 						}		
@@ -4346,7 +4346,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final Integer iModuleId = bSearchPanel ? getModuleId() : getSelectedCollectableModuleId();
 		return new UsageCriteria(iModuleId,
 				getUsageCriteriaProcessIdFromView(bSearchPanel),
-				getUsageCriteriaStatusIdFromView(bSearchPanel)
+				getUsageCriteriaStatusIdFromView(bSearchPanel), getCustomUsage()
 		);
 	}
 
@@ -4389,7 +4389,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final Integer iModuleId = bSearchPanel ? getModuleId() : getSelectedCollectableModuleId();
 				UsageCriteria uc = new UsageCriteria(iModuleId,
 						getUsageCriteriaProcessIdFromView(bSearchPanel),
-						null
+						null, getCustomUsage()
 				);
 				return getInitialStateId(uc);
 			}
@@ -4405,7 +4405,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected UsageCriteria getUsageCriteria(Collectable clct) {
 		return new UsageCriteria(((CollectableGenericObject)clct).getGenericObjectCVO().getModuleId(),
 				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.PROCESS.getMetaData().getField()),
-				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.STATE.getMetaData().getField())
+				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.STATE.getMetaData().getField()), getCustomUsage()
 		);
 	}
 
@@ -4587,7 +4587,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private UsageCriteria getUsageCriteriaFromFieldsMap(Map<String, CollectableField> mpFields) {
 		return new UsageCriteria(getModuleId(),
 				getProcessIdFromUsageCriteriaField(mpFields),
-				getStatusIdFromUsageCriteriaField(mpFields)
+				getStatusIdFromUsageCriteriaField(mpFields), getCustomUsage()
 		);
 	}
 
@@ -4623,7 +4623,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final ISearchStrategy<CollectableGenericObjectWithDependants> ss = getSearchStrategy();
 				final boolean bIncludeSubModules = ss.getIncludeSubModulesForSearch();
 				new ReportController(getTab()).export(getCollectableEntity(), ss.getInternalSearchExpression(), getSelectedFields(),
-					lstclctlo, usagecriteria, bIncludeSubModules, sDocumentEntityName, documentFieldNames);
+					lstclctlo, usagecriteria, bIncludeSubModules, sDocumentEntityName, documentFieldNames, getCustomUsage());
 			}
 		});
 	}
@@ -5485,7 +5485,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					ctl.invoke(new CommonRunnable() {
 						@Override
 						public void run() throws CommonBusinessException {
-							StateDelegate.getInstance().changeState(govo.getModuleId(), govo.getId(), stateNew);
+							StateDelegate.getInstance().changeState(govo.getModuleId(), govo.getId(), stateNew, ctl.getCustomUsage());
 						}
 					});
 				}
@@ -5960,7 +5960,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						for (CollectableField clctField : MasterDataDelegate.getInstance().getProcessByUsage(getModuleId(), false))
 							if (((String)clctField.getValue()).equals(scm.getField().getValue())) {
 								// reload layout according to the 'process' field
-								reloadLayout(new UsageCriteria(getModuleId(), (Integer)clctField.getValueId(), null), getCollectState(), true, true);
+								reloadLayout(new UsageCriteria(getModuleId(), (Integer)clctField.getValueId(), null, getCustomUsage()), getCollectState(), true, true);
 								detailsChanged(clctcomp);
 								break;
 							}
@@ -6213,7 +6213,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	                        try {
 	                        	if (!subFormCtrl.insertNewRowWithReference(
 	                        		entity, new CollectableGenericObjectWithDependants(
-	                        			GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId())),
+	                        			GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId(), getCustomUsage())),
 	                        		true)) {
 	                        		result[1] = result[1]+1;
 		                		} else {

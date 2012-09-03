@@ -31,11 +31,13 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -68,7 +70,7 @@ public class ResetToTemplateUserActionListener implements ActionListener{
 			try {
 				PreferencesUtils.resetToTemplateUser(goCon.getEntityName());
 				CollectableSearchCondition searchCondition = goCon.getSearchStrategy().getCollectableSearchCondition();
-				NuclosCollectController<?> goConNew = NuclosCollectControllerFactory.getInstance().newCollectController(goCon.getEntityName(), null);
+				NuclosCollectController<?> goConNew = NuclosCollectControllerFactory.getInstance().newCollectController(goCon.getEntityName(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 				goConNew.runViewResults(searchCondition);
 				Rectangle goConBounds = goCon.getTab().getBounds();
 				goConNew.getTab().setBounds(goConBounds);

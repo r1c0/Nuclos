@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
@@ -38,6 +39,7 @@ import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -171,7 +173,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 			collectableEntity = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(entityName));
 			if (withDependants) {
 				dependantEntities = new ArrayList<EntityAndFieldName>(
-					MasterDataDelegate.getInstance().getSubFormEntitiesByMasterDataEntity(entityName));
+					MasterDataDelegate.getInstance().getSubFormEntitiesByMasterDataEntity(entityName, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 			} else {
 				dependantEntities = new ArrayList<EntityAndFieldName>();
 			}
@@ -216,7 +218,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		public Collectable create(Collectable clct) throws CommonBusinessException {
 			CollectableMasterDataWithDependants clctMasterData = (CollectableMasterDataWithDependants) clct;
 			MasterDataVO createdMdvo = MasterDataDelegate.getInstance().create(
-					entity.getEntity(), clctMasterData.getMasterDataCVO(), clctMasterData.getDependantMasterDataMap());
+					entity.getEntity(), clctMasterData.getMasterDataCVO(), clctMasterData.getDependantMasterDataMap(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return get(createdMdvo.getId());
 		}
 		
@@ -244,14 +246,14 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		public Collectable modify(Collectable clct) throws CommonBusinessException {
 			CollectableMasterDataWithDependants clctMasterData = (CollectableMasterDataWithDependants) clct;
 			MasterDataDelegate.getInstance().update(
-					entity.getEntity(), clctMasterData.getMasterDataCVO(), clctMasterData.getDependantMasterDataMap());
+					entity.getEntity(), clctMasterData.getMasterDataCVO(), clctMasterData.getDependantMasterDataMap(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return get(clct.getId());
 		}
 		
 		@Override
 		public void remove(Collectable clct) throws CommonBusinessException, NuclosBusinessException {
 			MasterDataVO mdvo = ((CollectableMasterDataWithDependants) clct).getMasterDataCVO();
-			MasterDataDelegate.getInstance().remove(entity.getEntity(), mdvo);
+			MasterDataDelegate.getInstance().remove(entity.getEntity(), mdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 		
 		@Override
@@ -277,7 +279,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		
 		@Override
 		public MasterDataCollectController newCollectController() throws CommonBusinessException {
-			return NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entity.getEntity(), null);
+			return NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entity.getEntity(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 
 	}
@@ -340,13 +342,13 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		@Override
 		public Collectable create(Collectable clct) throws CommonBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			Integer id = genericObjectFacadeRemote.create(gowdvo).getId();
+			Integer id = genericObjectFacadeRemote.create(gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).getId();
 			return get(id);
 		}
 
 		@Override
 		public Collectable get(Object id) throws CommonBusinessException {
-			GenericObjectWithDependantsVO gowdvo = genericObjectFacadeRemote.getWithDependants((Integer) id, null);
+			GenericObjectWithDependantsVO gowdvo = genericObjectFacadeRemote.getWithDependants((Integer) id, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return new CollectableGenericObjectWithDependants(gowdvo);
 		}
 		
@@ -361,7 +363,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		public List<? extends Collectable> get(final List<?> ids) throws CommonBusinessException {
 			List<Integer> intIds = CollectionUtils.typecheck(ids, Integer.class);
 			Collection<GenericObjectWithDependantsVO> gowdvos = 
-					genericObjectFacadeRemote.getGenericObjectsMore(moduleId, intIds, null, Collections.<String>emptySet(), false);
+					genericObjectFacadeRemote.getGenericObjectsMore(moduleId, intIds, null, Collections.<String>emptySet(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), false);
 			List<Collectable> result = new ArrayList<Collectable>(gowdvos.size());
 			for (GenericObjectWithDependantsVO gowdvo : gowdvos) {
 				result.add(new CollectableGenericObjectWithDependants(gowdvo));
@@ -380,14 +382,14 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		@Override
 		public Collectable modify(Collectable clct) throws CommonBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			genericObjectFacadeRemote.modify(moduleId, gowdvo);
+			genericObjectFacadeRemote.modify(moduleId, gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return get(clct.getId());
 		}
 		
 		@Override
 		public void remove(Collectable clct) throws CommonBusinessException, NuclosBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			genericObjectFacadeRemote.remove(gowdvo, false);
+			genericObjectFacadeRemote.remove(gowdvo, false, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 
 		@Override
@@ -412,7 +414,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 
 		@Override
 		public GenericObjectCollectController newCollectController() throws CommonBusinessException {
-			return NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(moduleId, null);
+			return NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(moduleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 
 	}

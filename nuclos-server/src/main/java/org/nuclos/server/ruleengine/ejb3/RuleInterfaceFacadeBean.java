@@ -257,22 +257,22 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 		}
 	}
 
-	public Integer createObject(Integer iGenericObjectId, String sGenerator) throws NuclosBusinessRuleException {
+	public Integer createObject(Integer iGenericObjectId, String sGenerator, String customUsage) throws NuclosBusinessRuleException {
 		try {
-			return IdUtils.unsafeToId(generatorFacadeLocal.generateGenericObject(IdUtils.toLongId(iGenericObjectId), sGenerator));
+			return IdUtils.unsafeToId(generatorFacadeLocal.generateGenericObject(IdUtils.toLongId(iGenericObjectId), sGenerator, customUsage));
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosFatalRuleException(ex);
 		}
 	}
 
-	public Integer createObject(String sEntityName, Integer iObjectId, String sGenerator) throws NuclosBusinessRuleException {
-		return createObject(iObjectId, sGenerator);
+	public Integer createObject(String sEntityName, Integer iObjectId, String sGenerator, String customUsage) throws NuclosBusinessRuleException {
+		return createObject(iObjectId, sGenerator, customUsage);
 	}
 
-	public Integer createObject(RuleObjectContainerCVO loccvo, String sGenerator) throws NuclosBusinessRuleException {
+	public Integer createObject(RuleObjectContainerCVO loccvo, String sGenerator, String customUsage) throws NuclosBusinessRuleException {
 		try {
-			return IdUtils.unsafeToId(generatorFacadeLocal.generateGenericObject(loccvo, sGenerator));
+			return IdUtils.unsafeToId(generatorFacadeLocal.generateGenericObject(loccvo, sGenerator, customUsage));
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosBusinessRuleException(ex);
@@ -314,7 +314,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	 * @precondition iGenericObjectId != null
 	 * @deprecated
 	 */
-	public void setAttribute(RuleVO ruleVO, Integer iGenericObjectId, String sAttribute, Integer iValueId, Object oValue) throws NuclosBusinessRuleException {
+	public void setAttribute(RuleVO ruleVO, Integer iGenericObjectId, String sAttribute, Integer iValueId, Object oValue, String customUsage) throws NuclosBusinessRuleException {
 		if (iGenericObjectId == null) {
 			throw new NullArgumentException("iGenericObjectId");
 		}
@@ -333,7 +333,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 			final DynamicAttributeVO attr = go.getAttribute(sAttribute, prov);
 			attr.setParsedValue(oValue, prov);
 			attr.setValueId(iValueId);
-			gofl.modify(go, null, false);
+			gofl.modify(go, null, false, customUsage);
 			
 			// getGenericObjectFacade().setAttribute(iGenericObjectId, sAttribute, iValueId, oValue);
 		}
@@ -391,7 +391,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 		try {
 			// NUCLOS-29, save without dependants because save with dependants would trigger a layoutml lookup
 			// which leads to exception if there is not layout. In this case, dependants are empty anyway.
-			getMasterDataFacade().modify(sEntityName, mdvo, null);
+			getMasterDataFacade().modify(sEntityName, mdvo, null, null);
 		}
 		catch (Exception ex) {
 			throw new NuclosFatalRuleException(ex);
@@ -401,7 +401,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	/**
 	 * @precondition iGenericObjectId != null
 	 */
-	public GenericObjectVO changeState(GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNumeral) throws NuclosBusinessRuleException {
+	public GenericObjectVO changeState(GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNumeral, String customUsage) throws NuclosBusinessRuleException {
 		try {
 			final boolean bSyncNeeded = (govoCurrent != null) && iGenericObjectId.equals(govoCurrent.getId());
 
@@ -422,7 +422,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 				newId = (govoCurrent.getId() != null) ? govoCurrent.getId() : iGenericObjectId;
 			}
 
-			this.changeState(iGenericObjectId, iNumeral);
+			this.changeState(iGenericObjectId, iNumeral, customUsage);
 
 			return bSyncNeeded ? getGenericObjectFacade().get(newId) : govoCurrent;
 		}
@@ -440,10 +440,10 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	/**
 	 * @precondition iGenericObjectId != null
 	 */
-	public void changeState(Integer iGenericObjectId, int iNumeral) throws NuclosBusinessRuleException {
+	public void changeState(Integer iGenericObjectId, int iNumeral, String customUsage) throws NuclosBusinessRuleException {
 		// @todo defer sync to changeStateByRule
 		try {
-			stateFacadeLocal.changeStateByRule(this.getModuleId(iGenericObjectId), iGenericObjectId, iNumeral);
+			stateFacadeLocal.changeStateByRule(this.getModuleId(iGenericObjectId), iGenericObjectId, iNumeral, customUsage);
 		}
 		catch (CommonCreateException ex) {
 			throw new NuclosBusinessRuleException(ex);
@@ -476,7 +476,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	 * @precondition iGenericObjectId != null
 	 * @throws NuclosBusinessRuleException if the transition from the current state to the new state is not possible for the given object.
 	 */
-	public GenericObjectVO scheduleStateChange(GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNewState, Date dateToSchedule)
+	public GenericObjectVO scheduleStateChange(GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNewState, Date dateToSchedule, String customUsage)
 			throws NuclosBusinessRuleException, CommonFinderException {
 
 		if (iGenericObjectId == null) {
@@ -498,7 +498,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 			if (dateToSchedule != null) {
 				if (dateToSchedule.before(new Date())) {
 					// execute state change immediately:
-					result = this.changeState(govoCurrent, iGenericObjectId, iNewState);
+					result = this.changeState(govoCurrent, iGenericObjectId, iNewState, customUsage);
 				}
 				else {
 					final JobDetail jobDetail = new JobDetail(sJobName, Scheduler.DEFAULT_GROUP, StateChangeJob.class);
@@ -591,7 +591,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 				final Date dateNew = DateUtils.today();
 				if (dateOld == null || dateNew.before(dateOld)) {
 					vo.setValidUntil(dateNew);
-					getMasterDataFacade().modify(NuclosEntity.GENERICOBJECTRELATION.getEntityName(), MasterDataWrapper.wrapGenericObjectRelationVO(vo), null);
+					getMasterDataFacade().modify(NuclosEntity.GENERICOBJECTRELATION.getEntityName(), MasterDataWrapper.wrapGenericObjectRelationVO(vo), null, null);
 				}
 			}
 		}

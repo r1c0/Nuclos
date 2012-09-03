@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -35,6 +36,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.fileimport.FileImportResult;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -465,12 +467,12 @@ public class NuclosImport extends AbstractImport {
 	public EntityObjectVO insertObject(String entityname, EntityObjectVO vo) throws Exception {
 		if (MetaDataServerProvider.getInstance().getEntity(entityname).isStateModel()) {
 			GenericObjectVO go = DalSupportForGO.getGenericObjectVO(vo);
-			go = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(go, new DependantMasterDataMap()));
+			go = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(go, new DependantMasterDataMap()), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return DalSupportForGO.wrapGenericObjectVO(go);
 		}
 		else {
 			MasterDataVO md = DalSupportForMD.wrapEntityObjectVO(vo);
-			md = getMasterDataFacade().create(entityname, md, null);
+			md = getMasterDataFacade().create(entityname, md, null, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			EntityObjectVO result = DalSupportForMD.getEntityObjectVO(entityname, md);
 			result.setEntity(entityname);
 			return result;
@@ -480,12 +482,12 @@ public class NuclosImport extends AbstractImport {
 	public EntityObjectVO updateObject(String entityname, EntityObjectVO vo) throws Exception {
 		if (MetaDataServerProvider.getInstance().getEntity(entityname).isStateModel()) {
 			GenericObjectVO go = DalSupportForGO.getGenericObjectVO(vo);
-			go = getGenericObjectFacade().modify(Modules.getInstance().getModuleIdByEntityName(entityname), new GenericObjectWithDependantsVO(go, null));
+			go = getGenericObjectFacade().modify(Modules.getInstance().getModuleIdByEntityName(entityname), new GenericObjectWithDependantsVO(go, null), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return DalSupportForGO.wrapGenericObjectVO(go);
 		}
 		else {
 			MasterDataVO md = DalSupportForMD.wrapEntityObjectVO(vo);
-			md.setId(getMasterDataFacade().modify(entityname, md, null));
+			md.setId(getMasterDataFacade().modify(entityname, md, null, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
 			EntityObjectVO result = DalSupportForMD.getEntityObjectVO(entityname, md);
 			result.setEntity(entityname);
 			return result;
@@ -494,14 +496,14 @@ public class NuclosImport extends AbstractImport {
 
 	public void deleteObject(String entityname, Long id) throws Exception {
 		if (Modules.getInstance().existModule(entityname)) {
-			GenericObjectWithDependantsVO govo = getGenericObjectFacade().getWithDependants(IdUtils.unsafeToId(id), null);
+			GenericObjectWithDependantsVO govo = getGenericObjectFacade().getWithDependants(IdUtils.unsafeToId(id), null, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			govo.remove();
-			getGenericObjectFacade().remove(govo, true);
+			getGenericObjectFacade().remove(govo, true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 		else {
 			MasterDataVO mdvo = getMasterDataFacade().get(entityname, IdUtils.unsafeToId(id));
 			mdvo.remove();
-			getMasterDataFacade().remove(entityname, mdvo, false);
+			getMasterDataFacade().remove(entityname, mdvo, false, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 	}
 }

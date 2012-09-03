@@ -22,14 +22,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MetaDataCache;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
@@ -55,7 +57,7 @@ public class SubFormFieldsCollectableFieldsProvider implements CollectableFields
 		}
 		else {
 			collSubEntities = new ArrayList<MasterDataMetaVO>();
-			final Set<String> subEntities = MasterDataDelegate.getInstance().getSubFormEntityNamesByMasterDataEntity(entity);
+			final Set<String> subEntities = MasterDataDelegate.getInstance().getSubFormEntityNamesByMasterDataEntity(entity, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			for (String subEntity : subEntities) {
 				collSubEntities.add(MasterDataDelegate.getInstance().getMetaData(subEntity));
 			}

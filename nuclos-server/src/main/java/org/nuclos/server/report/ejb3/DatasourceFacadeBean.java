@@ -340,7 +340,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			processChangingChartEntity((ChartVO) datasourcevo, null, true);
 		}
 		
-		MasterDataVO mdVO = getMasterDataFacade().create(entity, type.unwrap(datasourcevo), null);
+		MasterDataVO mdVO = getMasterDataFacade().create(entity, type.unwrap(datasourcevo), null, null);
 		getMasterDataFacade().notifyClients(entity);
 
 		DatasourceVO dbDataSourceVO = MasterDataWrapper.getDatasourceVO(mdVO, getCurrentUserName());
@@ -434,7 +434,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
 				throw new CommonStaleVersionException(entity, datasourcevo.toString(), dsAsMd.toString());
 			}
-			getMasterDataFacade().modify(entity, type.unwrap(datasourcevo), null);
+			getMasterDataFacade().modify(entity, type.unwrap(datasourcevo), null, null);
 
 			if (modifyUsedDatasources) {
 				// store the list of used datasources
@@ -695,7 +695,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		// 1. remove all entries for this id:
 		CollectableComparison condUsage = SearchConditionUtils.newMDReferenceComparison(usageMeta, datasourceType.fieldEntity, datasourceVO.getId());
 		for (MasterDataVO mdVO : getMasterDataFacade().getMasterData(usageEntityName, condUsage, true))
-			getMasterDataFacade().remove(usageEntityName, mdVO, false);
+			getMasterDataFacade().remove(usageEntityName, mdVO, false, null);
 
 		// 2. insert the new entries:
 		for (String dataSourceName : referencedDatasources) {
@@ -708,7 +708,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				newEntryVO.setField(datasourceType.fieldEntity + "Id", datasourceVO.getId());
 				newEntryVO.setField(datasourceType.fieldEntityUsed + "Id", usedDatasource.getId());
 
-				getMasterDataFacade().create(usageEntityName, newEntryVO, null);
+				getMasterDataFacade().create(usageEntityName, newEntryVO, null, null);
 			}
 		}
 	}
@@ -835,7 +835,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			throw new CommonStaleVersionException(entity, dsAsMd.toString(), datasourcevo.toString());
 		}
 
-		getMasterDataFacade().remove(entity, type.unwrap(datasourcevo), false);
+		getMasterDataFacade().remove(entity, type.unwrap(datasourcevo), false, null);
 		getMasterDataFacade().notifyClients(entity);
 
 		try {

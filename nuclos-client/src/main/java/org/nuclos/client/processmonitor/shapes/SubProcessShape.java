@@ -390,7 +390,7 @@ public class SubProcessShape extends ContainerShape implements ImageObserver {
 		try {		
 			
 			cont = (NuclosCollectController<CollectableStateModel>) NuclosCollectControllerFactory.getInstance().
-				newCollectController(NuclosEntity.STATEMODEL.getEntityName(), null);
+				newCollectController(NuclosEntity.STATEMODEL.getEntityName(), null, null);
 		
 			Collection<StateModelVO> col = StateDelegate.getInstance().getAllStateModels();
 			

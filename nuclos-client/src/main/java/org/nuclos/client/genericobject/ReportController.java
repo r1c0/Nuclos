@@ -475,13 +475,13 @@ public class ReportController extends Controller<JComponent> {
 	public void export(CollectableEntity clcteMain, CollectableSearchExpression searchexpr,
 			List<? extends CollectableEntityField> lstclctefweSelected,
 			List<? extends CollectableGenericObject> lstclctlo, UsageCriteria usagecriteria, boolean bIncludeSubModules,
-			String sDocumentEntityName, String[] documentFieldNames)
+			String sDocumentEntityName, String[] documentFieldNames, String customUsage)
 			throws NuclosBusinessException {
 		final ReportFormatController formatController;
 		if (lstclctlo.isEmpty()) {
 			formatController = new ReportFormatController(getParent());
 			if (formatController.run(getSpringLocaleDelegate().getMessage("ReportController.13","Suchergebnis exportieren"))) {
-				export(clcteMain, searchexpr, lstclctefweSelected, bIncludeSubModules, formatController.getFormat());
+				export(clcteMain, searchexpr, lstclctefweSelected, bIncludeSubModules, formatController.getFormat(), customUsage);
 			}
 		}
 		else {
@@ -498,7 +498,7 @@ public class ReportController extends Controller<JComponent> {
 				}
 			}
 			else if (bSearchDialog && pnlChoiceExport.getListButton().isSelected()) {
-				export(clcteMain, searchexpr, lstclctefweSelected, bIncludeSubModules, formatController.getFormat());
+				export(clcteMain, searchexpr, lstclctefweSelected, bIncludeSubModules, formatController.getFormat(), customUsage);
 			}
 		}
 	}
@@ -512,14 +512,14 @@ public class ReportController extends Controller<JComponent> {
 	 * @throws NuclosBusinessException
 	 */
 	private void export(CollectableEntity clcteMain, CollectableSearchExpression searchexpr, List<? extends CollectableEntityField> lstclctefweSelected,
-			boolean bIncludeSubModules, ReportOutputVO.Format format) throws NuclosBusinessException {
+			boolean bIncludeSubModules, ReportOutputVO.Format format, String customUsage) throws NuclosBusinessException {
 		try {
 			getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 			final String sMainEntityName = clcteMain.getName();
 			final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(sMainEntityName);
 			
-			ReportRunner.createExportJob(getParent(), format, searchexpr, lstclctefweSelected, iModuleId, bIncludeSubModules).start();
+			ReportRunner.createExportJob(getParent(), format, searchexpr, lstclctefweSelected, iModuleId, bIncludeSubModules, customUsage).start();
 		}
 		finally {
 			getParent().setCursor(Cursor.getDefaultCursor());

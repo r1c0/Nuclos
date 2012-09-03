@@ -107,7 +107,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 	 * </code></pre>
 	 */
 	public ReportExecutionCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.REPORTEXECUTION, tabIfAny);
+		super(NuclosEntity.REPORTEXECUTION, tabIfAny, null);
 		setupResultToolBar();
 		setExecuteState();
 	}
