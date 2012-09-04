@@ -708,8 +708,17 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				final boolean bWasDetailsChangedIgnored = getCollectController().isDetailsChangedIgnored();
 				getCollectController().setDetailsChangedIgnored(true);
 				try {
+					final SizeKnownListener listener = getSubForm().getSizeKnownListener();
+					// Trigger the 'loading' display...
+					if (listener != null) {
+						listener.actionPerformed(new SizeKnownEvent(getSubForm(), null));
+					}
 					MasterDataSubFormController.this.updateTableModel(lstclctmd);
 					getSubForm().setNewEnabled(new SubformControllerScriptContext(getCollectController(), sfc, clct));
+					// Trigger the 'size' display...
+					if (listener != null) {
+						listener.actionPerformed(new SizeKnownEvent(getSubForm(), lstclctmd.size()));
+					}
 				}
 				finally {
 					getCollectController().setDetailsChangedIgnored(bWasDetailsChangedIgnored);

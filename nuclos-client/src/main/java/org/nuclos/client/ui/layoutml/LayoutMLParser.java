@@ -1569,7 +1569,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				// If there is a second subform in this tab remove the listener
 				// from the first subform.
 				else if (previousSubForm != null) {
-					previousSubForm.setSizeKnownListener(null);
+					//previousSubForm.setSizeKnownListener(null); // @todo is this needed here? @see  	RSWORGA-19
 					previousSubForm = null;
 					subform.setSizeKnownListener(new SizeKnownListener(tbdpn));
 				}
