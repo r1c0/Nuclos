@@ -1218,12 +1218,15 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 					jbtLabel.setIcon(null);
 					
 					JLabel jlbIcon = new JLabel((Icon) act.getValue(Action.SMALL_ICON));
-					jlbIcon.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							act.actionPerformed(new ActionEvent(e.getComponent(), e.getID(), "dummy"));
-						}
-					});
+					jlbIcon.setEnabled(act.isEnabled());
+					if (act.isEnabled()) {
+						jlbIcon.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								act.actionPerformed(new ActionEvent(e.getComponent(), e.getID(), "dummy"));
+							}
+						});
+					}
 					
 					pnlCol.add(jlbIcon, new TableLayoutConstraints(row, 0, row, 0, TableLayout.CENTER, TableLayout.BOTTOM));
 					pnlCol.add(jbtLabel, new TableLayoutConstraints(row, 1, row, 1, TableLayout.CENTER, TableLayout.BOTTOM));
