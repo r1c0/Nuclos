@@ -911,7 +911,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		LayoutRoot result;
 
 		try {
-			final Reader reader = MasterDataLayoutHelper.getLayoutMLReader(sEntityName, bSearch);
+			final Reader reader = MasterDataLayoutHelper.getLayoutMLReader(sEntityName, bSearch, getCustomUsage());
 
 			final InputSource isrc = new InputSource(new BufferedReader(reader));
 

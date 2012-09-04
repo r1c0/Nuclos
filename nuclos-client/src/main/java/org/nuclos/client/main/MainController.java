@@ -82,6 +82,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.JTextComponent;
+import javax.xml.stream.events.EntityDeclaration;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -1559,7 +1560,7 @@ public class MainController {
 
 	private void addActionIfAllowed(List<Pair<String[], Action>> menuActions, String[] menuPath, NuclosEntity entity, List<GenericAction> genericActions) {
 		EntityMetaDataVO entitymetavo = mdProv.getEntity(entity);
-		Action act = createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
+		Action act = createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null, null);
 		if (act != null) {
 			menuActions.add(new Pair<String[], Action>(menuPath, act));
 			if (genericActions != null) {
@@ -1585,10 +1586,10 @@ public class MainController {
 			String[] menuPath = splitMenuPath(localeDelegate.getResource(conf.getField("menupath", String.class), null));
 
 			if (menuPath != null && menuPath.length > 0) {
-				Action action = createEntityAction(meta, menuPath[menuPath.length - 1], conf.getField("new", Boolean.class), conf.getFieldId("process"));
+				Action action = createEntityAction(meta, menuPath[menuPath.length - 1], conf.getField("new", Boolean.class), conf.getFieldId("process"), null);
 				if (menuPath != null && menuPath.length > 0 && action != null) {
 					entityMenuActions.add(Pair.makePair(Arrays.copyOf(menuPath, menuPath.length - 1), action));
-					if (genericActions != null) {
+					if (genericActions != null) {					
 						WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
 						wa.setAction(GENERIC_ENTITY_ACTION);
 						wa.putStringParameter("entity", meta.getEntity());
@@ -1606,7 +1607,7 @@ public class MainController {
 				continue;
 			}
 			String[] menuPath = splitMenuPath(localeDelegate.getResource(entitymetavo.getLocaleResourceIdForMenuPath(), null));
-			Action action = createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
+			Action action = createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null, null);
 			if (menuPath != null && menuPath.length > 0 && action != null) {
 				entityMenuActions.add(Pair.makePair(menuPath, action));
 				if (genericActions != null) {
@@ -1614,6 +1615,15 @@ public class MainController {
 					wa.setAction(GENERIC_ENTITY_ACTION);
 					wa.putStringParameter("entity", entitymetavo.getEntity());
 					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+					
+					for (String customUsage : MasterDataDelegate.getInstance().getCustomUsages(entitymetavo.getEntity())) {
+						wa = new WorkspaceDescription.Action();
+						wa.setAction(GENERIC_ENTITY_ACTION);
+						wa.putStringParameter("entity", entitymetavo.getEntity());
+						wa.putStringParameter("customUsage", customUsage);
+						action = createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null, customUsage);
+						genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+					}
 				}
 			}
 		}
@@ -1742,10 +1752,10 @@ public class MainController {
 
 	private Action createEntityAction(NuclosEntity entity) {
 		EntityMetaDataVO entitymetavo = mdProv.getEntity(entity);
-		return createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
+		return createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null, null);
 	}
 
-	private Action createEntityAction(EntityMetaDataVO entitymetavo, String label, final boolean isNew, final Long processId) {
+	private Action createEntityAction(EntityMetaDataVO entitymetavo, String label, final boolean isNew, final Long processId, final String customUsage) {
 		String entity = entitymetavo.getEntity();
 		if (!securityCache.isReadAllowedForEntity(entity)) {
 			return null;
@@ -1759,11 +1769,11 @@ public class MainController {
 
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				cmdCollectMasterData(evt, isNew, processId);
+				cmdCollectMasterData(evt, isNew, processId, customUsage);
 			}
 		};
 		Pair<String, Character> nameAndMnemonic = MenuGenerator.getMnemonic(label);
-		action.putValue(Action.NAME, nameAndMnemonic.x);
+		action.putValue(Action.NAME, customUsage == null? nameAndMnemonic.x: String.format("%s (%s)", nameAndMnemonic.x, customUsage));
 		if (nameAndMnemonic.y != null) {
 			action.putValue(Action.MNEMONIC_KEY, (int)nameAndMnemonic.y.charValue());
 		}
@@ -2310,13 +2320,13 @@ public class MainController {
 		new ReleaseNotesController().showReleaseNotesIfNewVersion();
 	}
 
-	private void cmdCollectMasterData(final ActionEvent ev, final boolean isNew, final Long processId) {
+	private void cmdCollectMasterData(final ActionEvent ev, final boolean isNew, final Long processId, final String customUsage) {
 		UIUtils.runCommand(frm, new Runnable() {
 			@Override
 			public void run() {
 				try {
 					String entity = ev.getActionCommand();
-					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null, customUsage!=null? customUsage: ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 					if(ncc != null) {
 						if (processId != null && ncc instanceof GenericObjectCollectController) {
 							GenericObjectCollectController gcc = (GenericObjectCollectController) ncc;

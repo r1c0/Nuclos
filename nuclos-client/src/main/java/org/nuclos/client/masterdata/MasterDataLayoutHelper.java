@@ -65,19 +65,19 @@ public class MasterDataLayoutHelper {
 	private MasterDataLayoutHelper() {
 	}
 
-	public static Reader getLayoutMLReader(String sEntityName, boolean bSearch) throws NuclosBusinessException {
+	public static Reader getLayoutMLReader(String sEntityName, boolean bSearch, String customUsage) throws NuclosBusinessException {
 		checkLayoutMLExistence(sEntityName);
-		return new StringReader(MasterDataDelegate.getInstance().getLayoutML(sEntityName, bSearch));
+		return new StringReader(MasterDataDelegate.getInstance().getLayoutML(sEntityName, bSearch, customUsage));
 	}
 
-	public static LayoutRoot newLayoutRoot(String sEntityName, boolean bSearch) throws NuclosBusinessException {
+	public static LayoutRoot newLayoutRoot(String sEntityName, boolean bSearch, String customUsage) throws NuclosBusinessException {
 		final LayoutMLParser parser = new LayoutMLParser();
 
 		final CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(
 				MetaDataCache.getInstance().getMetaData(sEntityName));
 		LayoutRoot result;
 
-		final Reader reader = MasterDataLayoutHelper.getLayoutMLReader(sEntityName, bSearch);
+		final Reader reader = MasterDataLayoutHelper.getLayoutMLReader(sEntityName, bSearch, customUsage);
 
 		final InputSource isrc = new InputSource(new BufferedReader(reader));
 

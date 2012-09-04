@@ -18,6 +18,7 @@ package org.nuclos.client.masterdata;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -580,6 +581,10 @@ public class MasterDataDelegate {
 	public boolean isSubformEntity(String sEntity) {
 		return getLayoutCache().getLayoutId(sEntity, false, null) == null;
 	}
+	
+	public Set<String> getCustomUsages(String sEntity) {
+		return getLayoutCache().getCustomUsages(sEntity);
+	}
 
 	 /**
 	  * @param sEntityName
@@ -794,6 +799,16 @@ public class MasterDataDelegate {
 				  p = mpUsages.get(new Key(sEntityName, bSearchMode, null));
 			  }
 			  return p != null ? p.x : null;
+		  }
+		  
+		  public Set<String> getCustomUsages(String sEntityName) {
+			  Set<String> result = new HashSet<String>();
+			  for (Key key : mpUsages.keySet()) {
+				  if (key.sCustom != null && LangUtils.equals(sEntityName, key.sEntityName)) {
+					  result.add(key.sCustom);
+				  }
+			  }
+			  return result;
 		  }
 		  
 	  }       // class MasterDataLayoutCache

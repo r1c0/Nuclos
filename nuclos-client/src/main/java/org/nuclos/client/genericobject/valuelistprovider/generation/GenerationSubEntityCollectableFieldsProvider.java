@@ -20,11 +20,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.GenericObjectLayoutCache;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataLayoutHelper;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -86,7 +88,7 @@ public class GenerationSubEntityCollectableFieldsProvider implements Collectable
 					}
 				}
 			} else {
-				for (String entityFieldName : MasterDataLayoutHelper.newLayoutRoot(sEntityName, false).getMapOfSubForms().keySet()) {
+				for (String entityFieldName : MasterDataLayoutHelper.newLayoutRoot(sEntityName, false, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).getMapOfSubForms().keySet()) {
 					EntityMetaDataVO metaDataVO = MetaDataClientProvider.getInstance().getEntity(entityFieldName);
 					CollectableValueIdField cIdField = new CollectableValueIdField(new Integer(metaDataVO.getId().intValue()), metaDataVO.getEntity());		
 					if (!result.contains(cIdField)) {
