@@ -19,6 +19,7 @@ package org.nuclos.client.nuclet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuclos.api.ui.DesktopItemFactory;
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.api.ui.MenuItem;
 import org.nuclos.api.ui.UserSettingsEditor;
@@ -27,6 +28,7 @@ import org.nuclos.api.ui.UserSettingsEditor;
 public class NucletComponentRepository {
 
 	private List<MenuItem> menuItems = new ArrayList<MenuItem>();
+	private List<DesktopItemFactory> desktopItemFactories = new ArrayList<DesktopItemFactory>();
 	private List<LayoutComponentFactory> layoutComponentFactories = new ArrayList<LayoutComponentFactory>();
 	private List<UserSettingsEditor> userSettingsEditors = new ArrayList<UserSettingsEditor>();
 	
@@ -39,6 +41,14 @@ public class NucletComponentRepository {
 	
 	public List<MenuItem> getMenuItems() {
 		return new ArrayList<MenuItem>(menuItems);
+	}
+	
+	public void addDesktopItemFactory(DesktopItemFactory di) {
+		desktopItemFactories.add(di);
+	}
+	
+	public List<DesktopItemFactory> getDesktopItemFactories() {
+		return new ArrayList<DesktopItemFactory>(desktopItemFactories);
 	}
 	
 	public void addLayoutComponentFactory(LayoutComponentFactory lc) {

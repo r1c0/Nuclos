@@ -1206,6 +1206,27 @@ public class WorkspaceDescription implements Serializable {
 		}
 
 	}
+	
+	public static class ApiDesktopItem implements DesktopItem {
+		private static final long serialVersionUID = 4572201568744295412L;
+		private String id;
+		public String getId() {
+			return id;
+		}
+		public void setId(String id) {
+			this.id = id;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj instanceof ApiDesktopItem) {
+				ApiDesktopItem other = (ApiDesktopItem) obj;
+				return LangUtils.equals(this.id, other.id);
+			}
+			return super.equals(obj);
+		}
+	}
 
 	public static class MenuButton implements DesktopItem {
 		private static final long serialVersionUID = 6637996725938917463L;

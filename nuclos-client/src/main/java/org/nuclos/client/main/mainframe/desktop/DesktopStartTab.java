@@ -22,14 +22,23 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragGestureRecognizer;
+import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -38,6 +47,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -53,6 +63,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameUtils;
 import org.nuclos.client.main.mainframe.StartTabPanel;
+import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
@@ -71,6 +82,9 @@ import org.springframework.beans.factory.annotation.Value;
 public abstract class DesktopStartTab {
 
 	private static final Logger LOG = Logger.getLogger(DesktopStartTab.class);
+	
+	@Autowired
+	private NucletComponentRepository nucletComponentRepository;
 	
 	private Desktop desktopPrefs;
 
@@ -112,6 +126,8 @@ public abstract class DesktopStartTab {
 	private Action actRestoreDesktop;
 	
 	private Action actRemoveSplitPaneFixations;
+	
+	private List<org.nuclos.api.ui.DesktopItemFactory> apiDesktopItemFactories;
 	
 	public DesktopStartTab() {
 	}
@@ -204,6 +220,8 @@ public abstract class DesktopStartTab {
 			}
 		};
 		
+		apiDesktopItemFactories = nucletComponentRepository.getDesktopItemFactories();
+				
 		this.jpnMain = new JPanel(new BorderLayout(0, 0)){
 			@Override
 			public void paint(Graphics g) {
@@ -226,6 +244,22 @@ public abstract class DesktopStartTab {
 			
 		};
 		contextMenu.add(new JMenuItem(actAddMenubutton));
+		if (!apiDesktopItemFactories.isEmpty()) {
+			JMenu jm = new JMenu(localeDelegate.getResource("DesktopStartTab.8", "Nuclet Komponenten"));
+			contextMenu.add(jm);
+			for (final org.nuclos.api.ui.DesktopItemFactory dif : apiDesktopItemFactories) {
+				jm.add(new AbstractAction(
+						dif.getLabel()) {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						final WorkspaceDescription.ApiDesktopItem diPrefs = new WorkspaceDescription.ApiDesktopItem();
+						diPrefs.setId(dif.getId());
+						_getDesktop();
+						cmdAddApiDesktopItem(diPrefs);
+					}
+				});
+			}
+		}
 		contextMenu.add(new JMenuItem(actEditDesktop));
 		contextMenu.addSeparator();
 		JCheckBoxMenuItem chckHideToolBar = new JCheckBoxMenuItem(actHideToolBar);
@@ -348,6 +382,11 @@ public abstract class DesktopStartTab {
 					WorkspaceDescription.MenuButton mbPrefs = (WorkspaceDescription.MenuButton) diPrefs;
 					MenuButton mb = getMenuButton(mbPrefs, actions);
 					addDesktopItem(mb);
+				} else if (diPrefs instanceof WorkspaceDescription.ApiDesktopItem) {
+					ApiDesktopItem adi = getApiDesktopItem(((WorkspaceDescription.ApiDesktopItem) diPrefs));
+					if (adi != null) {
+						addDesktopItem(adi);
+					}
 				}
 			}
 		}
@@ -391,7 +430,6 @@ public abstract class DesktopStartTab {
 		jpnContent.revalidate();
 	}
 	
-	
 	private void addDesktopItem(DesktopItem di) {
 		final Desktop desktop = _getDesktop();
 		if (!isSetup) {
@@ -428,6 +466,60 @@ public abstract class DesktopStartTab {
 		
 		this.jpnContent.revalidate();
 //		this.jpnContent.repaint();
+	}
+	
+	private void cmdAddApiDesktopItem(final WorkspaceDescription.ApiDesktopItem diPrefs) {
+		for (org.nuclos.api.ui.DesktopItemFactory dif : apiDesktopItemFactories) {
+			if (LangUtils.equals(diPrefs.getId(), dif.getId())) {
+				ApiDesktopItem adi = getApiDesktopItem(diPrefs);
+				if (adi != null) {
+					addDesktopItem(adi);
+					desktopPrefs.addDesktopItem(diPrefs);
+				}
+			}
+		}
+	}
+	
+	private ApiDesktopItem getApiDesktopItem(final WorkspaceDescription.ApiDesktopItem diPrefs) {
+		for (org.nuclos.api.ui.DesktopItemFactory dif : apiDesktopItemFactories) {
+			if (LangUtils.equals(diPrefs.getId(), dif.getId())) {
+				final org.nuclos.api.ui.DesktopItem di = dif.newInstance();
+						
+				DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(di.getComponent(), DnDConstants.ACTION_MOVE, new DragGestureListener() {
+					@Override
+					public void dragGestureRecognized(DragGestureEvent dge) {
+						if (mainFrame.isStarttabEditable()) {
+							Transferable transferable = new DesktopItemTransferable(diPrefs, desktopPrefs);
+							dge.startDrag(null, transferable, null);
+						}
+					}
+				});
+				
+				di.getComponent().setTransferHandler(new DesktopItemTransferHandler(diPrefs, null));
+				
+				JPopupMenu popup = di.getComponent().getComponentPopupMenu();
+				if (popup == null) {
+					popup = new JPopupMenu();
+					di.getComponent().setComponentPopupMenu(popup);
+				}
+				
+				final ApiDesktopItem adi = new ApiDesktopItem(di);
+				
+				popup.add(new JMenuItem(new AbstractAction(
+						localeDelegate.getMessage("DesktopStartTab.9",
+								"Entfernen"), Icons.getInstance().getIconMinus16()) {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								desktopPrefs.removeDesktopItem(diPrefs);
+								removeDesktopItem(adi);
+							}
+						}));
+				
+				return adi;
+			}
+		}
+		
+		return null;
 	}
 
 	private void cmdAddButton(final WorkspaceDescription.MenuButton mbPrefs) {
@@ -476,53 +568,7 @@ public abstract class DesktopStartTab {
 			}
 		};
 		
-		mb.setTransferHandler(new TransferHandler() {
-			@Override
-			public boolean importData(JComponent comp, Transferable t) {
-				if (mainFrame.isStarttabEditable()) {
-					try {
-						DesktopItemTransferable.TransferData transferData = (DesktopItemTransferable.TransferData) t.getTransferData(DesktopItemTransferable.DESKTOP_ITEM_FLAVOR);
-						if (transferData != null &&
-								!LangUtils.equals(transferData.desktopItem, mb.getPreferences())) {
-							// only dnd in same desktop						
-							if (LangUtils.equals(transferData.desktop, desktopPrefs)) {
-								int iTargetIndex = desktopPrefs.getDesktopItems().indexOf(mb.getPreferences());
-								int iSourceIndex = desktopPrefs.getDesktopItems().indexOf(transferData.desktopItem);
-								if (iTargetIndex != -1 && iSourceIndex != -1) {
-									DesktopItem diSource = desktopItems.get(iSourceIndex);
-									WorkspaceDescription.DesktopItem wddiSource = desktopPrefs.getDesktopItems().get(iSourceIndex);
-									desktopPrefs.removeDesktopItem(wddiSource);
-									desktopPrefs.addDesktopItem(iTargetIndex, wddiSource);
-									desktopItems.remove(diSource);
-									desktopItems.add(iTargetIndex, diSource);
-									revalidateDesktopItems();
-									return true;
-								} else {
-									LOG.warn("iSourceIndex=" + iSourceIndex + ", iTargetIndex=" + iTargetIndex);
-									return false;
-								}
-							}
-						}
-					} catch (Exception e) {
-						Log.error(e);
-					} 
-				}
-				
-				return super.importData(comp, t);
-			}
-			@Override
-			public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
-				if (mainFrame.isStarttabEditable()) {
-					for (DataFlavor dataFlavor : transferFlavors) {
-						if (DesktopItemTransferable.DESKTOP_ITEM_FLAVOR.equals(dataFlavor)) {
-							mb.flashLight();
-							return true;
-						}
-					}
-				}
-				return false;
-			}
-		});
+		mb.setTransferHandler(new DesktopItemTransferHandler(mbPrefs, mb));
 
 		return mb;
 	}
@@ -550,5 +596,67 @@ public abstract class DesktopStartTab {
 	public void setDesktopPreferences(Desktop desktop, List<GenericAction> actions) {
 		this.desktopPrefs = desktop;
 		setupDesktop(actions);
+	}
+	
+	private class DesktopItemTransferHandler extends TransferHandler {
+		
+		private static final long serialVersionUID = 7393959101880598963L;
+		
+		private final DesktopItem di;
+		private final WorkspaceDescription.DesktopItem diPrefs;
+		
+		public DesktopItemTransferHandler(WorkspaceDescription.DesktopItem diPrefs, DesktopItem di) {
+			super();
+			this.di = di;
+			this.diPrefs = diPrefs;
+		}
+		
+		@Override
+		public boolean importData(JComponent comp, Transferable t) {
+			if (mainFrame.isStarttabEditable()) {
+				try {
+					DesktopItemTransferable.TransferData transferData = (DesktopItemTransferable.TransferData) t.getTransferData(DesktopItemTransferable.DESKTOP_ITEM_FLAVOR);
+					if (transferData != null &&
+							!LangUtils.equals(transferData.desktopItem, diPrefs)) {
+						// only dnd in same desktop						
+						if (LangUtils.equals(transferData.desktop, desktopPrefs)) {
+							int iTargetIndex = desktopPrefs.getDesktopItems().indexOf(diPrefs);
+							int iSourceIndex = desktopPrefs.getDesktopItems().indexOf(transferData.desktopItem);
+							if (iTargetIndex != -1 && iSourceIndex != -1) {
+								DesktopItem diSource = desktopItems.get(iSourceIndex);
+								WorkspaceDescription.DesktopItem wddiSource = desktopPrefs.getDesktopItems().get(iSourceIndex);
+								desktopPrefs.removeDesktopItem(wddiSource);
+								desktopPrefs.addDesktopItem(iTargetIndex, wddiSource);
+								desktopItems.remove(diSource);
+								desktopItems.add(iTargetIndex, diSource);
+								revalidateDesktopItems();
+								return true;
+							} else {
+								LOG.warn("iSourceIndex=" + iSourceIndex + ", iTargetIndex=" + iTargetIndex);
+								return false;
+							}
+						}
+					}
+				} catch (Exception e) {
+					LOG.error(e);
+				} 
+			}
+			return super.importData(comp, t);
+		}
+		
+		@Override
+		public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
+			if (mainFrame.isStarttabEditable()) {
+				for (DataFlavor dataFlavor : transferFlavors) {
+					if (DesktopItemTransferable.DESKTOP_ITEM_FLAVOR.equals(dataFlavor)) {
+						if (di instanceof MenuButton) {
+							((MenuButton)di).flashLight();
+						}
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 }

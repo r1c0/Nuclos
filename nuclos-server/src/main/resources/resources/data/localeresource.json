@@ -62365,6 +62365,36 @@
     "text": "Bereichsfixierungen aufheben"
   },
   {
+    "resourceID": "DesktopStartTab.8",
+    "locale": "i-default",
+    "text": "Nuclet components"
+  },
+  {
+    "resourceID": "DesktopStartTab.8",
+    "locale": "en",
+    "text": "Nuclet components"
+  },
+  {
+    "resourceID": "DesktopStartTab.8",
+    "locale": "de",
+    "text": "Nuclet Komponenten"
+  },
+  {
+    "resourceID": "DesktopStartTab.9",
+    "locale": "i-default",
+    "text": "Remove"
+  },
+  {
+    "resourceID": "DesktopStartTab.9",
+    "locale": "en",
+    "text": "Remove"
+  },
+  {
+    "resourceID": "DesktopStartTab.9",
+    "locale": "de",
+    "text": "Entfernen"
+  },
+  {
     "resourceID": "MenuButton.2",
     "locale": "i-default",
     "text": "Select default icon"
