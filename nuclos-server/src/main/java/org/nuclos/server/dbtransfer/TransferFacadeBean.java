@@ -1895,7 +1895,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 
 	private Set<Long> getExistingNucletIds(String rootNucletUID, Set<NucletContentUID> nucletUIDs) {
 		Set<Long> existingByRoot = new HashSet<Long>();
-		Long nucletId = getNcObjectIdFromNucletContentUID(NuclosEntity.NUCLET, rootNucletUID);
+		Long nucletId = rootNucletUID==null?null:getNcObjectIdFromNucletContentUID(NuclosEntity.NUCLET, rootNucletUID);
 		if (nucletId != null) {
 			LOG.info("existing root nuclet id: " + nucletId);
 			existingByRoot.addAll(getExistingNucletIds(nucletId));
