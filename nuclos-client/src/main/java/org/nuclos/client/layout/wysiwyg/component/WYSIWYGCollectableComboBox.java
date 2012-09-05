@@ -20,12 +20,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
@@ -265,6 +267,22 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 		@Override
 		public Color getBackground() {
 			return super.getBackground();
+		}
+
+		@Override
+		public void addMouseListenerToHiddenComponents(MouseListener l) {
+			super.addMouseListenerToHiddenComponents(l);
+			JTextField editor = (JTextField) getJComboBox().getEditor().getEditorComponent();
+			if (editor != null)
+				editor.addMouseListener(l);
+		}
+
+		@Override
+		public void removeMouseListenerFromHiddenComponents(MouseListener l) {
+			super.removeMouseListenerFromHiddenComponents(l);
+			JTextField editor = (JTextField) getJComboBox().getEditor().getEditorComponent();
+			if (editor != null)
+				editor.removeMouseListener(l);
 		}
 	}
 
