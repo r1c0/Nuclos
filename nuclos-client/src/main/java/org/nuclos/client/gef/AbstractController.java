@@ -294,10 +294,12 @@ public class AbstractController implements MouseListener, MouseMotionListener, K
 		}
 		else {
 			if (iPoint == AbstractConnector.STARTPOINT) {
-				connector.setSourceConnection(null);
+				if (connector != null)
+					connector.setSourceConnection(null);
 			}
 			else if (iPoint == AbstractConnector.ENDPOINT) {
-				connector.setDestinationConnection(null);
+				if (connector != null)
+					connector.setDestinationConnection(null);
 			}
 		}
 		return bResult;
@@ -392,12 +394,14 @@ public class AbstractController implements MouseListener, MouseMotionListener, K
 
 		switch (iDragMode) {
 			case DRAG_SCALE:
-				Point connectionPoint = new Point(mouseDragPoint.x, mouseDragPoint.y);
-				if (checkConnectableShapes(pe) && connectShape(lastConnectorHit, AbstractConnector.ENDPOINT, connectionPoint)) {
-					lastConnectorHit.setEndPoint(connectionPoint);
-				}
-				else {
-					lastConnectorHit.movePoint(AbstractConnector.ENDPOINT, mouseDeltaPoint);
+				if (lastConnectorHit != null) {
+					Point connectionPoint = new Point(mouseDragPoint.x, mouseDragPoint.y);
+					if (checkConnectableShapes(pe) && connectShape(lastConnectorHit, AbstractConnector.ENDPOINT, connectionPoint)) {
+						lastConnectorHit.setEndPoint(connectionPoint);
+					}
+					else {
+						lastConnectorHit.movePoint(AbstractConnector.ENDPOINT, mouseDeltaPoint);
+					}
 				}
 				viewer.repaint();
 				break;

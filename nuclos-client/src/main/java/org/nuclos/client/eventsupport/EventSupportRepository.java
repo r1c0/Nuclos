@@ -66,7 +66,7 @@ public class EventSupportRepository implements InitializingBean {
 
 	public static EventSupportRepository getInstance() throws RemoteException {
 		if (INSTANCE == null) {
-			INSTANCE = SpringApplicationContextHolder.getBean(EventSupportRepository.class);
+			INSTANCE = (EventSupportRepository)SpringApplicationContextHolder.getBean("eventSupportRepository");
 		}
 		return INSTANCE;
 	}

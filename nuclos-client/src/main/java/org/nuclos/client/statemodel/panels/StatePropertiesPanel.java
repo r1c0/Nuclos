@@ -570,7 +570,6 @@ public class StatePropertiesPanel extends JPanel {
 												5, Bubble.Position.SE)).setVisible(true);
 									} catch (IllegalComponentStateException e) {
 										// do nothing. it is not shown
-										LOG.info("showBubbleThread: roleSelection (still) not on screen; " + e);
 									}
 									tryAgain = tryAgain && !me.isInterrupted();
 								}

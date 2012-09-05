@@ -61,7 +61,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.eventsupport.EventSupportDelegate;
-import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.gef.AbstractShapeController;
 import org.nuclos.client.gef.DefaultShapeViewer;
 import org.nuclos.client.gef.Shape;
@@ -100,7 +99,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
-import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.statemodel.valueobject.NoteLayout;
 import org.nuclos.server.statemodel.valueobject.StateGraphVO;
@@ -748,9 +746,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			setDefaultTransitionActionSelected(((StateTransition) shapeSelected).getStateTransitionVO().isDefault());
 			
 			try {
-				int iTransId = ((StateTransition) shape).getStateTransitionVO().getId();
+				Integer iTransId = ((StateTransition) shape).getStateTransitionVO().getId();
 				
-				List<Pair<Integer, Boolean>> ruleIdsWithRunAfterwards = ((StateTransition) shape).getRuleIdsWithRunAfterwards();
 				List<SortedRuleVO> selectedRules = 
 						RuleRepository.getInstance().selectRulesByTransitionId(iTransId, ((StateTransition) shape).getRuleIdsWithRunAfterwards());
 				
@@ -760,9 +757,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 				
 				selectedRules.addAll(0,
 						EventSupportDelegate.getInstance().selectEventSupportByClassname(iTransId, eventSupportsWithRunAfterwards));
-				
+					
 				pnlProperties.getTransitionRulePanel().getModel().setRules(selectedRules);
-			
 				TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRulePanel().getTblRules(), 10, 10);
 				pnlProperties.getTransitionRulePanel().getBtnAutomatic().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isAutomatic());
 				pnlProperties.getTransitionRulePanel().getBtnDefault().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isDefault());
