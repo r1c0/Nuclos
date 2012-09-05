@@ -36,6 +36,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -57,6 +58,7 @@ import javax.swing.TransferHandler;
 import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
+import org.nuclos.api.ui.DesktopItemFactory;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
@@ -72,7 +74,9 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -247,7 +251,12 @@ public abstract class DesktopStartTab {
 		if (!apiDesktopItemFactories.isEmpty()) {
 			JMenu jm = new JMenu(localeDelegate.getResource("DesktopStartTab.8", "Nuclet Komponenten"));
 			contextMenu.add(jm);
-			for (final org.nuclos.api.ui.DesktopItemFactory dif : apiDesktopItemFactories) {
+			for (final org.nuclos.api.ui.DesktopItemFactory dif : CollectionUtils.sorted(apiDesktopItemFactories, new Comparator<org.nuclos.api.ui.DesktopItemFactory>() {
+				@Override
+				public int compare(DesktopItemFactory o1, DesktopItemFactory o2) {
+					return StringUtils.compareIgnoreCase(o1.getLabel(), o2.getLabel());
+				}
+			})) {
 				jm.add(new AbstractAction(
 						dif.getLabel()) {
 					@Override
