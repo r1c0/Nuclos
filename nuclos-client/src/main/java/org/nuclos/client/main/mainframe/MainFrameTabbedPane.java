@@ -1837,7 +1837,7 @@ public class MainFrameTabbedPane {
 		 */
 		public void addTab(MainFrameTab nuclosTab, boolean addToFront) {
 			if (addToFront)
-				mfTabbed.insertTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText(), 1);
+				mfTabbed.insertTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText(), startTabVisible?1:0);
 			else
 				mfTabbed.addTab(nuclosTab.getName(), nuclosTab.getTabIcon(), nuclosTab, nuclosTab.getToolTipText());
 		}
