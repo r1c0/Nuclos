@@ -215,7 +215,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 					for (ReportOutputVO formatVO : collFormats)
 						pnlSelection.addReport(new ReportVO(mdReport), formatVO);
 					pnlSelection.selectFirstReport();
-					if (JOptionPane.showConfirmDialog(parent, pnlSelection, 
+					if (collFormats.size() == 1 || JOptionPane.showConfirmDialog(parent, pnlSelection, 
 							localeDelegate.getMessage(
 									"ReportExecutionCollectController.6","Verf\u00fcgbare Ausgabeformate"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
 						final ReportSelectionPanel.ReportEntry entry = pnlSelection.getSelectedReport();
@@ -233,7 +233,8 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 							else
 								thread = null;
 							if (thread != null) {
-								BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
+								// do not set dialog visible per default. @see NUCLOS-1064
+								//BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
 								Future<?> future = cachedThreadPoolExecutor.submit(thread);
 								thread.getReportRunner().setProcessFuture(future);
 							}

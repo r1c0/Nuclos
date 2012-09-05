@@ -40,6 +40,7 @@ public class BackgroundProcessTableEntry implements BackgroundProcessInfo {
 	private final Date dateStartedAt;
 	private Status status;
 	private String sMessage;
+	private Throwable tThrowable;
 	private Future<?> processFuture;
 	private Observable observable = null;
 
@@ -72,6 +73,18 @@ public class BackgroundProcessTableEntry implements BackgroundProcessInfo {
 		if(this.observable != null){
 			this.observable.notifyObservers();
 		}
+	}
+
+	/**
+	 * @return the current exception if any
+	 */
+	@Override
+	public Throwable getException() {
+		return this.tThrowable;
+	}
+
+	public void setException(Throwable throwable) {
+		this.tThrowable = throwable;
 	}
 
 	@Override

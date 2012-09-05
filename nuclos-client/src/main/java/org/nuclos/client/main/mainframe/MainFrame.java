@@ -35,7 +35,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.image.BufferedImage;
@@ -49,9 +48,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.EventListener;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -79,7 +76,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
-import javax.swing.JToggleButton;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
@@ -111,8 +107,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.ValidationLayerFactory;
-import org.nuclos.client.ui.gc.IReferenceHolder;
-import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.Actions;
 import org.nuclos.common.ApplicationProperties;
@@ -591,68 +585,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 
 	}
-
-	//init WindowListener to set correct state of notificationButton and menuItem
-	private static class NotificationDialogListener extends WindowAdapter {
-
-		private final JToggleButton btnNotify;
-
-		private final JCheckBoxMenuItem miWindowNotificationDialog;
-
-		private NotificationDialogListener(JToggleButton btnNotify, JCheckBoxMenuItem miWindowNotificationDialog) {
-			this.btnNotify = btnNotify;
-			this.miWindowNotificationDialog = miWindowNotificationDialog;
-		}
-
-		@Override
-		public void windowClosed(WindowEvent ev) {
-			btnNotify.setSelected(false);
-			miWindowNotificationDialog.setSelected(false);
-		}
-
-		@Override
-		public void windowOpened(WindowEvent ev) {
-			btnNotify.setSelected(true);
-			miWindowNotificationDialog.setSelected(true);
-		}
-	}
-
-	//init WindowListener to set correct state of menuItem
-	private static class WindowBackgroundTasksListener extends WindowAdapter {
-
-		private final JCheckBoxMenuItem miWindowBackgroundTasks;
-
-		private WindowBackgroundTasksListener(JCheckBoxMenuItem miWindowBackgroundTasks) {
-			this.miWindowBackgroundTasks = miWindowBackgroundTasks;
-		}
-
-		@Override
-		public void windowClosed(WindowEvent ev) {
-			miWindowBackgroundTasks.setSelected(false);
-		}
-
-		@Override
-		public void windowOpened(WindowEvent ev) {
-			miWindowBackgroundTasks.setSelected(true);
-		}
-
-	}
-
-	private static class MyCheckBoxMenuItem extends JCheckBoxMenuItem implements IReferenceHolder {
-
-		private final List<Object> ref = new LinkedList<Object>();
-
-		public MyCheckBoxMenuItem() {
-		}
-
-		@Override
-		public void addRef(EventListener o) {
-			ref.add(o);
-		}
-
-	}
-
-	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
+	
+	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, final NuclosNotificationDialog notificationDialog) {
 		menuWindow = new JMenu();
 		miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
 		miDeactivateSplitting.setSelected(splittingDeactivated);
@@ -662,8 +596,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		// Windows menu:
 		menuWindow.removeAll();
 
-		final MyCheckBoxMenuItem miWindowNotificationDialog = new MyCheckBoxMenuItem();
-		final MyCheckBoxMenuItem miWindowBackgroundTasks = new MyCheckBoxMenuItem();
+		final JMenuItem miWindowNotificationDialog = new JMenuItem();
+		final JMenuItem miWindowBackgroundTasks = new JMenuItem();
 		final JMenuItem miScriptOutput = new JMenuItem();
 		JMenuItem miNextTab = new JMenuItem();
 		JMenuItem miPreviousTab = new JMenuItem();
@@ -683,7 +617,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		menuWindow.add(miWindowBackgroundTasks);
 		menuWindow.add(miWindowNotificationDialog);
-		miWindowNotificationDialog.setSelected(false);
+
 		if (SecurityCache.getInstance().isSuperUser()) {
 			menuWindow.add(miScriptOutput);
 		}
@@ -716,18 +650,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		menuWindow.addSeparator();
 
 		menuWindow.add(miRestoreDefaultWorkspace);
-
-		miWindowBackgroundTasks.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ev) {
-				UIUtils.runCommand(MainFrame.this, new Runnable() {
-					@Override
-					public void run() {
-						BackgroundProcessStatusController.getStatusDialog(MainFrame.this).setVisible(miWindowBackgroundTasks.isSelected());
-					}
-				});
-			}
-		});
 		miNextTab.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -748,12 +670,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				cmdCloseAllTabs();
 			}
 		});
-		miWindowNotificationDialog.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ev) {
-				getMessagePanel().toggleButton();
-			}
-		});
 		miRestoreDefaultWorkspace.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -765,18 +681,34 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				});
 			}
 		});
-
+		miWindowNotificationDialog.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				UIUtils.runCommand(MainFrame.this, new Runnable() {
+					@Override
+					public void run() {
+						notificationDialog.setVisible(true);
+					}
+				});
+			}
+		});
+		miWindowBackgroundTasks.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				UIUtils.runCommand(MainFrame.this, new Runnable() {
+					@Override
+					public void run() {
+						BackgroundProcessStatusController.getStatusDialog(MainFrame.this).setVisible(true);
+					}
+				});
+			}
+		});
 		miScriptOutput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdShowScriptOutput();
 			}
 		});
-
-		ListenerUtil.registerWindowListener(notificationDialog, miWindowNotificationDialog,
-				new NotificationDialogListener(getMessagePanel().btnNotify, miWindowNotificationDialog));
-		ListenerUtil.registerWindowListener(BackgroundProcessStatusController.getStatusDialog(this),
-				miWindowBackgroundTasks, new WindowBackgroundTasksListener(miWindowBackgroundTasks));
 	}
 
 	private void cmdShowScriptOutput() {

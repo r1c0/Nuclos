@@ -16,12 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
-import org.nuclos.common2.SpringLocaleDelegate;
-
 import java.awt.Dimension;
 import java.awt.Frame;
 
 import javax.swing.JDialog;
+
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Dialog which shows the status of background processes.

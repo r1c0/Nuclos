@@ -66,7 +66,6 @@ import org.nuclos.client.transfer.XmlExportDelegate;
 import org.nuclos.client.transfer.XmlImportDelegate;
 import org.nuclos.client.ui.CommonBackgroundProcessClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.TableRowMouseOverAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
@@ -443,6 +442,8 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 					else if(this.entry != null && this.entry.getStatus() == BackgroundProcessInfo.Status.ERROR){
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
 								localeDelegate.getMessage("NuclosResultPanel.6", "Der Export ist fehlgeschlagen."));
+						// set dialog visible. // @see NUCLOS-1064
+						BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(NuclosResultPanel.this)).setVisible(true);
 					}
 					else {
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.DONE, 
@@ -453,7 +454,9 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				@Override
 				public void handleError(Exception ex) {
 					entry.setStatus(BackgroundProcessInfo.Status.ERROR);
-					Errors.getInstance().showExceptionDialog(clctctl.getTab(), ex);
+					entry.setException(ex);
+					// with a double click in the background dialog, the exception dialog will be shown. @see NUCLOS-1064
+					//Errors.getInstance().showExceptionDialog(clctctl.getTab(), ex);
 				}
 			};
 
@@ -463,7 +466,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 					localeDelegate.getMessage("NuclosResultPanel.18", "XML-Export"), BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
 			workerAdapter.setBackgroundProcessTableEntry(entry);
 			dlgStatus.getStatusPanel().getModel().addEntry(entry);
-			dlgStatus.setVisible(true);
+			//dlgStatus.setVisible(true); // do not set dialog visible per default. @see NUCLOS-1064
 		}
 	}
 
@@ -555,6 +558,8 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
 								SpringLocaleDelegate.getInstance().getMessage(
 										"NuclosResultPanel.14", "Der Import ist fehlgeschlagen."));
+						// set dialog visible. // @see NUCLOS-1064
+						BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(NuclosResultPanel.this)).setVisible(true);
 					}
 					else {
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.DONE, 
@@ -566,7 +571,9 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				@Override
 				public void handleError(Exception ex) {
 					entry.setStatus(BackgroundProcessInfo.Status.ERROR);
-					Errors.getInstance().showExceptionDialog(clctctl.getTab(), ex);
+					entry.setException(ex);
+					// with a double click in the background dialog, the exception dialog will be shown. @see NUCLOS-1064
+					//Errors.getInstance().showExceptionDialog(clctctl.getTab(), ex);
 				}
 			};
 
@@ -576,7 +583,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 					getMessage("NuclosResultPanel.17", "XML-Import"), BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
 			workerAdapter.setBackgroundProcessTableEntry(entry);
 			dlgStatus.getStatusPanel().getModel().addEntry(entry);
-			dlgStatus.setVisible(true);
+			//dlgStatus.setVisible(true); // do not set dialog visible per default. @see NUCLOS-1064
 		}
 	}
 

@@ -27,7 +27,6 @@ import javax.swing.JToggleButton;
 import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
-
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 

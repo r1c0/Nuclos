@@ -16,9 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
-import org.nuclos.common2.SpringLocaleDelegate;
-
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.table.AbstractTableModel;
+
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * <code>TableModel</code> for <code>BackgroundProcessStatusPanel</code>.

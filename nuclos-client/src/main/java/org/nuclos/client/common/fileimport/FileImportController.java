@@ -42,18 +42,6 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
-
-import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
-import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.DateUtils;
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.fileimport.CommonParseException;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.report.reportrunner.BackgroundProcessInfo;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
@@ -61,12 +49,22 @@ import org.nuclos.client.report.reportrunner.BackgroundProcessStatusDialog;
 import org.nuclos.client.report.reportrunner.BackgroundProcessTableEntry;
 import org.nuclos.client.ui.CommonBackgroundProcessClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.ValidatingJOptionPane;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common2.DateUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.fileimport.CommonParseException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -220,6 +218,8 @@ public class FileImportController<Clct extends Collectable> {
 								if(this.entry != null && this.entry.getStatus() == BackgroundProcessInfo.Status.CANCELLED){
 									setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
 											localeDelegate.getMessage("FileImport.8", "Der Import wurde abgebrochen. Es konnten nicht alle Daten importiert werden."));
+									// set dialog visible. // @see NUCLOS-1064
+									BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clct.getTab())).setVisible(true);
 								} else {
 									setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.DONE, getImportSuccessMessage(fileImport));
 									final JPanel pnlResult = getImportResultPanel(fileImport);
@@ -232,9 +232,12 @@ public class FileImportController<Clct extends Collectable> {
 							
 							@Override
 							public void handleError(Exception ex) {
+								entry.setException(ex);
 								setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
 										localeDelegate.getMessage("FileImport.9", "Import fehlgeschlagen."));
-								Errors.getInstance().showExceptionDialog(clct.getTab(), ex);
+								// set dialog visible. // @see NUCLOS-1064
+								BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clct.getTab())).setVisible(true);
+								//Errors.getInstance().showExceptionDialog(clct.getTab(), ex);
 							}
 							
 							private JPanel getImportResultPanel(FileImport fileImport) {
@@ -279,7 +282,8 @@ public class FileImportController<Clct extends Collectable> {
 							BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
 						workerAdapter.setBackgroundProcessTableEntry(entry);
 						dlgStatus.getStatusPanel().getModel().addEntry(entry);
-						dlgStatus.setVisible(true);
+						// do not set dialog visible per default. @see NUCLOS-1064
+						//dlgStatus.setVisible(true);
 					}
 				}
 			}

@@ -53,7 +53,6 @@ import org.nuclos.client.report.reportrunner.source.ResultVoReportSource;
 import org.nuclos.client.report.reportrunner.source.SearchExpressionReportSource;
 import org.nuclos.client.report.reportrunner.source.WordReportSource;
 import org.nuclos.client.ui.CommonInterruptibleProcess;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -116,6 +115,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	private volatile Status status = Status.NOTRUNNING;
 	private volatile Date dateStartTime;
 	private volatile String message;
+	private volatile Throwable throwable;
 
 	private Future<?> future = null;
 	private Observable observable = null;
@@ -278,13 +278,17 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		}
 		catch (final Exception ex) {
 			this.setStatus(Status.ERROR);
+			this.setException(ex);
 			this.setMessage(ex.getMessage());
-			SwingUtilities.invokeLater(new Runnable() {
+			// on error show status dialog.
+			BackgroundProcessStatusController.getStatusDialog(Main.getInstance().getMainFrame().getFrame()).show();
+			// with a double click in the background dialog, the exception dialog will be shown. @see NUCLOS-1064
+			/*SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
 					Errors.getInstance().showExceptionDialog(UIUtils.getFrameForComponent(parent), ex);
 				}
-			});
+			});*/
 		}
 		finally {
 			// release the job - avoid memory leak:
@@ -421,6 +425,18 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		if (this.observable != null) {
 			this.observable.notifyObservers();
 		}
+	}
+
+	/**
+	 * @return the current exception if any
+	 */
+	@Override
+	public Throwable getException() {
+		return this.throwable;
+	}
+
+	private void setException(Throwable throwable) {
+		this.throwable = throwable;
 	}
 
 	/**

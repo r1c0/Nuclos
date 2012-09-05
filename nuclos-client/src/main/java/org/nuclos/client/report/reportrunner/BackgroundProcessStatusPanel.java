@@ -16,13 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
-import org.nuclos.common2.SpringLocaleDelegate;
-
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -32,13 +31,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
-
 import org.nuclos.client.report.reportrunner.BackgroundProcessInfo.Status;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Status Panel for all executed reports and forms.
@@ -98,6 +100,29 @@ public class BackgroundProcessStatusPanel extends JPanel {
 		final int iColumn2Width = 80;
 		column2.setPreferredWidth(iColumn2Width);
 		column2.setMaxWidth(iColumn2Width);
+		
+		tblStatus.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int idx = tblStatus.getSelectedRow();
+					if (idx != -1) {
+						BackgroundProcessInfo info = tblmodel.getRow(idx);
+						if (info.getStatus() == BackgroundProcessInfo.Status.ERROR) {
+							final Throwable cause = info.getException();
+							if (cause != null) {
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										Errors.getInstance().showExceptionDialog(UIUtils.getFrameForComponent(tblStatus), cause);
+									}
+								});
+							}
+						}
+					}
+				}
+			}
+		});
 	}
 
 	public BackgroundProcessStatusTableModel getModel() {

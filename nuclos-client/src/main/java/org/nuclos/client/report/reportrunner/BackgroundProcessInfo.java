@@ -69,6 +69,11 @@ public interface BackgroundProcessInfo {
 	String getMessage();
 
 	/**
+	 * @return a throwable returned from the process (describing its result).
+	 */
+	Throwable getException();
+
+	/**
 	 * @return the process future.
 	 */
 	Future<?> getProcessFuture();
