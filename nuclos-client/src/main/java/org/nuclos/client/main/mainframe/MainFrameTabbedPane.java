@@ -1004,7 +1004,7 @@ public class MainFrameTabbedPane {
 	/**
 	 *
 	 * @param nuclosTab
-	 * @return index of tab (could by <0 if tab is hidden)
+	 * @return index of tab (could be <0 if tab is hidden)
 	 */
 	public int getTabIndex(MainFrameTab nuclosTab) {
 		final int index = mfTabbed.indexOfComponent(nuclosTab);
