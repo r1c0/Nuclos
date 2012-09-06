@@ -331,6 +331,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							}
 
 							synchronized (this) {
+								iCurrentLayoutId = null; // reset current loaded layout. @see NUCLOS-1085
 								reloadLayoutForDetailsTab(true);
 
 								if (sFieldName.equals(NuclosEOField.PROCESS.getMetaData().getField()))
@@ -373,6 +374,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					@Override
 					public void run() {
 						try {
+							iCurrentLayoutId = null; // reset current loaded layout. @see NUCLOS-1085
 							reloadLayoutForSearchTab();
 
 							Utils.setComponentFocus(sFieldName, getSearchPanel().getEditView(), null, false);
@@ -2298,6 +2300,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
+		if (getCollectState().isDetailsModeNew())
+			iCurrentLayoutId = null; // reset current loaded layout. @see NUCLOS-1085
 		this.unsafeFillDetailsPanel(clct, getCollectState().isDetailsModeNew() /*&& getProcess() != null*/); //@see NUCLOS-656 respecting getProcess is not needed here. if process is not null, it will set via newCollectableWithDefaultValues
 	}
 
@@ -2506,9 +2510,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			@Override
 			public void init() throws CommonBusinessException {
 				if(!interrupted) {
+					boolean wasDetailsChangedIgnored = isDetailsChangedIgnored();
 					setDetailsChangedIgnored(true);
 					mdsubformctl.clear();
-					setDetailsChangedIgnored(false);
+					setDetailsChangedIgnored(wasDetailsChangedIgnored);
 					mdsubformctl.getSubForm().setLockedLayer();
 				}
 			}
@@ -3674,54 +3679,61 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private void showCustomActions(int iDetailsMode) {
-		final boolean bSingle = CollectState.isDetailsModeViewOrEdit(iDetailsMode);
-		final boolean bMulti = CollectState.isDetailsModeMultiViewOrEdit(iDetailsMode);
-		final boolean bViewOrEdit = bSingle || bMulti;
-		final boolean bView = bViewOrEdit && !CollectState.isDetailsModeChangesPending(iDetailsMode);
-
-		this.getDetailsPanel().removeToolBarComponents(toolbarCustomActionsDetails);
-		//toolbarCustomActionsDetails.removeAll();
-		toolbarCustomActionsDetails.clear();
-		if (toolbarCustomActionsDetailsIndex == -1) {
-			return; //
-		}
-
-		if (!bViewOrEdit) {
-			toolbarCustomActionsDetails.add(lbCurrentState);
-		} else {
-			// button: "print details":
-			if (isHistoricalView())
-				toolbarCustomActionsDetails.add(lbCurrentState);
-			else {
-				if (bSingle) {
-					/** @todo print historical order */
-					toolbarCustomActionsDetails.add(btnPrintDetails);
-					btnPrintDetails.setEnabled(bView && hasFormsAssigned(getSelectedCollectable()));
-				}
-
-				toolbarCustomActionsDetails.add(lbCurrentState);
-
-				// buttons/actions for "generate leased object":
-				if (!isSelectedCollectableMarkedAsDeleted()) {
-					addGeneratorActions(bView, toolbarCustomActionsDetails);
-				}
-				UIUtils.ensureMinimumSize(getTab());
+		final boolean bWasDetailsChangedIgnored = isDetailsChangedIgnored();
+		setDetailsChangedIgnored(true);
+		
+		try {
+			final boolean bSingle = CollectState.isDetailsModeViewOrEdit(iDetailsMode);
+			final boolean bMulti = CollectState.isDetailsModeMultiViewOrEdit(iDetailsMode);
+			final boolean bViewOrEdit = bSingle || bMulti;
+			final boolean bView = bViewOrEdit && !CollectState.isDetailsModeChangesPending(iDetailsMode);
+	
+			this.getDetailsPanel().removeToolBarComponents(toolbarCustomActionsDetails);
+			//toolbarCustomActionsDetails.removeAll();
+			toolbarCustomActionsDetails.clear();
+			if (toolbarCustomActionsDetailsIndex == -1) {
+				return; //
 			}
+	
+			if (!bViewOrEdit) {
+				toolbarCustomActionsDetails.add(lbCurrentState);
+			} else {
+				// button: "print details":
+				if (isHistoricalView())
+					toolbarCustomActionsDetails.add(lbCurrentState);
+				else {
+					if (bSingle) {
+						/** @todo print historical order */
+						toolbarCustomActionsDetails.add(btnPrintDetails);
+						btnPrintDetails.setEnabled(bView && hasFormsAssigned(getSelectedCollectable()));
+					}
+	
+					toolbarCustomActionsDetails.add(lbCurrentState);
+	
+					// buttons/actions for "generate leased object":
+					if (!isSelectedCollectableMarkedAsDeleted()) {
+						addGeneratorActions(bView, toolbarCustomActionsDetails);
+					}
+					UIUtils.ensureMinimumSize(getTab());
+				}
+			}
+	
+			//if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_USE_INVALID_MASTERDATA)) {
+				//toolbarCustomActionsDetails.add(Box.createHorizontalStrut(5));
+				//toolbarCustomActionsDetails.add(chkbxUseInvalidMasterData);
+				//toolbarCustomActionsDetails.add(Box.createHorizontalStrut(5));
+			//}
+	
+			//toolbarCustomActionsDetails.revalidate();
+	
+			/*if (cmpStateStandardView.getItemCount() != 0) {
+				toolbarCustomActionsDetails.add(Box.createHorizontalStrut(2000));
+				toolbarCustomActionsDetails.add(new BlackLabel(cmpStateStandardView, SpringLocaleDelegate.getMessage("GenericObjectCollectController.107","Standardpfad")));
+			}*/
+			this.getDetailsPanel().addToolBarComponents(toolbarCustomActionsDetails, toolbarCustomActionsDetailsIndex);
+		} finally {
+			setDetailsChangedIgnored(bWasDetailsChangedIgnored);
 		}
-
-		//if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_USE_INVALID_MASTERDATA)) {
-			//toolbarCustomActionsDetails.add(Box.createHorizontalStrut(5));
-			//toolbarCustomActionsDetails.add(chkbxUseInvalidMasterData);
-			//toolbarCustomActionsDetails.add(Box.createHorizontalStrut(5));
-		//}
-
-		//toolbarCustomActionsDetails.revalidate();
-
-		/*if (cmpStateStandardView.getItemCount() != 0) {
-			toolbarCustomActionsDetails.add(Box.createHorizontalStrut(2000));
-			toolbarCustomActionsDetails.add(new BlackLabel(cmpStateStandardView, SpringLocaleDelegate.getMessage("GenericObjectCollectController.107","Standardpfad")));
-		}*/
-		this.getDetailsPanel().addToolBarComponents(toolbarCustomActionsDetails, toolbarCustomActionsDetailsIndex);
 	}
 
 	protected final ExplorerController getExplorerController() {
@@ -5619,12 +5631,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			// current state, subsequent states and custom actions:
 			switch (iDetailsMode) {
 			case CollectState.DETAILSMODE_NEW:
+				iCurrentLayoutId = null;
 				// deselect potentially previously selected entry
 				getResultTable().clearSelection();
 				getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 				cmpStateStandardView.setSelectedItem(null);
 				break;
 			case CollectState.DETAILSMODE_NEW_SEARCHVALUE:
+				iCurrentLayoutId = null;
 				// deselect potentially previously selected entry
 				getResultTable().clearSelection();
 				break;
@@ -5642,6 +5656,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				break;
 			case CollectState.DETAILSMODE_MULTIVIEW:
 			case CollectState.DETAILSMODE_MULTIEDIT:
+				iCurrentLayoutId = null;
 				// show the buttons for subsequent states only if all objects are in the same state:
 				if (doTheSelectedGenericObjectsShareACommonState()) {
 					setSubsequentStatesVisible(true, iDetailsMode == CollectState.DETAILSMODE_MULTIVIEW);
