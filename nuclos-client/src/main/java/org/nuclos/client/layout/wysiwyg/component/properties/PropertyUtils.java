@@ -417,6 +417,10 @@ public class PropertyUtils implements LayoutMLConstants {
 	 * @throws CommonBusinessException
 	 */
 	private static void setDefaultValuesForWYSIWYGTabbedPane(ComponentProperties properties) throws CommonBusinessException{
+		PropertyValueBorder propertyValueBorder = new PropertyValueBorder();
+		propertyValueBorder.setClearBorder(true);
+		properties.setProperty(WYSIWYGLayoutEditorPanel.PROPERTY_BORDER, propertyValueBorder, Border.class);
+
 		properties.setProperty(WYSIWYGTabbedPane.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_TABBEDPANE_PREFERREDSIZE), DEFAULTVALUE_TABBEDPANE_PREFERREDSIZE.getClass());
 	}
 
@@ -426,6 +430,10 @@ public class PropertyUtils implements LayoutMLConstants {
 	 * @throws CommonBusinessException
 	 */
 	private static void setDefaultValuesForWYSIWYGScrollPane(ComponentProperties properties) throws CommonBusinessException{
+		PropertyValueBorder propertyValueBorder = new PropertyValueBorder();
+		propertyValueBorder.setClearBorder(true);
+		properties.setProperty(WYSIWYGLayoutEditorPanel.PROPERTY_BORDER, propertyValueBorder, Border.class);
+	
 		properties.setProperty(WYSIWYGScrollPane.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_SCROLLPANE_PREFERREDSIZE), DEFAULTVALUE_SCROLLPANE_PREFERREDSIZE.getClass());
 		// NUCLEUSINT-253
 		properties.setProperty(WYSIWYGScrollPane.PROPERTY_HORIZONTALSCROLLBAR, new PropertyValueString(ATTRIBUTEVALUE_ASNEEDED), String.class);
@@ -438,6 +446,10 @@ public class PropertyUtils implements LayoutMLConstants {
 	 * @throws CommonBusinessException
 	 */
 	private static void setDefaultValuesForWYSIWYGSplitPane(ComponentProperties properties) throws CommonBusinessException{
+		PropertyValueBorder propertyValueBorder = new PropertyValueBorder();
+		propertyValueBorder.setClearBorder(true);
+		properties.setProperty(WYSIWYGLayoutEditorPanel.PROPERTY_BORDER, propertyValueBorder, Border.class);
+
 		properties.setProperty(WYSIWYGSplitPane.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_SPLITPANE_PREFERREDSIZE), DEFAULTVALUE_SPLITPANE_MINIMUMSIZE.getClass());
 		properties.setProperty(WYSIWYGSplitPane.PROPERTY_ORIENTATION, new PropertyValueString(ATTRIBUTEVALUE_HORIZONTAL), ATTRIBUTEVALUE_HORIZONTAL.getClass());
 		properties.setProperty(WYSIWYGSplitPane.PROPERTY_DIVIDERSIZE, new PropertyValueInteger(DEFAULTVALUE_SPLITPANE_DIVIDERSIZE), int.class);
