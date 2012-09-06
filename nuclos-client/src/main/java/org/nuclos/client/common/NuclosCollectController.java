@@ -430,6 +430,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		Long objectId;
 		CollectableSearchCondition searchCondition;
 		Map<String, String> inheritControllerPreferences = new HashMap<String, String>(1);
+		String customUsage;
 	}
 
 	private static String toXML(RestorePreferences rp) {
@@ -463,6 +464,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			
 			final RestorePreferences rp = new RestorePreferences();
 			rp.entity = ctl.getEntity();
+			rp.customUsage = ctl.getCustomUsage();
 			try {
 				if (ctl.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_DETAILS) {
 					rp.iCollectState = CollectState.OUTERSTATE_DETAILS;
@@ -579,7 +581,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					"NuclosCollectController.17", "Sie haben kein Recht die Entit\u00e4t ''{0}'' zu verwenden.", rp.entity));
 		}
 
-		final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(rp.entity, tabIfAny, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+		final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(rp.entity, tabIfAny, rp.customUsage!=null? rp.customUsage: ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 		final int cs = result.restoreStateFromPreferences(rp.iCollectState, rp.searchCondition);
 
