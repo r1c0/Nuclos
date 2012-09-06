@@ -59,7 +59,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.eventsupport.EventSupportDelegate;
-import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.gef.AbstractShapeController;
 import org.nuclos.client.gef.DefaultShapeViewer;
 import org.nuclos.client.gef.Shape;
