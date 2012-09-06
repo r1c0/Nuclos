@@ -312,7 +312,7 @@ public abstract class SubFormController extends MainFrameTabController
 		return this.bSearchable;
 	}
 
-	protected final Preferences getPrefs() {
+	public final Preferences getPrefs() {
 		return this.prefs;
 	}
 	

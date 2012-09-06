@@ -97,6 +97,7 @@ import org.nuclos.client.common.NuclosFocusTraversalPolicy;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.SearchConditionSubFormController;
 import org.nuclos.client.common.SubFormController;
+import org.nuclos.client.common.TableRowIndicator;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
@@ -135,6 +136,8 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.LayoutComponentUtils;
 import org.nuclos.client.ui.OvOpAdapter;
 import org.nuclos.client.ui.OverlayOptionPane;
+import org.nuclos.client.ui.SizeKnownEvent;
+import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
@@ -1834,6 +1837,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (!getUsageCriteriaFieldListenersAdded(true))
 			this.addUsageCriteriaFieldListeners(true);
 		setupSubFormController(mpSubForm, mpsubformctlSearch);
+		addAdditionalChangeListeners(true);
 	}
 
 	private void setupEditPanelForDetailsTab() {
@@ -1868,11 +1872,28 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	  			}
 	  		}
     	  };
-
+    	
 		// create a map of subforms and their controllers
 		for (String sSubFormEntityName : mpSubFormController.keySet()) {
 			SubFormController subformcontroller = mpSubFormController.get(sSubFormEntityName);
+			if (subformcontroller instanceof SearchConditionSubFormController) {
+				((SearchConditionSubFormController) subformcontroller).clear();
+
+				subformcontroller.getSubForm().setRowHeight(subformcontroller.getPrefs().getInt(TableRowIndicator.SUBFORM_ROW_HEIGHT, 
+						subformcontroller.getSubForm().isDynamicRowHeightsDefault() ? 
+								SubForm.DYNAMIC_ROW_HEIGHTS : 
+								SubForm.MIN_ROWHEIGHT));
+			}
+			
 			SubForm subform = subformcontroller.getSubForm();
+	    	if (!GenericObjectCollectController.this.getSubFormsLoader().isLoadingSubForms() &&
+	    			!(subformcontroller instanceof SearchConditionSubFormController)) {
+	    		SizeKnownListener listener = subform.getSizeKnownListener();
+				if (listener != null) {
+					listener.actionPerformed(new SizeKnownEvent(subform, subform.getJTable().getRowCount()));
+				}
+	    	}
+
 			if (subformcontroller instanceof DetailsSubFormController<?>) {
 				subform.addParameterListener(changeListener);
 				((DetailsSubFormController<CollectableGenericObjectWithDependants>)subformcontroller).setCollectController(this);

@@ -241,7 +241,6 @@ public class SearchConditionSubFormController extends SubFormController {
 		@Override
 		public void setCollectableSearchCondition(CollectableSearchCondition cond) throws CommonBusinessException {
 			this.clear();
-
 			SearchConditionUtils.trueIfNull(cond).accept(new SetSearchConditionVisitor());
 		}
 
@@ -578,6 +577,7 @@ public class SearchConditionSubFormController extends SubFormController {
 	public void clear() {
 		try {
 			this.setCollectableSearchCondition(null);
+			
 			// special requirement: always have an empty row in the subform:
 			this.insertNewRow();
 		}
