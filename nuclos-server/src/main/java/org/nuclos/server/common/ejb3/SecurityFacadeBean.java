@@ -78,6 +78,7 @@ public class SecurityFacadeBean implements SecurityFacadeRemote {
 	@PostConstruct
 	public void postConstruct() {
 		LOG.info("Authentication successful.");
+		getCurrentApplicationInfoOnServer(); // prefill md5 info string.
 	}
 	
 	@Autowired
@@ -123,14 +124,18 @@ public class SecurityFacadeBean implements SecurityFacadeRemote {
 		return ApplicationProperties.getInstance().getNuclosVersion();
 	}
 
+    private String sApplicationInfo = null;
     public String getCurrentApplicationInfoOnServer() {
-    	try {
-        	//@todo mixup ip of current server. - not only database.
-        	String info = SpringDataBaseHelper.getInstance().getCurrentConnectionInfo();
-        	return new String(Hex.encode(MessageDigest.getInstance("MD5").digest(info.getBytes())));
-		} catch (Exception e) {
-			throw new NuclosFatalException(e);
-		}
+    	if (sApplicationInfo == null) {
+	    	try {
+	        	//@todo mixup ip of current server. - not only database.
+	        	String info = SpringDataBaseHelper.getInstance().getCurrentConnectionInfo();
+	        	sApplicationInfo = new String(Hex.encode(MessageDigest.getInstance("MD5").digest(info.getBytes())));
+			} catch (Exception e) {
+				throw new NuclosFatalException(e);
+			}
+    	}
+    	return sApplicationInfo;
     }
     
 	/**
