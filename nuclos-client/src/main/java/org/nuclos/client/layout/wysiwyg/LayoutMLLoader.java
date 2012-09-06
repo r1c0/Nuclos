@@ -1269,7 +1269,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						//NUCLEUSINT-1137
 						// does this entity still exist?
 
-						boolean found = MetaDataCache.getInstance().getMetaData(entity) != null;
+						boolean found = entity != null && MetaDataCache.getInstance().getMetaData(entity) != null;
 						if (found) {
 							setPropertiesFromAttributes(subform, atts);
 							stack.push(subform);
@@ -1279,7 +1279,10 @@ public class LayoutMLLoader implements LayoutMLConstants {
 							// fallback handling for a entity that does not exist anymore. the subformcolumns are not restored, instead of the subform a label with information is shown
 							subformEntityMissing = true;
 							Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LABEL, "", 0, editorPanel.getMetaInformation(), null);
-							((WYSIWYGStaticLabel)component).setText(WYSIWYGStringsAndLabels.partedString(ERROR_MESSAGES.ENTITY_USED_IN_LAYOUT_MISSING, entity));
+							if (StringUtils.isNullOrEmpty(entity))
+								((WYSIWYGStaticLabel)component).setText(ERROR_MESSAGES.ENTITY_USED_IN_LAYOUT_NOTGIVEN);
+							else
+								((WYSIWYGStaticLabel)component).setText(WYSIWYGStringsAndLabels.partedString(ERROR_MESSAGES.ENTITY_USED_IN_LAYOUT_MISSING, entity));
 							((WYSIWYGStaticLabel)component).setHorizontalAlignment(javax.swing.JLabel.CENTER);
 							((WYSIWYGStaticLabel)component).setForeground(Color.RED);
 							stack.push(component);
@@ -1373,7 +1376,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						//NUCLEUSINT-1137
 						// does this entity still exist?
 
-					boolean found = MetaDataCache.getInstance().getMetaData(entity) != null;
+					boolean found = entity != null && MetaDataCache.getInstance().getMetaData(entity) != null;
 					if (found) {
 						setPropertiesFromAttributes(chart, atts);
 						stack.push(chart);
@@ -1383,7 +1386,10 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						// fallback handling for a entity that does not exist anymore. instead of the chart a label with information is shown
 						chartEntityMissing = true;
 						Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LABEL, "", 0, editorPanel.getMetaInformation(), null);
-						((WYSIWYGStaticLabel)component).setText(WYSIWYGStringsAndLabels.partedString(ERROR_MESSAGES.ENTITY_USED_IN_LAYOUT_MISSING, entity));
+						if (StringUtils.isNullOrEmpty(entity))
+							((WYSIWYGStaticLabel)component).setText(ERROR_MESSAGES.ENTITY_USED_IN_LAYOUT_NOTGIVEN);
+						else
+							((WYSIWYGStaticLabel)component).setText(WYSIWYGStringsAndLabels.partedString(ERROR_MESSAGES.ENTITY_USED_IN_LAYOUT_MISSING, entity));
 						((WYSIWYGStaticLabel)component).setHorizontalAlignment(javax.swing.JLabel.CENTER);
 						((WYSIWYGStaticLabel)component).setForeground(Color.RED);
 						stack.push(component);

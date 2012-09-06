@@ -57,6 +57,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String TEXT_MISSING = "ist leer";
 		//NUCLEUSINT-1137
 		public static final String ENTITY_USED_IN_LAYOUT_MISSING = "Entity \"" + MARKER + "\" ist nicht mehr vorhanden!";
+		public static final String ENTITY_USED_IN_LAYOUT_NOTGIVEN = "Entity wurde nicht vergeben!";
 	}
 
 	/**
