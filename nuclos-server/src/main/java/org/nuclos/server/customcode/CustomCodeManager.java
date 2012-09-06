@@ -244,36 +244,43 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 	public List<EventSupportVO> getExecutableEventSupportFiles()
 	{
+		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
 		try {
 			getClassLoader();
+			
+			if (this.executableEventSupportFiles != null) {
+				for(Class n : this.executableEventSupportFiles.keySet())
+				{
+					list.addAll(0,this.executableEventSupportFiles.get(n));
+				}				
+			}
+			
 		}
 		catch (NuclosCompileException e) {
 			throw new NuclosFatalException(e);
 		}
-		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
 	
-		for(Class n : this.executableEventSupportFiles.keySet())
-		{
-			list.addAll(0,this.executableEventSupportFiles.get(n));
-		}
-		
 		return list;
 	}
 	
 	public List<EventSupportVO> getExecutableEventSupportFilesByClassType(List<Class<?>> listOfInterfaces)
 	{
+		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
+		
 		try {
 			getClassLoader();
+			if (this.executableEventSupportFiles != null) {
+				for(Class n : listOfInterfaces)
+				{
+					list.addAll(0,this.executableEventSupportFiles.get(n));
+				}				
+			}
 		}
+		
 		catch (NuclosCompileException e) {
 			throw new NuclosFatalException(e);
 		}
-		List<EventSupportVO> list = new ArrayList<EventSupportVO>();
 	
-		for(Class n : listOfInterfaces)
-		{
-			list.addAll(0,this.executableEventSupportFiles.get(n));
-		}
 		
 		return list;
 	}
