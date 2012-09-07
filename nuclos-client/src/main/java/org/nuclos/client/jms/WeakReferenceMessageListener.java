@@ -30,6 +30,7 @@ import javax.jms.TopicSubscriber;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,6 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
  * <code>TopicSession</code> and <code>TopicSubscriber</code> which are closed, when the reference
  * does not exists any more
  */
-@Configurable
 class WeakReferenceMessageListener implements MessageListener {
 	
 	private static final Logger LOG = Logger.getLogger(WeakReferenceMessageListener.class);
@@ -55,30 +55,28 @@ class WeakReferenceMessageListener implements MessageListener {
 	private TopicSession topicsession;
 	private TopicSubscriber topicsubscriber;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private TopicConnection topicConnection;
 	
-	// private SpringLocaleDelegate cld;
-	
-	// end of Spring injection
+	// end of former Spring injection
 
 	public WeakReferenceMessageListener(TopicInfo info) {
 		this.topicname = info.getTopic();
 		this.correlationId = info.getCorrelationId();
 		this.reference = new WeakReference<MessageListener>(info.getMessageListener());
+		
+		setTopicConnection(SpringApplicationContextHolder.getBean(TopicNotificationReceiver.class).getTopicConnection());
 	}
 	
-	@Autowired
-	void setTopicConnection(@Value("#{topicNotificationReceiver.topicConnection}") TopicConnection topicConnection) {
+	final void setTopicConnection(TopicConnection topicConnection) {
 		this.topicConnection = topicConnection;
 	}
 	
-	// @Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		// this.cld = cld;
+	final TopicConnection getTopicConnection() {
+		return topicConnection;
 	}
-
+	
 	public WeakReference<MessageListener> getReference() {
 		return this.reference;
 	}
@@ -111,7 +109,7 @@ class WeakReferenceMessageListener implements MessageListener {
 			}
 			else if (bean instanceof Topic) {
 				Topic topic = (Topic) bean;
-				this.topicsession = topicConnection.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
+				this.topicsession = getTopicConnection().createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
 				String idSelector = MessageFormat.format("JMSCorrelationID = ''{0}''", correlationId);
 				this.topicsubscriber = topicsession.createSubscriber(topic, idSelector, false);
 				this.topicsubscriber.setMessageListener(this);

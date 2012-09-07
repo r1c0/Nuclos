@@ -29,6 +29,7 @@ import org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonRunnable;
@@ -38,28 +39,34 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.GeneratorFailedException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Action used by the controller for creating multiple generic objects
  */
-@Configurable
 class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Long>, GenerationResult> {
 
 	private final JComponent parent;
 	private final GeneratorActionVO generatoractionvo;
 
+	// former Spring injection
+	
 	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
+	
+	// end of former Spring injection
 
 	MultiGenerateAction(JComponent parent, GeneratorActionVO generatoractionvo) {
 		this.parent = parent;
 		this.generatoractionvo = generatoractionvo;
+		
+		setInvokeWithInputRequiredSupport(SpringApplicationContextHolder.getBean(InvokeWithInputRequiredSupport.class));
 	}
 
-	@Autowired
-	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
+	final void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
 		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
+	}
+
+	final InvokeWithInputRequiredSupport getInvokeWithInputRequiredSupport() {
+		return invokeWithInputRequiredSupport;
 	}
 
 	/**
@@ -72,7 +79,7 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	public GenerationResult perform(final Pair<Collection<EntityObjectVO>, Long> sources) throws CommonBusinessException {
 		final HashMap<String, Serializable> context = new HashMap<String, Serializable>();
 		final AtomicReference<GenerationResult> result = new AtomicReference<GenerationResult>();
-		invokeWithInputRequiredSupport.invoke(new CommonRunnable() {
+		getInvokeWithInputRequiredSupport().invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				try {

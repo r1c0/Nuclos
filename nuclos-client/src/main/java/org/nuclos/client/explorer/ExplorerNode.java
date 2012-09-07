@@ -65,6 +65,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.ChainedTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
@@ -79,8 +80,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A node in the explorer tree.
@@ -91,7 +90,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
 public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 	private static final Logger log = Logger.getLogger(ExplorerNode.class);
@@ -119,7 +117,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	
 	private MainController mainController;
 	
+	// former Spring injection
+	
 	private transient SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 
 	/**
 	 * Use <code>ExplorerNodeFactory.newExplorerNode()</code> to create <code>ExplorerNode</code>s
@@ -128,6 +130,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected ExplorerNode(TreeNode treenode) {
 		super(treenode, true);
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
 	}
 	
 	/*
@@ -146,12 +150,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		return mainController;
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+	protected final SpringLocaleDelegate getSpringLocaleDelegate() {
 		return localeDelegate;
 	}
 

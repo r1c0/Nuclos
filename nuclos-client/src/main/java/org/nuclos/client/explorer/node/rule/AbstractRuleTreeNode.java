@@ -27,18 +27,16 @@ import java.util.Map;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.rule.RuleCache;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Treenode representing an Node in the Ruletree
  * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
  */
-@Configurable
 public abstract class AbstractRuleTreeNode implements TreeNode {
 
 	protected static final Collator textCollator = Collator.getInstance();
@@ -53,7 +51,11 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	private List<? extends TreeNode> lstSubNodes;
 	private RuleNodeType nodeType;
 	
+	// former Spring injection
+	
 	private transient SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 
 	public AbstractRuleTreeNode(Integer iId, String sLabel, String sDescription, List<? extends TreeNode> lstSubNodes,
 			RuleNodeType aNodeType) {
@@ -63,6 +65,8 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 		this.sDescription = sDescription;
 		this.lstSubNodes = lstSubNodes;
 		this.nodeType = aNodeType;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
 	}
 	
 	/*
@@ -74,12 +78,11 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	}
 	 */
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+	protected final SpringLocaleDelegate getSpringLocaleDelegate() {
 		return localeDelegate;
 	}
 

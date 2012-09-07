@@ -48,6 +48,7 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 		
 		private final Map<RuleVO, Integer> lstRules;
 		private final boolean isLeaf;
+		
 		public EntityRuleUsageStatusNode(String aEventName, String aEntity, String entityName, Integer processId, Integer statusId, String statusLabel, boolean isLeaf) {
 			super(aEventName, aEntity, statusLabel, null, false, processId, statusId);
 			

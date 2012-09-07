@@ -37,12 +37,12 @@ import org.nuclos.client.masterdata.datatransfer.MasterDataVOTransferable;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>ExplorerNode</code> presenting a <code>NucletContentEntryTreeNode</code>.
@@ -57,19 +57,24 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 
 	private static final Logger LOG = Logger.getLogger(NucletContentEntryExplorerNode.class);
 	
-	// Spring injection
+	// former Spring injection
 	
 	private TreeNodeFacadeRemote treeNodeFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	public NucletContentEntryExplorerNode(TreeNode treenode) {
 		super(treenode);
+		
+		setTreeNodeFacadeRemote(SpringApplicationContextHolder.getBean(TreeNodeFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
 		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
+	}
+	
+	final TreeNodeFacadeRemote getTreeNodeFacadeRemote() {
+		return treeNodeFacadeRemote;
 	}
 	
 	@Override
@@ -159,7 +164,7 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 				@Override
 				public void run() throws CommonBusinessException {
 					final NucletContentExplorerNode explorernodeParent = (NucletContentExplorerNode) explorernode.getParent();
-					treeNodeFacadeRemote.removeNucletContents(Collections.singleton(explorernode.getTreeNode()));
+					getTreeNodeFacadeRemote().removeNucletContents(Collections.singleton(explorernode.getTreeNode()));
 					explorernodeParent.refresh(getJTree());
 				}
 			});

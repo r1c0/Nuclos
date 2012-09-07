@@ -35,6 +35,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.client.wizard.ShowNuclosWizard;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -57,19 +58,24 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 
 	private static final Logger LOG = Logger.getLogger(NucletContentEntityExplorerNode.class);
 	
-	// Spring injection
+	// former Spring injection
 	
 	private TreeNodeFacadeRemote treeNodeFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	public NucletContentEntityExplorerNode(TreeNode treenode) {
 		super(treenode);
+		
+		setTreeNodeFacadeRemote(SpringApplicationContextHolder.getBean(TreeNodeFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
 		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
+	}
+
+	final TreeNodeFacadeRemote getTreeNodeFacadeRemote() {
+		return treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -138,7 +144,7 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 					
 					Set<AbstractNucletContentEntryTreeNode> remove = new HashSet<AbstractNucletContentEntryTreeNode>();
 					remove.add(explorernode.getTreeNode());
-					treeNodeFacadeRemote.removeNucletContents(remove);
+					getTreeNodeFacadeRemote().removeNucletContents(remove);
 					explorernodeParent.refresh(getJTree());
 				}
 			});

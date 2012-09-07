@@ -40,6 +40,7 @@ import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
@@ -59,19 +60,24 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 
 	private static final Logger LOG = Logger.getLogger(NucletContentExplorerNode.class);
 	
-	// Spring injection
+	// former Spring injection
 	
 	private TreeNodeFacadeRemote treeNodeFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	public NucletContentExplorerNode(TreeNode treenode) {
 		super(treenode);
+		
+		setTreeNodeFacadeRemote(SpringApplicationContextHolder.getBean(TreeNodeFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
 		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
+	}
+
+	final TreeNodeFacadeRemote getTreeNodeFacadeRemote() {
+		return treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -92,7 +98,9 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 				collimp = Collections.singletonList((MasterDataIdAndEntity) transferData);
 			}
 
-			Map<AbstractNucletContentEntryTreeNode, MasterDataIdAndEntity> contents = new HashMap<AbstractNucletContentEntryTreeNode, MasterDataIdAndEntity>();
+			final TreeNodeFacadeRemote treeNodeFacadeRemote = getTreeNodeFacadeRemote();
+			final Map<AbstractNucletContentEntryTreeNode, MasterDataIdAndEntity> contents = 
+					new HashMap<AbstractNucletContentEntryTreeNode, MasterDataIdAndEntity>();
 			for (MasterDataIdAndEntity mdiden : collimp) {
 				if (getTreeNode().getEntity().getEntityName().equals(mdiden.getEntity())) {
 					Long eoid = (mdiden.getId() instanceof Long) ? (Long) mdiden.getId() : ((Integer)mdiden.getId()).longValue();

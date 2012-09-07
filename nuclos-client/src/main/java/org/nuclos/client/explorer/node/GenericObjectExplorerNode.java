@@ -79,7 +79,6 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@SuppressWarnings("deprecation")
 public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNode> {
 
 	protected static final Logger log = Logger.getLogger(GenericObjectExplorerNode.class);

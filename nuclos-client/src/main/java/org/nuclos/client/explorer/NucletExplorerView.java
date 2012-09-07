@@ -47,6 +47,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.model.ChoiceList;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.PreferencesUtils;
@@ -54,10 +55,7 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class NucletExplorerView extends DefaultExplorerView {
 
 	private static final long serialVersionUID = 5014512105916869563L;
@@ -72,20 +70,25 @@ public class NucletExplorerView extends DefaultExplorerView {
 
 	private final NucletTreeNode nucletnode;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private TreeNodeFacadeRemote treeNodeFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	public NucletExplorerView(NucletTreeNode treenode) {
 		super(treenode);
 		this.nucletnode = treenode;
+		
+		setTreeNodeFacadeRemote(SpringApplicationContextHolder.getBean(TreeNodeFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
 		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
+	}
+
+	final TreeNodeFacadeRemote getTreeNodeFacadeRemote() {
+		return treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -114,6 +117,7 @@ public class NucletExplorerView extends DefaultExplorerView {
 		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
 			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(jTree, new NucletContentSelectObjectPanel());
 
+		final TreeNodeFacadeRemote treeNodeFacadeRemote = getTreeNodeFacadeRemote();
 		List<AbstractNucletContentEntryTreeNode> curAvailable = treeNodeFacadeRemote.getAvailableNucletContents();
 		List<AbstractNucletContentEntryTreeNode> curSelected = treeNodeFacadeRemote.getNucletContent(nucletnode);
 

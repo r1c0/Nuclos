@@ -73,6 +73,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
@@ -94,10 +95,7 @@ import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class GenerationController {
 
 	private static final Logger LOG = Logger.getLogger(GenerationController.class);
@@ -117,7 +115,11 @@ public class GenerationController {
 	private boolean confirmationEnabled = true;
 	private boolean headless = false;
 	
+	// former Spring injection
+	
 	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
+	
+	// end of former Spring injection
 
 	private final MainFrameTabListener tabListener = new MainFrameTabAdapter() {
 		@Override
@@ -137,11 +139,16 @@ public class GenerationController {
 		this.action = action;
 		this.parentController = parentController;
 		this.parent = parent;
+		
+		setInvokeWithInputRequiredSupport(SpringApplicationContextHolder.getBean(InvokeWithInputRequiredSupport.class));
 	}
 	
-	@Autowired
-	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
+	final void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
 		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
+	}
+
+	final InvokeWithInputRequiredSupport getInvokeWithInputRequiredSupport() {
+		return invokeWithInputRequiredSupport;
 	}
 
 	public boolean isConfirmationEnabled() {
@@ -421,7 +428,7 @@ public class GenerationController {
 						final HashMap<String, Serializable> context = new HashMap<String, Serializable>();
 						final AtomicReference<GenerationResult> result = new AtomicReference<GenerationResult>();
 						try {
-							invokeWithInputRequiredSupport.invoke(new CommonRunnable() {
+							getInvokeWithInputRequiredSupport().invoke(new CommonRunnable() {
 								@Override
 								public void run() throws CommonBusinessException {
 									result.set(GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));

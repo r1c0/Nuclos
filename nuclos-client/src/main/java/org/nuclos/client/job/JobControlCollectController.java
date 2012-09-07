@@ -65,6 +65,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAda
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.job.IntervalUnit;
@@ -91,7 +92,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
-@Configurable(preConstruction=true)
 public class JobControlCollectController extends MasterDataCollectController {
 
 	private static final Logger LOG = Logger.getLogger(JobControlCollectController.class);
@@ -100,11 +100,11 @@ public class JobControlCollectController extends MasterDataCollectController {
 	private static final Object JOB_RESULT_WITH_ERROR = "ERROR";
 	private static final Object JOB_RESULT_WITH_WARNINGS = "WARNING";
 	
-	// Spring injection
+	// former Spring injection
 	
 	private SchedulerControlFacadeRemote schedulerControlFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	private final JobControlDelegate delegate = JobControlDelegate.getInstance();
 
@@ -341,9 +341,17 @@ public class JobControlCollectController extends MasterDataCollectController {
         });
 	}
 	
-	@Autowired
+	/*
 	final void setSchedulerControlFacadeRemote(SchedulerControlFacadeRemote schedulerControlFacadeRemote) {
 		this.schedulerControlFacadeRemote = schedulerControlFacadeRemote;
+	}
+	 */
+
+	final SchedulerControlFacadeRemote getSchedulerControlFacadeRemote() {
+		if (schedulerControlFacadeRemote == null) {
+			schedulerControlFacadeRemote = SpringApplicationContextHolder.getBean(SchedulerControlFacadeRemote.class);
+		}
+		return schedulerControlFacadeRemote;
 	}
 
 	protected void setInputFieldsEnabled(boolean useCronExpression) {
@@ -432,7 +440,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 	}
 
 	private void checkNameWithAlreadyScheduledJobs(CollectableMasterDataWithDependants clct) throws CommonValidationException {
-		if (schedulerControlFacadeRemote.isScheduled((String)clct.getValue("name"))) {
+		if (getSchedulerControlFacadeRemote().isScheduled((String)clct.getValue("name"))) {
 			throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage(
 					"jobcontroller.error.validation.name", clct.getValue("name")));
 		}

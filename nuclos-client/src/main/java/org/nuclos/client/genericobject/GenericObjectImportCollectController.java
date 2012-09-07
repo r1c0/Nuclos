@@ -61,6 +61,7 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ProgressNotification;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.fileimport.ImportMode;
@@ -72,8 +73,6 @@ import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Special masterdata collect controller for generic object file import.
@@ -81,7 +80,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Configurable(preConstruction=true)
 public class GenericObjectImportCollectController extends MasterDataCollectController implements MessageListener {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectImportCollectController.class);
@@ -115,7 +113,11 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 
 	private ProgressNotification lastnotification;
 	
+	// former Spring injection
+	
 	private TopicNotificationReceiver tnr;
+	
+	// end of former Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -168,7 +170,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		            	if (!StringUtils.isNullOrEmpty(correlationId)) {
 		            		GenericObjectImportCollectController.this.progressBar.setString("Warte auf Status");
 		            		setupDetailsToolBar(true, false);
-		            		tnr.subscribe(JMSConstants.TOPICNAME_PROGRESSNOTIFICATION, correlationId, GenericObjectImportCollectController.this);
+		            		getTopicNotificationReceiver().subscribe(JMSConstants.TOPICNAME_PROGRESSNOTIFICATION, 
+		            				correlationId, GenericObjectImportCollectController.this);
 		            	}
 		            	else {
 		            		setupDetailsToolBar(false, false);
@@ -187,7 +190,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 
 			@Override
             public void detailsModeLeft(CollectStateEvent ev) throws CommonBusinessException {
-				tnr.unsubscribe(GenericObjectImportCollectController.this);
+				getTopicNotificationReceiver().unsubscribe(GenericObjectImportCollectController.this);
             }
 		});
 
@@ -200,9 +203,17 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
         });
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	/*
+	final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
+	}
+	 */
+
+	final TopicNotificationReceiver getTopicNotificationReceiver() {
+		if (tnr == null) {
+			tnr = SpringApplicationContextHolder.getBean(TopicNotificationReceiver.class);
+		}
+		return tnr;
 	}
 
 	@Override

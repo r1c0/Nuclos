@@ -31,6 +31,7 @@ import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
@@ -50,19 +51,24 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 
 	private static final Logger LOG = Logger.getLogger(NucletExplorerNode.class);
 	
-	// Spring injection
+	// former Spring injection
 	
 	private TreeNodeFacadeRemote treeNodeFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	public NucletExplorerNode(TreeNode treenode) {
 		super(treenode);
+		
+		setTreeNodeFacadeRemote(SpringApplicationContextHolder.getBean(TreeNodeFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
 		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
+	}
+
+	final TreeNodeFacadeRemote getTreeNodeFacadeRemote() {
+		return treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -77,7 +83,8 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			final Object transferData = transferable.getTransferData(MasterDataIdAndEntity.dataFlavor);
 			final Collection<MasterDataIdAndEntity> collimp = (Collection<MasterDataIdAndEntity>)transferData;
 
-			Set<AbstractNucletContentEntryTreeNode> contents = new HashSet<AbstractNucletContentEntryTreeNode>();
+			final TreeNodeFacadeRemote treeNodeFacadeRemote = getTreeNodeFacadeRemote();
+			final Set<AbstractNucletContentEntryTreeNode> contents = new HashSet<AbstractNucletContentEntryTreeNode>();
 			for (MasterDataIdAndEntity mdiden : collimp) {
 				NuclosEntity entity = NuclosEntity.getByName(mdiden.getEntity());
 				if (entity == null) {

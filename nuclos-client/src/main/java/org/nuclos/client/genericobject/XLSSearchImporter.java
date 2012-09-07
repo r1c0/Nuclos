@@ -42,7 +42,9 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.ui.ValidatingJOptionPane;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
@@ -64,7 +66,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author <a href="mailto:uwe.allner@novabit.de">Uwe Allner</a>
  * @version 01.00.00
  */
-@Configurable
 public class XLSSearchImporter implements ExtSourceSearchImporter {
 	
 	private Integer iModuleId = null;
@@ -74,21 +75,30 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 	private Workbook wb = null;
 	private Collection<String> readValues = null;
 	
+	// former Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 
 	public XLSSearchImporter(Integer iModuleId, JComponent parentComponent) {
 		this.parentComponent = parentComponent;
 		this.iModuleId = iModuleId;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	@Override
 	public String toString(){
-		return localeDelegate.getMessage("XLSSearchImporter.1", "Excel Datei");
+		return getSpringLocaleDelegate().getMessage("XLSSearchImporter.1", "Excel Datei");
 	}
 	
 	/**
@@ -123,13 +133,13 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 		} 
 		catch (BiffException e) {
 			JOptionPane.showMessageDialog(parentComponent,
-					"<html>" + localeDelegate.getMessage("XLSSearchImporter.2", "Keine g\u00fcltige Excel Datei") 
+					"<html>" + getSpringLocaleDelegate().getMessage("XLSSearchImporter.2", "Keine g\u00fcltige Excel Datei") 
 					+ ":<br>" + e.getMessage()	+ "</html>");
 			return getSearchCondition(); //try again
 
 		} 
 		catch (IOException e) {
-			JOptionPane.showMessageDialog(parentComponent, "<html>" + localeDelegate.getMessage("XLSSearchImporter.3", "I/O Fehler") 
+			JOptionPane.showMessageDialog(parentComponent, "<html>" + getSpringLocaleDelegate().getMessage("XLSSearchImporter.3", "I/O Fehler") 
 					+ ":<br>" + e.getMessage() + "</html>");
 			return getSearchCondition(); //try again
 		}
@@ -199,13 +209,14 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 		private ValidateImportPanel pnlContents;
 		
 		public ValidateImportPane(ValidateImportPanel contents) {
-			super(parentComponent, localeDelegate.getMessage(
+			super(parentComponent, getSpringLocaleDelegate().getMessage(
 					"XLSSearchImporter.4", "Excel Import: Suche"), contents);
 			pnlContents = contents;
 		}
 		
 		@Override
 		protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 			if (pnlContents.cbColumnName.getSelectedItem() == null) {
 				throw new ErrorInfo(localeDelegate.getMessage(
 						"XLSSearchImporter.5", "Bitte Spalte w\u00e4hlen"), pnlContents.cbColumnName);
@@ -222,7 +233,7 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 	} // inner class ValidateImportPane
 	
 	private class ValidateImportPanel extends JPanel {
-
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		private final JComboBox cbSheetName = new JComboBox();
 		private final JComboBox cbColumnName = new JComboBox();
 		private final JComboBox cbAttributeName = new JComboBox();
