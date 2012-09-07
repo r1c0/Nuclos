@@ -49,7 +49,7 @@ public class ServerServiceLocator extends ServiceLocator {
 		final T result;
 		final String name = getBeanname(c);
 		if (name.endsWith("Local")) {
-			result = SpringApplicationContextHolder.getInstance().getBean(c);
+			result = SpringApplicationContextHolder.getBean(c);
 			assert Proxy.isProxyClass(result.getClass());
 		}
 		else {

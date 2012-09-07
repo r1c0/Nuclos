@@ -26,10 +26,11 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 
 	private static final Logger LOG = Logger.getLogger(SpringApplicationContextHolder.class);
 	
-	private static ApplicationContext applicationContext;
-	
 	private static SpringApplicationContextHolder INSTANCE;
+
+	// 
 	
+	private ApplicationContext applicationContext;
 
 	/**
 	 * private Constructor which
@@ -39,10 +40,12 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 		INSTANCE = this;
 	}
 	
-	public static SpringApplicationContextHolder getInstance()	{
+	private static SpringApplicationContextHolder getInstance()	{
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
 		return INSTANCE;
 	}
-	
 	
 	/*
 	 * loads the Spring ApplicationContext from config-File
@@ -50,16 +53,14 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	 * @return ApplicationContext
 	 */
 	public static ApplicationContext getApplicationContext() {
-		if(applicationContext == null)
-			throw new RuntimeException("Spring Context not set");
-		return applicationContext;
+		return getInstance().applicationContext;
 	}
 	
 	@Override
 	public void setApplicationContext(ApplicationContext context) {
-		LOG.info("ApplicationContext set to " + context);
 		if(applicationContext != null)
 			return;
+		LOG.info("ApplicationContext set to " + context);
 		applicationContext = context;
 	}	
 	
@@ -73,7 +74,7 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	public static Object getBean(String strBean) {		
 		Object bean = null;
 		try {
-			bean = applicationContext.getBean(strBean);
+			bean = getApplicationContext().getBean(strBean);
 		} catch (BeansException e) {
 			throw new NuclosFatalException(e);
 		} 
@@ -89,18 +90,15 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	public static <T> T getBean(Class<T> c) {		
 		T bean = null;
 		try{
-			bean = applicationContext.getBean(c);
+			bean = getApplicationContext().getBean(c);
 		} catch (BeansException e) {
 			throw new NuclosFatalException(e);
 		} 
 		return bean;
 	}
 	
-	/*
-	 * 
-	 */
 	public static boolean containsBean(Class<?> c) {
-		return !applicationContext.getBeansOfType(c).isEmpty();
+		return !getApplicationContext().getBeansOfType(c).isEmpty();
 	}
 	
 }

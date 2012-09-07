@@ -352,6 +352,9 @@ public class StartUp  {
 			@Override
             public void run() {
 				try {
+					synchronized (lastContextCondition) {
+						lastContextCondition.waitFor();
+					}
 					createGUI();
 					if (Main.getInstance().isMacOSX()) {
 						Class<?> macAppClass = Class.forName("com.apple.eawt.Application");

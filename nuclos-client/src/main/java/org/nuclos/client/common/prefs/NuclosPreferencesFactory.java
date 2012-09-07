@@ -66,7 +66,7 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 	
 	private PreferencesFacadeRemote getPreferencesFacadeRemote() {
 		if (preferencesFacadeRemote == null) {
-			preferencesFacadeRemote = SpringApplicationContextHolder.getInstance().getBean(PreferencesFacadeRemote.class);
+			preferencesFacadeRemote = SpringApplicationContextHolder.getBean(PreferencesFacadeRemote.class);
 		}
 		return preferencesFacadeRemote;
 	}
