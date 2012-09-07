@@ -51,7 +51,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * An caching singleton for remotely accessing the meta data information
@@ -71,21 +71,19 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 
 	private final DataCache dataCache = new DataCache();
 	
-	private transient TopicNotificationReceiver tnr;
+	// set in afterPropertiesSet
 	private transient MessageListener messageListener;
+	
+	// Spring injection
+	
+	private transient TopicNotificationReceiver tnr;
+
+	private transient DatasourceDelegate datasourceDelegate;
+	
+	// end of Spring injection
 
 	MetaDataClientProvider() {
 		INSTANCE = this;
-	}
-
-	/*
-	public static void initialize() {
-		getInstance().dataCache.buildMaps();
-	}
-	 */
-	
-	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
-		this.tnr = tnr;
 	}
 
 	public static MetaDataClientProvider getInstance() {
@@ -95,6 +93,18 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 		return INSTANCE;
 	}
 
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
+	}
+	
+	@Autowired
+	final void setDatasourceDelegate(DatasourceDelegate datasourceDelegate) {
+		this.datasourceDelegate = datasourceDelegate;
+	}
+
+	/**
+	 * Will also be called on deserialized instances. (tp)
+	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// Constructor might not be called - as this instance might be deserialized (tp)
@@ -459,7 +469,8 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 			mapFieldMetaData = Collections.unmodifiableMap(buildMapFieldMetaData(allEntities));
 			mapPivotMetaData.clear();
 
-			mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(DatasourceDelegate.getInstance().getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
+			mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(
+					datasourceDelegate.getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
 			
 			lstEntityMenus = MetaDataDelegate.getInstance().getEntityMenus();
 			

@@ -134,17 +134,6 @@
 		<property name="masterDataFacadeRemote" ref="masterDataService"/>
 		<property name="metaDataFacadeRemote" ref="metaDataService"/>
 	</bean>
-	<bean id="datasourceDelegate" class="org.nuclos.client.datasource.DatasourceDelegate">
-		<property name="datasourceFacadeRemote" ref="datasourceService"/>
-	</bean>
-	<bean id="collectableEOEntityProvider" class="org.nuclos.client.entityobject.CollectableEOEntityClientProvider" lazy-init="true">
-		<constructor-arg><ref bean="metaDataProvider"/></constructor-arg>
-	</bean>
-	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider" lazy-init="true"
-		factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.common.MetaDataClientProvider" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-	</bean>
 	<bean id="entityFacadeDelegate" class="org.nuclos.client.entityobject.EntityFacadeDelegate" lazy-init="true">
 		<property name="entityFacadeRemote" ref="entityService"/>
 	</bean>
@@ -195,9 +184,6 @@
 	</bean>
 
 	<!-- Avoid scanning for nuclos-common -->
-	<bean id="defaultCollectableEntityProvider" class="org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider">
-		<property name="collectableEOEntityProvider" ref="collectableEOEntityProvider"/>
-	</bean>
 	<bean id="springLocaleDelegate" class="org.nuclos.common2.SpringLocaleDelegate">
 		<property name="lookupService" ref="localeDelegate"/>
 	</bean>

@@ -117,7 +117,7 @@
 	</bean>
 	<bean id="nucletComponentRepository" class="org.nuclos.client.nuclet.NucletComponentRepository">
 	</bean>
-	<bean id="mainFrameSpringComponent" class="org.nuclos.client.main.mainframe.MainFrameSpringComponent">
+	<bean id="mainFrameSpringComponent" class="org.nuclos.client.main.mainframe.MainFrameSpringComponent" depends-on="metaDataProvider">
 		<property name="resourceCache" ref="resourceCache"/>
 		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
 		<property name="clientParameterProvider" ref="parameterProvider"/>
@@ -234,7 +234,20 @@
 	</bean>
 	<bean id="userDelegate" class="org.nuclos.client.masterdata.user.UserDelegate">
 		<property name="userFacadeRemote" ref="userService"/>
-	</bean>	
+	</bean>
+	<bean id="datasourceDelegate" class="org.nuclos.client.datasource.DatasourceDelegate">
+		<property name="datasourceFacadeRemote" ref="datasourceService"/>
+	</bean>
+	
+	<bean id="collectableEOEntityProvider" class="org.nuclos.client.entityobject.CollectableEOEntityClientProvider">
+		<constructor-arg><ref bean="metaDataProvider"/></constructor-arg>
+	</bean>
+	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.common.MetaDataClientProvider" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
+	
 	<bean id="ruleCache" class="org.nuclos.client.rule.RuleCache"
 			factory-bean="deserializingFactoryBean" factory-method="createInstance">
 		<constructor-arg type="java.lang.Class" value="org.nuclos.client.rule.RuleCache" />
@@ -324,6 +337,11 @@
 	</bean>
 	
 	<bean id="nuclosConsole" class="org.nuclos.client.console.NuclosConsole" factory-method="newNuclosConsole"/>
+	
+	<!-- Avoid scanning for nuclos-common -->
+	<bean id="defaultCollectableEntityProvider" class="org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider">
+		<property name="collectableEOEntityProvider" ref="collectableEOEntityProvider"/>
+	</bean>
 	
 	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
 	<bean id="startup" class="org.nuclos.common.startup.Startup"/>	
