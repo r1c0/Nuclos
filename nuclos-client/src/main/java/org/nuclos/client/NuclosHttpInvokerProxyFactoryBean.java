@@ -38,7 +38,7 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 	/**
 	 * Minimum delay for calls in order to appear in LOG. 
 	 */
-	private static final long PROFILE_MIN_MS = 300L;
+	private static final long PROFILE_MIN_MS = 0L;
 	
 	//
 	
@@ -78,7 +78,7 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 		if (PROFILE) {
 			final long call = System.currentTimeMillis() - before;
 			if (call >= PROFILE_MIN_MS) {
-				LOG.info("remote invocation of " + invocation + " took " + call + " ms");
+				LOG.info("remote invocation of " + invocation + " on " + getServiceInterface() + " took " + call + " ms");
 			}
 		}
 		

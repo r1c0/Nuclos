@@ -43,7 +43,7 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 	/**
 	 * Minimum delay for calls in order to appear in LOG. 
 	 */
-	private static final long PROFILE_MIN_MS = 250L;
+	private static final long PROFILE_MIN_MS = 0L;
 	
 	/**
 	 * Spring injected.
@@ -173,7 +173,7 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 				final long call = after - before;
 				if (call >= PROFILE_MIN_MS) {
 					final long now = System.currentTimeMillis();
-					LOG.info("client invocation of " + invoke + " took " + (now - before) 
+					LOG.info("client invocation of " + invoke + " on " + param + " took " + (now - before) 
 							+ " (" + call + ") ms");
 				}
 			}
