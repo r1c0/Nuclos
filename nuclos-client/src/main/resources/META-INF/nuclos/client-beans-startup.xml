@@ -166,11 +166,6 @@
 	<bean id="invokeWithInputRequiredSupport" class="org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport" lazy-init="true">
 		<property name="nuclosHttpInvokerAttributeContext" ref="nuclosHttpInvokerAttributeContext"/>
 	</bean>
-	<bean id="customComponentCache" class="org.nuclos.client.customcomp.CustomComponentCache" lazy-init="true"
-		factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.customcomp.CustomComponentCache" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-	</bean>
 	<bean id="tasklistCache" class="org.nuclos.client.tasklist.TasklistCache" lazy-init="true"
 		factory-bean="deserializingFactoryBean" factory-method="createInstance">
 		<constructor-arg type="java.lang.Class" value="org.nuclos.client.tasklist.TasklistCache" />
@@ -341,10 +336,6 @@
     	<constructor-arg value="topic/lockedTabProgressNotification"/>
     </bean>
 
-    <bean id="topic.customcomponentCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
-    	<property name="destinationName" value="topic/customcomponentCache"></property>
-    </bean>
-    
     <bean id="topic.heartBeat" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/heartBeat"></property>
     </bean>

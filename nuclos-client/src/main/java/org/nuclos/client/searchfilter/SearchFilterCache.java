@@ -93,6 +93,10 @@ public class SearchFilterCache {
 	}
 	
 	private void init() {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 		//if (!wasDeserialized() || !isValid()) //@todo. this cache is user dependant. we need something like 'hasUserChanged(...)'
 		loadSearchFilters();
 	}

@@ -104,6 +104,10 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 
 	@Override
 	public void afterPropertiesSet() {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 		mpStateGraphVO = new ConcurrentHashMap<Integer, StateGraphVO>();
 		mpStatemodelClosure = new ConcurrentHashMap<Integer, StatemodelClosure>();
 		

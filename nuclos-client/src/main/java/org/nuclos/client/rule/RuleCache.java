@@ -101,14 +101,16 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 	}
 
 	RuleCache() {
-		if (INSTANCE == null) {
-			INSTANCE = this;
-		}
+		INSTANCE = this;
 	}
 	
 	public final void afterPropertiesSet() {
-		if (!INSTANCE.wasDeserialized() || !INSTANCE.isValid()) {
-			INSTANCE.invalidate(null);
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
+		if (!wasDeserialized() || !isValid()) {
+			invalidate(null);
 		}
 	}
 	

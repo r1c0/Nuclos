@@ -60,6 +60,10 @@ public class CustomComponentCache extends AbstractLocalUserCache implements Init
 	}
 	
 	public void afterPropertiesSet() throws Exception {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 		if (!wasDeserialized() || !isValid())
 			customComponents = new ConcurrentHashMap<String, CustomComponentVO>();
 		messageListener = new MessageListener() {

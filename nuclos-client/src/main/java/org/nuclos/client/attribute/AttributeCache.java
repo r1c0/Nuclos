@@ -90,6 +90,10 @@ public class AttributeCache extends AbstractLocalUserCache implements AttributeP
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 		// we can not do this here. attribute cache fills to early.
 		/*if (!wasDeserialized())
 			fill();

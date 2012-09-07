@@ -74,6 +74,10 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 	}
 	
 	public final void afterPropertiesSet() {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 		if (!wasDeserialized() || !isValid()) {
 			LOG.debug("Initializing metadata cache");
 			final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();

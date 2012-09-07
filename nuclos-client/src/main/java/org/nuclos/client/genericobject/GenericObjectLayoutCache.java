@@ -132,7 +132,11 @@ public class GenericObjectLayoutCache extends AbstractLocalUserCache implements 
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		 parser = new LayoutMLParser();
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
+		parser = new LayoutMLParser();
 	}
 	
 	public final void setGenericObjectMetaDataCache(GenericObjectMetaDataCache genericObjectMetaDataCache) {

@@ -235,7 +235,7 @@
 	<bean id="userDelegate" class="org.nuclos.client.masterdata.user.UserDelegate">
 		<property name="userFacadeRemote" ref="userService"/>
 	</bean>	
-	<bean id="ruleCache" class="org.nuclos.client.rule.RuleCache" lazy-init="true"
+	<bean id="ruleCache" class="org.nuclos.client.rule.RuleCache"
 			factory-bean="deserializingFactoryBean" factory-method="createInstance">
 		<constructor-arg type="java.lang.Class" value="org.nuclos.client.rule.RuleCache" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
@@ -284,6 +284,15 @@
 		<property name="destinationName" value="topic/searchfilterCache"></property>	
 	</bean>	
 	
+	<bean id="customComponentCache" class="org.nuclos.client.customcomp.CustomComponentCache"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.customcomp.CustomComponentCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
+	<bean id="topic.customcomponentCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
+		<property name="destinationName" value="topic/customcomponentCache"></property>
+	</bean>
+    	
 	<bean id="nuclosConsole" class="org.nuclos.client.console.NuclosConsole" factory-method="newNuclosConsole"/>
 	
 	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>

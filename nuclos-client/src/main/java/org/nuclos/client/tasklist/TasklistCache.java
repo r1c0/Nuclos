@@ -62,6 +62,10 @@ public class TasklistCache extends AbstractLocalUserCache implements Initializin
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 		if (!wasDeserialized() || !isValid())
 			revalidate();
 		messageListener = new MessageListener() {

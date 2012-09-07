@@ -94,6 +94,10 @@ public class LocaleDelegate extends AbstractLocalUserCache implements SpringLoca
 
 	@Override
 	public void afterPropertiesSet() {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 		if (!wasDeserialized() || !isValid())
 			flush();
 		tnr.subscribe(getCachingTopic(), this);
