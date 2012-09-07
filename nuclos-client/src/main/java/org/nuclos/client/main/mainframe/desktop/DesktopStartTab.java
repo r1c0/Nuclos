@@ -80,6 +80,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class DesktopStartTab {
 

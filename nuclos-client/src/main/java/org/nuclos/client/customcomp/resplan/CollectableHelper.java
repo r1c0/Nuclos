@@ -352,13 +352,13 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		@Override
 		public Collectable create(Collectable clct) throws CommonBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			Integer id = getGenericObjectFacadeRemote.create(gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).getId();
+			Integer id = getGenericObjectFacadeRemote().create(gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).getId();
 			return get(id);
 		}
 
 		@Override
 		public Collectable get(Object id) throws CommonBusinessException {
-			GenericObjectWithDependantsVO gowdvo = getGenericObjectFacadeRemote.getWithDependants((Integer) id, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+			GenericObjectWithDependantsVO gowdvo = getGenericObjectFacadeRemote().getWithDependants((Integer) id, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return new CollectableGenericObjectWithDependants(gowdvo);
 		}
 		
@@ -373,7 +373,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		public List<? extends Collectable> get(final List<?> ids) throws CommonBusinessException {
 			List<Integer> intIds = CollectionUtils.typecheck(ids, Integer.class);
 			Collection<GenericObjectWithDependantsVO> gowdvos = 
-					getGenericObjectFacadeRemote.getGenericObjectsMore(moduleId, intIds, null, Collections.<String>emptySet(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), false);
+					getGenericObjectFacadeRemote().getGenericObjectsMore(moduleId, intIds, null, Collections.<String>emptySet(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), false);
 			List<Collectable> result = new ArrayList<Collectable>(gowdvos.size());
 			for (GenericObjectWithDependantsVO gowdvo : gowdvos) {
 				result.add(new CollectableGenericObjectWithDependants(gowdvo));
@@ -392,14 +392,14 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		@Override
 		public Collectable modify(Collectable clct) throws CommonBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			getGenericObjectFacadeRemote.modify(moduleId, gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+			getGenericObjectFacadeRemote().modify(moduleId, gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return get(clct.getId());
 		}
 		
 		@Override
 		public void remove(Collectable clct) throws CommonBusinessException, NuclosBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			getGenericObjectFacadeRemote.remove(gowdvo, false, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+			getGenericObjectFacadeRemote().remove(gowdvo, false, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 
 		@Override
