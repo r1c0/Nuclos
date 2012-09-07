@@ -22,24 +22,17 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragGestureRecognizer;
 import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -80,14 +73,10 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class DesktopStartTab {
 
 	private static final Logger LOG = Logger.getLogger(DesktopStartTab.class);
-	
-	@Autowired
-	private NucletComponentRepository nucletComponentRepository;
 	
 	private Desktop desktopPrefs;
 
@@ -105,6 +94,8 @@ public abstract class DesktopStartTab {
 	private final List<DesktopItem> desktopItems = new ArrayList<DesktopItem>();
 	
 	// former Spring injection
+	
+	private NucletComponentRepository nucletComponentRepository;
 	
 	private SpringLocaleDelegate localeDelegate;
 	
@@ -137,6 +128,7 @@ public abstract class DesktopStartTab {
 		setResourceCache(SpringApplicationContextHolder.getBean(ResourceCache.class));
 		setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
 		setWorkspaceUtils(SpringApplicationContextHolder.getBean(WorkspaceUtils.class));
+		setNucletComponentRepository(SpringApplicationContextHolder.getBean(NucletComponentRepository.class));
 		
 		init();
 	}
@@ -229,7 +221,7 @@ public abstract class DesktopStartTab {
 			}
 		};
 		
-		apiDesktopItemFactories = nucletComponentRepository.getDesktopItemFactories();
+		apiDesktopItemFactories = getNucletComponentRepository().getDesktopItemFactories();
 				
 		this.jpnMain = new JPanel(new BorderLayout(0, 0)){
 			@Override
@@ -289,6 +281,14 @@ public abstract class DesktopStartTab {
 			contextMenu.add(new JMenuItem(actRemoveSplitPaneFixations));
 		}
 		this.jpnMain.setComponentPopupMenu(contextMenu);
+	}
+	
+	final void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
+		this.nucletComponentRepository = nucletComponentRepository;
+	}
+	
+	final NucletComponentRepository getNucletComponentRepository() {
+		return nucletComponentRepository;
 	}
 	
 	final void setResourceCache(ResourceCache resourceCache) {
