@@ -504,14 +504,11 @@ public class StartUp  {
 			themesContextCondition.waitFor();
 		}
 		setupLookAndFeel();
-		// show LoginPanal as soon as possible
+		
 		LoginPanel.getInstance();
-		synchronized (clientContextCondition) {
-			clientContextCondition.waitFor();
-		}
 		try {
 			// perform login:
-			final LoginController ctlLogin = new LoginController(null, this.args, clientContextCondition);
+			final LoginController ctlLogin = new LoginController(null, this.args, startupContext, clientContextCondition);
 			// ctlLogin.setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
 			final Main main = new Main();
 			
@@ -592,6 +589,7 @@ public class StartUp  {
 				}
 			});
 
+			// show LoginPanal as soon as possible
 			ctlLogin.run();
 			/** @todo move exception handling to LoginController.run() */
 		}

@@ -79,6 +79,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -132,17 +133,17 @@ public class LoginController extends Controller<Component> {
 	// end of former Spring injection
 	
 	private LoginController() {
-		this(null, new String[] {}, null);
+		this(null, new String[] {}, null, null);
 	}
 
-	public LoginController(Component parent, String[] args, StartUp.ClientContextCondition clientContextCondition) {
+	public LoginController(Component parent, String[] args, ClassPathXmlApplicationContext startupContext, StartUp.ClientContextCondition clientContextCondition) {
 		super(parent);
 		this.args = args;
 		this.clientContextCondition = clientContextCondition;
 		try {
-			setServerMetaFacadeRemote(SpringApplicationContextHolder.getBean(ServerMetaFacadeRemote.class));
-			setLocaleDelegate(SpringApplicationContextHolder.getBean(LocaleDelegate.class));
-			setNuclosRemoteServerSession(SpringApplicationContextHolder.getBean(NuclosRemoteServerSession.class));
+			setServerMetaFacadeRemote(startupContext.getBean(ServerMetaFacadeRemote.class));
+			setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
+			setNuclosRemoteServerSession(startupContext.getBean(NuclosRemoteServerSession.class));
 			
 	        passwordSaveAllowed = Boolean.valueOf(
 	        	StringUtils.defaultIfNull(

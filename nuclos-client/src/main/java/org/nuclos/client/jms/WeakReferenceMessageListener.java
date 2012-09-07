@@ -32,10 +32,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.SpringApplicationSubContextsHolder;
-import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 /**
@@ -61,12 +58,12 @@ class WeakReferenceMessageListener implements MessageListener {
 	
 	// end of former Spring injection
 
-	public WeakReferenceMessageListener(TopicInfo info) {
+	public WeakReferenceMessageListener(TopicInfo info, ClassPathXmlApplicationContext startupContext) {
 		this.topicname = info.getTopic();
 		this.correlationId = info.getCorrelationId();
 		this.reference = new WeakReference<MessageListener>(info.getMessageListener());
 		
-		setTopicConnection(SpringApplicationContextHolder.getBean(TopicNotificationReceiver.class).getTopicConnection());
+		setTopicConnection(startupContext.getBean(TopicNotificationReceiver.class).getTopicConnection());
 	}
 	
 	final void setTopicConnection(TopicConnection topicConnection) {

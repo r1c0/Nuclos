@@ -33,6 +33,9 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Receives topic based JMS messages in the client.
@@ -44,7 +47,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  */
 // @Component
-public class TopicNotificationReceiver implements InitializingBean {
+public class TopicNotificationReceiver implements InitializingBean, ApplicationContextAware {
 
 	private static final Logger LOG = Logger.getLogger(TopicNotificationReceiver.class);
 	
@@ -76,6 +79,10 @@ public class TopicNotificationReceiver implements InitializingBean {
 	private ShutdownActions shutdownActions;
 	
 	// end of Spring injection
+	
+	// ApplicationContextAware
+	
+	private ClassPathXmlApplicationContext startupContext;
 
 	/**
 	 * list that holds all registered listeners for this topic receiver
@@ -140,6 +147,11 @@ public class TopicNotificationReceiver implements InitializingBean {
 		this.shutdownActions = shutdownActions;
 	}
 	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		startupContext = (ClassPathXmlApplicationContext) applicationContext;
+	}
+	
 	public static TopicNotificationReceiver getInstance() {
 		return INSTANCE;
 	}
@@ -179,7 +191,7 @@ public class TopicNotificationReceiver implements InitializingBean {
 		assert deferredSubscribe || infos.isEmpty();
 		if (copy.size() < 3) {
 			for (TopicInfo i : copy) {
-				WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+				WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i, startupContext);
 				weakrefmsglistener.subscribe();
 				weakmessagelistener.add(weakrefmsglistener);
 			}
@@ -191,7 +203,7 @@ public class TopicNotificationReceiver implements InitializingBean {
 				@Override
 				public void run() {
 						for (TopicInfo i : copy) {
-							WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+							WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i, startupContext);
 							weakrefmsglistener.subscribe();
 							synchronized (TopicNotificationReceiver.this) {
 								weakmessagelistener.add(weakrefmsglistener);
@@ -267,5 +279,5 @@ public class TopicNotificationReceiver implements InitializingBean {
 		}		
 		
 	}
-	
+
 }	// class TopicNotificationReceiver
