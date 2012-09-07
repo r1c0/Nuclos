@@ -69,8 +69,7 @@
         method). Roo applications use this useful feature in a number of
         areas, such as @PersistenceContext injection into entities.
     -->
-	<!-- We need that at startup - at least for LoginController. (tp) -->
-    <context:spring-configured/>
+    <!-- context:spring-configured/ -->
     <!--
         This declaration will cause Spring to locate every @Component,
         @Repository and @Service in your application. In practical terms this
