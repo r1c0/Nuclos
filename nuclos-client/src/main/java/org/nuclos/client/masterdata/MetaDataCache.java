@@ -32,7 +32,6 @@ import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
-import org.springframework.beans.factory.InitializingBean;
 
 
 /**

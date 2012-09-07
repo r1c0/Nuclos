@@ -19,7 +19,6 @@ package org.nuclos.client.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * A Listener to a certain tab of a JInfoTabbedPane.

@@ -25,7 +25,6 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
-import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;

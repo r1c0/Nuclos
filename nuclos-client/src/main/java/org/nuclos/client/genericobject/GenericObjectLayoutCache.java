@@ -48,7 +48,6 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
-import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.InputSource;
 
 /**

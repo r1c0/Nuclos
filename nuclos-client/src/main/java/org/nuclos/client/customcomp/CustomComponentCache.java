@@ -32,7 +32,6 @@ import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
-import org.springframework.beans.factory.InitializingBean;
 
 public class CustomComponentCache extends AbstractLocalUserCache {
 	

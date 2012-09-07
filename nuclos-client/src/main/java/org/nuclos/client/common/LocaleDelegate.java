@@ -52,7 +52,6 @@ import org.nuclos.server.common.ejb3.LocaleFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 public class LocaleDelegate extends AbstractLocalUserCache implements SpringLocaleDelegate.LookupService, MessageListener, DisposableBean {

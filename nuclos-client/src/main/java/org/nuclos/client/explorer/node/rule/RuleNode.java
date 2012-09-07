@@ -29,7 +29,6 @@ import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatus
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.rule.RuleCache;
-import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;

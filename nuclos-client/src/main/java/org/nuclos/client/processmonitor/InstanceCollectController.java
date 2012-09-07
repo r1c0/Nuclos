@@ -26,7 +26,6 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
-import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.main.mainframe.MainFrameTab;

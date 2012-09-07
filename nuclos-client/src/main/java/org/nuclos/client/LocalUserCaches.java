@@ -55,7 +55,6 @@ import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.rule.RuleCache;
-import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.tasklist.TasklistCache;
 import org.nuclos.common.ApplicationProperties;

@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
-import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -23,7 +21,6 @@ import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.job.valueobject.JobVO;
-import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.springframework.beans.factory.InitializingBean;

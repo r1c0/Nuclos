@@ -35,7 +35,6 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.tasklist.TasklistDefinition;
-import org.springframework.beans.factory.InitializingBean;
 
 public class TasklistCache extends AbstractLocalUserCache {
 	

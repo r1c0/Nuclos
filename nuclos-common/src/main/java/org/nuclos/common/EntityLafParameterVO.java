@@ -20,9 +20,6 @@ package org.nuclos.common;
 import org.nuclos.common.dal.vo.AbstractDalVOWithVersion;
 import org.nuclos.common2.LangUtils;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-
 public class EntityLafParameterVO extends AbstractDalVOWithVersion {
 
 	/**

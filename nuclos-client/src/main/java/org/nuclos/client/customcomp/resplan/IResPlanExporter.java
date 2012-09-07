@@ -7,7 +7,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.nuclos.client.image.ImageType;
 import org.nuclos.client.image.SVGDOMDocumentSupport;
-import org.nuclos.common.dblayer.INameProducer;
 
 public interface IResPlanExporter<R, E, L> {
 

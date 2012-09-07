@@ -131,7 +131,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
-import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.NuclosReportPrintJob;
 import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.ejb3.ReportFacadeRemote;

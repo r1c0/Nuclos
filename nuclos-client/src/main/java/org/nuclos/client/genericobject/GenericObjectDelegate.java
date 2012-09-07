@@ -51,7 +51,6 @@ import org.nuclos.server.genericobject.valueobject.LogbookVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
-import org.nuclos.server.ruleengine.NuclosFatalRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 /**

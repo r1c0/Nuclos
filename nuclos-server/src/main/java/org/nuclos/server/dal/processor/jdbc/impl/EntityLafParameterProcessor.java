@@ -22,15 +22,11 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.common.EntityLafParameterVO;
 import org.nuclos.common.dal.DalCallResult;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEntityLafParameterProcessor;
-import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
 import org.nuclos.server.dblayer.DbException;
-import org.nuclos.server.dblayer.query.DbFrom;
-import org.nuclos.server.dblayer.query.DbQuery;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable

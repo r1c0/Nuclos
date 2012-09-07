@@ -58,7 +58,6 @@ import org.nuclos.server.dal.processor.jdbc.impl.EntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.ImportObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.WorkspaceProcessor;
-import org.nuclos.server.dal.processor.nuclet.IEntityLafParameterProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.fileimport.ImportStructure;

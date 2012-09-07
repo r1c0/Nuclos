@@ -44,7 +44,6 @@ import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Caches whole contents from master data entities. It is not used for data dependant on a foreign key.

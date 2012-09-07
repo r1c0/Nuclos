@@ -62,7 +62,6 @@ import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.main.ChangePasswordPanel;
-import org.nuclos.client.main.StartUp;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.ui.Controller;

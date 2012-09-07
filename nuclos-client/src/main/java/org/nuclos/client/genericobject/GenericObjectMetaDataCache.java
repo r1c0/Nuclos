@@ -40,7 +40,6 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Client side leased object meta data cache (singleton).

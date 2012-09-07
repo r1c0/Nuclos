@@ -8,10 +8,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTable;
 import javax.swing.border.Border;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 
 import org.nuclos.client.eventsupport.EventSupportActionHandler.ACTIONS;
 import org.nuclos.client.eventsupport.model.EventSupportEntityPropertiesTableModel;

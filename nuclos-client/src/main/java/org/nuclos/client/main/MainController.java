@@ -53,7 +53,6 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -82,7 +81,6 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.JTextComponent;
-import javax.xml.stream.events.EntityDeclaration;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;

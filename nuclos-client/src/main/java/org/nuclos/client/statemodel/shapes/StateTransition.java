@@ -35,7 +35,6 @@ import org.nuclos.client.gef.shapes.ConnectionPoint;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
-import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 
 /**

@@ -60,8 +60,6 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 public abstract class CollectableHelper<C extends Collectable> implements CollectableFactory<C> {
 

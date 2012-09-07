@@ -18,8 +18,6 @@ package org.nuclos.server.api.eventsupport;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Configurable;
-
 abstract class AbstractEventObjectWithCache {
 	
 	private final Map<String, Object> eventCache;

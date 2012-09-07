@@ -32,7 +32,6 @@ import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.collect.component.CollectableColorChooserButton;
 import org.nuclos.client.ui.collect.component.CollectableResourceIconChooserButton;
-import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;

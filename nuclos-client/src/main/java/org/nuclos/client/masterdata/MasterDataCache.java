@@ -32,7 +32,6 @@ import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
@@ -41,7 +40,6 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Caches whole contents from master data entities. It is not used for data dependant on a foreign key.

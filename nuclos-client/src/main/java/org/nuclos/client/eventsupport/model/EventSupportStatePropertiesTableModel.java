@@ -7,7 +7,6 @@ import java.util.List;
 import org.jfree.util.Log;
 import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;

@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;

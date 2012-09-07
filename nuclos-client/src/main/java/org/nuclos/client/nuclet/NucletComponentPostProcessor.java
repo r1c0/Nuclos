@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.nuclet;
 
-import org.nuclos.api.ui.DesktopItem;
 import org.nuclos.api.ui.DesktopItemFactory;
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.api.ui.MenuItem;

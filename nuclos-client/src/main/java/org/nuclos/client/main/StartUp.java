@@ -47,7 +47,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.xbean.spring.context.ResourceXmlApplicationContext;
 import org.nuclos.api.ui.annotation.NucletComponent;
-import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.StartIcons;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
 import org.nuclos.client.common.security.SecurityDelegate;

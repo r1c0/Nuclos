@@ -36,7 +36,6 @@ import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>ExplorerNode</code> presenting a <code>NucletTreeNode</code>.

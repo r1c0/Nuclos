@@ -58,7 +58,6 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common.transport.GzipList;
 import org.nuclos.common2.EntityAndFieldName;

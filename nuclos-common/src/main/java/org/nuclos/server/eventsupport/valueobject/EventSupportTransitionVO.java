@@ -1,6 +1,5 @@
 package org.nuclos.server.eventsupport.valueobject;
 
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 

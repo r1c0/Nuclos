@@ -23,7 +23,6 @@ import java.util.List;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
-import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 
 /**
  * Value object representing a state transition.

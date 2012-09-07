@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

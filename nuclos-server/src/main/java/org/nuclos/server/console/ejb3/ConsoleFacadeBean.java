@@ -18,7 +18,6 @@ package org.nuclos.server.console.ejb3;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

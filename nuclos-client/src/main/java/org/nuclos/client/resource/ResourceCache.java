@@ -26,11 +26,9 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.resource.valueobject.ResourceVO;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * A (client) cache for resources.

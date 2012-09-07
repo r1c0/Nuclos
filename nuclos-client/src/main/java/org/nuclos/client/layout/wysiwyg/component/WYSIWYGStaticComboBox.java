@@ -34,8 +34,6 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
-import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
-import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;

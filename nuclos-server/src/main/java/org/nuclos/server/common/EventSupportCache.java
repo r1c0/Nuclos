@@ -3,13 +3,10 @@ package org.nuclos.server.common;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeLocal;
 import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
-import org.nuclos.server.mbean.MBeanAgent;
 
 public class EventSupportCache 
 {

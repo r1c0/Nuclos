@@ -31,7 +31,6 @@ import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;

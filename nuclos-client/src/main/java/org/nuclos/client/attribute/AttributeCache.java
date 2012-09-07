@@ -33,7 +33,6 @@ import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Client cache for all attributes (Singleton pattern).

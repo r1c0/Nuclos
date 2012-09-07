@@ -13,7 +13,6 @@ import org.nuclos.client.image.SVGDOMDocumentSupport;
 import org.nuclos.client.ui.resplan.JResPlanComponent;
 import org.nuclos.client.ui.resplan.header.JHeaderGrid;
 import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common.dblayer.INameProducer;
 import org.w3c.dom.Element;
 
 /**

@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.table.AbstractTableModel;
-
 import org.jfree.util.Log;
 import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.common2.SpringLocaleDelegate;

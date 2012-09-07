@@ -19,7 +19,6 @@ package org.nuclos.client.ui.collect;
 import java.awt.event.MouseListener;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;

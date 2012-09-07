@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.client.rule.RuleCache;
-import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;

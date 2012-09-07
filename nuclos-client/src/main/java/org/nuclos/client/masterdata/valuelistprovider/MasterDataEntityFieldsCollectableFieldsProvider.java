@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
+import org.nuclos.client.masterdata.MetaDataCache;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -31,9 +32,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.masterdata.MetaDataCache;
-import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
 public class MasterDataEntityFieldsCollectableFieldsProvider implements CollectableFieldsProvider {

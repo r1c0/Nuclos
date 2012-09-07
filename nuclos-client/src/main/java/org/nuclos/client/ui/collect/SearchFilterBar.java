@@ -18,7 +18,6 @@ package org.nuclos.client.ui.collect;
 
 import info.clearthought.layout.TableLayout;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -32,8 +31,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

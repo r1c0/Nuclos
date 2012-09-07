@@ -58,7 +58,6 @@ import javax.swing.event.DocumentListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
-import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.StartIcons;
 import org.nuclos.client.ui.BackgroundPanel;
 import org.nuclos.client.ui.Bubble;

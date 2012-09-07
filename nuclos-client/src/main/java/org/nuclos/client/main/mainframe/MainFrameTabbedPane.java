@@ -71,9 +71,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.NuclosIcons;
-import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.StartIcons;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetListener;

@@ -107,7 +107,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
-import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.xml.sax.Attributes;

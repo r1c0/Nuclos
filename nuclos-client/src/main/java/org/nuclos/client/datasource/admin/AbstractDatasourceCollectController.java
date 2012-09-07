@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;

@@ -30,7 +30,6 @@ import javax.jms.TopicSubscriber;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;

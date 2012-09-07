@@ -50,7 +50,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.ResultVO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>CollectController</code> for entity "datasource".

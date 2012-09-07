@@ -7,17 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
-import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.eventsupport.model.EventSupportPropertiesTableModel;
 import org.nuclos.client.eventsupport.panel.EventSupportSourceView;
 import org.nuclos.client.eventsupport.panel.EventSupportTargetView;
 import org.nuclos.client.eventsupport.panel.EventSupportView;
-import org.nuclos.client.explorer.EventSupportTargetExplorerView;
 import org.nuclos.client.explorer.node.EventSupportTargetExplorerNode;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportGenerationVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;

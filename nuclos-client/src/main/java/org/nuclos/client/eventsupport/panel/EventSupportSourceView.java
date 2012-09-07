@@ -13,14 +13,10 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.border.Border;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.client.explorer.EventSupportExplorerView;
-import org.nuclos.client.explorer.EventSupportTargetExplorerView;
 import org.nuclos.client.explorer.ExplorerView;
-import org.nuclos.client.explorer.ExplorerViewFactory;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
 public class EventSupportSourceView extends JPanel {

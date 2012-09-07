@@ -22,7 +22,6 @@ package org.nuclos.client.processmonitor;
 import javax.swing.JToolBar;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LafParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.console.NuclosConsole;

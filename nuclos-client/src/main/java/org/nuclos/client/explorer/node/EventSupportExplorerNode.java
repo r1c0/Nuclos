@@ -1,33 +1,23 @@
 package org.nuclos.client.explorer.node;
 
 import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JTree;
-import javax.swing.TransferHandler;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 
 import org.nuclos.client.eventsupport.EventSupportManagementController;
-import org.nuclos.client.eventsupport.EventSupportTransferable;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetType;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.client.ui.tree.ChainedTreeNodeAction;
-import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 

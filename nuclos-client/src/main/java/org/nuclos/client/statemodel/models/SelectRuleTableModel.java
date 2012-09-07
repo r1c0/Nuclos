@@ -17,13 +17,10 @@
 package org.nuclos.client.statemodel.models;
 
 import java.rmi.RemoteException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.client.eventsupport.EventSupportDelegate;
 import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.statemodel.RuleRepository;
 import org.nuclos.client.statemodel.SortedRuleVO;

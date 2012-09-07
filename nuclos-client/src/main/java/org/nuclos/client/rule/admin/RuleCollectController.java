@@ -37,7 +37,6 @@ import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
