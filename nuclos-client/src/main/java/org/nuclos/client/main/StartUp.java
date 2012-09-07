@@ -697,7 +697,6 @@ public class StartUp  {
 
 	private void createMainController(String sUserName, String sNucleusServerName, LoginController lc)
 			throws CommonPermissionException {
-		log.info("waiting for lastContextCondition in createMainController");
 		
 		final SearchFilterCache searchFilterCache = SearchFilterCache.getInstance();
 		searchFilterCache.setUserName(sUserName);

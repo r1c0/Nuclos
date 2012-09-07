@@ -91,6 +91,7 @@ public class SpringApplicationSubContextsHolder {
 				bean = getSubContextBean(strBean, subs);
 			}
 			if (bean == null) {
+				LOG.info("waiting for lastContextCondition in searchBean()");
 				synchronized (lastContextCondition) {
 					lastContextCondition.waitFor();
 				}
@@ -136,6 +137,7 @@ public class SpringApplicationSubContextsHolder {
 				bean = getSubContextBean(c, subs);
 			}
 			if (bean == null) {
+				LOG.info("waiting for lastContextCondition in getBean()");
 				synchronized (lastContextCondition) {
 					lastContextCondition.waitFor();
 				}

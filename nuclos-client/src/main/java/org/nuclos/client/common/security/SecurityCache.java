@@ -18,6 +18,8 @@ package org.nuclos.client.common.security;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.JMSException;
@@ -43,6 +45,7 @@ import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * caches client rights.
@@ -81,11 +84,17 @@ public class SecurityCache implements InitializingBean {
 	private final Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache 
 		= new ConcurrentHashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
 	
+	// Spring injection
+	
+	private Timer timer;
+	
 	private TopicNotificationReceiver tnr;
 	
 	private SecurityDelegate securityDelegate;
 	
 	private AttributeCache attributeCache;
+	
+	// end of Spring injection
 
 	private final MessageListener listener = new MessageListener() {
 		@Override
@@ -125,10 +134,22 @@ public class SecurityCache implements InitializingBean {
 		INSTANCE = this;
 	}
 	
+	@Autowired
+	final void setTimer(Timer timer) {
+		this.timer = timer;
+	}
+	
 	// @PostConstruct
 	public final void afterPropertiesSet() {
 		tnr.subscribe(JMSConstants.TOPICNAME_SECURITYCACHE, listener);
-		validate();
+		final TimerTask task = new TimerTask() {
+			
+			@Override
+			public void run() {
+				validate();
+			}
+		};
+		timer.schedule(task, 300);
 	}
 	
 	// @Autowired
