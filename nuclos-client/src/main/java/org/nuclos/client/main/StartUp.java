@@ -168,7 +168,15 @@ public class StartUp  {
 		"META-INF/nuclos/client-beans.xml"
 	};
 	
-	private static final String EXTENSION_SPRING_BEANS = "classpath*:META-INF/nuclos/nuclos-extension-client-beans.xml";
+	/**
+	 * To avoid classpath scanning we limit ourself to ONE extension theme (tp)
+	 */
+	private static final String EXTENSION_THEMES = "classpath:META-INF/nuclos/nuclos-theme.properties";
+
+	/**
+	 * To avoid classpath scanning we limit ourself to ONE extension (tp)
+	 */
+	private static final String EXTENSION_SPRING_BEANS = "classpath:META-INF/nuclos/nuclos-extension-client-beans.xml";
 	
 	//
 
@@ -238,7 +246,7 @@ public class StartUp  {
 			clientContext.registerShutdownHook();
 			
 			log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
-			final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/nuclos-theme.properties");
+					final Resource[] themes = clientContext.getResources(EXTENSION_THEMES);
 			log.info("loading themes properties from the following files: " + Arrays.asList(themes));
 					// Thread.yield();
 			
