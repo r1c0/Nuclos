@@ -314,6 +314,15 @@
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 	</bean>
 	
+	<bean id="securityCache" class="org.nuclos.client.common.security.SecurityCache">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="securityDelegate" ref="securityDelegate"/>
+		<property name="attributeCache" ref="attributeProvider"/>
+	</bean>
+	<bean id="topic.securityCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
+		<property name="destinationName" value="topic/securityCache"></property>
+	</bean>
+	
 	<bean id="nuclosConsole" class="org.nuclos.client.console.NuclosConsole" factory-method="newNuclosConsole"/>
 	
 	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>

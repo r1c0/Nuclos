@@ -58,7 +58,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 01.00.00
  */
 // @Component
-// @Lazy
 public class SecurityCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(SecurityCache.class);

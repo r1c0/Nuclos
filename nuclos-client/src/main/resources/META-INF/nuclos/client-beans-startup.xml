@@ -105,13 +105,8 @@
 	<bean id="localUserCaches" class="org.nuclos.client.LocalUserCaches">
 		<property name="localUserCachesService" ref="localUserCachesService"/>
 	</bean>
-	<bean id="deserializingFactoryBean" class="org.nuclos.client.DeserializingFactoryBean" lazy-init="true">
-	</bean>
 	<!-- must be lazy -->
-	<bean id="securityCache" class="org.nuclos.client.common.security.SecurityCache">
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-		<property name="securityDelegate" ref="securityDelegate"/>
-		<property name="attributeCache" ref="attributeProvider"/>
+	<bean id="deserializingFactoryBean" class="org.nuclos.client.DeserializingFactoryBean" lazy-init="true">
 	</bean>
 	<bean id="attributeDelegate" class="org.nuclos.client.attribute.AttributeDelegate" lazy-init="true">
 		<property name="attributeFacadeRemote" ref="attributeService"/>
@@ -280,10 +275,6 @@
 
     <bean id="topic.masterdataCache" class="org.nuclos.client.jms.MultiMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/masterdataCache"></property>
-    </bean>
-
-    <bean id="topic.securityCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
-    	<property name="destinationName" value="topic/securityCache"></property>
     </bean>
 
     <bean id="topic.resourceCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
