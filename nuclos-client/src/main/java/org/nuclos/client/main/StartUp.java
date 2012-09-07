@@ -63,7 +63,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.startup.Startup;
@@ -229,19 +228,19 @@ public class StartUp  {
 			// Scanning context
 			clientContext = new ClassPathXmlApplicationContext(CLIENT_SPRING_BEANS, false, startupContext);
 			final StartUpApplicationListener clientListener = new StartUpApplicationListener(clientContextCondition);
-			clientContext.addApplicationListener(clientListener);
+					// don't register - we want that AFTER theme scanning (tp)
+					// clientContext.addApplicationListener(clientListener);
+					
 			// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 			clientContext.setClassLoader(cl);
-			Thread.yield();					
+					// Thread.yield();
 			clientContext.refresh();
 			clientContext.registerShutdownHook();
 			
 			log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 			final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/nuclos-theme.properties");
 			log.info("loading themes properties from the following files: " + Arrays.asList(themes));
-			final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
-			log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
-			Thread.yield();
+					// Thread.yield();
 			
 			for (Resource r : themes) {
 				if (!r.exists()) {
@@ -270,9 +269,13 @@ public class StartUp  {
 					}
 				}
 			}
+					// invoke lifecylce listener AFTER theme scanning (tp)
+					clientListener.onApplicationEvent(new ContextRefreshedEvent(clientContext));
 			
 			final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
 			holder.setClientContext(clientContext);
+					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
+					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
 
 			final int size = extensions.length;
 			if (size == 0) {
@@ -286,7 +289,7 @@ public class StartUp  {
 				log.info("no extension contexts found, all spring contexts refreshed");
 			}
 			else {
-				Thread.yield();
+						// Thread.yield();
 				for (int i = 0; i < size; ++i) {
 					final Resource r = extensions[i];
 					final boolean last = (i + 1 == size);
@@ -352,9 +355,7 @@ public class StartUp  {
 			@Override
             public void run() {
 				try {
-					synchronized (lastContextCondition) {
-						lastContextCondition.waitFor();
-					}
+					// this waits for some condition! (tp)
 					createGUI();
 					if (Main.getInstance().isMacOSX()) {
 						Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
@@ -458,6 +459,10 @@ public class StartUp  {
 	}
 
 	private void createGUI() {
+		synchronized (clientContextCondition) {
+			clientContextCondition.waitFor();
+		}
+
 		this.setupLookAndFeel();
 		// show LoginPanal as soon as possible
 		LoginPanel.getInstance();
@@ -468,7 +473,7 @@ public class StartUp  {
 			final LoginController ctlLogin = new LoginController(null, this.args, clientContextCondition);
 			// ctlLogin.setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
 			final Main main = new Main();
-
+			
 			ctlLogin.addLoginListener(new LoginListener() {
 				@Override
                 public void loginSuccessful(final LoginEvent ev) {
@@ -480,6 +485,10 @@ public class StartUp  {
 					catch (Exception ex) {
 						Errors.getInstance().showExceptionDialog(null, ex);
 						Main.exit(Main.ExitResult.ABNORMAL);
+					}
+					
+					synchronized (lastContextCondition) {
+						lastContextCondition.waitFor();
 					}
 
 					UIUtils.runCommandForTabbedPane(null, new Runnable() {
