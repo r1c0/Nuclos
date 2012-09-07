@@ -124,8 +124,6 @@ public class LoginController extends Controller<Component> {
 	
 	// former Spring injection
 	
-	private LocaleDelegate localeDelegate;
-	
 	private ServerMetaFacadeRemote serverMetaFacadeRemote;
 	
 	private NuclosRemoteServerSession nuclosRemoteServerSession;
@@ -142,7 +140,6 @@ public class LoginController extends Controller<Component> {
 		this.clientContextCondition = clientContextCondition;
 		try {
 			setServerMetaFacadeRemote(startupContext.getBean(ServerMetaFacadeRemote.class));
-			setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
 			setNuclosRemoteServerSession(startupContext.getBean(NuclosRemoteServerSession.class));
 			
 	        passwordSaveAllowed = Boolean.valueOf(
@@ -186,14 +183,6 @@ public class LoginController extends Controller<Component> {
 		this.args = new String[]{};
 	}
 	
-	final void setLocaleDelegate(LocaleDelegate localeDelegate) {
-		this.localeDelegate = localeDelegate;
-	}
-	
-	final LocaleDelegate getLocaleDelegate() {
-		return localeDelegate;
-	}
-	
 	final void setServerMetaFacadeRemote(ServerMetaFacadeRemote serverMetaFacadeRemote) {
 		this.serverMetaFacadeRemote = serverMetaFacadeRemote;
 	}
@@ -223,7 +212,7 @@ public class LoginController extends Controller<Component> {
 			ApplicationProperties.getInstance().getCurrentVersion().getShortName());
 		final JFrame frame = new JFrame(sTitle);
 		frame.setName("frmLogin");
-		frame.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
+		// frame.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
 		frame.getContentPane().add(optpn, BorderLayout.CENTER);
 		frame.pack();
 		frame.setResizable(false);
@@ -393,7 +382,7 @@ public class LoginController extends Controller<Component> {
 		List<LocaleInfo> clientCachedLocaleInfo
 			= LocalUserProperties.getInstance().getLoginLocaleSelection();
 
-		final LocaleDelegate localeDelegate = getLocaleDelegate();
+		final LocaleDelegate localeDelegate = SpringApplicationContextHolder.getBean(LocaleDelegate.class);
 		if (localeDelegate == null) {
 			throw new IllegalStateException("Spring injection failed: Most probably cause: You need load-time weaving but started client without -javaagent.");
 		}

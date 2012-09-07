@@ -72,6 +72,7 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 	private final DataCache dataCache = new DataCache();
 	
 	// set in afterPropertiesSet
+	
 	private transient MessageListener messageListener;
 	
 	// Spring injection
@@ -79,6 +80,8 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 	private transient TopicNotificationReceiver tnr;
 
 	private transient DatasourceDelegate datasourceDelegate;
+	
+	private transient MetaDataDelegate metaDataDelegate;
 	
 	// end of Spring injection
 
@@ -100,6 +103,11 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 	@Autowired
 	final void setDatasourceDelegate(DatasourceDelegate datasourceDelegate) {
 		this.datasourceDelegate = datasourceDelegate;
+	}
+	
+	@Autowired
+	final void setMetaDataDelegate(MetaDataDelegate metaDataDelegate) {
+		this.metaDataDelegate = metaDataDelegate;
 	}
 
 	/**
@@ -214,7 +222,7 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
     	Map<String, EntityFieldMetaDataVO> serverResult = dataCache.getMapPivotMetaData().get(info);
     	if (serverResult == null) {
     		// load data lazy
-    		serverResult = MetaDataDelegate.getInstance().getAllPivotEntityFields(info);
+    		serverResult = metaDataDelegate.getAllPivotEntityFields(info);
     		// localize name for client
 			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
     		for (EntityFieldMetaDataVO ef: serverResult.values()) {
@@ -438,14 +446,14 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 		}
 
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Collection<EntityMetaDataVO> allEntities) {
-			return MetaDataDelegate.getInstance().getAllEntityFieldsByEntitiesGz(
+			return metaDataDelegate.getAllEntityFieldsByEntitiesGz(
 				CollectionUtils.transform(allEntities, DalTransformations.getEntity()));
 		}
 
 		public synchronized void buildMaps() {
 			startRevalidating = System.currentTimeMillis();
 			revalidating = true;
-			Collection<EntityMetaDataVO> allEntities = MetaDataDelegate.getInstance().getAllEntities();
+			Collection<EntityMetaDataVO> allEntities = metaDataDelegate.getAllEntities();
 
 			HashMap<String, List<String>> entitiesByNuclets = new HashMap<String, List<String>>();
 			for (EntityMetaDataVO meta : allEntities) {
@@ -472,7 +480,7 @@ public class MetaDataClientProvider extends AbstractLocalUserCache
 			mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(
 					datasourceDelegate.getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
 			
-			lstEntityMenus = MetaDataDelegate.getInstance().getEntityMenus();
+			lstEntityMenus = metaDataDelegate.getEntityMenus();
 			
 			mapLafParameter = Collections.unmodifiableMap(MetaDataDelegate.getInstance().getLafParameters());
 			
