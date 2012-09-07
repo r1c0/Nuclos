@@ -301,7 +301,10 @@ public class StartUp  {
 							if (!r.exists()) {
 								log.error("spring sub context xml not found: " + r);
 								if (last) {
-									throw new IllegalStateException();
+									synchronized (lastContextCondition) {
+										lastContextCondition.refreshed();
+										lastContextCondition.notify();
+									}
 								}
 								continue;
 							}
