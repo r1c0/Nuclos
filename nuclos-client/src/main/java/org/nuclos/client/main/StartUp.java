@@ -48,6 +48,7 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.xbean.spring.context.ResourceXmlApplicationContext;
 import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.StartIcons;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
 import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
@@ -370,7 +371,8 @@ public class StartUp  {
 						Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
 						Object macAppObject = macAppClass.getConstructor().newInstance();
 						// set Nuclos dock icon
-						macAppClass.getMethod("setDockIconImage", java.awt.Image.class).invoke(macAppObject, NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
+						macAppClass.getMethod("setDockIconImage", java.awt.Image.class).invoke(
+								macAppObject, StartIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
 					}
 					// really subscribe to the topics collected at startup time
 					TopicNotificationReceiver.getInstance().realSubscribe();

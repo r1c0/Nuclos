@@ -102,77 +102,13 @@
 	<bean id="securityDelegate" class="org.nuclos.client.common.security.SecurityDelegate">
 		<property name="securityFacadeRemote" ref="securityService"/>
 	</bean>
-	<bean id="localUserCaches" class="org.nuclos.client.LocalUserCaches">
-		<property name="localUserCachesService" ref="localUserCachesService"/>
-	</bean>
-	<!-- must be lazy -->
-	<bean id="deserializingFactoryBean" class="org.nuclos.client.DeserializingFactoryBean" lazy-init="true">
-	</bean>
-	<bean id="attributeDelegate" class="org.nuclos.client.attribute.AttributeDelegate" lazy-init="true">
-		<property name="attributeFacadeRemote" ref="attributeService"/>
-	</bean>
+	
 	<!-- other -->
 	<bean id="nuclosHttpInvokerAttributeContext" class="org.nuclos.client.NuclosHttpInvokerAttributeContext">
-	</bean>
-	<bean id="attributeProvider" class="org.nuclos.client.attribute.AttributeCache" lazy-init="true"
-			factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.attribute.AttributeCache" />
-		<qualifier value="attributeCache" />
-		<property name="attributeDelegate" ref="attributeDelegate"/>
-	</bean>
-	<bean id="parameterProvider" class="org.nuclos.client.common.ClientParameterProvider"
-		factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.common.ClientParameterProvider" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-		<property name="parameterService" ref="parameterService"/>
 	</bean>
 	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver">
 		<property name="connectionFactory" ref="jmsFactory"/>
 		<property name="shutdownActions" ref="shutdownActions"/>
-	</bean>
-	<bean id="metaDataDelegate" class="org.nuclos.client.masterdata.MetaDataDelegate">
-		<property name="masterDataFacadeRemote" ref="masterDataService"/>
-		<property name="metaDataFacadeRemote" ref="metaDataService"/>
-	</bean>
-	<bean id="entityFacadeDelegate" class="org.nuclos.client.entityobject.EntityFacadeDelegate" lazy-init="true">
-		<property name="entityFacadeRemote" ref="entityService"/>
-	</bean>
-	<bean id="genericObjectDelegate" class="org.nuclos.client.genericobject.GenericObjectDelegate" lazy-init="true">
-		<property name="genericObjectFacadeRemote" ref="genericObjectService"/>
-	</bean>
-	<bean id="invokeWithInputRequiredSupport" class="org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport" lazy-init="true">
-		<property name="nuclosHttpInvokerAttributeContext" ref="nuclosHttpInvokerAttributeContext"/>
-	</bean>
-	<bean id="localeDelegate" class="org.nuclos.client.common.LocaleDelegate"
-		factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.common.LocaleDelegate" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-		<property name="localeService" ref="localeService"/>
-	</bean>
-	<bean id="masterDataCache" class="org.nuclos.client.masterdata.MasterDataCache" lazy-init="true"
-			factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.masterdata.MasterDataCache" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-		<property name="masterDataDelegate" ref="masterDataDelegate"/>
-		<property name="entityFacadeDelegate" ref="entityFacadeDelegate"/>
-	</bean>
-	<bean id="masterDataDelegate" class="org.nuclos.client.masterdata.MasterDataDelegate" lazy-init="true">
-		<property name="masterDataFacadeRemote" ref="masterDataService"/>
-		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
-		<property name="masterDataCache" ref="masterDataCache"/>
-	</bean>
-	<bean id="nuclosIcons" class="org.nuclos.client.NuclosIcons">
-		<property name="resourceCache" ref="resourceCache"/>
-	</bean>
-	<bean id="resourceCache" class="org.nuclos.client.resource.ResourceCache"
-			factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.resource.ResourceCache" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-		<property name="resourceDelegate" ref="resourceDelegate"/>
-	</bean>
-	<bean id="resourceDelegate" class="org.nuclos.client.resource.ResourceDelegate">
-		<property name="resourceCache" ref="resourceCache"/>
-		<property name="resourceFacadeRemote" ref="resourceService"/>
 	</bean>
 	<bean id="nuclosRemoteServerSession" class="org.nuclos.client.security.NuclosRemoteServerSession">
 		<property name="securityFacadeRemote" ref="securityService"/>
@@ -181,11 +117,6 @@
 		<property name="nuclosRemoteServerSession" ref="nuclosRemoteServerSession"/>
 	</bean>
 	<bean id="shutdownActions" class="org.nuclos.client.common.ShutdownActions" depends-on="preferencesService">
-	</bean>
-
-	<!-- Avoid scanning for nuclos-common -->
-	<bean id="springLocaleDelegate" class="org.nuclos.common2.SpringLocaleDelegate">
-		<property name="lookupService" ref="localeDelegate"/>
 	</bean>
     
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -263,10 +194,6 @@
     	<property name="destinationName" value="topic/masterdataCache"></property>
     </bean>
 
-    <bean id="topic.resourceCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
-    	<property name="destinationName" value="topic/resourceCache"></property>
-    </bean>
-
     <bean id="topic.localizationChanges" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/localizationChanges"></property>
     </bean>
@@ -313,7 +240,8 @@
 
 	<!-- Security end -->
 
-	<!-- remoting start -->
+	<!-- remote services -->
+	
 	<bean id="httpInvokerProxyFactoryBean" class="org.nuclos.client.NuclosHttpInvokerProxyFactoryBean"
 		abstract="true">
 		<!-- property name="serviceUrl" value="${url.remoting}/DummyForAbstract"/ -->
@@ -321,60 +249,11 @@
         <property name="nuclosHttpInvokerAttributeContext" ref="nuclosHttpInvokerAttributeContext" />
 	</bean>
 	
-	<bean id="apiUserSettingsService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="apiUserSettingsService" />
-	    <property name="serviceUrl" value="${url.remoting}/apiUserSettingsService"/>
-	    <property name="serviceInterface" 
-	    	value="org.nuclos.api.service.UserSettingsService" />
-	</bean>
-	
-	<bean id="apiServerPropertyService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="apiServerPropertyService" />
-	    <property name="serviceUrl" value="${url.remoting}/apiServerPropertyService"/>
-	    <property name="serviceInterface" 
-	    	value="org.nuclos.api.service.ServerPropertyService" />
-	</bean>
-
-	<bean id="parameterService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="parameterService" />
-		<property name="serviceUrl" value="${url.remoting}/ParameterService" />
+	<bean id="securityService" parent="httpInvokerProxyFactoryBean">
+		<qualifier value="securityService" />
+		<property name="serviceUrl" value="${url.remoting}/SecurityService" />
 		<property name="serviceInterface"
-			value="org.nuclos.server.common.ejb3.ParameterFacadeRemote" />
-	</bean>
-
-	<bean id="attributeService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="attributeService" />
-		<property name="serviceUrl" value="${url.remoting}/AttributeService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.attribute.ejb3.AttributeFacadeRemote" />
-	</bean>
-
-	<bean id="masterDataService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="masterDataService" />
-		<property name="serviceUrl" value="${url.remoting}/MasterDataService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote" />
-	</bean>
-
-	<bean id="serverMetaService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="serverMetaService" />
-		<property name="serviceUrl" value="${url.remoting}/ServerMetaService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote" />
-	</bean>
-
-	<bean id="localeService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="localeService" />
-		<property name="serviceUrl" value="${url.remoting}/LocaleService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.common.ejb3.LocaleFacadeRemote" />
-	</bean>
-
-	<bean id="localUserCachesService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="localUserCachesService" />
-		<property name="serviceUrl" value="${url.remoting}/LocalUserCachesService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.common.ejb3.LocalUserCachesFacadeRemote" />
+			value="org.nuclos.server.common.ejb3.SecurityFacadeRemote" />
 	</bean>
 
 	<bean id="preferencesService" parent="httpInvokerProxyFactoryBean">
@@ -384,271 +263,24 @@
 			value="org.nuclos.server.common.ejb3.PreferencesFacadeRemote" />
 	</bean>
 
-	<bean id="securityService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="securityService" />
-		<property name="serviceUrl" value="${url.remoting}/SecurityService" />
+	<bean id="parameterService" parent="httpInvokerProxyFactoryBean">
+		<qualifier value="parameterService" />
+		<property name="serviceUrl" value="${url.remoting}/ParameterService" />
 		<property name="serviceInterface"
-			value="org.nuclos.server.common.ejb3.SecurityFacadeRemote" />
+			value="org.nuclos.server.common.ejb3.ParameterFacadeRemote" />
 	</bean>
 
-	<bean id="metaDataService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="metaDataService" />
-		<property name="serviceUrl" value="${url.remoting}/MetaDataService" />
+	<bean id="serverMetaService" parent="httpInvokerProxyFactoryBean">
+		<qualifier value="serverMetaService" />
+		<property name="serviceUrl" value="${url.remoting}/ServerMetaService" />
 		<property name="serviceInterface"
-			value="org.nuclos.server.masterdata.ejb3.MetaDataFacadeRemote" />
+			value="org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote" />
 	</bean>
 
-	<bean id="genericObjectService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="genericObjectService" />
-		<property name="serviceUrl" value="${url.remoting}/GenericObjectService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.genericobject.ejb3.GenericObjectFacadeRemote" />
-	</bean>
-
-	<bean id="generatorService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="generatorService" />
-		<property name="serviceUrl" value="${url.remoting}/GeneratorService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote" />
-	</bean>
-
-	<bean id="searchFilterService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="searchFilterService" />
-		<property name="serviceUrl" value="${url.remoting}/SearchFilterService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.searchfilter.ejb3.SearchFilterFacadeRemote" />
-	</bean>
-
-	<bean id="resourceService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="resourceService" />
-		<property name="serviceUrl" value="${url.remoting}/ResourceService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.resource.ejb3.ResourceFacadeRemote" />
-	</bean>
-
-	<bean id="taskService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="taskService" />
-		<property name="serviceUrl" value="${url.remoting}/TaskService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.common.ejb3.TaskFacadeRemote" />
-	</bean>
-
-	<bean id="timelimitTaskService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="timelimitTaskService" />
-		<property name="serviceUrl" value="${url.remoting}/TimelimitTaskService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.common.ejb3.TimelimitTaskFacadeRemote" />
-	</bean>
-
-	<bean id="layoutService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="layoutService" />
-		<property name="serviceUrl" value="${url.remoting}/LayoutService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.attribute.ejb3.LayoutFacadeRemote" />
-	</bean>
-
-	<bean id="datasourceService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="datasourceService" />
-		<property name="serviceUrl" value="${url.remoting}/DatasourceService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.report.ejb3.DatasourceFacadeRemote" />
-	</bean>
-
-	<bean id="entityService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="entityService" />
-		<property name="serviceUrl" value="${url.remoting}/EntityService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.masterdata.ejb3.EntityFacadeRemote" />
-	</bean>
-
-	<bean id="entityObjectService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="entityObjectService" />
-		<property name="serviceUrl" value="${url.remoting}/EntityObjectService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.common.ejb3.EntityObjectFacadeRemote" />
-	</bean>
-
-	<bean id="genericObjectGroupService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="genericObjectGroupService" />
-		<property name="serviceUrl" value="${url.remoting}/GenericObjectGroupService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeRemote" />
-	</bean>
-
-	<bean id="reportService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="reportService" />
-		<property name="serviceUrl" value="${url.remoting}/ReportService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.report.ejb3.ReportFacadeRemote" />
-	</bean>
-
-	<bean id="ruleEngineService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="ruleEngineService" />
-		<property name="serviceUrl" value="${url.remoting}/RuleEngineService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeRemote" />
-	</bean>
-	
-	<bean id="eventSupportService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="eventSupportService" />
-		<property name="serviceUrl" value="${url.remoting}/EventSupportService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.eventsupport.ejb3.EventSupportFacadeRemote" />
-	</bean>
-	
-	<bean id="timelimitRuleService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="timelimitRuleService" />
-		<property name="serviceUrl" value="${url.remoting}/TimelimitRuleService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeRemote" />
-	</bean>
-
-	<bean id="treeNodeService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="treeNodeService" />
-		<property name="serviceUrl" value="${url.remoting}/TreeNodeService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote" />
-	</bean>
-
-	<bean id="consoleService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="consoleService" />
-		<property name="serviceUrl" value="${url.remoting}/ConsoleService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.console.ejb3.ConsoleFacadeRemote" />
-	</bean>
-
-	<bean id="wikiService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="wikiService" />
-		<property name="serviceUrl" value="${url.remoting}/WikiService" />
-		<property name="serviceInterface" value="org.nuclos.server.wiki.ejb3.WikiFacadeRemote" />
-	</bean>
-
-	<bean id="transferService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="transferService" />
-		<property name="serviceUrl" value="${url.remoting}/TransferService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.dbtransfer.TransferFacadeRemote" />
-	</bean>
-
-	<bean id="stateService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="stateService" />
-		<property name="serviceUrl" value="${url.remoting}/StateService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.statemodel.ejb3.StateFacadeRemote" />
-	</bean>
-
-	<bean id="importService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="importService" />
-		<property name="serviceUrl" value="${url.remoting}/ImportService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.fileimport.ejb3.ImportFacadeRemote" />
-	</bean>
-
-	<bean id="liveSearchService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="liveSearchService" />
-		<property name="serviceUrl" value="${url.remoting}/LiveSearchService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.livesearch.ejb3.LiveSearchFacadeRemote" />
-	</bean>
-
-	<bean id="schedulerControlService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="schedulerControlService" />
-		<property name="serviceUrl" value="${url.remoting}/SchedulerControlService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.report.ejb3.SchedulerControlFacadeRemote" />
-	</bean>
-
-	<bean id="processMonitorService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="processMonitorService" />
-		<property name="serviceUrl" value="${url.remoting}/ProcessMonitorService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.processmonitor.ejb3.ProcessMonitorFacadeRemote" />
-	</bean>
-
-	<bean id="masterDataModuleService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="masterDataModuleService" />
-		<property name="serviceUrl" value="${url.remoting}/MasterDataModuleService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.masterdata.ejb3.MasterDataModuleFacadeRemote" />
-	</bean>
-
-	<bean id="jobControlService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="jobControlService" />
-		<property name="serviceUrl" value="${url.remoting}/JobControlService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.job.ejb3.JobControlFacadeRemote" />
-	</bean>
-
-	<bean id="ldapDataService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="ldapDataService" />
-		<property name="serviceUrl" value="${url.remoting}/LdapDataService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.ldap.ejb3.LDAPDataFacadeRemote" />
-	</bean>
-
-	<bean id="xmlExportImportProtocolService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="xmlExportImportProtocolService" />
-		<property name="serviceUrl"
-			value="${url.remoting}/XmlExportImportProtocolService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.transfer.ejb3.XmlExportImportProtocolFacadeRemote" />
-	</bean>
-
-	<bean id="xmlExportService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="xmlExportService" />
-		<property name="serviceUrl" value="${url.remoting}/XmlExportService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.transfer.ejb3.XmlExportFacadeRemote" />
-	</bean>
-
-	<bean id="xmlImportService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="xmlImportService" />
-		<property name="serviceUrl" value="${url.remoting}/XmlImportService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.transfer.ejb3.XmlImportFacadeRemote" />
-	</bean>
-
-	<bean id="instanceService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="instanceService" />
-		<property name="serviceUrl" value="${url.remoting}/InstanceService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.processmonitor.ejb3.InstanceFacadeRemote" />
-	</bean>
-
-	<bean id="customComponentService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="customComponentService" />
-		<property name="serviceUrl" value="${url.remoting}/CustomComponentService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.customcomp.ejb3.CustomComponentFacadeRemote" />
-	</bean>
-
-	<bean id="codeService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="codeService" />
-		<property name="serviceUrl" value="${url.remoting}/CodeService" />
-		<property name="serviceInterface"
-			value="org.nuclos.server.customcode.ejb3.CodeFacadeRemote" />
-	</bean>
-
-	<bean id="userService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="userService" />
-		<property name="serviceUrl" value="${url.remoting}/UserService" />
-		<property name="serviceInterface" value="org.nuclos.common.security.UserFacadeRemote" />
-	</bean>
-
-	<bean id="tasklistService" parent="httpInvokerProxyFactoryBean">
-		<qualifier value="tasklistService" />
-		<property name="serviceUrl" value="${url.remoting}/TasklistService" />
-		<property name="serviceInterface"
-			value="org.nuclos.common.tasklist.TasklistFacadeRemote" />
-	</bean>
-
-	<!-- bean id="lookupService" class="org.nuclos.client.common.LocaleDelegate">
-		<property name="localeService" ref="localeService" />
-	</bean -->
-
-	<bean id="enumeratedDefaultValueProvider" class="org.nuclos.client.masterdata.ClientEnumeratedDefaultValueProvider" />
+	<!-- end of remote services -->
 
 	<bean id="serviceLocator" class="org.nuclos.common2.ServiceLocator"/>
 	<bean id="appSubContext" class="org.nuclos.common.SpringApplicationSubContextsHolder"/>
-		
+	<bean id="startIcons" class="org.nuclos.client.StartIcons"/>
+			
 </beans>

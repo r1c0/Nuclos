@@ -71,13 +71,6 @@ public class NuclosIcons {
 		return INSTANCE;
 	}
 	
-	public Icon getIconCustomer() {
-		final String sCustomerIconFilename = LangUtils.defaultIfNull(
-				ApplicationProperties.getInstance().getCustomerIconFileName(),
-				"org/nuclos/client/images/eplus-logo-scaled.png");
-		return this.getCachedImageIcon(sCustomerIconFilename);		
-	}
-
 	/**
 	 * @return an opaque 16x16 icon that should be used as frame icon.
 	 */
@@ -126,18 +119,6 @@ public class NuclosIcons {
 		// @todo Use a Nucleus icon as default
 		final String sBigIconFilename = LangUtils.defaultIfNull(
 				ApplicationProperties.getInstance().getBigTransparentIconFileName(),
-				"org/nuclos/client/images/nucleus-96x96-transparent.png"
-		);
-		return this.getCachedImageIcon(sBigIconFilename);
-	}
-	
-	/**
-	 * @return a transparent (preferably) 512x512 or greater icon.
-	 */
-	public ImageIcon getBigTransparentApplicationIcon512() {
-		// @todo Use a Nucleus icon as default
-		final String sBigIconFilename = LangUtils.defaultIfNull(
-				ApplicationProperties.getInstance().getBigTransparentIcon512FileName(),
 				"org/nuclos/client/images/nucleus-96x96-transparent.png"
 		);
 		return this.getCachedImageIcon(sBigIconFilename);

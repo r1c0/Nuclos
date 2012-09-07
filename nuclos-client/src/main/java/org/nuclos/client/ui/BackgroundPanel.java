@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.StartIcons;
 import org.nuclos.client.image.ImageScaler;
 import org.nuclos.common.ApplicationProperties;
 
@@ -42,7 +42,7 @@ public class BackgroundPanel extends JPanel {
 
 	private final Color bg = ApplicationProperties.getInstance().getLoginPanelBgColor(Color.WHITE);
 	
-	private final Image img512 = NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage();
+	private final Image img512 = StartIcons.getInstance().getBigTransparentApplicationIcon512().getImage();
 	
 	// private final ImageIcon bgImg = new ImageIcon(img512.getScaledInstance(250, -1, java.awt.Image.SCALE_SMOOTH));
 	private final ImageIcon bgImg = new ImageIcon(ImageScaler.scaleImage(img512, 250, -1));

@@ -73,6 +73,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.StartIcons;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetListener;
@@ -2220,7 +2221,7 @@ public class MainFrameTabbedPane {
 	
 	public static class EmptyPanel extends JPanel {
 		
-		private final ImageIcon bgImg = new ImageIcon(NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
+		private final ImageIcon bgImg = new ImageIcon(StartIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
 		
 		private JLabel lbTitle;
 		

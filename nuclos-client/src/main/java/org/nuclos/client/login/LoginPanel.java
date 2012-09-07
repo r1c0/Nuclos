@@ -59,6 +59,7 @@ import javax.swing.event.DocumentListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.StartIcons;
 import org.nuclos.client.ui.BackgroundPanel;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.UIUtils;
@@ -122,7 +123,7 @@ public class LoginPanel extends BackgroundPanel {
 			}
 		});	
 		
-		Icon iconCustomer = NuclosIcons.getInstance().getIconCustomer();
+		Icon iconCustomer = StartIcons.getInstance().getIconCustomer();
 		JLabel labLogo = new JLabel(iconCustomer);
 		labLogo.setBorder(null);
 		labLogo.setPreferredSize(new Dimension(iconCustomer.getIconWidth(),
