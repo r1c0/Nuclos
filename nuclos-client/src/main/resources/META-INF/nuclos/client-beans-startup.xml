@@ -37,7 +37,7 @@
 		Enable Annotation with @Configurable
 		http://forum.springsource.org/archive/index.php/t-39571.html 
 	 -->
-	<context:annotation-config/>
+	<!-- context:annotation-config/ -->
 
 	<!--
 		Enable @AspectJ Support of Sprint AOP
