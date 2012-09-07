@@ -34,7 +34,6 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
 
-//@Configurable
 public class ReportSearchStrategy extends MasterDataSearchStrategy {
 
 	private final NuclosEntity entity;

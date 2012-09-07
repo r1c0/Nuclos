@@ -28,7 +28,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
  * @author	<a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
  */
-//@Configurable
 public abstract class AbstractCollectable implements Collectable {
 	
 	protected AbstractCollectable() {

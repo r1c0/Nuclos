@@ -29,7 +29,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
 /**
  * common controller for the Search and Details panels.
  */
-//@Configurable(preConstruction=true)
 public abstract class CommonController<Clct extends Collectable> implements Closeable {
 	
 	private static final Logger LOG = Logger.getLogger(CommonController.class);

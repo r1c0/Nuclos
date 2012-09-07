@@ -29,7 +29,6 @@ import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.ResultListener;
 
-//@Configurable
 public class ScriptLoggerController extends MainFrameTabController {
 
 	private final static Logger LOG = Logger.getLogger(ScriptEvaluator.class);

@@ -54,7 +54,6 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 
 	public static final String[] labels = TranslationVO.labelsEntity;
@@ -78,7 +77,6 @@ public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 		initComponents();
 	}
 	
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL, 130,130, TableLayout.FILL, 10}, {TableLayout.FILL, 10}};

@@ -91,7 +91,6 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep implements CollectableResouceSaveListener {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityCommonPropertiesStep.class);
@@ -298,7 +297,6 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		return false;
 	}
 
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 

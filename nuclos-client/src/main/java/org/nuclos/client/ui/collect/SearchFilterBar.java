@@ -58,7 +58,6 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.PreferencesException;
 
-//@Configurable
 public class SearchFilterBar implements ItemSelectable {
 	
 	private static final Logger LOG = Logger.getLogger(SearchFilterBar.class);
@@ -79,7 +78,6 @@ public class SearchFilterBar implements ItemSelectable {
 		init();
 	}
 	
-	//@PostConstruct
 	void init() {
 		pnl = new Panel();
 		scroll = new JScrollPane(pnl, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {

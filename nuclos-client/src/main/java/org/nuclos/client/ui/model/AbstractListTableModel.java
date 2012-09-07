@@ -31,7 +31,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
  * Abstract TableModel which manages its rows as List of type R.
  * @param R row type
  */
-//@Configurable
 public abstract class AbstractListTableModel<R> extends AbstractTableModel implements Iterable<R> {
 
 	private List<R> lstRows;

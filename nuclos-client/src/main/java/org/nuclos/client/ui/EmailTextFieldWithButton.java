@@ -39,10 +39,7 @@ import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-//@Configurable
 public class EmailTextFieldWithButton extends HyperlinkTextFieldWithButton {
 
 	private static final long serialVersionUID = 1L;

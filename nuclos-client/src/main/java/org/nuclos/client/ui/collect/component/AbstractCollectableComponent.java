@@ -128,8 +128,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import com.jhlabs.image.BoxBlurFilter;
 
@@ -144,7 +142,6 @@ import com.jhlabs.image.BoxBlurFilter;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-//@Configurable
 public abstract class AbstractCollectableComponent
 		implements CollectableComponent, CollectableComponentModelListener, JPopupMenuFactory, ToolTipTextProvider {
 
@@ -262,7 +259,6 @@ public abstract class AbstractCollectableComponent
 		assert isSearchComponent() == bSearchable;
 	}
 
-	//@Autowired
 	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}

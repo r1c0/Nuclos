@@ -99,7 +99,6 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:thomas.schiffmann@novabit.de">thomas.schiffmann</a>
  * @version 01.00.00
  */
-//@Configurable
 public class PaletteController implements DragGestureListener, LayoutMLConstants, WYSIWYGEditorModes {
 	
 	private JPanel palettePanel = new JPanel();
@@ -122,7 +121,6 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 		init();
 	}
 	
-	//@PostConstruct
 	void init() {
 		palettePanel.setLayout(new GridBagLayout());
 

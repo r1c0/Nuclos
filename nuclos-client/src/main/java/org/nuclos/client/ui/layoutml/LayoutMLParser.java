@@ -149,7 +149,6 @@ import org.xml.sax.SAXParseException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-//@Configurable
 public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 	private static final Logger log = Logger.getLogger(LayoutMLParser.class.getName());
@@ -3962,7 +3961,6 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		/**
 		 * inner class <code>LayoutComponentElementProcessor</code>. Processes a layout component element.
 		 */
-		//@Configurable
 		class LayoutComponentElementProcessor extends ComponentElementProcessor {
 
 			public LayoutComponentElementProcessor() {

@@ -51,7 +51,6 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosUserGroupRightsStep.class);
@@ -77,7 +76,6 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 		initComponents();
 	}
 	
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		
@@ -179,12 +177,9 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 					voAdd = NuclosWizardUtils.setFieldsForUserRight(voRole, (String)voRole.getField("name"), voAdd, this.model);
 					this.userRightsModel.addRole(voAdd);
 				}
-			}
-			
-			
+			}		
 		}		
 		
 	}
-	
 
 }

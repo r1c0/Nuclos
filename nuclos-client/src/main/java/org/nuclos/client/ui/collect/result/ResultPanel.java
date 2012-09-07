@@ -120,7 +120,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-//@Configurable
 public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_RESULT);

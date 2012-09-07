@@ -120,7 +120,6 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttributeAbstractStep {
 	
 	public static class ListOfValues extends org.nuclos.client.ui.ListOfValues implements ICollectableListOfValues, JPopupMenuFactory, CollectableEventListener {
@@ -470,7 +469,6 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		initComponents();
 	}
 
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{150,20, TableLayout.FILL}, {20,20,20,20,20,20,20,20,90, TableLayout.FILL}};

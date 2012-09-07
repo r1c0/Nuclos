@@ -69,7 +69,6 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 
-//@Configurable
 public class CopyPreferencesPanel extends JPanel {
 
 	private static final Logger LOG = Logger.getLogger(CopyPreferencesPanel.class);
@@ -106,9 +105,10 @@ public class CopyPreferencesPanel extends JPanel {
 		setLayout(new BorderLayout());
 		add(sourceUserBox, BorderLayout.NORTH);
 		add(prefsPanel, BorderLayout.CENTER);
+		
+		init();
 	}
 	
-	@PostConstruct
 	final void init() {
 		userCollectableCbx.setSelectedItem(defaultUser);
 		initPreferencesTree(defaultUser);

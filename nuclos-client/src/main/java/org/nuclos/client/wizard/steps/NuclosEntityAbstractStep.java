@@ -40,7 +40,6 @@ import org.pietschy.wizard.WizardModel;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public abstract class NuclosEntityAbstractStep extends PanelWizardStep implements Closeable, IReferenceHolder {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAbstractStep.class);
@@ -62,7 +61,6 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep implement
 		super(name, summary, icon);
 	}
 	
-	//@PostConstruct
 	protected abstract void initComponents();
 		
 	WorkspaceDescription.EntityPreferences getEntityPreferences() {

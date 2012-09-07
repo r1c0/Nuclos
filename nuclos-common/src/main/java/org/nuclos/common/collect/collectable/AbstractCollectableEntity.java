@@ -33,7 +33,6 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-//@Configurable(preConstruction=true)
 public abstract class AbstractCollectableEntity implements CollectableEntity {
 	
 	private final String sName;

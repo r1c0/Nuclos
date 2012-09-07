@@ -64,7 +64,6 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttributeAbstractStep implements IReferenceHolder {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeValueListShipStep.class);
@@ -94,7 +93,6 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		initComponents();
 	}
 	
-	//@PostConstruct
 	@Override
 	protected void initComponents() {		
 		

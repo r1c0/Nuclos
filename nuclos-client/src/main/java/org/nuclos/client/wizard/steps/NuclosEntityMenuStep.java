@@ -65,7 +65,6 @@ import org.pietschy.wizard.InvalidStateException;
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-//@Configurable
 public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 	private static final long serialVersionUID = 2900241917334839766L;
@@ -91,7 +90,6 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 		initComponents();
 	}
 
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL}, {TableLayout.FILL}};

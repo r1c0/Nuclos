@@ -85,7 +85,6 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityNameStep.class);
@@ -121,7 +120,6 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		this.toEdit = vo;
 	}
 
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 

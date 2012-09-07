@@ -47,7 +47,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 
-//@Configurable(preConstruction=true)
 public class ToolTipsTableHeader extends JTableHeader {
 
 	private CollectableEntityFieldBasedTableModel entityTableModel;

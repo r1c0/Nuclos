@@ -33,7 +33,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 
 	private JLabel lbName;
@@ -56,7 +55,6 @@ public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 		initComponents();
 	}
 	
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		

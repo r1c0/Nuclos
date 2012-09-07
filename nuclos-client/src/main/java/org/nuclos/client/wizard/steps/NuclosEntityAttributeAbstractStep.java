@@ -33,7 +33,6 @@ import org.pietschy.wizard.WizardModel;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public abstract class NuclosEntityAttributeAbstractStep extends PanelWizardStep implements Closeable {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeAbstractStep.class);

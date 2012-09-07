@@ -107,7 +107,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-//@Configurable(preConstruction=true)
 public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDropTargetVisitor, IconResolverConstants {
 
 	public static final String IMAGE_ICON_PROPERTY = "NOVABIT_DESKTOP_ICON";

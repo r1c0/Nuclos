@@ -119,7 +119,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
  * @since Nuclos 3.1.01 this is a top-level class.
  * @author Thomas Pasch
  */
-//@Configurable(preConstruction=true)
 public class ResultController<Clct extends Collectable> {
 
 	private static final Logger LOG = Logger.getLogger(ResultController.class);

@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -78,7 +77,6 @@ import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-//@Configurable
 public class CollectableListOfValues extends LabeledCollectableComponentWithVLP implements ICollectableListOfValues, CollectableEventListener {
 
 	private static final Logger LOG = Logger.getLogger(CollectableListOfValues.class);
@@ -162,7 +160,6 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		init();
 	}
 	
-	//@PostConstruct
 	final void init() {
 		final CollectableEntityField clctef = getEntityField();
 		if (clctef == null) {

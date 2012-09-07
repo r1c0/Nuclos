@@ -94,7 +94,6 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
  *
  */
-//@Configurable
 public class FixedColumnRowHeader extends SubformRowHeader {
 
 	private static final Logger LOG = Logger.getLogger(FixedColumnRowHeader.class);

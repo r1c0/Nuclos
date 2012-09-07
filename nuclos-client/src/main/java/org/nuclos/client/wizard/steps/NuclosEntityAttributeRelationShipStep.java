@@ -70,7 +70,6 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-//@Configurable
 public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttributeAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeRelationShipStep.class);
@@ -115,7 +114,6 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		this.lstAttributes = lst;
 	}
 
-	//@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.PREFERRED,40, TableLayout.FILL}, {20,20,20,20,100,20,TableLayout.PREFERRED, TableLayout.FILL}};
