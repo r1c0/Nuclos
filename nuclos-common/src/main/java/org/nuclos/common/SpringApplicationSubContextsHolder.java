@@ -91,6 +91,12 @@ public class SpringApplicationSubContextsHolder {
 				bean = getSubContextBean(strBean, subs);
 			}
 			if (bean == null) {
+				synchronized (lastContextCondition) {
+					lastContextCondition.waitFor();
+				}
+				bean = getSubContextBean(strBean, subs);
+			}
+			if (bean == null) {
 				throw new NoSuchBeanDefinitionException(strBean);
 			}
 		}
@@ -127,6 +133,12 @@ public class SpringApplicationSubContextsHolder {
 				}
 			}
 			else {
+				bean = getSubContextBean(c, subs);
+			}
+			if (bean == null) {
+				synchronized (lastContextCondition) {
+					lastContextCondition.waitFor();
+				}
 				bean = getSubContextBean(c, subs);
 			}
 			if (bean == null) {

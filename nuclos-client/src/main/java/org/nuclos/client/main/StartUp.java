@@ -490,10 +490,6 @@ public class StartUp  {
 						Main.exit(Main.ExitResult.ABNORMAL);
 					}
 					
-					synchronized (lastContextCondition) {
-						lastContextCondition.waitFor();
-					}
-
 					UIUtils.runCommandForTabbedPane(null, new Runnable() {
 						@Override
                         public void run() {
@@ -702,9 +698,6 @@ public class StartUp  {
 	private void createMainController(String sUserName, String sNucleusServerName, LoginController lc)
 			throws CommonPermissionException {
 		log.info("waiting for lastContextCondition in createMainController");
-		synchronized (lastContextCondition) {
-			lastContextCondition.waitFor();
-		}
 		
 		final SearchFilterCache searchFilterCache = SearchFilterCache.getInstance();
 		searchFilterCache.setUserName(sUserName);
