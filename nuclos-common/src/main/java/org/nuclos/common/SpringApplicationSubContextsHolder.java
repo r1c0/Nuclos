@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common2.ContextConditionVariable;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.support.AbstractXmlApplicationContext;
@@ -36,6 +37,8 @@ public class SpringApplicationSubContextsHolder {
 
 	private final ArrayList<AbstractXmlApplicationContext> subContexts = new ArrayList<AbstractXmlApplicationContext>();
 
+	private ContextConditionVariable lastContextCondition;
+	
 	/**
 	 * private Constructor which
 	 * initialize Spring ApplicationContext
@@ -53,6 +56,10 @@ public class SpringApplicationSubContextsHolder {
 	
 	public void setClientContext(AbstractXmlApplicationContext ctx) {
 		this.clientContext = ctx;
+	}
+	
+	public void setLastContextCondition(ContextConditionVariable lastContextCondition) {
+		this.lastContextCondition = lastContextCondition;
 	}
 
 	public synchronized void registerSubContext(AbstractXmlApplicationContext ctx) {
@@ -81,12 +88,7 @@ public class SpringApplicationSubContextsHolder {
 				}
 			}
 			else {
-				for (AbstractXmlApplicationContext c : subs) {
-					if (c.containsBean(strBean)) {
-						bean = c.getBean(strBean);
-						break;
-					}
-				}
+				bean = getSubContextBean(strBean, subs);
 			}
 			if (bean == null) {
 				throw new NoSuchBeanDefinitionException(strBean);
@@ -98,6 +100,17 @@ public class SpringApplicationSubContextsHolder {
 		return bean;
 	}
 	
+	private static <T> T getSubContextBean(String strBean, List<AbstractXmlApplicationContext> subs) {
+		T bean = null;
+		for (AbstractXmlApplicationContext c : subs) {
+			if (c.containsBean(strBean)) {
+				bean = (T) c.getBean(strBean);
+				break;
+			}
+		}
+		return bean;
+	}
+
 	public <T> T getBean(Class<T> c) {		
 		T bean = null;
 		try{
@@ -114,12 +127,7 @@ public class SpringApplicationSubContextsHolder {
 				}
 			}
 			else {
-				for (AbstractXmlApplicationContext sub : subs) {
-					if (!sub.getBeansOfType(c).isEmpty()) {
-						bean = sub.getBean(c);
-						break;
-					}
-				}
+				bean = getSubContextBean(c, subs);
 			}
 			if (bean == null) {
 				throw new NoSuchBeanDefinitionException(c.getName());
@@ -127,6 +135,17 @@ public class SpringApplicationSubContextsHolder {
 		} catch (BeansException e) {
 			throw new NuclosFatalException(e);
 		} 
+		return bean;
+	}
+	
+	private static <T> T getSubContextBean(Class<T> c, List<AbstractXmlApplicationContext> subs) {
+		T bean = null;
+		for (AbstractXmlApplicationContext sub : subs) {
+			if (!sub.getBeansOfType(c).isEmpty()) {
+				bean = sub.getBean(c);
+				break;
+			}
+		}
 		return bean;
 	}
 

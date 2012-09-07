@@ -73,8 +73,8 @@ import org.nuclos.common.CryptUtil;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.security.RemoteAuthenticationManager;
+import org.nuclos.common2.ContextConditionVariable;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -120,7 +120,7 @@ public class LoginController extends Controller<Component> {
 	private double                    shakeStepSize	    = 0;
 	private final String[] args;
 	
-	private StartUp.ClientContextCondition clientContextCondition;
+	private ContextConditionVariable clientContextCondition;
 	
 	// former Spring injection
 	
@@ -136,7 +136,7 @@ public class LoginController extends Controller<Component> {
 		this(null, new String[] {}, null, null);
 	}
 
-	public LoginController(Component parent, String[] args, ClassPathXmlApplicationContext startupContext, StartUp.ClientContextCondition clientContextCondition) {
+	public LoginController(Component parent, String[] args, ClassPathXmlApplicationContext startupContext, ContextConditionVariable clientContextCondition) {
 		super(parent);
 		this.args = args;
 		this.clientContextCondition = clientContextCondition;

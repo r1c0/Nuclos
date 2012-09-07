@@ -66,6 +66,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.startup.Startup;
+import org.nuclos.common2.ContextConditionVariable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
@@ -116,50 +117,11 @@ public class StartUp  {
 	 */
 	private static Logger log;
 	
-	public static class ClientContextCondition {
-		
-		private static final Logger LOG = Logger.getLogger(ClientContextCondition.class);
-		
-		private final String name;
-		
-		private boolean refreshed = false;
-		
-		private ClientContextCondition(String name) {
-			this.name = name;
-		}
-		
-		public boolean isRefreshed() {
-			return refreshed;
-		}
-		
-		public void waitFor() {
-			LOG.info("Starting waitFor() on " + name);
-			try {
-				for(int i = 0; !refreshed && i < 1000; ++i) {
-					wait(100);
-				}
-			}
-			catch (InterruptedException e) {
-				// ignore
-			}
-			if (!refreshed) {
-				throw new IllegalStateException("Can't create MainController: Spring context not initialized!");
-			}
-			LOG.info("Finished waitFor() on " + name);
-		}
-		
-		private void refreshed() {
-			LOG.info("refreshed() on " + name);
-			refreshed = true;
-		}
-		
-	}
-	
 	private static class StartUpApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
 		
-		private final ClientContextCondition contextCondition;
+		private final ContextConditionVariable contextCondition;
 		
-		private StartUpApplicationListener(ClientContextCondition contextCondition) {
+		private StartUpApplicationListener(ContextConditionVariable contextCondition) {
 			this.contextCondition = contextCondition;
 		}
 		
@@ -197,18 +159,18 @@ public class StartUp  {
 	/**
 	 * Condition variable for processing themes.
 	 */
-	private final ClientContextCondition themesContextCondition = new ClientContextCondition("themes");
+	private final ContextConditionVariable themesContextCondition = new ContextConditionVariable("themes");
 	
 	/**
 	 * Condition variable for Spring client context wait (e.g. client-beans.xml)
 	 */
-	private final ClientContextCondition clientContextCondition = new ClientContextCondition("client");
+	private final ContextConditionVariable clientContextCondition = new ContextConditionVariable("client");
 	
 	/**
 	 * Condition variable for Spring complete initialization (e.g. all nuclos extension
 	 * and their associated Spring contexts).
 	 */
-	private final ClientContextCondition lastContextCondition = new ClientContextCondition("extensions");
+	private final ContextConditionVariable lastContextCondition = new ContextConditionVariable("extensions");
 	
 	//
 	
@@ -304,6 +266,7 @@ public class StartUp  {
 					clientContext.setClassLoader(cl);
 					final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
 					holder.setClientContext(clientContext);
+					holder.setLastContextCondition(lastContextCondition);
 					// Thread.yield();
 					clientContext.refresh();
 					log.info("Spring clientContext refreshed");
