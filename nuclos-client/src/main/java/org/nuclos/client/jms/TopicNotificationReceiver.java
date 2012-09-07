@@ -64,6 +64,11 @@ public class TopicNotificationReceiver implements InitializingBean, ApplicationC
 	
 	//
 	
+	/**
+	 * realSubscribe must only be called after the Spring clientContext has initialized.
+	 */
+	private boolean readyToSubscribe = false;
+	
 	private boolean deferredSubscribe = true;
 
 	private TopicConnection topicconn;
@@ -71,8 +76,6 @@ public class TopicNotificationReceiver implements InitializingBean, ApplicationC
 	private List<TopicInfo> infos = new ArrayList<TopicInfo>();
 	
 	// Spring injection
-	
-	// private SpringLocaleDelegate cld;
 	
 	private ConnectionFactory jmsFactory;
 	
@@ -125,10 +128,6 @@ public class TopicNotificationReceiver implements InitializingBean, ApplicationC
 		}
 		catch (JMSException e) {
 			throw new NuclosFatalException("Can't establish JMS connection", e);
-			/*
-			throw new NuclosFatalException(cld.getMessage(
-					"TopicNotificationReceiver.3", "Die JMS-Topic-Verbindung konnte nicht aufgebaut werden."), e);
-			 */
 		}
 	}
 	
@@ -138,13 +137,15 @@ public class TopicNotificationReceiver implements InitializingBean, ApplicationC
 	}
 	
 	// @Autowired
-	public final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
-		// this.cld = cld;
-	}
-	
-	// @Autowired
 	public final void setShutdownActions(ShutdownActions shutdownActions) {
 		this.shutdownActions = shutdownActions;
+	}
+	
+	public synchronized final void setReadyToSubscribe(boolean readyToSubscribe) {
+		this.readyToSubscribe = readyToSubscribe;
+		if (readyToSubscribe && deferredSubscribe) {
+			realSubscribe();
+		}
 	}
 	
 	@Override
@@ -184,7 +185,7 @@ public class TopicNotificationReceiver implements InitializingBean, ApplicationC
 	}
 	
 	public synchronized final void realSubscribe() {
-		if (infos.isEmpty()) return;
+		if (!readyToSubscribe || infos.isEmpty()) return;
 		
 		final List<TopicInfo> copy = new ArrayList<TopicInfo>(infos);
 		infos.clear();

@@ -271,6 +271,9 @@ public class StartUp  {
 					clientContext.refresh();
 					log.info("Spring clientContext refreshed");
 					clientContext.registerShutdownHook();
+					// Ready for subscribe
+					final TopicNotificationReceiver tnr = startupContext.getBean(TopicNotificationReceiver.class);
+					tnr.setReadyToSubscribe(true);
 					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 					
 					// final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
