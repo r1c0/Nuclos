@@ -157,19 +157,8 @@
 	<bean id="genericObjectDelegate" class="org.nuclos.client.genericobject.GenericObjectDelegate" lazy-init="true">
 		<property name="genericObjectFacadeRemote" ref="genericObjectService"/>
 	</bean>
-	<bean id="genericObjectMetaDataCache" class="org.nuclos.client.genericobject.GenericObjectMetaDataCache" lazy-init="true"
-			factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.genericobject.GenericObjectMetaDataCache" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-		<property name="genericObjectDelegate" ref="genericObjectDelegate"/>
-	</bean>
 	<bean id="invokeWithInputRequiredSupport" class="org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport" lazy-init="true">
 		<property name="nuclosHttpInvokerAttributeContext" ref="nuclosHttpInvokerAttributeContext"/>
-	</bean>
-	<bean id="tasklistCache" class="org.nuclos.client.tasklist.TasklistCache" lazy-init="true"
-		factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.tasklist.TasklistCache" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 	</bean>
 	<bean id="localeDelegate" class="org.nuclos.client.common.LocaleDelegate"
 		factory-bean="deserializingFactoryBean" factory-method="createInstance">
@@ -188,12 +177,6 @@
 		<property name="masterDataFacadeRemote" ref="masterDataService"/>
 		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
 		<property name="masterDataCache" ref="masterDataCache"/>
-	</bean>
-	<bean id="metaDataCache" class="org.nuclos.client.masterdata.MetaDataCache" lazy-init="true"
-			factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.masterdata.MetaDataCache" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-		<property name="masterDataDelegate" ref="masterDataDelegate"/>
 	</bean>
 	<bean id="nuclosIcons" class="org.nuclos.client.NuclosIcons">
 		<property name="resourceCache" ref="resourceCache"/>
@@ -300,10 +283,6 @@
 
     <bean id="topic.masterdataCache" class="org.nuclos.client.jms.MultiMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/masterdataCache"></property>
-    </bean>
-
-    <bean id="topic.metadataCache" class="org.nuclos.client.jms.MultiMessageListenerContainer" parent="topic">
-    	<property name="destinationName" value="topic/metadataCache"></property>
     </bean>
 
     <bean id="topic.securityCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">

@@ -293,6 +293,29 @@
 		<property name="destinationName" value="topic/customcomponentCache"></property>
 	</bean>
     	
+	<bean id="metaDataCache" class="org.nuclos.client.masterdata.MetaDataCache"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.masterdata.MetaDataCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="masterDataDelegate" ref="masterDataDelegate"/>
+	</bean>
+    <bean id="topic.metadataCache" class="org.nuclos.client.jms.MultiMessageListenerContainer" parent="topic">
+    	<property name="destinationName" value="topic/metadataCache"></property>
+    </bean>
+	
+	<bean id="genericObjectMetaDataCache" class="org.nuclos.client.genericobject.GenericObjectMetaDataCache"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.genericobject.GenericObjectMetaDataCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="genericObjectDelegate" ref="genericObjectDelegate"/>
+	</bean>
+	
+    <bean id="tasklistCache" class="org.nuclos.client.tasklist.TasklistCache"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.tasklist.TasklistCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
+	
 	<bean id="nuclosConsole" class="org.nuclos.client.console.NuclosConsole" factory-method="newNuclosConsole"/>
 	
 	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
