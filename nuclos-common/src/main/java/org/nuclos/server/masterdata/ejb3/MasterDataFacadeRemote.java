@@ -218,7 +218,37 @@ public interface MasterDataFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	MasterDataVO create(String sEntityName, MasterDataVO mdvo,
+		DependantMasterDataMap mpDependants) throws CommonCreateException,
+		CommonPermissionException, NuclosBusinessRuleException;
+
+	/**
+	 * create a new master data record
+	 * @param mdvo the master data record to be created
+	 * @param mpDependants map containing dependant masterdata, if any
+	 * @return master data value object containing the newly created record
+	 * @precondition sEntityName != null
+	 * @precondition mdvo.getId() == null
+	 * @precondition (mpDependants != null) --> mpDependants.areAllDependantsNew()
+	 * @nucleus.permission checkWriteAllowed(sEntityName)
+	 */
+	@RolesAllowed("Login")
+	MasterDataVO create(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants, String customUsage) throws CommonCreateException,
+		CommonPermissionException, NuclosBusinessRuleException;
+
+	/**
+	 * modifies an existing master data record.
+	 * @param mdvo the master data record
+	 * @param mpDependants map containing dependant masterdata, if any
+	 * @return id of the modified master data record
+	 * @precondition sEntityName != null
+	 * @nucleus.permission checkWriteAllowed(sEntityName)
+	 */
+	@RolesAllowed("Login")
+	Object modify(String sEntityName, MasterDataVO mdvo,
+		DependantMasterDataMap mpDependants) throws CommonCreateException,
+		CommonFinderException, CommonRemoveException,
+		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
 	/**
@@ -236,6 +266,19 @@ public interface MasterDataFacadeRemote {
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException;
 
+	/**
+	 * method to delete an existing master data record
+	 * @param mdvo containing the master data record
+	 * @param bRemoveDependants remove all dependants if true, else remove only given (single) mdvo record
+	 * 			this is helpful for entities which have no layout
+	 * @precondition sEntityName != null
+	 * @nucleus.permission checkDeleteAllowed(sEntityName)
+	 */
+	@RolesAllowed("Login")
+	void remove(String sEntityName, MasterDataVO mdvo,
+		boolean bRemoveDependants) throws CommonFinderException,
+		CommonRemoveException, CommonStaleVersionException,
+		CommonPermissionException, NuclosBusinessRuleException;
 	/**
 	 * method to delete an existing master data record
 	 * @param mdvo containing the master data record
