@@ -34,11 +34,10 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.transfer.ejb3.XmlExportImportProtocolFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Controller for export/import protocol.
@@ -55,18 +54,17 @@ import org.springframework.beans.factory.annotation.Configurable;
  * NOTE: this controller should not be used, if the transfered data is not compressed
  *       because of memory problems
  */
-@Configurable(preConstruction=true)
 public class ExportImportCollectController extends MasterDataCollectController {
 
 	private final JButton btnCopyFile = new JButton();
 
 	private final String ZIP_EXTENSION = ".zip";
 	
-	// Spring injection
+	// former Spring injection
 
 	private XmlExportImportProtocolFacadeRemote xmlExportImportFacade;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -80,11 +78,16 @@ public class ExportImportCollectController extends MasterDataCollectController {
 	public ExportImportCollectController(MainFrameTab tabIfAny) {
 		super(NuclosEntity.IMPORTEXPORT, tabIfAny, null);
 		this.setupDetailsToolBar();
+		
+		setXmlExportImportFacade(SpringApplicationContextHolder.getBean(XmlExportImportProtocolFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setXmlExportImportFacade(XmlExportImportProtocolFacadeRemote xmlExportImportFacade) {
 		this.xmlExportImportFacade = xmlExportImportFacade;
+	}
+
+	final XmlExportImportProtocolFacadeRemote getXmlExportImportFacade() {
+		return xmlExportImportFacade;
 	}
 
 	private void setupDetailsToolBar(){
@@ -124,7 +127,8 @@ public class ExportImportCollectController extends MasterDataCollectController {
 				@Override
 				public void work() throws CommonBusinessException {
 					try {
-						org.nuclos.common2.File fZip = xmlExportImportFacade.getFile((Integer)ExportImportCollectController.this.getSelectedCollectable().getId());
+						org.nuclos.common2.File fZip = getXmlExportImportFacade().getFile(
+								(Integer)ExportImportCollectController.this.getSelectedCollectable().getId());
 
 						String sFileName = filechooser.getSelectedFile().getAbsolutePath();
 						if (!sFileName.toLowerCase().endsWith(ZIP_EXTENSION)) {

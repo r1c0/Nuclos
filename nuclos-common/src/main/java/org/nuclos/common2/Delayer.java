@@ -7,10 +7,6 @@ import java.util.WeakHashMap;
 
 import javax.swing.SwingUtilities;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
-@Configurable
 public class Delayer<T> extends TimerTask {
 	
 	public static interface IHandler<T> {
@@ -88,7 +84,11 @@ public class Delayer<T> extends TimerTask {
 	
 	private final long gracePeriodMillis;
 	
+	// former Spring injection
+	
 	private Timer timer;
+	
+	// end of former Spring injection
 	
 	private Delayer(IRealHandler<T> handler, long gracePeriodMillis) {
 		if (handler == null) {
@@ -101,13 +101,16 @@ public class Delayer<T> extends TimerTask {
 		this.gracePeriodMillis = gracePeriodMillis;		
 	}
 	
-	@Autowired
 	final void setTimer(Timer timer) {
 		this.timer = timer;
 	}
 	
+	final Timer getTimer() {
+		return timer;
+	}
+	
 	private void schedule() {
-		timer.schedule(this, gracePeriodMillis, gracePeriodMillis);
+		getTimer().schedule(this, gracePeriodMillis, gracePeriodMillis);
 	}
 
 	@Override

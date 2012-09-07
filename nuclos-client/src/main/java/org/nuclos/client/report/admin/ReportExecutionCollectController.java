@@ -60,8 +60,6 @@ import org.nuclos.server.report.ejb3.ReportFacadeRemote;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.OutputType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * <code>MasterDataCollectController</code> for entity "reportExecution".
@@ -74,7 +72,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:rostislav.maksymovskyi@novabit.de">rostislav.maksymovskyi</a>
  * @version 02.00.00
  */
-@Configurable(preConstruction=true)
 public class ReportExecutionCollectController extends MasterDataCollectController {
 
 	protected class ExecuteAction extends AbstractAction {
@@ -91,11 +88,11 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 
 	private static String sLastGeneratedFileName = null;
 
-	// Spring injection
+	// former Spring injection
 	
 	private ReportFacadeRemote reportFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -110,11 +107,16 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		super(NuclosEntity.REPORTEXECUTION, tabIfAny, null);
 		setupResultToolBar();
 		setExecuteState();
+		
+		setReportFacadeRemote(SpringApplicationContextHolder.getBean(ReportFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setReportFacadeRemote(ReportFacadeRemote reportFacadeRemote) {
 		this.reportFacadeRemote = reportFacadeRemote;
+	}
+
+	final ReportFacadeRemote getReportFacadeRemote() {
+		return reportFacadeRemote;
 	}
 
 	@Override
@@ -129,7 +131,6 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 
 		getSearchPanel().btnNew.setVisible(false);
 	}
-
 
 
 	/**

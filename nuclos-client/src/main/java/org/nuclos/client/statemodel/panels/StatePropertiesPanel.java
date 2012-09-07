@@ -107,16 +107,17 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
@@ -128,8 +129,6 @@ import org.nuclos.server.statemodel.valueobject.MandatoryFieldVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.nuclos.server.statemodel.valueobject.SubformColumnPermissionVO;
 import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Panel containing the properties of a state.
@@ -141,7 +140,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph Radig</a>
  * @version 01.00.00
  */
-@Configurable(preConstruction=true)
 public class StatePropertiesPanel extends JPanel {
 
 	private static final Logger LOG = Logger.getLogger(StatePropertiesPanel.class);
@@ -259,7 +257,6 @@ public class StatePropertiesPanel extends JPanel {
 		}
 	}
 
-	@Configurable
 	public static class StateDependantRightsPanel extends JPanel 
 			implements RightAndMandatoryConstants, Closeable {
 		
@@ -291,7 +288,11 @@ public class StatePropertiesPanel extends JPanel {
 		
 		private Thread showBubbleThread = null;
 		
+		// former Spring injection
+		
 		private SpringLocaleDelegate localeDelegate;
+		
+		// end of former Spring injection
 		
 		private ChangeListener detailsChangedListener = new ChangeListener() {
 			@Override
@@ -314,11 +315,16 @@ public class StatePropertiesPanel extends JPanel {
 			scroll.getHorizontalScrollBar().setUnitIncrement(20);
 			scroll.getVerticalScrollBar().setUnitIncrement(20);
 			this.add(scroll, BorderLayout.CENTER);
+			
+			setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
 		}
 		
-		@Autowired
-		void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 			this.localeDelegate = cld;
+		}
+		
+		final SpringLocaleDelegate getSpringLocaleDelegate() {
+			return localeDelegate;
 		}
 		
 		public void addDetailsChangedListener(ChangeListener cl) {
@@ -439,6 +445,8 @@ public class StatePropertiesPanel extends JPanel {
 		 * @throws CommonBusinessException
 		 */
 		private void initMain(List<CollectableEntityObject> usages) throws CommonBusinessException {
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
+			
 			final Collection<MasterDataVO> roles = MasterDataCache.getInstance().get(NuclosEntity.ROLE.getEntityName());
 			final SortedMap<String, Integer> rolesSorted = getRolesSorted(roles);
 			final List<Integer> rolesSortOrder = getRolesSorted(rolesSorted);
@@ -1354,7 +1362,7 @@ public class StatePropertiesPanel extends JPanel {
 				}
 			}
 			
-			result.put(0l, "[" + localeDelegate.getMessage("StatePropertiesPanel.19", "Ohne Gruppe") + "]");
+			result.put(0l, "[" + getSpringLocaleDelegate().getMessage("StatePropertiesPanel.19", "Ohne Gruppe") + "]");
 			
 			return result;
 		}
@@ -1501,7 +1509,11 @@ public class StatePropertiesPanel extends JPanel {
 
 	private final StateDependantRightsPanel pnlStateDependantRights = new StateDependantRightsPanel();
 	
+	// former Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 
 	public StatePropertiesPanel() {
 		super(new BorderLayout());
@@ -1511,17 +1523,24 @@ public class StatePropertiesPanel extends JPanel {
 				"StatePropertiesPanel.6","Eigenschaften"), newStateBasicPropertiesPanel());
 		tabpn.addTab(SpringLocaleDelegate.getInstance().getMessage(
 				"StatePropertiesPanel.9","Berechtigungen"), pnlStateDependantRights);
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**
 	 * @return a new panel containing the basic properties for a state.
 	 */
 	private JPanel newStateBasicPropertiesPanel() {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
+		
 		final JPanel pnlStateProperties = new JPanel(new GridBagLayout());
 		pnlStateProperties.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 

@@ -67,6 +67,7 @@ import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -79,8 +80,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.io.mxModelCodec;
@@ -106,7 +105,6 @@ import com.mxgraph.view.mxGraph;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
 public class EntityRelationshipModelEditPanel extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(EntityRelationshipModelEditPanel.class);
@@ -145,23 +143,35 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 	
 	private boolean isPopupShown;
 	
+	// former Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 	
 
 	public EntityRelationshipModelEditPanel(MainFrame mf) {
 		super(new BorderLayout());
 		this.mf = mf;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		if (getSpringLocaleDelegate() == null) {
+			setSpringLocaleDelegate(SpringLocaleDelegate.getInstance());
+			LOG.warn("Setting SpringLocaleDelegate hasn't worked as expected");
+		}
+		
 		lstChangeListener = new ArrayList<ChangeListener>();
 		lstRelations = new ArrayList<mxCell>();
 		mpRemoveRelation = new HashMap<EntityMetaDataVO, Set<EntityFieldMetaDataVO>>();
-		if (localeDelegate == null)
-			localeDelegate = SpringLocaleDelegate.getInstance();
 		init();		
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+	
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 	
 	public void setIsPopupShown(boolean shown) {
@@ -191,6 +201,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 				}
 			}
 			else if(cell.getStyle() != null) {
+				final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 				String sStyle = cell.getStyle();
 				if(sStyle.indexOf(OPENARROW) >= 0) {
 					if(cell.getSource() != null && cell.getTarget() != null) {
@@ -231,6 +242,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 	}
 	
 	protected void init() {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		mainPanel = new JPanel();
 		
 		double sizeHeader [][] = {{TableLayout.PREFERRED, 5, TableLayout.PREFERRED, 10}, {10, 25,10}};		
@@ -629,7 +641,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 		
 		JPopupMenu pop = new JPopupMenu();
 		
-		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.16", "neue Entit\u00e4t"));
+		JMenuItem i1 = new JMenuItem(getSpringLocaleDelegate().getMessage("nuclos.entityrelation.editor.16", "neue Entit\u00e4t"));
 		i1.addActionListener(new ActionListener() {
 			
 			@Override
@@ -653,7 +665,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			}
 		});
 		
-		JMenuItem i3 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.8", "zoom in"));
+		JMenuItem i3 = new JMenuItem(getSpringLocaleDelegate().getMessage("nuclos.entityrelation.editor.8", "zoom in"));
 		i3.addActionListener(new ActionListener() {
 			
 			@Override
@@ -662,7 +674,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			}
 		});
 		
-		JMenuItem i4 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.9", "zoom out"));
+		JMenuItem i4 = new JMenuItem(getSpringLocaleDelegate().getMessage("nuclos.entityrelation.editor.9", "zoom out"));
 		i4.addActionListener(new ActionListener() {
 			
 			@Override
@@ -677,12 +689,11 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 		pop.add(i4);
 		
 		return pop;	
-		
 	}
 	
 	
-	
 	protected JPopupMenu createRelationPopupMenu(final mxCell cell, boolean delete, boolean objectGeneration) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		
 		JPopupMenu pop = new JPopupMenu();
 		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.10","Bezug zu Stammdaten bearbeiten"));
@@ -970,6 +981,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 
 
 	protected JPopupMenu createPopupMenuEntity(final mxCell cell, boolean newCell) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		
 		JPopupMenu pop = new JPopupMenu();
 		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.14","Symbol l\u00f6schen"));
@@ -1391,6 +1403,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			EntityMetaDataVO voTarget = (EntityMetaDataVO)target.getValue();
 			String sFieldName = null;
 			boolean blnNotSet = true;
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 			while(blnNotSet) {
 				if(cell.getValue() instanceof EntityFieldMetaDataVO) {
 					String sDefault = ((EntityFieldMetaDataVO)cell.getValue()).getField();

@@ -83,8 +83,6 @@ import org.nuclos.server.report.valueobject.ReportOutputVO.Destination;
 import org.nuclos.server.report.valueobject.ReportOutputVO.Format;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ResultVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Create a new thread in which a <code>ReportExporter<code> is executed.
@@ -96,7 +94,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author <a href="mailto:rostislav.maksymovskyi@novabit.de">rostislav.maksymovskyi</a>
  * @version 02.00.00
  */
-@Configurable
 public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInterruptibleProcess {
 
 	private final static Logger log = Logger.getLogger(ReportRunner.class);
@@ -122,13 +119,13 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 
 	private final ReportAttachmentInfo attachmentInfo;
 	
-	// Spring injection
+	// former Spring injection
 
 	private SpringLocaleDelegate localeDelegate;
 	
 	private DatasourceFacadeRemote datasourceFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	/**
 	 * Called for forms and reports (with real ReportVO and ReportOutputVO)
@@ -204,6 +201,9 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		this.format = reportoutputvo.getFormat();
 		this.destination = reportoutputvo.getDestination();
 		this.attachmentInfo = attachmentInfo;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setDatasourceFacadeRemote(SpringApplicationContextHolder.getBean(DatasourceFacadeRemote.class));
 	}
 
 	private ReportRunner(Component parent, ReportSource source, ReportOutputVO.Format format, String filename) {
@@ -215,16 +215,25 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		this.format = format;
 		this.destination = Destination.SCREEN;
 		this.attachmentInfo = null;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setDatasourceFacadeRemote(SpringApplicationContextHolder.getBean(DatasourceFacadeRemote.class));
 	}
 
-	@Autowired
 	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	@Autowired
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
 	final void setDatasourceFacadeRemote(DatasourceFacadeRemote datasourceFacadeRemote) {
 		this.datasourceFacadeRemote = datasourceFacadeRemote;
+	}
+
+	final DatasourceFacadeRemote getDatasourceFacadeRemote() {
+		return datasourceFacadeRemote;
 	}
 
 	@Override
@@ -265,7 +274,8 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			if (attachmentInfo != null) {
 				String filename = attachDocument();
 				this.setStatus(Status.DONE);
-				this.setMessage(localeDelegate.getMessage("ReportRunner.fileattached", "Document {0} has been attached to object {1}.", filename, attachmentInfo.getGenericObjectIdentifier()));
+				this.setMessage(getSpringLocaleDelegate().getMessage(
+						"ReportRunner.fileattached", "Document {0} has been attached to object {1}.", filename, attachmentInfo.getGenericObjectIdentifier()));
 			}
 			else {
 				this.setStatus(Status.DONE);
@@ -274,7 +284,8 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			this.setStatus(Status.CANCELLED);
-			this.setMessage(localeDelegate.getMessage("ReportRunner.1", "Der Prozess wurde abgebrochen."));
+			this.setMessage(getSpringLocaleDelegate().getMessage(
+					"ReportRunner.1", "Der Prozess wurde abgebrochen."));
 		}
 		catch (final Exception ex) {
 			this.setStatus(Status.ERROR);
@@ -385,7 +396,8 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			final MasterDataVO mdvo = new MasterDataVO(MasterDataDelegate.getInstance().getMetaData(attachmentInfo.getDocumentEntityName()), false);
 			mdvo.setField("genericObject", attachmentInfo.getGenericObjectId());
 			mdvo.setField("entity", attachmentInfo.getDocumentEntityName());
-			mdvo.setField(attachmentInfo.getDocumentFieldNames()[0], localeDelegate.getMessage("ReportController.2", "Automatisch angef\u00fcgtes Dokument"));
+			mdvo.setField(attachmentInfo.getDocumentFieldNames()[0], getSpringLocaleDelegate().getMessage(
+					"ReportController.2", "Automatisch angef\u00fcgtes Dokument"));
 			mdvo.setField(attachmentInfo.getDocumentFieldNames()[1], new Date());
 			mdvo.setField(attachmentInfo.getDocumentFieldNames()[2], Main.getInstance().getMainController().getUserName());
 			if (NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName().equals(attachmentInfo.getDocumentEntityName())) {
@@ -400,7 +412,8 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			return file.getName();
 		}
 		catch (Exception ex) {
-			throw new NuclosReportException(localeDelegate.getMessage("ReportController.1", "Anh\u00e4ngen der Datei \"{0}\" an GenericObject \"{1}\" fehlgeschlagen.", getDocumentName(), attachmentInfo.getGenericObjectIdentifier()), ex);
+			throw new NuclosReportException(getSpringLocaleDelegate().getMessage(
+					"ReportController.1", "Anh\u00e4ngen der Datei \"{0}\" an GenericObject \"{1}\" fehlgeschlagen.", getDocumentName(), attachmentInfo.getGenericObjectIdentifier()), ex);
 		}
 	}
 
@@ -444,7 +457,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	 */
 	@Override
 	public String getJobName() {
-		return localeDelegate.getMessage("ReportRunner.6", "Report: \"{0}\"", reportname);
+		return getSpringLocaleDelegate().getMessage("ReportRunner.6", "Report: \"{0}\"", reportname);
 	}
 
 	/**

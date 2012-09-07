@@ -36,16 +36,14 @@ import javax.swing.ListSelectionModel;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable(preConstruction=true)
 public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 	
 	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
 	
-	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage("PopupButton.Extras","Extras"));
+	private final PopupButton popupExtras;
 	
 	private final JScrollPane scrlpn = new JScrollPane();
 
@@ -54,36 +52,45 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 	public final JTextField tfStatusBar = new StatusBarTextField(" ");
 	
 	private final int[] intervals = new int[] {	0, 5, 10, 30};
-	private final String[] intervalLabels = new String[] {
-		getSpringLocaleDelegate().getMessage("TaskController.Refresh.0.name","Manuell aktualisieren"),
-		getSpringLocaleDelegate().getMessage("TaskController.Refresh.5.name","Alle 5 Minuten aktualisieren"),
-		getSpringLocaleDelegate().getMessage("TaskController.Refresh.10.name","Alle 10 Minuten aktualisieren"),
-		getSpringLocaleDelegate().getMessage("TaskController.Refresh.30.name","Alle 30 Minuten aktualisieren")
-	};
-	private final String[] intervalDescs = new String[] {
-			getSpringLocaleDelegate().getMessage("TaskController.Refresh.0.desc","Manuell aktualisieren"),
-			getSpringLocaleDelegate().getMessage("TaskController.Refresh.5.desc","Alle 5 Minuten aktualisieren"),
-			getSpringLocaleDelegate().getMessage("TaskController.Refresh.10.desc","Alle 10 Minuten aktualisieren"),
-			getSpringLocaleDelegate().getMessage("TaskController.Refresh.30.desc","Alle 30 Minuten aktualisieren")
-	};
+	private final String[] intervalLabels;
+	private final String[] intervalDescs;
 	
 	private final ButtonGroup bgRefreshInterval = new ButtonGroup();
 	private final JRadioButtonMenuItem[] rbRefresIntervals = new JRadioButtonMenuItem[intervals.length];
 
 	private int refreshInterval = 0;
 	
+	// former Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
 	
+	// end of former Spring injection
+	
 	public TaskView() {
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		
+		popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage("PopupButton.Extras","Extras"));
+		intervalLabels = new String[] {
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.0.name","Manuell aktualisieren"),
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.5.name","Alle 5 Minuten aktualisieren"),
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.10.name","Alle 10 Minuten aktualisieren"),
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.30.name","Alle 30 Minuten aktualisieren")};
+		intervalDescs = new String[] {
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.0.desc","Manuell aktualisieren"),
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.5.desc","Alle 5 Minuten aktualisieren"),
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.10.desc","Alle 10 Minuten aktualisieren"),
+				getSpringLocaleDelegate().getMessage("TaskController.Refresh.30.desc","Alle 30 Minuten aktualisieren")};
+		
 		for (int i = 0; i < intervals.length; i++) {
 			JRadioButtonMenuItem rb = new JRadioButtonMenuItem();
 			rb.setToolTipText(intervalDescs[i]);
 			bgRefreshInterval.add(rb);
 			rbRefresIntervals[i] = rb;
-		}
+		}	
 	}
 	
 	public void init() {
+		
 		this.setLayout(new BorderLayout());
 		this.add(toolbar, BorderLayout.NORTH);
 		this.add(scrlpn, BorderLayout.CENTER);
@@ -119,12 +126,11 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 		UIUtils.setupCopyAction(getTable());
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+	protected final SpringLocaleDelegate getSpringLocaleDelegate() {
 		return localeDelegate;
 	}
 	

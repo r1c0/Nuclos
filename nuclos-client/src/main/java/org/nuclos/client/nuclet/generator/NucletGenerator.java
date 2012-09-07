@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -47,6 +46,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferConstants;
@@ -58,13 +58,10 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.ejb3.LocaleFacadeRemote;
 import org.nuclos.server.dbtransfer.TransferFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-@Configurable
 public class NucletGenerator implements TransferConstants {
 	
 	private static final Logger LOG = Logger.getLogger(NucletGenerator.class);
@@ -75,11 +72,15 @@ public class NucletGenerator implements TransferConstants {
 	
 	public static final String XLSX_FILE_SHEET_VERSION = "_(Version)_";
 	
+	// former Spring injection
+	
 	private TransferFacadeRemote transferFacade;
 	
 	private LocaleFacadeRemote localeFacade;
 	
 	private SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 	
 	private Collection<LocaleInfo> locales;
 	
@@ -114,27 +115,38 @@ public class NucletGenerator implements TransferConstants {
 	private List<EntityObjectVO> nucletContentUids;
 	
 	public NucletGenerator() {
-		
+		setTransferFacadeRemote(SpringApplicationContextHolder.getBean(TransferFacadeRemote.class));
+		setLocaleFacadeRemote(SpringApplicationContextHolder.getBean(LocaleFacadeRemote.class));
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		init();
 	}
 	
-	@Autowired
-	void setTransferFacadeRemote(TransferFacadeRemote transferFacade) {
+	final void setTransferFacadeRemote(TransferFacadeRemote transferFacade) {
 		this.transferFacade = transferFacade;
 	}
 	
-	@Autowired
-	void setLocaleFacadeRemote(LocaleFacadeRemote localeFacade) {
+	final TransferFacadeRemote getTransferFacadeRemote() {
+		return transferFacade;
+	}
+	
+	final void setLocaleFacadeRemote(LocaleFacadeRemote localeFacade) {
 		this.localeFacade = localeFacade;
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate localeDelegate) {
+	final LocaleFacadeRemote getLocaleFacadeRemote() {
+		return localeFacade;
+	}
+	
+	final void setSpringLocaleDelegate(SpringLocaleDelegate localeDelegate) {
 		this.localeDelegate = localeDelegate;
 	}
 	
-	@PostConstruct
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
 	void init() {
-		locales = localeFacade.getAllLocales(false);
+		locales = getLocaleFacadeRemote().getAllLocales(false);
 		localeResources = new HashMap<LocaleInfo, Map<String, String>>();
 	}
 	
@@ -324,7 +336,7 @@ public class NucletGenerator implements TransferConstants {
 		
 		TransferOption.Map exportOptions = new TransferOption.HashMap();
 		exportOptions.put(TransferOption.IS_NUCLON_IMPORT_ALLOWED, null);
-		String root = transferFacade.createMetaDataRoot(
+		String root = getTransferFacadeRemote().createMetaDataRoot(
 				TRANSFER_VERSION,
 				(new NucletContentUID(nucletVO)).uid,
 				nucletName,
@@ -485,7 +497,7 @@ public class NucletGenerator implements TransferConstants {
 	}
 	
 	protected String getResourceText(String resourceId) {
-		return localeResources.get(localeDelegate.getUserLocaleInfo()).get(resourceId);
+		return localeResources.get(getSpringLocaleDelegate().getUserLocaleInfo()).get(resourceId);
 	}
 	
 	public void setMetaFields(EntityObjectVO eo) {
