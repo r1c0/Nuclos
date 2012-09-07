@@ -1896,7 +1896,12 @@ public class SubForm extends JPanel
 			
 			if (iRow >= 0) {
 				if (bSetInModel && !isSearchable) {
-					CollectableComponentTableCellEditor editor = (CollectableComponentTableCellEditor)subformtbl.getCellEditor(iRow, subformtbl.convertColumnIndexToView(iTargetColumn));
+					int iCol = subformtbl.convertColumnIndexToView(iTargetColumn);
+					CollectableComponentTableCellEditor editor = null;
+					if (iCol != -1)
+						editor = (CollectableComponentTableCellEditor)subformtbl.getCellEditor(iRow, iCol);
+					else
+						editor = (CollectableComponentTableCellEditor)subformtbl.getCellEditor(iRow, clctefTarget);
 					if (editor != null) {
 						try {
 							CollectableField oldValue = editor.getCollectableComponent().getField();
@@ -2696,6 +2701,26 @@ public class SubForm extends JPanel
 
 		public void setTableCellRendererProvider(TableCellRendererProvider cellrendererprovider) {
 			this.cellrendererprovider = cellrendererprovider;
+		}
+
+		public TableCellEditor getCellEditor(int iRow, CollectableEntityField clctefTarget) {
+			TableCellEditor result = null;
+
+			if (celleditorprovider != null && getModel() instanceof SubFormTableModel) {
+
+				try {
+					result = celleditorprovider.getTableCellEditor(this, iRow, clctefTarget);
+				}
+				catch(NuclosFieldNotInModelException e) {
+					// expected exception
+					LOG.info("getCellEditor: " + e);
+					result = null;
+				}
+			}
+			if (result == null) {
+				result = getCellEditor(iRow, ((SubFormTableModel) getModel()).getColumn(clctefTarget));
+			}
+			return result;
 		}
 
 		@Override
