@@ -122,7 +122,8 @@ class WeakReferenceMessageListener implements MessageListener {
 			}
 		}
 		catch (Exception ex) {
-			throw new NuclosFatalException("Can't subscribe to JMS topic " + topicname, ex);
+			LOG.error("Can't subscribe to JMS topic " + topicname, ex);
+			// throw new NuclosFatalException("Can't subscribe to JMS topic " + topicname, ex);
 			/*
 			throw new NuclosFatalException(cld.getMessage(
 					"TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr das Topic {0} konnte nicht registriert werden.", topicname), ex);

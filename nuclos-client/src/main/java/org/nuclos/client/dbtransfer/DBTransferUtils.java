@@ -30,34 +30,36 @@ import javax.swing.JProgressBar;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.dbtransfer.TransferFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class DBTransferUtils {
 
 	private static final Logger LOG = Logger.getLogger(DBTransferUtils.class);
 	
 	//
 	
-	// Spring injection
+	// former Spring injection
 	
 	private TransferFacadeRemote transferFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	public static final int TABLE_LAYOUT_V_GAP = 3;
 	public static final int TABLE_LAYOUT_H_GAP = 5;
 	
 	public DBTransferUtils() {
+		setTransferFacadeRemote(SpringApplicationContextHolder.getBean(TransferFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setTransferFacadeRemote(TransferFacadeRemote transferFacadeRemote) {
 		this.transferFacadeRemote = transferFacadeRemote;
+	}
+	
+	final TransferFacadeRemote getTransferFacadeRemote() {
+		return transferFacadeRemote;
 	}
 	
 	protected void initJPanel(JPanel panel, double[] cols, double[] rows) {	
@@ -134,7 +136,7 @@ public class DBTransferUtils {
 	}
 
 	protected TransferNuclet[] getAvaiableNuclets() {
-		List<TransferNuclet> result = transferFacadeRemote.getAvaiableNuclets();
+		List<TransferNuclet> result = getTransferFacadeRemote().getAvaiableNuclets();
 		result.add(0, new TransferNuclet(null, "<" + SpringLocaleDelegate.getInstance().getMessage(
 				"configuration.transfer.utils.fullinstance", "komplette Nuclos Instanz") + ">", null));
 		return result.toArray(new TransferNuclet[0]);

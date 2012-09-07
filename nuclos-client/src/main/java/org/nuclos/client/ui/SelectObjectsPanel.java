@@ -34,7 +34,6 @@ import org.nuclos.client.ui.model.MutableListModel;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version	01.00.00
  */
-//@Configurable
 public abstract class SelectObjectsPanel<T> extends JPanel {
 
 	/*

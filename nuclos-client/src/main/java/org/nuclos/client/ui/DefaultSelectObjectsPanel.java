@@ -39,7 +39,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-//@Configurable
 public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 
 	protected final JComponent header;
@@ -54,7 +53,6 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 		init();
 	}
 
-	//@PostConstruct
 	protected void init() {
 		this.pnlMain.setLayout(new GridBagLayout());
 		this.pnlAvailableObjects.setLayout(new BorderLayout());

@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -43,6 +42,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.wizard.WizardFrame;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
@@ -53,10 +53,7 @@ import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.models.StaticModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class DBTransferExport {
 	
 	private static final Logger LOG = Logger.getLogger(DBTransferExport.class);
@@ -75,24 +72,27 @@ public class DBTransferExport {
 	
 	private MainFrameTab ifrm;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private SpringLocaleDelegate localeDelegate;
 	
 	private TransferFacadeRemote transferFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	public DBTransferExport(Long nucletId) {
 		this.nucletId = nucletId;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setTransferFacadeRemote(SpringApplicationContextHolder.getBean(TransferFacadeRemote.class));
+		init();
 	}
 	
-	@PostConstruct
 	final void init() {
 		I18n.setBundle(DBTransferWizard.getResourceBundle());
 		
 		ifrm = Main.getInstance().getMainController().newMainFrameTab(
-				null, localeDelegate.getMessage("dbtransfer.export.title", "Konfiguration exportieren"));
+				null, getSpringLocaleDelegate().getMessage("dbtransfer.export.title", "Konfiguration exportieren"));
 		ifrm.setTabIconFromNuclos("getDefaultFrameIcon");
 		
 		step1 = newStep1(ifrm);
@@ -130,14 +130,20 @@ public class DBTransferExport {
       });
 	}
 	
-	@Autowired
 	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	@Autowired
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
 	final void setTransferFacadeRemote(TransferFacadeRemote transferFacadeRemote) {
 		this.transferFacadeRemote = transferFacadeRemote;
+	}
+	
+	final TransferFacadeRemote getTransferFacadeRemote() {
+		return transferFacadeRemote;
 	}
 	
 	public void showWizard(MainFrameTabbedPane homePane) {
@@ -149,22 +155,16 @@ public class DBTransferExport {
 	}
 
 	private PanelWizardStep newStep1(final MainFrameTab ifrm) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final PanelWizardStep step = new PanelWizardStep(localeDelegate.getMessage(
 				"dbtransfer.export.step1.1", "Export"), 
 				localeDelegate.getMessage("dbtransfer.export.step1.2", 
 						"Bitte w\u00e4hlen Sie den Speicherort f\u00fcr die Konfigurationsdatei aus und die Optionen."));
 		utils.initJPanel(step,
 			new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
-			new double[] {20,				  
-							  20,
-							  20,
-							  20,
-							  20,
-							  20,
-							  20,
-							  20,
-							  TableLayout.PREFERRED,
-							  TableLayout.PREFERRED});
+			new double[] {	20, 20, 20, 20,
+							20, 20, 20, 20,
+							TableLayout.PREFERRED, TableLayout.PREFERRED});
 		
 		final JLabel lbNuclet = new JLabel("Nuclet");
 		final JComboBox comboNuclet = new JComboBox(utils.getAvaiableNuclets());
@@ -284,7 +284,7 @@ public class DBTransferExport {
 //								exportOptions.put(TransferOption.FREEZE_CONFIGURATION, null);
 //							}
 							
-							byte[] transferFile = transferFacadeRemote.createTransferFile(
+							byte[] transferFile = getTransferFacadeRemote().createTransferFile(
 									((TransferNuclet)comboNuclet.getSelectedItem()).getId(), exportOptions);
 							File f = new File(tfTransferFile.getText());
 							final OutputStream fout = new BufferedOutputStream(new FileOutputStream(f));
@@ -323,6 +323,7 @@ public class DBTransferExport {
 		final JTextArea taLog = new JTextArea();
 		final JScrollPane scrollLog = new JScrollPane(taLog);
 		
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final PanelWizardStep step = new PanelWizardStep(localeDelegate.getMessage(
 				"dbtransfer.import.step5.4", "Ergebnis"), 
 				localeDelegate.getMessage("dbtransfer.export.step2.1", "Hier wird Ihnen das Ergebnis des Exports angezeigt.")){

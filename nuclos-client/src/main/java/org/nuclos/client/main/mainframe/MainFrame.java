@@ -139,7 +139,6 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-// @org.springframework.stereotype.Component
 public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter, IconResolverConstants {
 
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
@@ -220,7 +219,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 	private NuclosMessagePanel msgPanel;
 	
-	// Spring injection
+	// former Spring injection, now from MainFrameSpringComponent
 
 	private LiveSearchController liveSearchController;
 	
@@ -234,7 +233,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 	private ResourceCache resourceCache;
 	
-	// end of Spring injection
+	private MetaDataClientProvider metaDataClientProvider;
+	
+	// end of former Spring injection
 
 	/**
 	 * creates the main frame. Note that here we don't follow the general rule that the view shouldn't
@@ -263,24 +264,24 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		});	
 	}	// ctor
 
-	// @Autowired
 	final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 
-	// @Autowired
 	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 
-	// @Autowired
 	final void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
 		this.clientParameterProvider = clientParameterProvider;
 	}
 
-	// @Autowired
 	final void setNuclosIcons(NuclosIcons nuclosIcons) {
 		this.nuclosIcons = nuclosIcons;
+	}
+	
+	final void setMetaDataClientProvider(MetaDataClientProvider metaDataClientProvider) {
+		this.metaDataClientProvider = metaDataClientProvider;
 	}
 
 	/*
@@ -292,12 +293,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 	 */
 
-	// @Autowired
 	final void setWorkspaceChooserController(WorkspaceChooserController wcc) {
 		this.workspaceChooserController = wcc;
 	}
 
-	// @Autowired
 	final void setLiveSearchController(LiveSearchController lsc) {
 		this.liveSearchController = lsc;
 		lsc.setParentFrame(this); // @see 	NUCLOSINT-1615
@@ -521,9 +520,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			MainFrameTabbedPane maxTabbedPane = getMaximizedTabbedPaneIfAny(result);
 			(new Bubble(maxTabbedPane.getComponentPanel(),
 					SpringLocaleDelegate.getInstance().getMessage("MainFrame.3","Neuer Tab im ausgeblendeten Bereich."),
-				5,
-				Bubble.Position.NO_ARROW_CENTER)).setVisible(true);
-
+					5, Bubble.Position.NO_ARROW_CENTER)).setVisible(true);
 		}
 
 		return result;
@@ -2168,8 +2165,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public ImageIcon getEntityIcon(String entity) {
 		ImageIcon result = null;
 
-		Integer resourceId = MetaDataClientProvider.getInstance().getEntity(entity).getResourceId();
-		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(entity).getNuclosResource();
+		Integer resourceId = metaDataClientProvider.getEntity(entity).getResourceId();
+		String nuclosResource = metaDataClientProvider.getEntity(entity).getNuclosResource();
 		if (resourceId != null) {
 			result = resourceCache.getIconResource(resourceId);
 		} else if (nuclosResource != null) {
@@ -2178,7 +2175,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		if (result == null) {
 			if (NuclosEntity.isNuclosEntity(entity)) {
-				result = NuclosIcons.getInstance().getDefaultFrameIcon();
+				result = nuclosIcons.getDefaultFrameIcon();
 			} else {
 				result = Icons.getInstance().getIconTabGeneric();
 			}
@@ -2190,8 +2187,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public Pair<IconResolver, String> getEntityIconAndResolver(String entity) {
 		Pair<IconResolver, String> result = new Pair<IconResolver, String>();
 
-		Integer resourceId = MetaDataClientProvider.getInstance().getEntity(entity).getResourceId();
-		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(entity).getNuclosResource();
+		Integer resourceId = metaDataClientProvider.getEntity(entity).getResourceId();
+		String nuclosResource = metaDataClientProvider.getEntity(entity).getNuclosResource();
 		if (resourceId != null) {
 			result.x = RESOURCE_ICON_RESOLVER;
 			result.y = ResourceIconResolver.RESOURCEID_PREFIX + resourceId;

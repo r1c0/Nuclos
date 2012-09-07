@@ -41,7 +41,6 @@ import org.nuclos.common.LafParameterMap;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -84,16 +83,13 @@ public class MetaDataClientProvider extends AbstractLocalUserCache implements Me
 	}
 	 */
 	
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 
 	public static MetaDataClientProvider getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE = SpringApplicationContextHolder.getBean(MetaDataClientProvider.class);
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}

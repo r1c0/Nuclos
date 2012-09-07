@@ -34,7 +34,6 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
@@ -95,12 +94,10 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 		INSTANCE = this;
 	}
 	
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 
-	// @Autowired
 	public final void setStateFacadeRemote(StateFacadeRemote stateFacadeRemote) {
 		this.stateFacadeRemote = stateFacadeRemote;
 	}
@@ -141,9 +138,7 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 
 	public static StateDelegate getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE =  (StateDelegate) SpringApplicationContextHolder.getBean("stateDelegate");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}

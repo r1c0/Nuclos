@@ -36,6 +36,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
@@ -46,7 +47,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.ResultVO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>CollectController</code> for entity "dynamicEntity".
@@ -58,11 +58,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class DynamicEntityCollectController extends AbstractDatasourceCollectController<DynamicEntityVO> implements DatasourceEditController {
 	
-	// Spring injection
+	// former Spring injection
 	
 	private DatasourceFacadeRemote datasourceFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -76,7 +76,8 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	public DynamicEntityCollectController(MainFrameTab tabIfAny) {
 		super(new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.DYNAMICENTITY)), tabIfAny);
-
+		setDatasourceFacadeRemote(SpringApplicationContextHolder.getBean(DatasourceFacadeRemote.class));
+		
 		CollectableMasterDataEntity clctEntity = new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.DYNAMICENTITY));
 		initializeDatasourceCollectController(
@@ -86,9 +87,12 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 				new CollectableEntityFieldWithEntity(clctEntity, CollectableDataSource.FIELDNAME_DESCRIPTION)));
 	}
 	
-	@Autowired
 	final void setDatasourceFacadeRemote(DatasourceFacadeRemote datasourceFacadeRemote) {
 		this.datasourceFacadeRemote = datasourceFacadeRemote;
+	}
+
+	final DatasourceFacadeRemote getDatasourceFacadeRemote() {
+		return datasourceFacadeRemote;
 	}
 
 	@Override
@@ -190,7 +194,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	@Override
 	protected void validateSQL() {
 		try {
-			datasourceFacadeRemote.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true)));
+			getDatasourceFacadeRemote().validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true)));
 			JOptionPane.showMessageDialog(getTab(), SpringLocaleDelegate.getInstance().getMessage(
 					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}

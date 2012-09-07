@@ -31,7 +31,6 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -47,7 +46,6 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  *
  */
-// @Component
 public class MetaDataCache extends AbstractLocalUserCache implements InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataCache.class);
@@ -70,14 +68,11 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 	
 	public static MetaDataCache getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE = (MetaDataCache)SpringApplicationContextHolder.getBean("metaDataCache");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
 	
-	// @PostConstruct
 	public final void afterPropertiesSet() {
 		if (!wasDeserialized() || !isValid()) {
 			LOG.debug("Initializing metadata cache");
@@ -111,12 +106,10 @@ public class MetaDataCache extends AbstractLocalUserCache implements Initializin
 		tnr.subscribe(getCachingTopic(), messageListener);
 	}
 	
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	// @Autowired
 	public final void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
 		this.masterDataDelegate = masterDataDelegate;
 	}

@@ -53,10 +53,9 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Simple GUI for the managment console.
@@ -66,7 +65,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  *
  * @author	<a href="mailto:florian.speidel@novabit.de">florian.speidel</a>
  */
-@Configurable
 public class NuclosConsoleGui extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosConsoleGui.class);
@@ -87,11 +85,11 @@ public class NuclosConsoleGui extends JPanel {
 
 	private Thread thread = null;
 	
-	// Spring injection
+	// former Spring injection
 	
-	NuclosRemoteServerSession nuclosRemoteServerSession;
+	private NuclosRemoteServerSession nuclosRemoteServerSession;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	private final JButton btnStart = new JButton(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"NuclosConsoleGui.3","Aktion starten...")) {
@@ -141,10 +139,19 @@ public class NuclosConsoleGui extends JPanel {
 		this.add(new JScrollPane(textArea), BorderLayout.CENTER);
 		this.add(createButtonPnl(), BorderLayout.SOUTH);
 	}
-	
+
+	/*
 	@Autowired
-	final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
+	private final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
 		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
+	}
+	 */
+
+	private final NuclosRemoteServerSession getNuclosRemoteServerSession() {
+		if (nuclosRemoteServerSession == null) {
+			nuclosRemoteServerSession = SpringApplicationContextHolder.getBean(NuclosRemoteServerSession.class);
+		}
+		return nuclosRemoteServerSession;
 	}
 
 	private JPanel createButtonPnl() {
@@ -365,7 +372,7 @@ public class NuclosConsoleGui extends JPanel {
 	}
 
 	String login(String sUsername, String sPassword) throws LoginException {
-		return nuclosRemoteServerSession.login(sUsername, sPassword);
+		return getNuclosRemoteServerSession().login(sUsername, sPassword);
 	}
 
 	public static void main(String[] args) {
@@ -374,7 +381,7 @@ public class NuclosConsoleGui extends JPanel {
 			@Override
 			public void run() {
 				try {
-					dut.nuclosRemoteServerSession.logout();
+					dut.getNuclosRemoteServerSession().logout();
 				}
 				catch (Exception e) {
 					LOG.error("main failed: " + e, e);

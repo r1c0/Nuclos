@@ -40,6 +40,7 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -62,7 +63,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public abstract class CollectableHelper<C extends Collectable> implements CollectableFactory<C> {
 
 	protected final EntityMetaDataVO entity;
@@ -157,11 +157,11 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 	
 	private static class CollectableMasterDataHelper extends CollectableHelper<CollectableMasterDataWithDependants> {
 		
-		// Spring injection
+		// formal Spring injection
 		
 		private MasterDataFacadeRemote masterDataFacadeRemote;
 		
-		// end of Spring injection
+		// end of former Spring injection
 
 		private final String entityName;
 		private final CollectableMasterDataEntity collectableEntity;
@@ -177,11 +177,16 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 			} else {
 				dependantEntities = new ArrayList<EntityAndFieldName>();
 			}
+			
+			setMasterDataFacadeRemote(SpringApplicationContextHolder.getBean(MasterDataFacadeRemote.class));
 		}
 		
-		@Autowired
 		final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
 			this.masterDataFacadeRemote = masterDataFacadeRemote;
+		}
+		
+		final MasterDataFacadeRemote getMasterDataFacadeRemote() {
+			return masterDataFacadeRemote;
 		}
 		
 		@Override
@@ -232,13 +237,13 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		public List<?> getIds(CollectableSearchExpression searchExpr) throws CommonBusinessException {
 			if (searchExpr == null)
 				searchExpr = new CollectableSearchExpression(null);
-			return masterDataFacadeRemote.getMasterDataIds(entityName,searchExpr);
+			return getMasterDataFacadeRemote().getMasterDataIds(entityName,searchExpr);
 		}
 
 		@Override
 		public List<? extends Collectable> get(List<?> ids) throws CommonBusinessException {
 			return CollectionUtils.transform(
-					masterDataFacadeRemote.getMasterDataMore(entityName, ids, dependantEntities),
+					getMasterDataFacadeRemote().getMasterDataMore(entityName, ids, dependantEntities),
 					new CollectableMasterDataWithDependants.MakeCollectable(collectableEntity));
 		}
 
@@ -286,11 +291,11 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 
 	private static class CollectableGenericObjectHelper extends CollectableHelper<CollectableGenericObjectWithDependants> {
 		
-		// Spring injection
+		// former Spring injection
 		
 		private GenericObjectFacadeRemote genericObjectFacadeRemote;
 		
-		// end of Spring injection
+		// end of former Spring injection
 
 		private final int moduleId;
 		private final CollectableGenericObjectEntity collectableEntity;
@@ -299,11 +304,16 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 			super(entity);
 			moduleId = entity.getId().intValue();
 			collectableEntity = (CollectableGenericObjectEntity) CollectableGenericObjectEntity.getByModuleId(moduleId);
+			
+			setGenericObjectFacadeRemote(SpringApplicationContextHolder.getBean(GenericObjectFacadeRemote.class));
 		}
 		
-		@Autowired
 		final void setGenericObjectFacadeRemote(GenericObjectFacadeRemote genericObjectFacadeRemote) {
 			this.genericObjectFacadeRemote = genericObjectFacadeRemote;
+		}
+
+		final GenericObjectFacadeRemote getGenericObjectFacadeRemote() {
+			return genericObjectFacadeRemote;
 		}
 
 		@Override
@@ -342,13 +352,13 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		@Override
 		public Collectable create(Collectable clct) throws CommonBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			Integer id = genericObjectFacadeRemote.create(gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).getId();
+			Integer id = getGenericObjectFacadeRemote.create(gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)).getId();
 			return get(id);
 		}
 
 		@Override
 		public Collectable get(Object id) throws CommonBusinessException {
-			GenericObjectWithDependantsVO gowdvo = genericObjectFacadeRemote.getWithDependants((Integer) id, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+			GenericObjectWithDependantsVO gowdvo = getGenericObjectFacadeRemote.getWithDependants((Integer) id, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return new CollectableGenericObjectWithDependants(gowdvo);
 		}
 		
@@ -356,14 +366,14 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		public List<?> getIds(CollectableSearchExpression searchExpr) throws CommonBusinessException {
 			if (searchExpr == null)
 				searchExpr = new CollectableSearchExpression(null);
-			return genericObjectFacadeRemote.getGenericObjectIds(moduleId, searchExpr);
+			return getGenericObjectFacadeRemote().getGenericObjectIds(moduleId, searchExpr);
 		}
 		
 		@Override
 		public List<? extends Collectable> get(final List<?> ids) throws CommonBusinessException {
 			List<Integer> intIds = CollectionUtils.typecheck(ids, Integer.class);
 			Collection<GenericObjectWithDependantsVO> gowdvos = 
-					genericObjectFacadeRemote.getGenericObjectsMore(moduleId, intIds, null, Collections.<String>emptySet(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), false);
+					getGenericObjectFacadeRemote.getGenericObjectsMore(moduleId, intIds, null, Collections.<String>emptySet(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), false);
 			List<Collectable> result = new ArrayList<Collectable>(gowdvos.size());
 			for (GenericObjectWithDependantsVO gowdvo : gowdvos) {
 				result.add(new CollectableGenericObjectWithDependants(gowdvo));
@@ -382,14 +392,14 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		@Override
 		public Collectable modify(Collectable clct) throws CommonBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			genericObjectFacadeRemote.modify(moduleId, gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+			getGenericObjectFacadeRemote.modify(moduleId, gowdvo, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return get(clct.getId());
 		}
 		
 		@Override
 		public void remove(Collectable clct) throws CommonBusinessException, NuclosBusinessException {
 			GenericObjectWithDependantsVO gowdvo = ((CollectableGenericObjectWithDependants) clct).getGenericObjectWithDependantsCVO();
-			genericObjectFacadeRemote.remove(gowdvo, false, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+			getGenericObjectFacadeRemote.remove(gowdvo, false, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 		}
 
 		@Override

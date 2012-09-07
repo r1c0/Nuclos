@@ -43,16 +43,14 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageType;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * An abstract base class for SVG (and more) export dialogs.
  * 
  * @author Thomas Pasch
  */
-@Configurable
 public abstract class AbstractResPlanExportDialog extends JDialog {
 	
 	private static final Logger LOG = Logger.getLogger(AbstractResPlanExportDialog.class);
@@ -61,11 +59,11 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 	
 	private static final String DIRECTORY_KEY = "directory";
 	
-	// Spring injection
+	// former Spring injection
 	
 	private SpringLocaleDelegate sld;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	private final Preferences node;
 	
@@ -100,15 +98,21 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 			final String ext = (defaultFileType == null) ? "svg" : defaultFileType; 
 			save = new File(save, fileName + "." + ext);
 		}
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		init();
 	}
-	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate sld) {
+
+	private void setSpringLocaleDelegate(SpringLocaleDelegate sld) {
 		this.sld = sld;
 	}
 	
+	private SpringLocaleDelegate getSpringLocaleDelegate() {
+		return sld;
+	}
+	
 	@PostConstruct
-	public void init() {
+	private void init() {
 		double border = 10;
 		double inset = 5;
         double size[][] =
@@ -117,6 +121,7 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
         final TableLayout tl = new TableLayout(size);
 		setLayout(tl);
 				
+		final SpringLocaleDelegate sld = getSpringLocaleDelegate();
 		final JLabel fileLabel = new JLabel(sld.getText("nuclos.resplan.dialog.file"), SwingConstants.RIGHT);
 		add(fileLabel, "1, 1");
 		file = new JTextField();

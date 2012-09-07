@@ -31,21 +31,18 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.springframework.beans.factory.InitializingBean;
 
-//@Configurable
 public class CustomComponentCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(CustomComponentCache.class);
 
 	private static CustomComponentCache INSTANCE;
 
-	public static synchronized CustomComponentCache getInstance() {
+	public static CustomComponentCache getInstance() {
 		if (INSTANCE == null) {
-			// lazy support
-			INSTANCE = (CustomComponentCache)SpringApplicationContextHolder.getBean("customComponentCache");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
@@ -78,7 +75,6 @@ public class CustomComponentCache extends AbstractLocalUserCache implements Init
 			revalidate();
 	}
 	
-	//@Autowired
 	public void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}

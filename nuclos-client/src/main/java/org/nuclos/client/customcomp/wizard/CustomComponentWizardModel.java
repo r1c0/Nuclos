@@ -107,6 +107,7 @@ import org.nuclos.client.ui.model.AbstractListTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -126,10 +127,7 @@ import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.Wizard;
 import org.pietschy.wizard.WizardModel;
 import org.pietschy.wizard.models.StaticModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-//@Configurable
 public class CustomComponentWizardModel extends StaticModel {
 
 	Wizard wizard;
@@ -203,12 +201,15 @@ public class CustomComponentWizardModel extends StaticModel {
 	// Steps
 	//
 
-	@Configurable(preConstruction=true)
 	abstract static class CustomComponentWizardAbstractStep extends PanelWizardStep implements DocumentListener {
 
 		CustomComponentWizardModel model;
 		
-		SpringLocaleDelegate localeDelegate;
+		// former Spring injection
+		
+		private SpringLocaleDelegate localeDelegate;
+		
+		// end of former Spring injection
 
 		CustomComponentWizardAbstractStep(String titleResId) {
 			super(SpringLocaleDelegate.getInstance().getText(titleResId, null), null);
@@ -217,11 +218,16 @@ public class CustomComponentWizardModel extends StaticModel {
 		CustomComponentWizardAbstractStep(String titleResId, String summaryResId) {
 			super(SpringLocaleDelegate.getInstance().getText(titleResId, null), 
 					SpringLocaleDelegate.getInstance().getText(summaryResId, null));
+			
+			setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
 		}
 		
-		@Autowired
-		void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 			this.localeDelegate = cld;
+		}
+
+		final SpringLocaleDelegate getSpringLocaleDelegate() {
+			return localeDelegate;
 		}
 
 		@Override
@@ -251,7 +257,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		}
 
 		protected void invalidStateLocalized(JComponent comp, String resourceId, Object...args) throws InvalidStateException {
-			invalidState(comp, localeDelegate.getMessage(resourceId, null, args));
+			invalidState(comp, getSpringLocaleDelegate().getMessage(resourceId, null, args));
 		}
 
 		protected void invalidState(JComponent comp, String message) throws InvalidStateException {
@@ -275,7 +281,8 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		CustomComponentWizardStep1() {
 			super("nuclos.resplan.wizard.step1.title", "nuclos.resplan.wizard.step1.summary");
-
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
+					
 			internalNameTextField = new JTextField(40);
 			internalNameTextField.getDocument().addDocumentListener(this);
 
@@ -466,6 +473,7 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		CustomComponentWizardStep3() {
 			super("nuclos.resplan.wizard.step3.title", "nuclos.resplan.wizard.step3.summary");
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 
 			resEntityComboBox = createJComboBox(30);
 			resSortFieldComboBox = createJComboBox(30);
@@ -889,6 +897,7 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		CustomComponentWizardStep4() {
 			super("nuclos.resplan.wizard.step4.title", "nuclos.resplan.wizard.step4.summary");
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 
 			locales = LocaleDelegate.getInstance().getAllLocales(false);
 			tablemodel = new ResPlanTranslationTableModel(locales);
@@ -1090,6 +1099,7 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		CustomComponentWizardStep5() {
 			super("nuclos.resplan.wizard.step5.title", "nuclos.resplan.wizard.step5.summary");
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 
 			codeEditor = new CustomComponentCodeEditor();
 
@@ -1182,6 +1192,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		protected void updateState() {
 			boolean withCode = scriptActiveCheckBox.isSelected();
 			boolean compiled = false;
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 			if (withCode) {
 				GroovySupport support = codeEditor.getSupport();
 				compiled = support.isCompiled();
@@ -1280,6 +1291,7 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		CustomComponentWizardStep6() {
 			super("nuclos.resplan.wizard.step6.title", "nuclos.resplan.wizard.step6.summary");
+			final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 
 			add(new JLabel(localeDelegate.getText("nuclos.resplan.wizard.step6.summary", null)));
 		}

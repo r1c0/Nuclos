@@ -54,7 +54,6 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 		super(header);	
 	}
 
-	@PostConstruct
 	@Override
 	protected void init() {
 		super.init();

@@ -41,7 +41,6 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.LocaleInfo;
@@ -56,7 +55,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-// @Component
 public class LocaleDelegate extends AbstractLocalUserCache implements SpringLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
@@ -86,12 +84,10 @@ public class LocaleDelegate extends AbstractLocalUserCache implements SpringLoca
 		INSTANCE = this;
 	}
 	
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 
-	// @Autowired
 	public final void setLocaleService(LocaleFacadeRemote service) {
 		this.remoteInterface = service;
 	}
@@ -110,9 +106,7 @@ public class LocaleDelegate extends AbstractLocalUserCache implements SpringLoca
 
 	public static LocaleDelegate getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE =  (LocaleDelegate) SpringApplicationContextHolder.getBean("localeDelegate");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}

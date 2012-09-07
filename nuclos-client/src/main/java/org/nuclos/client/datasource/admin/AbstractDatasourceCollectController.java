@@ -75,9 +75,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable(preConstruction=true)
 public abstract class AbstractDatasourceCollectController<T extends DatasourceVO> extends NuclosCollectController<CollectableDataSource<T>>  {
 
 	private static final Logger LOG = Logger.getLogger(AbstractDatasourceCollectController.class);
@@ -655,7 +653,6 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 		public DetailsPanel newDetailsPanel(Long entityId) {
 			return new DetailsPanel(entityId, false);
 		}
-
 
 	}
 }

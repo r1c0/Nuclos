@@ -76,7 +76,6 @@ import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.ruleengine.valueobject.RuleWithUsagesVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
@@ -88,7 +87,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
-@Configurable
 public class NuclosConsole extends ConsoleConstants {
 
 	/**
@@ -134,21 +132,22 @@ public class NuclosConsole extends ConsoleConstants {
 	private NuclosRemoteServerSession nuclosRemoteServerSession;
 	
 	// end of Spring injection
-
-	public static synchronized NuclosConsole getInstance() {
+	
+	public static NuclosConsole getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = newNuclosConsole();
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
 
-	private static NuclosConsole newNuclosConsole() {
+	protected static NuclosConsole newNuclosConsole() {
 		try {
 			final String sClassName = LangUtils.defaultIfNull(
 					ApplicationProperties.getInstance().getConsoleClassName(),
 					NuclosConsole.class.getName());
 
-			return (NuclosConsole) Class.forName(sClassName).newInstance();
+			INSTANCE = (NuclosConsole) Class.forName(sClassName).newInstance();
+			return INSTANCE;
 		}
 		catch (Exception ex) {
 			throw new CommonFatalException("Console could not be created.", ex);

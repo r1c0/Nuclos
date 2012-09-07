@@ -22,14 +22,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 
 public class SpringApplicationSubContextsHolder {
 
 	private static final Logger LOG = Logger.getLogger(SpringApplicationSubContextsHolder.class);
-
-	private static ApplicationContext applicationContext;
 
 	private static SpringApplicationSubContextsHolder INSTANCE;
 
@@ -73,6 +70,9 @@ public class SpringApplicationSubContextsHolder {
 				subs = (List<AbstractXmlApplicationContext>) subContexts.clone();
 			}
 			if (subs.isEmpty()) {
+				if (clientContext == null) {
+					throw new IllegalStateException("too early");
+				}
 				if (clientContext.containsBean(strBean)) {
 					bean = clientContext.getBean(strBean);
 				}
@@ -103,6 +103,9 @@ public class SpringApplicationSubContextsHolder {
 				subs = (List<AbstractXmlApplicationContext>) subContexts.clone();
 			}
 			if (subs.isEmpty()) {
+				if (clientContext == null) {
+					throw new IllegalStateException("too early");
+				}
 				if (!clientContext.getBeansOfType(c).isEmpty()) {
 					bean = clientContext.getBean(c);
 				}

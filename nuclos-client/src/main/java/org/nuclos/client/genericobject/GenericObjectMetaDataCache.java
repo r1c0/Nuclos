@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
@@ -36,7 +35,6 @@ import org.nuclos.common.GenericObjectMetaDataProvider;
 import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosAttributeNotFoundException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
@@ -53,7 +51,6 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-// @Component
 public class GenericObjectMetaDataCache extends AbstractLocalUserCache implements GenericObjectMetaDataProvider, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectMetaDataCache.class);
@@ -94,21 +91,17 @@ public class GenericObjectMetaDataCache extends AbstractLocalUserCache implement
 		tnr.subscribe(getCachingTopic(), messageListener);
 	}
 
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	// @Autowired
 	public final void setGenericObjectDelegate(GenericObjectDelegate genericObjectDelegate) {
 		this.genericObjectDelegate = genericObjectDelegate;
 	}
 
 	public static GenericObjectMetaDataCache getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE = SpringApplicationContextHolder.getBean(GenericObjectMetaDataCache.class);
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}

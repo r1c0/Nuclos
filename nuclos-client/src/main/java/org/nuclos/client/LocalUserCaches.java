@@ -107,16 +107,16 @@ public class LocalUserCaches extends java.util.Properties {
 		}
 	}
 	
-	private static LocalUserCaches singleton;
+	private static LocalUserCaches INSTANCE;
 
-    public static synchronized LocalUserCaches getInstance() {
-        if (singleton == null) {
-            singleton = new LocalUserCaches();
+    public static LocalUserCaches getInstance() {
+        if (INSTANCE == null) {
+            throw new IllegalStateException("too eary");
         }
-        return singleton;
+        return INSTANCE;
     }
 
-    private LocalUserCaches() {
+    LocalUserCaches() {
     	try {
 	        InputStream in = null;
 	        try {
@@ -164,10 +164,12 @@ public class LocalUserCaches extends java.util.Properties {
             final String sMessage = "Lokale Caches konnten nicht geladen werden: " + e.getMessage();
             throw new NuclosFatalException(sMessage, e);
     	}
-    	singleton = this;
+    	INSTANCE = this;
     }
 
-	// @Autowired
+    /**
+     * Spring injection setter.
+     */
 	public final void setLocalUserCachesService(LocalUserCachesFacadeRemote service) {
 		this.remoteInterface = service;
 	}

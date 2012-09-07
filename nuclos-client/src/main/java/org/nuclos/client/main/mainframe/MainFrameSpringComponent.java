@@ -6,18 +6,19 @@ package org.nuclos.client.main.mainframe;
 
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * An delegate for MainFrame as java.awt.Component's are slow as spring beans.
  * 
  * @author Thomas Pasch
  */
-// @org.springframework.stereotype.Component
 public class MainFrameSpringComponent implements InitializingBean {
 	
 	private MainFrame mainFrame;
@@ -36,6 +37,8 @@ public class MainFrameSpringComponent implements InitializingBean {
 
 	private ResourceCache resourceCache;
 	
+	private MetaDataClientProvider metaDataClientProvider;
+	
 	public MainFrameSpringComponent() {
 	}
 
@@ -47,6 +50,7 @@ public class MainFrameSpringComponent implements InitializingBean {
 		mainFrame.setClientParameterProvider(getClientParameterProvider());
 		mainFrame.setLiveSearchController(getLiveSearchController());
 		mainFrame.setWorkspaceChooserController(getWorkspaceChooserController());
+		mainFrame.setMetaDataClientProvider(getMetaDataClientProvider());
 	}
 
 	// @Autowired
@@ -88,6 +92,11 @@ public class MainFrameSpringComponent implements InitializingBean {
 		this.liveSearchController = lsc;
 	}
 	
+	@Autowired
+	public final void setMetaDataClientProvider(MetaDataClientProvider metaDataClientProvider) {
+		this.metaDataClientProvider = metaDataClientProvider;
+	}
+	
 	// 
 
 	private LiveSearchController getLiveSearchController() {
@@ -112,6 +121,10 @@ public class MainFrameSpringComponent implements InitializingBean {
 
 	private ResourceCache getResourceCache() {
 		return resourceCache;
+	}
+	
+	private MetaDataClientProvider getMetaDataClientProvider() {
+		return metaDataClientProvider;
 	}
 	
 	public MainFrame getMainFrame() {

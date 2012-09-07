@@ -18,7 +18,6 @@ package org.nuclos.client.rule;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +34,6 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -59,7 +57,6 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
-// @Component
 public class RuleCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(RuleCache.class);
@@ -98,20 +95,20 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 
 	public static RuleCache getInstance() {
 		if (INSTANCE == null) {
-			// lazy support
-			INSTANCE = (RuleCache)SpringApplicationContextHolder.getBean("ruleCache");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
 
 	RuleCache() {
-		INSTANCE = this;
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
 	}
 	
-	// @PostConstruct
 	public final void afterPropertiesSet() {
-		if (!wasDeserialized() || !isValid()) {
-			invalidate(null);
+		if (!INSTANCE.wasDeserialized() || !INSTANCE.isValid()) {
+			INSTANCE.invalidate(null);
 		}
 	}
 	
@@ -143,22 +140,18 @@ public class RuleCache extends AbstractLocalUserCache implements InitializingBea
 		tnr.subscribe(getCachingTopic(), messageListener);
 	}
 	
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	// @Autowired
 	public final void setRuleDelegate(RuleDelegate ruleDelegate) {
 		this.ruleDelegate = ruleDelegate;
 	}
 	
-	// @Autowired
 	public final void setCodeDelegate(CodeDelegate codeDelegate) {
 		this.codeDelegate = codeDelegate;
 	}
 	
-	// @Autowired
 	public final void setTimelimitRuleDelegate(TimelimitRuleDelegate timelimitRuleDelegate) {
 		this.timelimitRuleDelegate = timelimitRuleDelegate;
 	}

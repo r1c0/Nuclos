@@ -31,7 +31,6 @@ import org.nuclos.common.CacheableListener;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,7 +48,6 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-// @Component
 public class AttributeCache extends AbstractLocalUserCache implements AttributeProvider, InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(AttributeCache.class);
@@ -67,14 +65,13 @@ public class AttributeCache extends AbstractLocalUserCache implements AttributeP
     private final Map<Integer, AttributeCVO> mpAttributesByIds = new ConcurrentHashMap<Integer, AttributeCVO>();
 
 	private final LinkedList<CacheableListener> lstCacheableListeners = new LinkedList<CacheableListener>();
+	
 	/**
 	 * @return the one (and only) instance of AttributeCache
 	 */
 	public static AttributeCache getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE =  (AttributeCache) SpringApplicationContextHolder.getBean("attributeProvider");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
@@ -87,7 +84,6 @@ public class AttributeCache extends AbstractLocalUserCache implements AttributeP
 		INSTANCE = this;
 	}
 	
-	// @Autowired
 	public final void setAttributeDelegate(AttributeDelegate attributeDelegate) {
 		this.attributeDelegate = attributeDelegate;
 	}

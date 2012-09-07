@@ -28,7 +28,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.resplan.JResPlanComponent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.ClientPreferences;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A SVG (and more) export dialog for {@link org.nuclos.client.ui.resplan.JResPlanComponent}s.
@@ -36,7 +35,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author Thomas Pasch
  * @since Nuclos 3.6
  */
-@Configurable
 public class ResPlanExportDialog2 extends AbstractResPlanExportDialog {
 	
 	private static final Logger LOG = Logger.getLogger(ResPlanExportDialog2.class);

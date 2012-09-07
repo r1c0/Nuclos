@@ -37,7 +37,6 @@ import org.nuclos.client.main.MainController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
@@ -46,6 +45,7 @@ import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * SearchFilterCache containing all searchfilters (entity + global searchfilters)
@@ -57,7 +57,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:martin.weber@novabit.de">Martin Weber</a>
  * @version 00.01.000
  */
-@Configurable
 public class SearchFilterCache {
 	
 	private static final Logger LOG = Logger.getLogger(SearchFilterCache.class);
@@ -71,8 +70,27 @@ public class SearchFilterCache {
 	private transient TopicNotificationReceiver tnr;
 	private transient MessageListener messageListener;
 	
+	// Spring injection
+	
+	private SearchFilterDelegate searchFilterDelegate;
+	
+	// end of Spring injection
+	
 	private SearchFilterCache() {
-		INSTANCE = this;
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
+	}
+	
+	@Autowired
+	final void setSearchFilterDelegate(SearchFilterDelegate searchFilterDelegate) {
+		this.searchFilterDelegate = searchFilterDelegate;
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		//if (!wasDeserialized() || !isValid()) //@todo. this cache is user dependant. we need something like 'hasUserChanged(...)'
+		INSTANCE.loadSearchFilters();
 	}
 	
 	public final void initMessageListener() {
@@ -120,11 +138,11 @@ public class SearchFilterCache {
 		tnr.subscribe(getCachingTopic(), messageListener);	
 	}
 	
+	@Override
 	public String getCachingTopic() {
 		return JMSConstants.TOPICNAME_SEARCHFILTERCACHE;
 	}
 	
-	// @Autowired
 	public void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
@@ -132,10 +150,9 @@ public class SearchFilterCache {
 	/**
 	 * @return the one (and only) instance of SearchFilterCache
 	 */
-	public static synchronized SearchFilterCache getInstance() {
+	public static SearchFilterCache getInstance() {
 		if (INSTANCE == null) {
-			// lazy support
-			INSTANCE = (SearchFilterCache)SpringApplicationContextHolder.getBean("searchFilterCache");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
@@ -144,7 +161,7 @@ public class SearchFilterCache {
 	 * initializes the cache for all entity searchfilters
 	 */
 	private void loadSearchFilters() {
-		for (SearchFilter searchFilter : SearchFilterDelegate.getInstance().getAllSearchFilterByUser(
+		for (SearchFilter searchFilter : searchFilterDelegate.getAllSearchFilterByUser(
 				Main.getInstance().getMainController().getUserName())) {
 			if (isFilterValid(searchFilter)) {
 				if (searchFilter instanceof EntitySearchFilter) {

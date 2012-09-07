@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -80,6 +79,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.wizard.WizardFrame;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.DalSupportForMD;
@@ -98,23 +98,20 @@ import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.models.StaticModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class DBTransferImport {
 
 	public static final String IMPORT_EXECUTED = "import_executed";
 
 	//
 	
-	// Spring injection
+	// former Spring injection
 	
 	private SpringLocaleDelegate localeDelegate;
 	
 	private TransferFacadeRemote transferFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	private boolean isNuclon;
 	private final ActionListener notifyParent;
@@ -135,12 +132,15 @@ public class DBTransferImport {
 			throw new IllegalArgumentException("notifyParent must not be null");
 		}
 		this.notifyParent = notifyParent;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setTransferFacadeRemote(SpringApplicationContextHolder.getBean(TransferFacadeRemote.class));
+		init();
 	}
 	
-	@PostConstruct
 	final void init() {
 		ifrm = Main.getInstance().getMainController().newMainFrameTab(
-				null, localeDelegate.getMessage("dbtransfer.import.title", "Konfiguration importieren"));
+				null, getSpringLocaleDelegate().getMessage("dbtransfer.import.title", "Konfiguration importieren"));
 		I18n.setBundle(DBTransferWizard.getResourceBundle());
 
 		ifrm.setTabIconFromNuclos("getDefaultFrameIcon");
@@ -185,14 +185,20 @@ public class DBTransferImport {
       });
 	}
 	
-	@Autowired
 	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	@Autowired
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
 	final void setTransferFacadeRemote(TransferFacadeRemote transferFacadeRemote) {
 		this.transferFacadeRemote = transferFacadeRemote;
+	}
+
+	final TransferFacadeRemote getTransferFacadeRemote() {
+		return transferFacadeRemote;
 	}
 
 	private void closeWizard(){
@@ -201,6 +207,7 @@ public class DBTransferImport {
 				ifrm.dispose();
 			} else {
 				if (blnSaveOfLogRecommend || blnSaveOfScriptRecommend) {
+					final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 					String titel = localeDelegate.getMessage("dbtransfer.import.closewizard.title", "Wizard kann noch nicht geschlossen werden");
 					String message = "";
 					if (blnSaveOfLogRecommend) {
@@ -242,6 +249,7 @@ public class DBTransferImport {
 	private final JTextField tfTransferFile = new JTextField(50);
 	
 	private PanelWizardStep newStep1(final MainFrameTab ifrm) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final PanelWizardStep step = new PanelWizardStep(localeDelegate.getMessage(
 				"dbtransfer.import.step1.1", "Konfigurationsdatei"), 
 				localeDelegate.getMessage("dbtransfer.import.step1.2", "Bitte w\u00e4hlen Sie eine Konfigurationsdatei aus."));
@@ -334,7 +342,7 @@ public class DBTransferImport {
 							}
 
 							resetStep2();
-							importTransferObject = transferFacadeRemote.prepareTransfer(isNuclon, transferFile);
+							importTransferObject = getTransferFacadeRemote().prepareTransfer(isNuclon, transferFile);
 							chbxImportAsNuclon.setEnabled(importTransferObject.getTransferOptions().containsKey(TransferOption.IS_NUCLON_IMPORT_ALLOWED));
 
 							step.setComplete(!importTransferObject.result.hasCriticals());
@@ -428,6 +436,7 @@ public class DBTransferImport {
 		final int iWidthBeginnigSpace = 3;
 		final int iWidthSeparator = 6;
 		
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		JLabel lbPreviewHeaderEntity = new JLabel(localeDelegate.getMessage("dbtransfer.import.step1.11", "Entit\u00e4t"));
 		JLabel lbPreviewHeaderTable = new JLabel(localeDelegate.getMessage("dbtransfer.import.step1.12", "Tabellenname"));
 		JLabel lbPreviewHeaderRecords = new JLabel(localeDelegate.getMessage("dbtransfer.import.step1.4", "Datens\u00e4tze"));
@@ -619,6 +628,7 @@ public class DBTransferImport {
 	}
 	
 	private PanelWizardStep newStep2(final MainFrameTab ifrm) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final PanelWizardStep step = new PanelWizardStep(localeDelegate.getMessage(
 				"configuration.transfer.options", "Optionen"), 
 				localeDelegate.getMessage("dbtransfer.import.step2.1", "Bitte w\u00e4hlen Sie die Import Optionen aus.")){
@@ -736,6 +746,7 @@ public class DBTransferImport {
 	private final List<ParameterEditor> lstParameterEditors = new ArrayList<ParameterEditor>();
 	
 	private PanelWizardStep newStep3(final MainFrameTab ifrm) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final PanelWizardStep step = new PanelWizardStep(localeDelegate.getMessage(
 				"dbtransfer.import.step3.1", "System Parameter"), 
 				localeDelegate.getMessage(
@@ -812,6 +823,8 @@ public class DBTransferImport {
 		int iCountNew = 0;
 		int iCountDeleted = 0;
 		int iCountValueChanged = 0;
+		
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		
 		// find new parameter and existing
 		List<ParameterComparison> allParameter = new ArrayList<ParameterComparison>();
@@ -1014,6 +1027,7 @@ public class DBTransferImport {
 	 * Begin Step 4
 	 */
 	private PanelWizardStep newStep4(final MainFrameTab ifrm) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final PanelWizardStep step = new PanelWizardStep(localeDelegate.getMessage(
 				"dbtransfer.import.step4.1", "Import"), 
 				localeDelegate.getMessage(
@@ -1097,7 +1111,7 @@ public class DBTransferImport {
 							Transfer transfer = new Transfer(importTransferObject);
 							transfer.setParameter(parameterSelection);
 							
-							importTransferResult = transferFacadeRemote.runTransfer(transfer);
+							importTransferResult = getTransferFacadeRemote().runTransfer(transfer);
 							
 							// Nicht invalidateAllClientCaches() aufrufen! Nach einem Aufruf sind die Menus solange deaktiviert, 
 							// bis alle NovabitInternalFrames geschlossen wurden... BUG?
@@ -1141,6 +1155,7 @@ public class DBTransferImport {
 	 * Begin Step 5
 	 */
 	private PanelWizardStep newStep5(final MainFrameTab ifrm) {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final JLabel lbResult = new JLabel();
 		final JEditorPane editLog = new JEditorPane();
 		final JScrollPane scrollLog = new JScrollPane(editLog);

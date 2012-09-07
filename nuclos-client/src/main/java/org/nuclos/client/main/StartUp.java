@@ -55,6 +55,7 @@ import org.nuclos.client.login.LoginController;
 import org.nuclos.client.login.LoginEvent;
 import org.nuclos.client.login.LoginListener;
 import org.nuclos.client.login.LoginPanel;
+import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.synthetica.NuclosSyntheticaUtils;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.ResultListener;
@@ -62,6 +63,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.startup.Startup;
@@ -487,6 +489,7 @@ public class StartUp  {
 								
 								compareClientAndServerVersions();
 								ctlLogin.increaseLoginProgressBar(PROGRESS_COMPARE_VERSIONS);
+								
 								createMainController(ev.getAuthenticatedUserName(), ev.getConnectedServerName(), ctlLogin);
 
 								try {

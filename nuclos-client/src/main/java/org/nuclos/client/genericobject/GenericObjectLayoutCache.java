@@ -39,7 +39,6 @@ import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collection.BinaryPredicate;
@@ -62,7 +61,6 @@ import org.xml.sax.InputSource;
  * @version 01.00.00
  * @todo check if this cache is still needed
  */
-// @Component
 public class GenericObjectLayoutCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(GenericObjectLayoutCache.class);
@@ -127,9 +125,7 @@ public class GenericObjectLayoutCache extends AbstractLocalUserCache implements 
 
 	public static GenericObjectLayoutCache getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE = SpringApplicationContextHolder.getBean(GenericObjectLayoutCache.class);
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}

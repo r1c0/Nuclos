@@ -54,7 +54,6 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
-// @Component
 public class MasterDataCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(MasterDataCache.class);
@@ -80,8 +79,7 @@ public class MasterDataCache extends AbstractLocalUserCache implements Initializ
 
 	public static MasterDataCache getInstance() {
 		if (INSTANCE == null) {
-			// lazy support
-			INSTANCE = SpringApplicationContextHolder.getBean(MasterDataCache.class);
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
@@ -90,7 +88,6 @@ public class MasterDataCache extends AbstractLocalUserCache implements Initializ
 		INSTANCE = this;
 	}
 	
-	// @PostConstruct
 	public final void afterPropertiesSet() {
 		if (!wasDeserialized() || !isValid())
 			invalidate(null);
@@ -119,17 +116,14 @@ public class MasterDataCache extends AbstractLocalUserCache implements Initializ
 		tnr.subscribe(getCachingTopic(), messageListener);
 	}
 	
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	// @Autowired
 	public final void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
 		this.masterDataDelegate = masterDataDelegate;
 	}
 	
-	// @Autowired
 	public final void setEntityFacadeDelegate(EntityFacadeDelegate entityFacadeDelegate) {
 		this.entityFacadeDelegate = entityFacadeDelegate;
 	}

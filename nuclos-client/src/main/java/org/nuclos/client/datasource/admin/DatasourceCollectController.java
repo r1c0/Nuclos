@@ -41,6 +41,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
@@ -61,11 +62,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class DatasourceCollectController extends AbstractDatasourceCollectController<DatasourceVO> implements DatasourceEditController {
 	
-	// Spring injection
+	// former Spring injection
 	
 	private DatasourceFacadeRemote datasourceFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -79,7 +80,8 @@ public class DatasourceCollectController extends AbstractDatasourceCollectContro
 	public DatasourceCollectController(MainFrameTab tabIfAny) {
 		super(new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.DATASOURCE)), tabIfAny);
-
+		setDatasourceFacadeRemote(SpringApplicationContextHolder.getBean(DatasourceFacadeRemote.class));
+		
 		CollectableMasterDataEntity clctEntity = new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.DYNAMICENTITY));
 		initializeDatasourceCollectController(
@@ -91,9 +93,12 @@ public class DatasourceCollectController extends AbstractDatasourceCollectContro
 		setupResultToolBar();
 	}
 	
-	@Autowired
 	final void setDatasourceFacadeRemote(DatasourceFacadeRemote datasourceFacadeRemote) {
 		this.datasourceFacadeRemote = datasourceFacadeRemote;
+	}
+	
+	final DatasourceFacadeRemote getDatasourceFacadeRemote() {
+		return datasourceFacadeRemote;
 	}
 	
 	private void setupResultToolBar() {
@@ -238,7 +243,7 @@ public class DatasourceCollectController extends AbstractDatasourceCollectContro
 	@Override
 	protected void validateSQL() {
 		try {
-			datasourceFacadeRemote.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
+			getDatasourceFacadeRemote().validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
 			JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}

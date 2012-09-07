@@ -19,7 +19,6 @@ package org.nuclos.client.ui;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * General controller (as in "model-view-controller").
@@ -30,7 +29,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-//@Configurable(preConstruction=true)
 public abstract class Controller<Parent> {
 	
 	private Parent parent;

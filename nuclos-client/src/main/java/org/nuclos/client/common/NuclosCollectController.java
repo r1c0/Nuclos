@@ -1361,7 +1361,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		return bTransferable;
 	}
 
-	//@Configurable
 	private static class MySelectObjectsPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		private JCheckBox cbxSaveAfterRuleExecution;
@@ -1369,7 +1368,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		MySelectObjectsPanel() {
 		}
 
-		//@PostConstruct
 		@Override
 		protected void init() {
 			super.init();

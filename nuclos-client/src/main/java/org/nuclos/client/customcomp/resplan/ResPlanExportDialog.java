@@ -29,7 +29,6 @@ import org.nuclos.client.ui.resplan.JResPlanComponent;
 import org.nuclos.client.ui.resplan.ResPlanModel;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.ClientPreferences;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A SVG (and more) export dialog for {@link ResPlanModel}s.
@@ -37,7 +36,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author Thomas Pasch
  * @deprecated JResPlanComponent is now directly exported as {@link org.apache.batik.svggen.SVGGraphics2D}.
  */
-@Configurable
 public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 	
 	private static final Logger LOG = Logger.getLogger(ResPlanExportDialog.class);

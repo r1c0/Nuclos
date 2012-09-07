@@ -301,6 +301,12 @@ public class MainController {
 	
 	private WorkspaceChooserController workspaceChooserController;
 	
+	// private GenericObjectMetaDataCache genericObjectMetaDataCache;
+	
+	// private SearchFilterCache searchFilterCache;
+	
+	// private RuleCache ruleCache;
+	
 	// end of Spring injection
 
 	/**
@@ -369,6 +375,23 @@ public class MainController {
 		this.workspaceChooserController = workspaceChooserController;
 	}
 	
+	/*
+	@Autowired
+	final void setGenericObjectMetaDataCache(GenericObjectMetaDataCache genericObjectMetaDataCache) {
+		this.genericObjectMetaDataCache = genericObjectMetaDataCache;
+	}
+	
+	@Autowired
+	final void setSearchFilterCache(SearchFilterCache searchFilterCache) {
+		this.searchFilterCache = searchFilterCache;
+	}
+	
+	@Autowired
+	final void setRuleCache(RuleCache ruleCache) {
+		this.ruleCache = ruleCache;
+	}
+	 */
+	
 	@PostConstruct
 	void init() throws CommonPermissionException, BackingStoreException {
 		debugFrame = new SwingDebugFrame(this);
@@ -398,7 +421,8 @@ public class MainController {
 				@Override
 				public void run() {
 					LOG.debug(">>> read metadata...");
-					GenericObjectMetaDataCache.getInstance();
+					// GenericObjectMetaDataCache.getInstance();
+					SpringApplicationContextHolder.getBean(GenericObjectMetaDataCache.class);
 				}
 			};
 
@@ -409,7 +433,8 @@ public class MainController {
 				@Override
 				public void run() {
 					LOG.debug(">>> read searchfilter...");
-					SearchFilterCache.getInstance();
+					// SearchFilterCache.getInstance();
+					SpringApplicationContextHolder.getBean(SearchFilterCache.class);
 				}
 			};
 
@@ -420,7 +445,8 @@ public class MainController {
 				@Override
 				public void run() {
 					LOG.debug(">>> read rules...");
-					RuleCache.getInstance();
+					// RuleCache.getInstance();
+					SpringApplicationContextHolder.getBean(RuleCache.class);
 				}
 			};
 
@@ -446,9 +472,12 @@ public class MainController {
 			
 			// !!! init messagelisteners here.
 			// initialzing chaches in these threads will cause an deadlock situation at realSubscribe in TopicNotificationReceiver. 
-			GenericObjectMetaDataCache.getInstance().initMessageListener();
-			SearchFilterCache.getInstance().initMessageListener();
-			RuleCache.getInstance().initMessageListener();
+			// genericObjectMetaDataCache.initMessageListener();
+			// searchFilterCache.initMessageListener();
+			// ruleCache.initMessageListener();
+			SpringApplicationContextHolder.getBean(GenericObjectMetaDataCache.class).initMessageListener();
+			SpringApplicationContextHolder.getBean(SearchFilterCache.class).initMessageListener();
+			SpringApplicationContextHolder.getBean(RuleCache.class).initMessageListener();
 
 			
 			LOG.debug(">>> create mainframe...");

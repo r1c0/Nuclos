@@ -34,22 +34,18 @@ import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.springframework.beans.factory.InitializingBean;
 
-//@Configurable
 public class TasklistCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(TasklistCache.class);
 
 	private static TasklistCache INSTANCE;
 
-	public static synchronized TasklistCache getInstance() {
+	public static TasklistCache getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE =  (TasklistCache) SpringApplicationContextHolder.getBean("tasklistCache");
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
@@ -105,7 +101,6 @@ public class TasklistCache extends AbstractLocalUserCache implements Initializin
 		return JMSConstants.TOPICNAME_MASTERDATACACHE;
 	}
 	
-	//@Autowired
 	public void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}

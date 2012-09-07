@@ -41,7 +41,6 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 00.01.000
  */
-// @Component
 public class ResourceCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(ResourceCache.class);
@@ -69,7 +68,6 @@ public class ResourceCache extends AbstractLocalUserCache implements Initializin
 		INSTANCE = this;
 	}
 	
-	// @PostConstruct
 	public final void afterPropertiesSet() {
 		if (!wasDeserialized() || !isValid())
 			invalidate();
@@ -88,21 +86,17 @@ public class ResourceCache extends AbstractLocalUserCache implements Initializin
 		return JMSConstants.TOPICNAME_RESOURCECACHE;
 	}
 	
-	// @Autowired
 	public final void setResourceDelegate(ResourceDelegate delegate) {
 		this.delegate = delegate;
 	}
 	
-	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
 	public static ResourceCache getInstance() {
 		if (INSTANCE == null) {
-			// throw new IllegalStateException("too early");
-			// lazy support
-			INSTANCE = SpringApplicationContextHolder.getBean(ResourceCache.class);
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
@@ -111,7 +105,7 @@ public class ResourceCache extends AbstractLocalUserCache implements Initializin
 		ICON     { @Override public Object prepare(byte[] in) { return in == null ? null : new ImageIcon(in); }},
 		BYTE_ARR { @Override public Object prepare(byte[] in) { return in; }};
 		public abstract Object prepare(byte[] in);
-	};
+	}
 
 	private void encache(Pair<ResourceVO, byte[]> v, ResourcePrep prep, String nullString, Integer nullId) {
 		if(v.x == null) {
