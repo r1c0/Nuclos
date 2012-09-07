@@ -28,10 +28,10 @@
        					   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
 
 	<!-- 
-		Enable load-time weaving
+		Disable load-time weaving
 		http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/aop.html#aop-aj-ltw
 	 -->
-	<context:load-time-weaver weaver-class="org.nuclos.common.startup.NuclosContextLoadTimeWeaver"/>
+	<!-- context:load-time-weaver weaver-class="org.nuclos.common.startup.NuclosContextLoadTimeWeaver"/ -->
 
 	<!--
 		Enable Annotation with @Configurable
