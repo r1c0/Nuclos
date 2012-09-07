@@ -36,6 +36,7 @@ import java.util.List;
  * @version 00.01.000
  */
 public class EntitySearchResultTreeNode extends AbstractStaticTreeNode<Integer> {
+	
 	private static final long serialVersionUID = 6784499906928623893L;
 
 	private final String sFilterName;

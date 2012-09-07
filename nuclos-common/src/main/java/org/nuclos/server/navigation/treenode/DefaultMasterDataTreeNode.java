@@ -19,15 +19,12 @@ package org.nuclos.server.navigation.treenode;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
+import org.nuclos.common.Utils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoteException;
-import org.nuclos.common.Utils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * TreeNode for MasterDataRecords
@@ -38,12 +35,7 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version	01.00.00
  */
-@Configurable
 public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Attention:
@@ -57,7 +49,7 @@ public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
 		this.mdvo = mdvo;
 	}
 	
-	@PostConstruct
+	// @PostConstruct
 	final void init() {
 		// after deserialization (e.g. from XStream) this is called again
 		// but with mdvo == null!
@@ -67,7 +59,28 @@ public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
 		}
 		assert getLabel() != null;
 	}
+	
+	@Override
+	public String getLabel() {
+		String result = super.getLabel();
+		// after deserialization (e.g. from XStream) this is called again
+		// but with mdvo == null!
+		if (result == null && mdvo != null) {
+			setLabel(getIdentifier(mdvo));
+		}
+		return result;
+	}
 
+	@Override
+	public String getDescription() {
+		String result = super.getDescription();
+		// after deserialization (e.g. from XStream) this is called again
+		// but with mdvo == null!
+		if (result == null && mdvo != null) {
+			setDescription(getDescription(mdvo));
+		}
+		return result;
+	}
 
 	@Override
 	protected List<TreeNode> getSubNodesImpl() throws RemoteException {

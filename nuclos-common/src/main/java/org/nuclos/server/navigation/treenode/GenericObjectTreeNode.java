@@ -44,13 +44,7 @@ import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
  * @author <a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
  */
-public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
-	Comparable<GenericObjectTreeNode> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements Comparable<GenericObjectTreeNode> {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectTreeNode.class);
 

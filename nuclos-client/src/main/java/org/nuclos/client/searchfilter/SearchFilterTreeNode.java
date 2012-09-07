@@ -128,6 +128,4 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 		return super.getDescription();
 	}
 
-
-
 }	// class SearchFilterTreeNode

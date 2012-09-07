@@ -41,6 +41,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @version 00.01.000
  */
 public class PersonalSearchFiltersTreeNode extends AbstractTreeNode<Object> {
+	
 	private static final long serialVersionUID = 4153932414394405456L;
 
 	public PersonalSearchFiltersTreeNode() {

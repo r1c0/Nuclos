@@ -21,10 +21,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.LangUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Abstract base class for all tree nodes.
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph Radig</a>
  * @version 00.01.000
  */
-@Configurable
 public abstract class AbstractTreeNode<Id> implements TreeNode {
 	private static final long serialVersionUID = -2950313888999290579L;
 
@@ -45,7 +43,11 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	private String sDescription;
 	private List<? extends TreeNode> lstSubNodes;
 	
+	// former Spring injection
+	
 	private transient SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 
 	/**
 	 * @param id the tree node's id. May be <code>null</code>.
@@ -78,26 +80,24 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	}
 	 */
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	/*
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
+	 */
 	
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		if (localeDelegate == null) {
+			localeDelegate = SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class);
+		}
 		return localeDelegate;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Id getId() {
 		return this.id;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getLabel() {
 		return this.sLabel;
@@ -107,9 +107,6 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		this.sLabel = sLabel;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public Date getChangedAt(){
 		return this.dateChangedAt;
 	}
@@ -117,9 +114,6 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		this.dateChangedAt = dateChangedAt;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getDescription() {
 		return this.sDescription;
@@ -164,9 +158,6 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	 */
 	protected abstract List<? extends TreeNode> getSubNodesImpl() throws RemoteException;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Boolean hasSubNodes() {
 		return (this.lstSubNodes == null) ? null : !this.lstSubNodes.isEmpty();
@@ -187,9 +178,6 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		assert this.hasSubNodes() == null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void refresh() {
 		throw new UnsupportedOperationException("refresh");
@@ -210,9 +198,6 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -224,11 +209,9 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		return (LangUtils.equals(this.getId(), ((TreeNode) o).getId()));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int hashCode() {
 		return LangUtils.hashCode(this.getId());
 	}
+	
 }	// class AbstractTreeNode

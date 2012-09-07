@@ -24,7 +24,6 @@ import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * TreeNode for MasterDataRecords
@@ -35,14 +34,8 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version	01.00.00
  */
-@Configurable
 public class SubFormEntryTreeNode extends DefaultMasterDataTreeNode {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private EntityFacadeRemote entityFacadeRemote;
 
 	public SubFormEntryTreeNode(String sEntity, MasterDataVO mdvo) {
