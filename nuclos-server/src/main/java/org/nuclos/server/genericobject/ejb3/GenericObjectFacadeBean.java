@@ -39,6 +39,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.MasterDataToEntityObjectTransformer;
@@ -48,6 +49,7 @@ import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
@@ -1148,6 +1150,69 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 
 		this.debug("Leaving remove(GenericObjectVO govo, boolean bDeletePhysically)");
+	}
+
+	/**
+	 * update generic object in database
+	 * @param sEntityName name of the entity
+	 * @throws NuclosBusinessRuleException
+	 */
+	@RolesAllowed("Login")
+	public void updateGenericObjectEntries(String sEntityName) throws NuclosBusinessException {
+		this.debug("Entering updateGenericObjectEntries(String sEntityName)");
+		
+		Integer iModuleId = null;
+		if (Modules.getInstance().isModuleEntity(sEntityName))
+			iModuleId =	Modules.getInstance().getModuleIdByEntityName(sEntityName);
+		else
+			iModuleId =	IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntity(sEntityName).getId());
+		
+		if (!Modules.getInstance().isModuleEntity(sEntityName)) {
+			 List<Integer> lstGenericObjectIds = getGenericObjectIds(iModuleId, (CollectableSearchCondition)null);
+			 for (Integer id : lstGenericObjectIds) {
+				// @todo helper.removeLogBookEntries(id);
+				helper.removeDependantTaskObjects(id);
+				helper.removeGroupBelonging(id);
+				
+				try {
+					NucletDalProvider.getInstance().getEOGenericObjectProcessor().delete(IdUtils.toLongId(id));
+				}
+				catch (DbException e) {
+					throw new NuclosBusinessException(e);
+				}
+			 }
+		}
+		else {
+			CollectableSearchCondition cond = new CollectableIsNullCondition(
+					new CollectableEOEntityField(NuclosEOField.SYSTEMIDENTIFIER.getMetaData(), sEntityName));
+			TruncatableCollection<MasterDataVO> mdcvos = masterDataFacadeHelper.getGenericMasterData(sEntityName, cond, true);
+			
+			for (MasterDataVO mdvo : mdcvos) {
+				EOGenericObjectVO eoGenericObjectVO = new EOGenericObjectVO();
+				eoGenericObjectVO.flagNew();
+				eoGenericObjectVO.setId(IdUtils.toLongId(mdvo.getIntId()));
+				eoGenericObjectVO.setModuleId(IdUtils.toLongId(iModuleId));
+				DalUtils.updateVersionInformation(eoGenericObjectVO, getCurrentUserName());
+				
+				try {
+					NucletDalProvider.getInstance().getEOGenericObjectProcessor().insertOrUpdate(eoGenericObjectVO);
+					
+					EntityObjectVO dalVO = DalSupportForGO.getEntityObjectProcessor(iModuleId).getByPrimaryKey(IdUtils.toLongId(mdvo.getIntId()));
+
+					final String sCanonicalValueSystemIdentifier = BusinessIDFactory.generateSystemIdentifier(iModuleId);
+					assert !StringUtils.isNullOrEmpty(sCanonicalValueSystemIdentifier);
+					dalVO.getFields().put(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField(), sCanonicalValueSystemIdentifier);
+
+					dalVO.flagUpdate();
+					DalSupportForGO.getEntityObjectProcessor(iModuleId).insertOrUpdate(dalVO);
+				}
+				catch (DbException e) {
+					throw new NuclosBusinessException(e);
+				}
+			}
+		}
+
+		this.debug("Leaving updateGenericObjectEntries(String sEntityName)");
 	}
 
 	// replaces the ejbRemove() from GenericObjectBean

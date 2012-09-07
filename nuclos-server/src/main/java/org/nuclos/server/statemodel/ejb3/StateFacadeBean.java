@@ -46,14 +46,17 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.DalSupportForMD;
+import org.nuclos.common.dal.vo.EOGenericObjectVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -62,9 +65,11 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.AttributeCache;
+import org.nuclos.server.common.BusinessIDFactory;
 import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
@@ -73,12 +78,16 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
+import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeLocal;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
+import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
@@ -112,6 +121,7 @@ import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.nuclos.server.statemodel.valueobject.SubformColumnPermissionVO;
 import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
+import org.nuclos.server.statemodel.valueobject.StateModelUsages.StateModelUsage;
 import org.nuclos.server.validation.ValidationSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -288,8 +298,17 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			}
 		}
 
-		SecurityCache.getInstance().invalidate();
+		if (mpDependants != null) {
+			StateModelUsagesCache.getInstance().revalidate();
+			
+			for (EntityObjectVO eovo : mpDependants.getData(NuclosEntity.STATEMODELUSAGE.getEntityName())) {
+				String sEntityName = (String)eovo.getField("nuclos_module");
+				updateInitialStates(sEntityName);
+			}
+		}
 
+		SecurityCache.getInstance().invalidate();
+		
 		return result;
 	}
 
@@ -491,8 +510,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			}
 		}
 
-
-
 		// update states:
 		Map<Integer, Integer> mpStates = new HashMap<Integer, Integer>();
 		for (StateVO statevo : stategraphcvo.getStates()) {
@@ -587,6 +604,39 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		dbStateModel.setXMLLayout(sXmlLayout);
 
 		getMasterDataFacade().modify(NuclosEntity.STATEMODEL.getEntityName(), MasterDataWrapper.wrapStateModelVO(dbStateModel), null, null);
+	}
+
+	private void updateInitialStates(String sEntityName) throws CommonCreateException {
+		if (Modules.getInstance().isModuleEntity(sEntityName)) {
+			Integer iModuleId =	Modules.getInstance().getModuleIdByEntityName(sEntityName);
+			final StateModelUsage stateModelUsage
+				= StateModelUsagesCache.getInstance().getStateUsages().getStateModelUsage(new UsageCriteria(iModuleId, null, null, null));
+			if (stateModelUsage != null) {
+				StateVO stateVO = stateCache.getState(stateModelUsage.getInitialStateId());
+				if (stateVO != null) {
+					CollectableSearchCondition cond = new CollectableIsNullCondition(
+							new CollectableEOEntityField(NuclosEOField.STATE.getMetaData(), sEntityName));
+					List<Integer> genvos = genericObjectFacade.getGenericObjectIds(iModuleId, cond);
+					for (Integer id : genvos) {
+						try {
+							EntityObjectVO dalVO = DalSupportForGO.getEntityObjectProcessor(iModuleId).getByPrimaryKey(IdUtils.toLongId(id));
+		
+							dalVO.getFieldIds().put(NuclosEOField.STATE.getMetaData().getField(), IdUtils.toLongId(stateVO.getId()));
+
+							dalVO.getFields().put(NuclosEOField.STATE.getMetaData().getField(), stateVO.getStatename());
+							dalVO.getFields().put(NuclosEOField.STATEICON.getMetaData().getField(), stateVO.getIcon());
+							dalVO.getFields().put(NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getNumeral());
+		
+							dalVO.flagUpdate();
+							DalSupportForGO.getEntityObjectProcessor(iModuleId).insertOrUpdate(dalVO);
+						}
+						catch (DbException e) {
+							throw new CommonCreateException(e);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void updateState(StateVO clientStateVO, StateModelVO modelVO) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonCreateException, CommonRemoveException, CommonStaleVersionException, CommonValidationException {

@@ -395,6 +395,7 @@ public enum NuclosEOField implements NuclosEOFieldConstants{
 		result.setShowMnemonic(false);
 		result.setUnique(false);
 		result.setInsertable(false);
+		result.setDefaultMandatory("false");
 		result.processor(PROCESSOR);
 
 		result.setId(-10019l);

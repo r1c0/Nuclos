@@ -487,4 +487,12 @@ public interface GenericObjectFacadeLocal {
 			CommonCreateException, CommonFinderException, CommonRemoveException;
 			
 	String getCurrentUserName();
+	
+	/**
+	 * update generic object in database
+	 * @param sEntityName name of the entity
+	 * @throws NuclosBusinessRuleException
+	 */
+	@RolesAllowed("Login")
+	public void updateGenericObjectEntries(String sEntityName) throws NuclosBusinessException;
 }

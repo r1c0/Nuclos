@@ -928,6 +928,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			}
 
 			changeModuleDirectory(sOldPath, updatedMDEntity.getDocumentPath(), updatedMDEntity);
+			
+			genericObjectFacade.updateGenericObjectEntries(updatedMDEntity.getEntity());
 
 		}
 		catch (CommonFatalException e) {
