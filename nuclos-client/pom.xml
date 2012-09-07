@@ -169,7 +169,7 @@
 		<!-- needed for spring-security-web -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<artifactId>javax.servlet-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<!--
