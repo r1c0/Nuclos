@@ -74,12 +74,11 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -96,7 +95,6 @@ import org.springframework.security.core.AuthenticationException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable(preConstruction=true)
 public class LoginController extends Controller<Component> {
 
 	private static final Logger LOG = Logger.getLogger(LoginController.class);
@@ -123,7 +121,7 @@ public class LoginController extends Controller<Component> {
 	
 	private StartUp.ClientContextCondition clientContextCondition;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private LocaleDelegate localeDelegate;
 	
@@ -131,7 +129,7 @@ public class LoginController extends Controller<Component> {
 	
 	private NuclosRemoteServerSession nuclosRemoteServerSession;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	private LoginController() {
 		this(null, new String[] {}, null);
@@ -142,6 +140,10 @@ public class LoginController extends Controller<Component> {
 		this.args = args;
 		this.clientContextCondition = clientContextCondition;
 		try {
+			setServerMetaFacadeRemote(SpringApplicationContextHolder.getBean(ServerMetaFacadeRemote.class));
+			setLocaleDelegate(SpringApplicationContextHolder.getBean(LocaleDelegate.class));
+			setNuclosRemoteServerSession(SpringApplicationContextHolder.getBean(NuclosRemoteServerSession.class));
+			
 	        passwordSaveAllowed = Boolean.valueOf(
 	        	StringUtils.defaultIfNull(
 	        		StringUtils.nullIfEmpty(
@@ -183,19 +185,28 @@ public class LoginController extends Controller<Component> {
 		this.args = new String[]{};
 	}
 	
-	@Autowired
 	final void setLocaleDelegate(LocaleDelegate localeDelegate) {
 		this.localeDelegate = localeDelegate;
 	}
 	
-	@Autowired
+	final LocaleDelegate getLocaleDelegate() {
+		return localeDelegate;
+	}
+	
 	final void setServerMetaFacadeRemote(ServerMetaFacadeRemote serverMetaFacadeRemote) {
 		this.serverMetaFacadeRemote = serverMetaFacadeRemote;
 	}
 	
-	@Autowired
+	final ServerMetaFacadeRemote getServerMetaFacadeRemote() {
+		return serverMetaFacadeRemote;
+	}
+	
 	final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
 		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
+	}
+
+	final NuclosRemoteServerSession getNuclosRemoteServerSession() {
+		return nuclosRemoteServerSession;
 	}
 
 	public void run() {
@@ -381,6 +392,7 @@ public class LoginController extends Controller<Component> {
 		List<LocaleInfo> clientCachedLocaleInfo
 			= LocalUserProperties.getInstance().getLoginLocaleSelection();
 
+		final LocaleDelegate localeDelegate = getLocaleDelegate();
 		if (localeDelegate == null) {
 			throw new IllegalStateException("Spring injection failed: Most probably cause: You need load-time weaving but started client without -javaagent.");
 		}
@@ -486,7 +498,7 @@ public class LoginController extends Controller<Component> {
 									public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
 										RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
 										ram.changePassword(sUserName, new String(acPassword), newPw);
-										nuclosRemoteServerSession.relogin(sUserName, newPw);
+										getNuclosRemoteServerSession().relogin(sUserName, newPw);
 									}
 								});
 							}
@@ -599,7 +611,7 @@ public class LoginController extends Controller<Component> {
 				clientContextCondition.waitFor();
 			}
 		}
-		final String result = nuclosRemoteServerSession.login(sUserName, new String(acPassword));
+		final String result = getNuclosRemoteServerSession().login(sUserName, new String(acPassword));
 		if (!ShutdownActions.getInstance().isRegistered(ShutdownActions.SHUTDOWNORDER_LOGOUT)) {
 			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_LOGOUT, new Logout());
 		}
@@ -639,7 +651,7 @@ public class LoginController extends Controller<Component> {
 	private class Logout implements Runnable {
 		@Override
 		public void run() {
-			nuclosRemoteServerSession.logout();
+			getNuclosRemoteServerSession().logout();
 		}
 	}
 

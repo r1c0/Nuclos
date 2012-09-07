@@ -36,7 +36,6 @@ import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.StringUtils;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * The main class of the Nucleus client. Contains some global constants and objects.
@@ -49,7 +48,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
 public class Main {
 	
 	private static final Logger LOG = Logger.getLogger(Main.class);

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
@@ -34,7 +33,6 @@ import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledPasswordField;
 import org.nuclos.common.NuclosBusinessException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * 
@@ -209,17 +207,14 @@ public class WYSIWYGCollectablePasswordfield extends WYSIWYGCollectableComponent
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 	}
 
-	@Configurable
-	private class WYSIWYGLabeledPasswordField extends LabeledPasswordField {
+	private static class WYSIWYGLabeledPasswordField extends LabeledPasswordField {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		
 		private Color backgroundcolor;
 		
-		@PostConstruct
+		private WYSIWYGLabeledPasswordField() {
+			init();
+		}
+		
 		void init() {
 			support.setColorProvider(new ColorProvider() {
 				@Override

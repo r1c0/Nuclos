@@ -20,7 +20,6 @@ package org.nuclos.client.main.mainframe;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPopupMenu;
@@ -29,9 +28,7 @@ import javax.swing.JSplitPane;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.WorkspaceDescription.Split;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class MainFrameSplitPane extends JSplitPane {
 	
 	/**
@@ -49,10 +46,10 @@ public class MainFrameSplitPane extends JSplitPane {
 		defaultDividerSize = getDividerSize();
 		defaultResizeWeight = getResizeWeight();
 		fixedState = Split.FIXED_STATE_NONE;
+		
+		init();
 	}
 	
-	@SuppressWarnings("serial")
-	@PostConstruct
 	void init() {
 		if (MainFrame.isSplittingEnabled()) {
 			Action actFixLeft = new AbstractAction() {

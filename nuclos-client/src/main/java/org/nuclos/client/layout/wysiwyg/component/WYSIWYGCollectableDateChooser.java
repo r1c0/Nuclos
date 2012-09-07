@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
@@ -34,7 +33,6 @@ import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledDateChooser;
 import org.nuclos.common.NuclosBusinessException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * 
@@ -218,16 +216,15 @@ public class WYSIWYGCollectableDateChooser extends WYSIWYGCollectableComponent {
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 	}
 	
-	@Configurable
-	private class WYSIWYGLabeledDateChooser extends LabeledDateChooser {
+	private static class WYSIWYGLabeledDateChooser extends LabeledDateChooser {
 
 		private Color backgroundcolor;
 		
 		private WYSIWYGLabeledDateChooser() {
 			super(new LabeledComponentSupport());
+			init();
 		}
 		
-		@PostConstruct
 		void init() {
 			support.setColorProvider(new ColorProvider() {
 				@Override

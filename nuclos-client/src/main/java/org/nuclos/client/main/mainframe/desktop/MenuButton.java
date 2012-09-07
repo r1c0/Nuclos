@@ -55,6 +55,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.main.mainframe.MenuActionChooser;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.NuclosResourceCategory;
@@ -62,14 +63,11 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 
-@Configurable(preConstruction=true)
 abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
 	private static final Logger LOG = Logger.getLogger(MenuButton.class);
@@ -111,16 +109,18 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
 	private final List<DefaultMenuItem> menuItems = new ArrayList<DefaultMenuItem>();
 	
-	// Spring injection
+	// former Spring injection
 	
 	private MainFrame mainFrame;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	public MenuButton(final WorkspaceDescription.MenuButton prefs, List<GenericAction> actions, Color defaultBackroundColor,
 			final boolean staticMenu,
 			int itemFontSize, int itemTextHorizontalAlignment, int itemTextHorizontalPadding, 
 			Color itemTextColor, Color itemTextColorHover, String itemResourceBackground, String itemResourceBackgroundHover) {
+		setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
+		
 		if (prefs == null) {
 			throw new IllegalArgumentException("prefs could not be null");
 		}
@@ -233,7 +233,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 					menuItemAction = genAction.y.y;
 				}
 			}
-			if (menuItemAction != null || mainFrame.isStarttabEditable()) {
+			if (menuItemAction != null || getMainFrame().isStarttabEditable()) {
 				addMenuItem(getDefaultMenuItem(miPrefs, menuItemAction));
 			}
 		}
@@ -282,9 +282,12 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		dragSource.createDefaultDragGestureRecognizer(jlbButton, DnDConstants.ACTION_COPY_OR_MOVE, MenuButton.this);
 	}
 	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final void setMainFrame(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
+	}
+	
+	final MainFrame getMainFrame() {
+		return mainFrame;
 	}
 	
 	abstract void remove();
@@ -485,7 +488,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	}
 
 	private void showContextMenu(MouseEvent mev) {
-		if (!mainFrame.isStarttabEditable()) {
+		if (!getMainFrame().isStarttabEditable()) {
 			return;
 		}
 		hideMenu();
@@ -718,7 +721,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			}
 			@Override
 			public void dragGestureRecognized(DragGestureEvent dge) {
-				if (mainFrame.isStarttabEditable()) {
+				if (getMainFrame().isStarttabEditable()) {
 //					Transferable transferable = new MenuItemTransferable(getPreferences());
 //					this.setHover(false);
 //					dge.startDrag(null, transferable, null);

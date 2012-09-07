@@ -63,6 +63,7 @@ import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.main.mainframe.MainFrameUtils;
 import org.nuclos.client.main.mainframe.StartTabPanel;
 import org.nuclos.client.nuclet.NucletComponentRepository;
@@ -72,17 +73,14 @@ import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.WrapLayout;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 
-@Configurable(preConstruction=true)
 public abstract class DesktopStartTab {
 
 	private static final Logger LOG = Logger.getLogger(DesktopStartTab.class);
@@ -105,7 +103,7 @@ public abstract class DesktopStartTab {
 	private DesktopBackgroundPainter desktopBackgroundPainter;
 	private final List<DesktopItem> desktopItems = new ArrayList<DesktopItem>();
 	
-	// Spring injection
+	// former Spring injection
 	
 	private SpringLocaleDelegate localeDelegate;
 	
@@ -115,7 +113,7 @@ public abstract class DesktopStartTab {
 	
 	private WorkspaceUtils workspaceUtils;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	private Action actAddMenubutton;
 	
@@ -134,10 +132,16 @@ public abstract class DesktopStartTab {
 	private List<org.nuclos.api.ui.DesktopItemFactory> apiDesktopItemFactories;
 	
 	public DesktopStartTab() {
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setResourceCache(SpringApplicationContextHolder.getBean(ResourceCache.class));
+		setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
+		setWorkspaceUtils(SpringApplicationContextHolder.getBean(WorkspaceUtils.class));
+		
+		init();
 	}
 	
-	@PostConstruct
 	final void init() {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		actAddMenubutton = new AbstractAction(
 				localeDelegate.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
 				Icons.getInstance().getIconPlus16()) {
@@ -241,7 +245,7 @@ public abstract class DesktopStartTab {
 
 			@Override
 			public void show(Component invoker, int x, int y) {
-				if (mainFrame.isStarttabEditable()) {
+				if (getMainFrame().isStarttabEditable()) {
 					super.show(invoker, x, y);
 				}
 			}
@@ -286,24 +290,36 @@ public abstract class DesktopStartTab {
 		this.jpnMain.setComponentPopupMenu(contextMenu);
 	}
 	
-	@Autowired
 	final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 	
-	@Autowired
+	final ResourceCache getResourceCache() {
+		return resourceCache;
+	}
+	
 	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
+	final void setMainFrame(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 	}
 	
-	@Autowired
+	final MainFrame getMainFrame() {
+		return mainFrame;
+	}
+	
 	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
 		this.workspaceUtils = workspaceUtils;
+	}
+	
+	final WorkspaceUtils getWorkspaceUtils() {
+		return workspaceUtils;
 	}
 	
 	public void setDesktopBackgroundPainter(DesktopBackgroundPainter desktopBackgroundPainter) {
@@ -321,7 +337,7 @@ public abstract class DesktopStartTab {
 	
 	public void restoreDesktop() {
 		try {
-			WorkspaceDescription.Desktop restoredPrefs = workspaceUtils.restoreDesktop(desktopPrefs);
+			WorkspaceDescription.Desktop restoredPrefs = getWorkspaceUtils().restoreDesktop(desktopPrefs);
 			setDesktopPreferences(restoredPrefs, null);
 		} catch (CommonBusinessException e) {
 			Errors.getInstance().showExceptionDialog(getJComponent(), e);
@@ -413,7 +429,7 @@ public abstract class DesktopStartTab {
 			backgroundImage = null;
 			boolean resIcon = false;
 			if (desktopPrefs.getResourceBackground() != null) {
-				backgroundImage = resourceCache.getIconResource(desktopPrefs.getResourceBackground());
+				backgroundImage = getResourceCache().getIconResource(desktopPrefs.getResourceBackground());
 				resIcon = true;
 			}
 			if (!resIcon && desktopPrefs.getNuclosResourceBackground() != null) {
@@ -564,7 +580,7 @@ public abstract class DesktopStartTab {
 			}
 			@Override
 			public void dragGestureRecognized(DragGestureEvent dge) {
-				if (mainFrame.isStarttabEditable()) {
+				if (getMainFrame().isStarttabEditable()) {
 					Transferable transferable = new DesktopItemTransferable(getPreferences(), desktopPrefs);
 					this.setHover(false);
 					dge.startDrag(null, transferable, null);
@@ -622,7 +638,7 @@ public abstract class DesktopStartTab {
 		
 		@Override
 		public boolean importData(JComponent comp, Transferable t) {
-			if (mainFrame.isStarttabEditable()) {
+			if (getMainFrame().isStarttabEditable()) {
 				try {
 					DesktopItemTransferable.TransferData transferData = (DesktopItemTransferable.TransferData) t.getTransferData(DesktopItemTransferable.DESKTOP_ITEM_FLAVOR);
 					if (transferData != null &&
@@ -655,7 +671,7 @@ public abstract class DesktopStartTab {
 		
 		@Override
 		public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
-			if (mainFrame.isStarttabEditable()) {
+			if (getMainFrame().isStarttabEditable()) {
 				for (DataFlavor dataFlavor : transferFlavors) {
 					if (DesktopItemTransferable.DESKTOP_ITEM_FLAVOR.equals(dataFlavor)) {
 						if (di instanceof MenuButton) {

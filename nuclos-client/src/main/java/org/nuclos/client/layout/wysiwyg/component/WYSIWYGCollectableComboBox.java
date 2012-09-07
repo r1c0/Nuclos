@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -36,7 +35,6 @@ import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.NuclosBusinessException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * 
@@ -233,12 +231,14 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 	}
 	
-	@Configurable
-	private class WYSIWYGLabeledComboBox extends LabeledComboBox {
+	private static class WYSIWYGLabeledComboBox extends LabeledComboBox {
 
 		private Color backgroundcolor;
 		
-		@PostConstruct
+		private WYSIWYGLabeledComboBox() {
+			init();
+		}
+		
 		void init() {
 			support.setColorProvider(new ColorProvider() {
 				@Override

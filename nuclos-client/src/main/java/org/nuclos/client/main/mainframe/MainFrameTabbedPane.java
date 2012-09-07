@@ -54,7 +54,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -91,13 +90,11 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class MainFrameTabbedPane {
 
 	private static final Logger LOG = Logger.getLogger(MainFrameTabbedPane.class);
@@ -131,11 +128,11 @@ public class MainFrameTabbedPane {
 	
 	private int tabClosing = -1;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private MainFrameSpringComponent mainFrameSpringComponent;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	private static class FirstTabLabel extends JLabel {
 		
@@ -237,18 +234,23 @@ public class MainFrameTabbedPane {
 		
 		actionHome = createHomeAction();
 		actionHomeTree = createHomeTreeAction();
+		
+		setMainFrameSpringComponent(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class));
+		init();
 	}
 	
-	@PostConstruct
 	final void init() {
 		setupStartTab();
 		setCloseEnabled(false);
 		setMaximizeEnabled(false);
 	}
 	
-	@Autowired
-	void setMainFrame(MainFrameSpringComponent mainFrameSpringComponent) {
+	final void setMainFrameSpringComponent(MainFrameSpringComponent mainFrameSpringComponent) {
 		this.mainFrameSpringComponent = mainFrameSpringComponent;
+	}
+	
+	final MainFrameSpringComponent getMainFrameSpringComponent() {
+		return mainFrameSpringComponent;
 	}
 	
 	public ComponentPanel getComponentPanel() {
@@ -868,7 +870,7 @@ public class MainFrameTabbedPane {
 		 */
 		final JToggleButton btnHome = new JToggleButton(actionHome);
 		btnHome.setFocusable(false);
-		final MainFrame mainFrame = mainFrameSpringComponent.getMainFrame();
+		final MainFrame mainFrame = getMainFrameSpringComponent().getMainFrame();
 		if (mainFrame.isStarttabEditable()) {
 			startTabToolBar.add(btnHome);
 		}
@@ -1720,14 +1722,18 @@ public class MainFrameTabbedPane {
 					}
 					
 					if (!consumed && SwingUtilities.isRightMouseButton(e)) {
-						if (mainFrameSpringComponent.getMainFrame().isStarttabEditable()) {
-							final JMenuItem miHideStartTab = new JMenuItem(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage("MainFrameTabbedPane.4", "Starttab ausblenden")) {
+						if (getMainFrameSpringComponent().getMainFrame().isStarttabEditable()) {
+							final JMenuItem miHideStartTab = new JMenuItem(
+									new AbstractAction(
+											SpringLocaleDelegate.getInstance().getMessage("MainFrameTabbedPane.4", "Starttab ausblenden")) {
 								@Override
 								public void actionPerformed(ActionEvent e) {
 									setStartTabVisible(false);
 								}
 							});
-							final JMenuItem miShowStartTab = new JMenuItem(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage("MainFrameTabbedPane.5", "Starttab einblenden")) {
+							final JMenuItem miShowStartTab = new JMenuItem(
+									new AbstractAction(
+											SpringLocaleDelegate.getInstance().getMessage("MainFrameTabbedPane.5", "Starttab einblenden")) {
 								@Override
 								public void actionPerformed(ActionEvent e) {
 									setStartTabVisible(true);

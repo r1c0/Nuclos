@@ -91,10 +91,9 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * JInternalFrame replacement that corrects the ill minimum size behavior of the
@@ -851,7 +850,6 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
    } // class TranslucentLockableUI
 
-	@Configurable
 	public static class TranslucentLockableWithProgressUI extends TranslucentLockableUI implements MessageListener {
 
 		private static final Logger LOG = Logger.getLogger(TranslucentLockableWithProgressUI.class);
@@ -862,7 +860,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 		private final MutableBoolean mutLocked = new MutableBoolean(false);
 		
+		// former Spring injection
+		
 		private TopicNotificationReceiver tnr;
+		
+		// end of former Spring injection
 
 		public TranslucentLockableWithProgressUI(Color busyColor, String correlationId) {
 			super(busyColor);
@@ -874,16 +876,22 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			textMessage = new TextPainter("", Color.WHITE);
 			textMessage.setFont(fMessage);
 			setText("", 0);
+			
+			setTopicNotificationReceiver(SpringApplicationContextHolder.getBean(TopicNotificationReceiver.class));
 		}
 		
-		@Autowired
-		void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 			this.tnr = tnr;
+		}
+
+		final TopicNotificationReceiver getTopicNotificationReceiver() {
+			return tnr;
 		}
 
 		@Override
 		public void setLocked(boolean locked) {
 			mutLocked.setValue(locked);
+			final TopicNotificationReceiver tnr = getTopicNotificationReceiver();
 			if (locked) {
 				LOG.info("subscribe to " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION + " with correlationId=" + correlationId);
 				tnr.subscribe(JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION, correlationId, TranslucentLockableWithProgressUI.this);

@@ -22,23 +22,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.httpclient.util.LangUtils;
 import org.nuclos.client.layout.AbstractLayoutMLFactory;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class NucletGeneratorLayoutMLFactory extends AbstractLayoutMLFactory {
 
+	// former Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
+	
+	// end of former Spring injection
 	
 	private final NucletGenerator generator;
 	private List<EntityMetaDataVO> metaEntity;
@@ -46,16 +46,20 @@ public class NucletGeneratorLayoutMLFactory extends AbstractLayoutMLFactory {
 	private Map<Long, String> attributeGroups;
 
 	public NucletGeneratorLayoutMLFactory(NucletGenerator generator) {
-		super();
 		this.generator = generator;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		init();
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate localeDelegate) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate localeDelegate) {
 		this.localeDelegate = localeDelegate;
 	}
 	
-	@PostConstruct
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
 	void init() {
 		metaEntity = new ArrayList<EntityMetaDataVO>();
 		for (EntityObjectVO eo : generator.getEntities()) {
@@ -75,7 +79,7 @@ public class NucletGeneratorLayoutMLFactory extends AbstractLayoutMLFactory {
 	public String getResourceText(String resourceId) {
 		String result = generator.getResourceText(resourceId);
 		if (result == null) {
-			result = localeDelegate.getMessage(resourceId, ""); // for meta fields (DATCREATED, etc.)
+			result = getSpringLocaleDelegate().getMessage(resourceId, ""); // for meta fields (DATCREATED, etc.)
 		}
 		if (result == null) {
 			result = "["+resourceId+"]";

@@ -21,7 +21,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -43,10 +42,9 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelis
 import org.nuclos.client.main.Main;
 import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.common.NuclosScript;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * This class creates a {@link WYSIWYGLAyoutComponent}
@@ -59,26 +57,35 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author <a href="mailto:maik.stueker@nuclos.de">Maik Stueker</a>
  * @version 01.00.00
  */
-@Configurable
 public class LayoutComponentElementProcessor implements ComponentProcessor, LayoutMLConstants {
 
+	private final String sLayoutComponentFactoryClass;
+	
+	private LayoutComponentFactory lcf;
+	
+	// former Spring injection
+	
 	private NucletComponentRepository nucletComponentRepository;
 	
-	final String sLayoutComponentFactoryClass;
-	LayoutComponentFactory lcf;
+	// end of former Spring injection
 	
 	public LayoutComponentElementProcessor(String sLayoutComponentFactoryClass) {
 		this.sLayoutComponentFactoryClass = sLayoutComponentFactoryClass;
+		
+		setNucletComponentRepository(SpringApplicationContextHolder.getBean(NucletComponentRepository.class));
+		init();
 	}
 	
-	@Autowired
-	void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
+	final void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
 		this.nucletComponentRepository = nucletComponentRepository;
 	}
 	
-	@PostConstruct
+	final NucletComponentRepository getNucletComponentRepository() {
+		return nucletComponentRepository;
+	}	
+	
 	void init() {
-		for (LayoutComponentFactory lcf : nucletComponentRepository.getLayoutComponentFactories()) {
+		for (LayoutComponentFactory lcf : getNucletComponentRepository().getLayoutComponentFactories()) {
 			if (lcf.getClass().getName().equals(sLayoutComponentFactoryClass)) {
 				this.lcf = lcf;
 				break;

@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -38,23 +37,25 @@ import org.nuclos.client.livesearch.LiveSearchSettingsPanel;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class NuclosSettingsContainer extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosSettingsContainer.class);
 	
 	private final MainFrame frm;
 
+	// former Spring injection
+	
 	private NucletComponentRepository ncr;
 	private PreferencesFacadeRemote preferencesFacade;
+	
+	// end of former Spring injection
 	
 	private NuclosSettingsPanel      settingsPanel;
 	private LiveSearchSettingsPanel  livesearchPanel;
@@ -65,19 +66,28 @@ public class NuclosSettingsContainer extends JPanel {
 	public NuclosSettingsContainer(MainFrame frm) {
 		super(new GridLayout(1, 1));
 		this.frm = frm;
+		
+		setNucletComponentRepository(SpringApplicationContextHolder.getBean(NucletComponentRepository.class));
+		setPreferencesFacadeRemote(SpringApplicationContextHolder.getBean(PreferencesFacadeRemote.class));
+		init();
 	}
 
-	@Autowired
-	void setNucletComponentRepository(NucletComponentRepository ncr) {
+	final void setNucletComponentRepository(NucletComponentRepository ncr) {
 		this.ncr = ncr;
 	}
 	
-	@Autowired
-	void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacade) {
+	final NucletComponentRepository getNucletComponentRepository() {
+		return ncr;
+	}
+	
+	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacade) {
 		this.preferencesFacade = preferencesFacade;
 	}
 	
-	@PostConstruct
+	final PreferencesFacadeRemote getPreferencesFacadeRemote() {
+		return preferencesFacade;
+	}
+	
 	void init() {
 		JTabbedPane  tabPane = new JTabbedPane(JTabbedPane.TOP);
 		add(tabPane);
@@ -92,8 +102,8 @@ public class NuclosSettingsContainer extends JPanel {
 			SpringLocaleDelegate.getInstance().getResource("nuclos.settings.container.tab1", "Ansichtsoptionen"),
 			settingsPanel);
 		
-		apiUserSettingsEditors = ncr.getUserSettingsEditors();
-		apiUserSettings = preferencesFacade.getApiUserSettings();
+		apiUserSettingsEditors = getNucletComponentRepository().getUserSettingsEditors();
+		apiUserSettings = getPreferencesFacadeRemote().getApiUserSettings();
 		
 		for (UserSettingsEditor use : CollectionUtils.sorted(apiUserSettingsEditors, new Comparator<UserSettingsEditor>() {
 			@Override
@@ -135,7 +145,7 @@ public class NuclosSettingsContainer extends JPanel {
 			for (UserSettingsEditor use : apiUserSettingsEditors) {
 				newSettings.put(use.getSettingsKey(), use.getSettings());
 			}
-			preferencesFacade.setApiUserSettings(newSettings);
+			getPreferencesFacadeRemote().setApiUserSettings(newSettings);
 			saved = true;
 		} catch (Exception ex) {
 			throw new PreferencesException(ex);

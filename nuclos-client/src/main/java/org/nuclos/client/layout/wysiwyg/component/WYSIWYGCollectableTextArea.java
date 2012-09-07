@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
@@ -39,7 +38,6 @@ import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * 
@@ -256,17 +254,14 @@ public class WYSIWYGCollectableTextArea extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	@Configurable
-	private class WYSIWYGLabeledTextArea extends LabeledTextArea {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	private static class WYSIWYGLabeledTextArea extends LabeledTextArea {
 		
 		private Color backgroundcolor;
 		
-		@PostConstruct
+		private WYSIWYGLabeledTextArea() {
+			init();
+		}
+		
 		void init() {
 			support.setColorProvider(new ColorProvider() {
 				@Override

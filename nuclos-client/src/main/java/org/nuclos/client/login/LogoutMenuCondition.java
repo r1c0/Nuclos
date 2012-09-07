@@ -17,31 +17,33 @@
 package org.nuclos.client.login;
 
 import org.nuclos.client.main.DynamicClassCondition;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.w3c.dom.Element;
 
 /**
  * Menu evaluation condition: "logout" will not be shown on systems which support
  * no auto login anyway.
  */
-@Configurable
 public class LogoutMenuCondition implements DynamicClassCondition {
 	
-	// Spring injection
+	// former Spring injection
 	
 	private ServerMetaFacadeRemote serverMetaFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	public LogoutMenuCondition() {
+		setServerMetaFacadeRemote(SpringApplicationContextHolder.getBean(ServerMetaFacadeRemote.class));
 	}
 	
-	@Autowired
 	final void setServerMetaFacadeRemote(ServerMetaFacadeRemote serverMetaFacadeRemote) {
 		this.serverMetaFacadeRemote = serverMetaFacadeRemote;
+	}
+	
+	final ServerMetaFacadeRemote getServerMetaFacadeRemote() {
+		return serverMetaFacadeRemote;
 	}
 	
 	@Override
@@ -49,7 +51,7 @@ public class LogoutMenuCondition implements DynamicClassCondition {
 		return Boolean.valueOf(
 			StringUtils.defaultIfNull(
 				StringUtils.nullIfEmpty(
-					serverMetaFacadeRemote.getServerProperty("application.settings.client.autologin.allowed")),
+					getServerMetaFacadeRemote().getServerProperty("application.settings.client.autologin.allowed")),
 			"false"));
 	}
 }

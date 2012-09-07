@@ -27,6 +27,7 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.dal.DalSupportForMD;
@@ -39,35 +40,45 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class DefaultLayoutMLFactory extends AbstractLayoutMLFactory {
+	
+	private final Map<Long, String> attributeGroups;
+	
+	// former Spring injection
 	
 	private SpringLocaleDelegate localeDelegate;
 	
 	private MasterDataFacadeRemote masterDataFacadeRemote;
 	
-	private final Map<Long, String> attributeGroups;
+	// end of former Spring injection
 	
 	public DefaultLayoutMLFactory(Map<Long, String> attributeGroups) {
 		this.attributeGroups = attributeGroups;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setMasterDataFacadeRemote(SpringApplicationContextHolder.getBean(MasterDataFacadeRemote.class));
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	@Autowired
-	void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
+	final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
 		this.masterDataFacadeRemote = masterDataFacadeRemote;
+	}
+
+	final MasterDataFacadeRemote getMasterDataFacadeRemote() {
+		return masterDataFacadeRemote;
 	}
 
 	@Override
 	public String getResourceText(String resourceId) {
-		return localeDelegate.getResource(resourceId, "");
+		return getSpringLocaleDelegate().getResource(resourceId, "");
 	}
 
 	@Override
@@ -132,7 +143,7 @@ public class DefaultLayoutMLFactory extends AbstractLayoutMLFactory {
 		String sCompareField = "entity";
 
 		CollectableComparison compare = SearchConditionUtils.newMDComparison(metaLayoutUsage, sCompareField, ComparisonOperator.EQUAL, entity);
-		Collection<MasterDataVO> colLayout = masterDataFacadeRemote.getMasterData(sLayoutUsageType, compare, true);
+		Collection<MasterDataVO> colLayout = getMasterDataFacadeRemote().getMasterData(sLayoutUsageType, compare, true);
 
 		if(colLayout.size() > 0) {
 			MasterDataVO voLayoutUsage = colLayout.iterator().next();

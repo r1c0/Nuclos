@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -79,6 +78,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.collection.CollectionUtils;
@@ -91,11 +91,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 
-@Configurable
 public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 	private static final Logger log = Logger.getLogger(StartTabPanel.class);
@@ -192,9 +188,13 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	
 	private boolean initiating;
 	
+	// former Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
 	
 	private MainFrame mainFrame;
+	
+	// end of former Spring injection
 
 	/**
 	 *
@@ -203,10 +203,15 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	public StartTabPanel(MainFrameTabbedPane tabbedPane) {
 		super(new BorderLayout(10, 10));
 		this.tabbedPane = tabbedPane;
+		
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
+		init();
 	}
 	
-	@PostConstruct
 	void init() {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
+		
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setOpaque(false);
 
@@ -241,14 +246,20 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		updateControlOverview();
 	}
 	
-	@Autowired
-	void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final void setMainFrame(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final MainFrame getMainFrame() {
+		return mainFrame;
+	}
+	
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**
@@ -272,10 +283,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		return result;
 	}
 
-	/**
-	 *
-	 */
 	private void setupActions() {
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
+		
 		actionNeverHideStartmenu =  new AbstractAction(localeDelegate.getMessage("StartTabPanel.2","Immer anzeigen")) {
 
 			@Override
@@ -548,7 +558,9 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 * @return
 	 */
 	public Action createSelectHistorySize(final int index) {
-		Action result = new AbstractAction(localeDelegate.getMessage("StartTabPanel.6","Merke {0} Eintraege",MainFrame.HISTORY_SIZES[index])) {
+		Action result = new AbstractAction(
+				getSpringLocaleDelegate().getMessage(
+						"StartTabPanel.6","Merke {0} Eintraege",MainFrame.HISTORY_SIZES[index])) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -695,10 +707,10 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		jpnHistory.removeAll();
 		for (final Entry<String, String> entity : sortEntities(MainFrame.getHistory().keySet()).entrySet()) {
 			final ExpandOrReduceAction headlineAction = new ExpandOrReduceAction(reducedHistoryEntities, entity.getKey(), 
-					MainFrame.resizeAndCacheLinkIcon(mainFrame.getEntityIcon(entity.getValue())));
+					MainFrame.resizeAndCacheLinkIcon(getMainFrame().getEntityIcon(entity.getValue())));
 			historyExpandOrReduceActions.put(entity.getKey(), headlineAction);
 
-			final Action openAll = new AbstractAction(localeDelegate.getText("ExplorerController.22"), 
+			final Action openAll = new AbstractAction(getSpringLocaleDelegate().getText("ExplorerController.22"), 
 					MainFrame.resizeAndCacheLinkIcon(Icons.getInstance().getIconShowList())) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -746,10 +758,10 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		jpnBookmark.removeAll();
 		for (final Entry<String, String> entity : sortEntities(MainFrame.getBookmark().keySet()).entrySet()) {
 			final ExpandOrReduceAction headlineAction = new ExpandOrReduceAction(reducedBookmarkEntities, entity.getKey(), 
-					MainFrame.resizeAndCacheLinkIcon(mainFrame.getEntityIcon(entity.getValue())));
+					MainFrame.resizeAndCacheLinkIcon(getMainFrame().getEntityIcon(entity.getValue())));
 			bookmarkExpandOrReduceActions.put(entity.getKey(), headlineAction);
 
-			final Action openAll = new AbstractAction(localeDelegate.getText("ExplorerController.22"), 
+			final Action openAll = new AbstractAction(getSpringLocaleDelegate().getText("ExplorerController.22"), 
 					MainFrame.resizeAndCacheLinkIcon(Icons.getInstance().getIconShowList())) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -794,7 +806,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		SortedMap<String, String> result = new TreeMap<String, String>();
 		for (String entity : entities) {
 			try {
-				result.put(localeDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entity)), entity);
+				result.put(getSpringLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entity)), entity);
 			} catch (Exception e) {
 				// ignore: Entity removed
 			}
@@ -1166,7 +1178,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				List<JMenuItem> result = new ArrayList<JMenuItem>();
-				result.add(new JMenuItem(new AbstractAction(localeDelegate.getMessage("StartTabPanel.7","Lesezeichen entfernen"), 
+				result.add(new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage("StartTabPanel.7","Lesezeichen entfernen"), 
 						Icons.getInstance().getIconDelete16()){
 
 					@Override
@@ -1204,7 +1216,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			@Override
 			protected List<JMenuItem> getContextMenuItems() {
 				List<JMenuItem> result = new ArrayList<JMenuItem>();
-				result.add(new JMenuItem(new AbstractAction(localeDelegate.getMessage("StartTabPanel.8","Lesezeichen setzen"), 
+				result.add(new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage("StartTabPanel.8","Lesezeichen setzen"), 
 						Icons.getInstance().getIconBookmark16()){
 
 					@Override
@@ -1212,7 +1224,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 						MainFrame.addBookmark(eb.copy(), true);
 					}
 				}));
-				result.add(new JMenuItem(new AbstractAction(localeDelegate.getMessage("StartTabPanel.9","Eintrag entfernen"), 
+				result.add(new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage("StartTabPanel.9","Eintrag entfernen"), 
 						Icons.getInstance().getIconDelete16()){
 
 					@Override
@@ -1248,8 +1260,8 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				
 				List<JMenuItem>result = new ArrayList<JMenuItem>();
 
-				if (mainFrame.isStarttabEditable()) {
-					JCheckBoxMenuItem cbmiOpenHere = new JCheckBoxMenuItem(new AbstractAction(localeDelegate.getMessage(
+				if (getMainFrame().isStarttabEditable()) {
+					JCheckBoxMenuItem cbmiOpenHere = new JCheckBoxMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage(
 							"StartTabPanel.10","Immer hier oeffnen")) {
 
 						@Override
@@ -1529,7 +1541,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 		@Override
 		public boolean isEnabled() {
-			return mainFrame.isStarttabEditable();
+			return getMainFrame().isStarttabEditable();
 		}
 	}
 	

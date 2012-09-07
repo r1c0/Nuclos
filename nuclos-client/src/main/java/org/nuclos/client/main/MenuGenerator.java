@@ -53,8 +53,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceParameter;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -63,14 +65,10 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-@Configurable
 public class MenuGenerator {
 	
 	private static final Logger log = Logger.getLogger(MenuGenerator.class);
@@ -84,11 +82,11 @@ public class MenuGenerator {
 	private final Map<String, JMenu> menuIds;
 	private final List<Component> exportNotJMenuComponents;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private MainFrame mainFrame;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	public MenuGenerator(Map<String, Map<String, Action>> commandMap, Map<String, Map<String, JComponent>> componentMap, List<Component> exportNotJMenuComponents) {
 		this.commandMap = commandMap;
@@ -96,11 +94,16 @@ public class MenuGenerator {
 		this.topMenu = new JMenu();
 		this.menuIds = new HashMap<String, JMenu>();
 		this.exportNotJMenuComponents = exportNotJMenuComponents;
+		
+		setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
 	}
 	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final void setMainFrame(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
+	}
+
+	final MainFrame getMainFrame() {
+		return mainFrame;
 	}
 
 	public JMenuBar getJMenuBar() {
@@ -227,6 +230,7 @@ public class MenuGenerator {
 			controlable.add("MainController.cmdShowPersonalTasks");
 			controlable.add("MainController.cmdShowTimelimitTasks");
 			final String menuItem = menuElement.getAttribute("commandreference");
+			final MainFrame mainFrame = getMainFrame();
 			if (mainFrame.getWorkspace() == null) {
 				if (controlable.contains(menuItem)) {
 					return insertIndex;

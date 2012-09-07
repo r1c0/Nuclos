@@ -43,17 +43,15 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.main.mainframe.MenuActionChooser;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 
-@Configurable
 abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	
 	private static final Logger LOG = Logger.getLogger(DefaultMenuItem.class);
@@ -75,11 +73,11 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	private final ImageIcon itemBackground;
 	private final ImageIcon itemBackgroundHover;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private MainFrame mainFrame;
 	
-	// end of Spring injection
+	// end of former Spring injection
 	
 	public DefaultMenuItem(WorkspaceDescription.MenuItem prefs, Action action, 
 			int itemFontSize, int itemTextHorizontalAlignment, int itemTextHorizontalPadding, 
@@ -139,11 +137,16 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		initListener();
 		DragSource dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
+		
+		setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
 	}
 	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final void setMainFrame(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
+	}
+	
+	final MainFrame getMainFrame() {
+		return mainFrame;
 	}
 	
 	@Override
@@ -206,7 +209,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	abstract void move();
 	
 	private void showContextMenu(MouseEvent mev) {	
-		if (!mainFrame.isStarttabEditable()) {
+		if (!getMainFrame().isStarttabEditable()) {
 			return;
 		}
 		

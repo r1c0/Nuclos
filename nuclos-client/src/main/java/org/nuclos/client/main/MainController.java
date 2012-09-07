@@ -118,6 +118,7 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.main.mainframe.IconResolver;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.main.mainframe.workspace.RestoreUtils;
@@ -193,9 +194,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
 
 
 /**
@@ -207,7 +205,6 @@ import org.springframework.beans.factory.annotation.Value;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
 public class MainController {
 
 	private static final Logger LOG = Logger.getLogger(MainController.class);
@@ -225,6 +222,9 @@ public class MainController {
 
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_MAINFRAME);
 
+	/**
+	 * TODO: should be non-static (tp)
+	 */
 	private static MainFrame frm;
 
 	private SwingDebugFrame debugFrame;
@@ -279,7 +279,7 @@ public class MainController {
 
 	private DirectHelpActionListener dha;
 	
-	// Spring injection
+	// former Spring injection
 
 	private NucletComponentRepository nucletComponentRepository;
 
@@ -307,72 +307,120 @@ public class MainController {
 	
 	// private RuleCache ruleCache;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	/**
 	 * @param sUserName name of the logged in user
 	 * @param sNuclosServerName name of the Nucleus server connected to.
+	 * @throws CommonPermissionException 
 	 * @throws BackingStoreException
 	 */
-	public MainController(String sUserName, String sNuclosServerName, LoginController loginController) {
+	public MainController(String sUserName, String sNuclosServerName, LoginController loginController) 
+			throws CommonPermissionException, BackingStoreException {
+		
 		this.sUserName = sUserName;
 		this.sNuclosServerName = sNuclosServerName;
 		this.loginController = loginController;
+		
+		setNucletComponentRepository(SpringApplicationContextHolder.getBean(NucletComponentRepository.class));
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+		setMetaDataClientProvider(SpringApplicationContextHolder.getBean(MetaDataClientProvider.class));
+		setTopicNotificationReceiver(SpringApplicationContextHolder.getBean(TopicNotificationReceiver.class));
+		setResourceCache(SpringApplicationContextHolder.getBean(ResourceCache.class));
+		setSecurityCache(SpringApplicationContextHolder.getBean(SecurityCache.class));
+		setRestoreUtils(SpringApplicationContextHolder.getBean(RestoreUtils.class));
+		setNuclosRemoteServerSession(SpringApplicationContextHolder.getBean(NuclosRemoteServerSession.class));
+		setWebAccessPrefs(SpringApplicationContextHolder.getBean(WebAccessPrefs.class));
+		setWorkspaceChooserController(SpringApplicationContextHolder.getBean(WorkspaceChooserController.class));
+		init();
 	}
 
-	@Autowired
 	final void setSecurityCache(SecurityCache securityCache) {
 		this.securityCache = securityCache;
 	}
 
-	@Autowired
+	final SecurityCache getSecurityCache() {
+		return securityCache;
+	}
+
 	final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 
-	@Autowired
+	final ResourceCache getResourceCache() {
+		return resourceCache;
+	}
+
 	final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 
-	@Autowired
+	final TopicNotificationReceiver getTopicNotificationReceiver() {
+		return tnr;
+	}
+
 	final void setMetaDataClientProvider(MetaDataClientProvider mdProv) {
 		this.mdProv = mdProv;
 	}
 
-	@Autowired
+	final MetaDataClientProvider getMetaDataClientProvider() {
+		return mdProv;
+	}
+
 	final void setNucletComponentRepository(NucletComponentRepository ncr) {
 		this.nucletComponentRepository = ncr;
 	}
 
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final NucletComponentRepository getNucletComponentRepository() {
+		return nucletComponentRepository;
+	}
+
+	final void setMainFrame(MainFrame mainFrame) throws CommonPermissionException, BackingStoreException {
 		this.frm = mainFrame;
 	}
 
-	@Autowired
+	final MainFrame getMainFrame() {
+		return frm;
+	}
+
 	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	@Autowired
+	final SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
+	}
+	
 	final void setRestoreUtils(RestoreUtils restoreUtils) {
 		this.restoreUtils = restoreUtils;
 	}
 	
-	@Autowired
+	final RestoreUtils getRestoreUtils() {
+		return restoreUtils;
+	}
+
 	final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
 		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
 	}
 	
-	@Autowired
+	final NuclosRemoteServerSession getNuclosRemoteServerSession() {
+		return nuclosRemoteServerSession;
+	}
+	
 	final void setWebAccessPrefs(WebAccessPrefs webAccessPrefs) {
 		this.webAccessPrefs = webAccessPrefs;
 	}
 	
-	@Autowired
+	final WebAccessPrefs getWebAccessPrefs() {
+		return webAccessPrefs;
+	}
+	
 	final void setWorkspaceChooserController(WorkspaceChooserController workspaceChooserController) {
 		this.workspaceChooserController = workspaceChooserController;
+	}
+	
+	final WorkspaceChooserController getWorkspaceChooserController() {
+		return workspaceChooserController;
 	}
 	
 	/*
@@ -392,7 +440,6 @@ public class MainController {
 	}
 	 */
 	
-	@PostConstruct
 	void init() throws CommonPermissionException, BackingStoreException {
 		debugFrame = new SwingDebugFrame(this);
 		try {
@@ -407,8 +454,8 @@ public class MainController {
 			LOG.debug(">>> read user rights...");
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_SECURITYCACHE);
 
-			if (!securityCache.isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
-				throw new CommonPermissionException(localeDelegate.getMessage(
+			if (!getSecurityCache().isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
+				throw new CommonPermissionException(getSpringLocaleDelegate().getMessage(
 						"MainController.23", "Sie haben nicht das Recht, {0} zu benutzen.", ApplicationProperties.getInstance().getName()));
 			}
 
@@ -482,8 +529,9 @@ public class MainController {
 			
 			LOG.debug(">>> create mainframe...");
 			// this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
-
-			this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
+			final MainFrame frm = getMainFrame();
+			frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			// Attention: Do not use ListenerUtil here! (tp)
 			frm.addWindowListener(new WindowAdapter() {
 				@Override
@@ -497,8 +545,8 @@ public class MainController {
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINFRAME);
 
 			LOG.debug(">>> init client communication...");
-			this.notificationdlg = new NuclosNotificationDialog(this.frm);
-			tnr.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
+			this.notificationdlg = new NuclosNotificationDialog(frm);
+			getTopicNotificationReceiver().subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_NOTIFICATION);
 
 			LOG.debug(">>> setup menus...");
@@ -519,14 +567,14 @@ public class MainController {
 			LOG.debug(">>> restore last workspace...");
 			try {
 				Main.getInstance().getMainFrame().readMainFramePreferences(prefs);
-				restoreUtils.restoreWorkspaceThreaded(
+				getRestoreUtils().restoreWorkspaceThreaded(
 						MainFrame.getLastWorkspaceIdFromPreferences(),
 						MainFrame.getLastWorkspaceFromPreferences(),
 						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(),
 						MainFrame.getLastAlwaysOpenWorkspaceFromPreferences());
 			}
 			catch (Exception ex) {
-				final String sMessage = localeDelegate.getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
@@ -542,7 +590,7 @@ public class MainController {
 				reopenAllControllers(ClientPreferences.getUserPreferences());
 			}
 			catch (Exception ex) {
-				final String sMessage = localeDelegate.getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
@@ -552,7 +600,7 @@ public class MainController {
 				ctlTasks.restoreGenericObjectTaskViewsFromPreferences();
 			}
 			catch (Exception ex) {
-				final String sMessage = localeDelegate.getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"tasklist.error.restore", "Die Aufgabenlisten konnten nicht wiederhergestellt werden.");
 				LOG.error(sMessage, ex);
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
@@ -625,7 +673,7 @@ public class MainController {
 				}
 			};
 			cmdShowTimelimitTasks = new AbstractAction(
-					localeDelegate.getMessage("miShowTimelimitTasks","Fristen anzeigen"),
+					getSpringLocaleDelegate().getMessage("miShowTimelimitTasks","Fristen anzeigen"),
 					Icons.getInstance().getIconTabTimtlimit()) {
 
 					@Override
@@ -634,11 +682,11 @@ public class MainController {
 					}
 					@Override
 					public boolean isEnabled() {
-						return securityCache.isActionAllowed(Actions.ACTION_TIMELIMIT_LIST);
+						return getSecurityCache().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST);
 					}
 				};
 			cmdShowPersonalTasks = new AbstractAction(
-					localeDelegate.getMessage("miShowPersonalTasks","Meine Aufgaben anzeigen"),
+					getSpringLocaleDelegate().getMessage("miShowPersonalTasks","Meine Aufgaben anzeigen"),
 					Icons.getInstance().getIconTabTask()) {
 
 					@Override
@@ -647,11 +695,11 @@ public class MainController {
 					}
 					@Override
 					public boolean isEnabled() {
-						return securityCache.isActionAllowed(Actions.ACTION_TASKLIST);
+						return getSecurityCache().isActionAllowed(Actions.ACTION_TASKLIST);
 					}
 				};
 			cmdShowPersonalSearchFilters = new AbstractAction(
-					localeDelegate.getMessage("ExplorerPanel.3","Meine Suchfilter anzeigen"),
+					getSpringLocaleDelegate().getMessage("ExplorerPanel.3","Meine Suchfilter anzeigen"),
 					Icons.getInstance().getIconFilter16()) {
 
 					@Override
@@ -671,7 +719,7 @@ public class MainController {
 						public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
 							RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
 							ram.changePassword(sUserName, oldPw, newPw);
-							nuclosRemoteServerSession.relogin(sUserName, newPw);
+							getNuclosRemoteServerSession().relogin(sUserName, newPw);
 							try {
 								MainController.this.prefs.flush();
 							} catch (BackingStoreException e) {
@@ -693,16 +741,16 @@ public class MainController {
 				}
 			};
 			cmdOpenManagementConsole = new AbstractAction(
-					localeDelegate.getMessage("miManagementConsole", "Management Console"),
+					getSpringLocaleDelegate().getMessage("miManagementConsole", "Management Console"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.158-wrench-2.png"))) {
 
 					@Override
 					public void actionPerformed(ActionEvent evt) {
-						UIUtils.runCommand(frm, new Runnable() {
+						UIUtils.runCommand(getMainFrame(), new Runnable() {
 							@Override
 							public void run() {
 								try {
-									NuclosConsoleGui.showInFrame(frm.getHomePane().getComponentPanel());
+									NuclosConsoleGui.showInFrame(getMainFrame().getHomePane().getComponentPanel());
 								}
 								catch (Exception e) {
 									LOG.error("showInFrame failed: " + e, e);
@@ -712,32 +760,32 @@ public class MainController {
 					}};
 					
 			cmdOpenEntityWizard = new AbstractAction(
-					localeDelegate.getMessage("miEntityWizard", "Entity Wizard"),
+					getSpringLocaleDelegate().getMessage("miEntityWizard", "Entity Wizard"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png"))) {
 
 				@Override
 				public void actionPerformed(ActionEvent evt) {
 					final MainFrameTabbedPane desktopPane = MainController.this.getHomePane();
-					UIUtils.runCommand(frm, new ShowNuclosWizard.NuclosWizardRoRunnable(desktopPane));
+					UIUtils.runCommand(getMainFrame(), new ShowNuclosWizard.NuclosWizardRoRunnable(desktopPane));
 				}};
 				
 			cmdOpenEventSupportManagement = new AbstractAction(
-					localeDelegate.getMessage("miEventSupportManagement", "Regelmanagement"),
+					getSpringLocaleDelegate().getMessage("miEventSupportManagement", "Regelmanagement"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.34-coffee.png"))) {
 
 				@Override
 				public void actionPerformed(ActionEvent evt) {
 					final MainFrameTabbedPane desktopPane = MainController.this.getHomePane();
-					UIUtils.runCommand(frm, new EventSupportManagementController.NuclosESMRunnable(desktopPane));
+					UIUtils.runCommand(getMainFrame(), new EventSupportManagementController.NuclosESMRunnable(desktopPane));
 				}};
 			
 			cmdOpenCustomComponentWizard = new AbstractAction(
-					localeDelegate.getMessage("miResPlanWizard", "Ressourcenplanung"),
+					getSpringLocaleDelegate().getMessage("miResPlanWizard", "Ressourcenplanung"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png"))) {
 
 				@Override
 				public void actionPerformed(final ActionEvent evt) {
-					UIUtils.runCommand(frm, new Runnable() {
+					UIUtils.runCommand(getMainFrame(), new Runnable() {
 						@Override
 						public void run() {
 							try {
@@ -750,12 +798,12 @@ public class MainController {
 					});
 				}};
 			cmdOpenRelationEditor = new AbstractAction(
-					localeDelegate.getMessage("miRelationEditor", "Relationeneditor"),
+					getSpringLocaleDelegate().getMessage("miRelationEditor", "Relationeneditor"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png"))) {
 
 						@Override
 						public void actionPerformed(final ActionEvent evt) {
-							UIUtils.runCommand(frm, new Runnable() {
+							UIUtils.runCommand(getMainFrame(), new Runnable() {
 								@Override
 								public void run() {
 									try {
@@ -777,12 +825,12 @@ public class MainController {
 							});
 						}};
 			cmdOpenRelationEditor = new AbstractAction(
-					localeDelegate.getMessage("miRelationEditor", "Relationeneditor"),
+					getSpringLocaleDelegate().getMessage("miRelationEditor", "Relationeneditor"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png"))) {
 
 						@Override
 						public void actionPerformed(final ActionEvent evt) {
-							UIUtils.runCommand(frm, new Runnable() {
+							UIUtils.runCommand(getMainFrame(), new Runnable() {
 								@Override
 								public void run() {
 									try {
@@ -819,7 +867,7 @@ public class MainController {
 						public void run() throws CommonBusinessException {
 							invalidateAllClientCaches();
 							JOptionPane.showMessageDialog(getFrame(),
-								localeDelegate.getMessage("MainController.3","Die folgenden Aktionen wurden erfolgreich durchgef\u00fchrt:\n" +
+								getSpringLocaleDelegate().getMessage("MainController.3","Die folgenden Aktionen wurden erfolgreich durchgef\u00fchrt:\n" +
 									"Caches aktualisiert: MasterDataCache, SecurityCache, AttributeCache, GenericObjectLayoutCache, GeneratorCache, MetaDataCache, ResourceCache, SearchFilterCache.\n"+
 								"Men\u00fcs aktualisiert."));
 						}
@@ -1029,7 +1077,7 @@ public class MainController {
         }
         catch(Exception e) {
         	Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(),
-        			localeDelegate.getMessage("MainController.26", "Die Infos k\u00f6nnen nicht angezeigt werden."), e);
+        			getSpringLocaleDelegate().getMessage("MainController.26", "Die Infos k\u00f6nnen nicht angezeigt werden."), e);
         }
 	}
 
@@ -1183,7 +1231,7 @@ public class MainController {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					String s = JOptionPane.showInputDialog(frm, "Topic: Message");
+					String s = JOptionPane.showInputDialog(getMainFrame(), "Topic: Message");
 					if(s == null)
 						return;
 					String[] a = s.split(": *");
@@ -1192,7 +1240,7 @@ public class MainController {
 						throw new UnsupportedOperationException("TestFacade removed");
 					}
 					else {
-						JOptionPane.showMessageDialog(frm, "Wrong input format");
+						JOptionPane.showMessageDialog(getMainFrame(), "Wrong input format");
 					}
 				}
 			});
@@ -1201,18 +1249,18 @@ public class MainController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = JOptionPane.showInputDialog(frm, "Access-Path");
+				String s = JOptionPane.showInputDialog(getMainFrame(), "Access-Path");
 				if(s == null)
 					return;
 				try {
-					Map<String, String> m = webAccessPrefs.getPrefsMap(s);
+					Map<String, String> m = getWebAccessPrefs().getPrefsMap(s);
 					StringBuilder sb = new StringBuilder();
 					for(String k : m.keySet())
 						sb.append(k).append(": ").append(m.get(k)).append("\n");
-					JOptionPane.showMessageDialog(frm, sb.toString());
+					JOptionPane.showMessageDialog(getMainFrame(), sb.toString());
 				}
 				catch(CommonBusinessException e1) {
-					Errors.getInstance().showExceptionDialog(frm, e1);
+					Errors.getInstance().showExceptionDialog(getMainFrame(), e1);
 				}
 			}});
 
@@ -1268,7 +1316,7 @@ public class MainController {
 		HashMap<String, Map<String, JComponent>> res = new HashMap<String, Map<String, JComponent>>();
 		HashMap<String, JComponent> dev = new HashMap<String, JComponent>();
 
-		Map<String, JComponent> mainFrame = frm.getComponentMap();
+		Map<String, JComponent> mainFrame = getMainFrame().getComponentMap();
 		res.put("MainFrame", mainFrame);
 
 //		dev.put("memoryMonitor", new MemoryMonitor());
@@ -1440,7 +1488,7 @@ public class MainController {
 
 		addSearchFilterActions(result);
 		addReportActions(result);
-		workspaceChooserController.addGenericActions(result);
+		getWorkspaceChooserController().addGenericActions(result);
 
 		return result;
 	}
@@ -1459,6 +1507,7 @@ public class MainController {
 
 		final String[] menuPath = new String[] {getMainMenuFile()};
 
+		final SecurityCache securityCache = getSecurityCache();
 		if (securityCache.isActionAllowed(Actions.ACTION_EXECUTE_REPORTS)) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdExecuteRport));
 			addGenericCommandAction(genericActions, Actions.ACTION_EXECUTE_REPORTS, cmdExecuteRport, menuPath);
@@ -1541,7 +1590,7 @@ public class MainController {
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.LDAPSERVER, genericActions);
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.WEBSERVICE, genericActions);
 
-		if (securityCache.isActionAllowed("UseManagementConsole")) {
+		if (getSecurityCache().isActionAllowed("UseManagementConsole")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenManagementConsole));
 			addGenericCommandAction(genericActions, "UseManagementConsole", cmdOpenManagementConsole, menuPath);
 		}
@@ -1557,7 +1606,8 @@ public class MainController {
 		List<Pair<String[], Action>> menuActions = new ArrayList<Pair<String[],Action>>();
 
 		final String[] menuPath = new String[] {getMainMenuConfiguration()};
-
+		final SecurityCache securityCache = getSecurityCache();
+		
 		if (securityCache.isActionAllowed("EntityWizard")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenEntityWizard));
 			addGenericCommandAction(genericActions, "EntityWizard", cmdOpenEntityWizard, menuPath);
@@ -1588,8 +1638,8 @@ public class MainController {
 	}
 
 	private void addActionIfAllowed(List<Pair<String[], Action>> menuActions, String[] menuPath, NuclosEntity entity, List<GenericAction> genericActions) {
-		EntityMetaDataVO entitymetavo = mdProv.getEntity(entity);
-		Action act = createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null, null);
+		EntityMetaDataVO entitymetavo = getMetaDataClientProvider().getEntity(entity);
+		Action act = createEntityAction(entitymetavo, getSpringLocaleDelegate().getLabelFromMetaDataVO(entitymetavo), false, null, null);
 		if (act != null) {
 			menuActions.add(new Pair<String[], Action>(menuPath, act));
 			if (genericActions != null) {
@@ -1609,7 +1659,9 @@ public class MainController {
 		List<Pair<String[], Action>> entityMenuActions = new ArrayList<Pair<String[], Action>>();
 
 		Set<String> customConfigurationEntities = new HashSet<String>();
-
+		final MetaDataClientProvider mdProv = getMetaDataClientProvider();
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
+		
 		for (EntityObjectVO conf : mdProv.getAllEntityMenus()) {
 			EntityMetaDataVO meta = mdProv.getEntity(conf.getFieldId("entity"));
 			String[] menuPath = splitMenuPath(localeDelegate.getResource(conf.getField("menupath", String.class), null));
@@ -1666,6 +1718,7 @@ public class MainController {
 	private List<Pair<String[], Action>> getNucletComponentMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> nucletComponentMenuAction = new ArrayList<Pair<String[],Action>>();
 
+		final NucletComponentRepository nucletComponentRepository = getNucletComponentRepository();
 		if (nucletComponentRepository != null) {
 			for (MenuItem mi : nucletComponentRepository.getMenuItems()) {
 				if (mi.isEnabled()) {
@@ -1695,7 +1748,7 @@ public class MainController {
 	private List<Pair<String[], Action>> getCustomComponentMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> customComponentMenuAction = new ArrayList<Pair<String[], Action>>();
 		for (CustomComponentVO ccvo : CustomComponentCache.getInstance().getAll()) {
-			String[] menuPath = splitMenuPath(localeDelegate.getTextFallback(ccvo.getMenupathResourceId(), ccvo.getMenupathResourceId()));
+			String[] menuPath = splitMenuPath(getSpringLocaleDelegate().getTextFallback(ccvo.getMenupathResourceId(), ccvo.getMenupathResourceId()));
 			Action action = new ResPlanAction(ccvo);
 			// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
 			if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {
@@ -1717,7 +1770,7 @@ public class MainController {
 					NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.06-magnify.png"), 16)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					UIUtils.runCommand(frm, new CommonRunnable() {
+					UIUtils.runCommand(getMainFrame(), new CommonRunnable() {
 						@Override
 						public void run() throws CommonBusinessException {
 							final String entity = searchfilter.getEntityName();
@@ -1743,7 +1796,7 @@ public class MainController {
 				wa.setAction(GENERIC_SEARCHFILTER_ACTION);
 				wa.putStringParameter("searchfilter", searchfilter.getName());
 				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{
-						localeDelegate.getMessage("nuclos.entity.searchfilter.label", "Suchfilter")}, action)));
+						getSpringLocaleDelegate().getMessage("nuclos.entity.searchfilter.label", "Suchfilter")}, action)));
 			}
 		}
 	}
@@ -1770,7 +1823,7 @@ public class MainController {
 					wa.setAction(GENERIC_REPORT_ACTION);
 					wa.putStringParameter("report", mdReport.getField("name", String.class));
 					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{
-							localeDelegate.getMessage("nuclos.entity.reportExecution.label", "Reporting ausfÃ¼hren")
+							getSpringLocaleDelegate().getMessage("nuclos.entity.reportExecution.label", "Reporting ausfÃ¼hren")
 							}, action)));
 				}
 			}
@@ -1780,17 +1833,18 @@ public class MainController {
 	}
 
 	private Action createEntityAction(NuclosEntity entity) {
-		EntityMetaDataVO entitymetavo = mdProv.getEntity(entity);
-		return createEntityAction(entitymetavo, localeDelegate.getLabelFromMetaDataVO(entitymetavo), false, null, null);
+		EntityMetaDataVO entitymetavo = getMetaDataClientProvider().getEntity(entity);
+		return createEntityAction(entitymetavo, getSpringLocaleDelegate().getLabelFromMetaDataVO(entitymetavo), false, null, null);
 	}
 
 	private Action createEntityAction(EntityMetaDataVO entitymetavo, String label, final boolean isNew, final Long processId, final String customUsage) {
 		String entity = entitymetavo.getEntity();
-		if (!securityCache.isReadAllowedForEntity(entity)) {
+		if (!getSecurityCache().isReadAllowedForEntity(entity)) {
 			return null;
 		}
 		
-		if (isNew && entitymetavo.isStateModel() && !securityCache.isNewAllowedForModuleAndProcess(IdUtils.unsafeToId(entitymetavo.getId()), IdUtils.unsafeToId(processId))) {
+		if (isNew && entitymetavo.isStateModel() && !getSecurityCache().isNewAllowedForModuleAndProcess(
+				IdUtils.unsafeToId(entitymetavo.getId()), IdUtils.unsafeToId(processId))) {
 			return null;
 		}
 
@@ -1832,6 +1886,7 @@ public class MainController {
 	private List<Pair<String[], Action>> getTasklistMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> result = new ArrayList<Pair<String[], Action>>();
 
+		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		String miFile = localeDelegate.getText("miFile");
 		String miTasklists = localeDelegate.getText("miTasklists");
 		String[] mainPath = new String[] { miFile, miTasklists };
@@ -1868,7 +1923,7 @@ public class MainController {
 	}
 
 	public void setupMenuBar(){
-		frm.menuSetup(getCommandMap(), getComponentMap(), getNotificationDialog());
+		getMainFrame().menuSetup(getCommandMap(), getComponentMap(), getNotificationDialog());
 		LOG.info("Setup (refreshed) menu bar");
 	}
 
@@ -1882,8 +1937,8 @@ public class MainController {
 				if (Boolean.TRUE.equals(result)) {
 					try {
 
-						frm.writeMainFramePreferences(prefs);
-						restoreUtils.storeWorkspace(frm.getWorkspace());
+						getMainFrame().writeMainFramePreferences(prefs);
+						getRestoreUtils().storeWorkspace(getMainFrame().getWorkspace());
 						
 						LocalUserCaches.getInstance().store();
 
@@ -1899,10 +1954,10 @@ public class MainController {
 						closeAllControllers();
 					}
 					catch (Exception ex) {
-						final String sMessage = localeDelegate.getMessage("MainController.20","Die Sitzungsdaten, die Informationen \u00fcber die zuletzt ge\u00f6ffneten Fenster enthalten,\n" +
+						final String sMessage = getSpringLocaleDelegate().getMessage("MainController.20","Die Sitzungsdaten, die Informationen \u00fcber die zuletzt ge\u00f6ffneten Fenster enthalten,\n" +
 								"konnten nicht geschrieben werden. Bei der n\u00e4chsten Sitzung k\u00f6nnen nicht alle Fenster\n" +
 								"wiederhergestellt werden. Bitte \u00f6ffnen Sie diese Fenster in der n\u00e4chsten Sitzung erneut.");
-						Errors.getInstance().showExceptionDialog(frm, sMessage, ex);
+						Errors.getInstance().showExceptionDialog(getMainFrame(), sMessage, ex);
 					}
 					catch (Error error) {
 						LOG.error("Beim Beenden des Clients ist ein fataler Fehler aufgetreten.", error);
@@ -1934,18 +1989,18 @@ public class MainController {
 		// BOS problem with custom icon 
 		MetaDataClientProvider.getInstance().revalidate();
 		
-		securityCache.revalidate();
+		getSecurityCache().revalidate();
 		AttributeCache.getInstance().revalidate();
 		GenericObjectLayoutCache.getInstance().invalidate();
 		GeneratorActions.invalidateCache();
-		resourceCache.invalidate();
+		getResourceCache().invalidate();
 		SearchFilterCache.getInstance().validate();
 		RuleCache.getInstance().invalidate(null);
 		GenericObjectDelegate.getInstance().invalidateCaches();
 		LocaleDelegate.getInstance().flush();
 		refreshMenus();
 		refreshTaskController();
-		frm.setTitle();
+		getMainFrame().setTitle();
 	}
 
 	/**
@@ -2058,7 +2113,7 @@ public class MainController {
 	private List<TopController> getTopControllersForInternalFrames() {
 		final List<TopController> result = new LinkedList<TopController>();
 
-		for (MainFrameTab ifrm : frm.getAllTabs()) {
+		for (MainFrameTab ifrm : getMainFrame().getAllTabs()) {
 			final TopController ctl = this.getControllerForTab(ifrm, TopController.class);
 			if (ctl != null) {
 				result.add(ctl);
@@ -2330,7 +2385,7 @@ public class MainController {
 	 */
 	private void cmdExit() {
 		beforeExit();
-		frm.dispose();
+		getMainFrame().dispose();
 		Main.exit(Main.ExitResult.NORMAL);
 	}
 
@@ -2342,7 +2397,7 @@ public class MainController {
 	}
 
 	protected MainFrame getFrame() {
-		return this.frm;
+		return frm;
 	}
 
 	private void showReleaseNotesIfNewVersion() {
@@ -2350,7 +2405,7 @@ public class MainController {
 	}
 
 	private void cmdCollectMasterData(final ActionEvent ev, final boolean isNew, final Long processId, final String customUsage) {
-		UIUtils.runCommand(frm, new Runnable() {
+		UIUtils.runCommand(getMainFrame(), new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -2370,9 +2425,9 @@ public class MainController {
 					}
 				}
 				catch (CommonBusinessException ex) {
-					final String sErrorMsg = localeDelegate.getMessage(
+					final String sErrorMsg = getSpringLocaleDelegate().getMessage(
 							"MainController.21","Die Stammdaten k\u00f6nnen nicht bearbeitet werden.");
-					Errors.getInstance().showExceptionDialog(frm, sErrorMsg, ex);
+					Errors.getInstance().showExceptionDialog(getMainFrame(), sErrorMsg, ex);
 				}
 			}
 		});
@@ -2396,7 +2451,7 @@ public class MainController {
 							// just add the message, nothing else.
 							break;
 						case NORMAL:
-							frm.getMessagePanel().startFlashing();
+							getMainFrame().getMessagePanel().startFlashing();
 							break;
 						case HIGH:
 							getNotificationDialog().setVisible(true);
@@ -2411,7 +2466,7 @@ public class MainController {
 					switch (command.getCommand()) {
 						case CommandMessage.CMD_SHUTDOWN :
 							getNotificationDialog().addMessage(new RuleNotification(Priority.HIGH,
-									localeDelegate.getMessage("MainController.19","Der Client wird auf Anweisung des Administrators in 10 Sekunden beendet."),
+									getSpringLocaleDelegate().getMessage("MainController.19","Der Client wird auf Anweisung des Administrators in 10 Sekunden beendet."),
 									"Administrator"));
 							getNotificationDialog().setVisible(true);
 
@@ -2437,7 +2492,7 @@ public class MainController {
 					switch(command.getCommand()) {
 						case CommandInformationMessage.CMD_INFO_SHUTDOWN :
 							Object[] options = { "OK" };
-							int decision = JOptionPane.showOptionDialog(frm, command.getInfo(), localeDelegate.getMessage(
+							int decision = JOptionPane.showOptionDialog(getMainFrame(), command.getInfo(), getSpringLocaleDelegate().getMessage(
 									"MainController.17","Administrator - Passwort\u00e4nderung"),
 									JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 							if (decision == 0 || decision == JOptionPane.CLOSED_OPTION || decision == JOptionPane.NO_OPTION) {
@@ -2460,7 +2515,7 @@ public class MainController {
 				}
 			}
 			else {
-				LOG.warn(localeDelegate.getMessage(
+				LOG.warn(getSpringLocaleDelegate().getMessage(
 						"MainController.14","Message of type {0} received, while an ObjectMessage was expected.", msg.getClass().getName()));
 			}
 		}
@@ -2698,19 +2753,19 @@ public class MainController {
 	}
 
 	public String getMainMenuFile() {
-		return localeDelegate.getMessage("miFile", "Datei").replace("^", "");
+		return getSpringLocaleDelegate().getMessage("miFile", "Datei").replace("^", "");
 	}
 	
 	public String getMainMenuHelp() {
-		return localeDelegate.getMessage("miHelp", "Hilfe").replace("^", "");
+		return getSpringLocaleDelegate().getMessage("miHelp", "Hilfe").replace("^", "");
 	}
 
 	public String getMainMenuAdministration() {
-		return localeDelegate.getMessage("MainMenuAdministration", "Administration").replace("^", "");
+		return getSpringLocaleDelegate().getMessage("MainMenuAdministration", "Administration").replace("^", "");
 	}
 
 	public String getMainMenuConfiguration() {
-		return localeDelegate.getMessage("MainMenuConfiguration", "Konfiguration").replace("^", "");
+		return getSpringLocaleDelegate().getMessage("MainMenuConfiguration", "Konfiguration").replace("^", "");
 	}
 
 	public Preferences getMainFramePreferences() {

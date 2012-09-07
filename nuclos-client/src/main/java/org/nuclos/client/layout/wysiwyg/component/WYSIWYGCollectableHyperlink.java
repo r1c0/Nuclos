@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
@@ -35,7 +34,6 @@ import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledHyperlink;
 import org.nuclos.common.NuclosBusinessException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * 
@@ -208,16 +206,15 @@ public class WYSIWYGCollectableHyperlink extends WYSIWYGCollectableComponent {
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 	}
 
-	@Configurable
-	private class WYSIWYGLabeledHyperlink extends LabeledHyperlink {
+	private static class WYSIWYGLabeledHyperlink extends LabeledHyperlink {
 
 		private Color backgroundcolor;
 		
 		private WYSIWYGLabeledHyperlink() {
 			super(new LabeledComponentSupport());
+			init();
 		}
 		
-		@PostConstruct
 		void init() {
 			support.setColorProvider(new ColorProvider() {
 				@Override

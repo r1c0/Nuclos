@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -41,9 +40,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.ui.UIUtils;
@@ -52,9 +48,11 @@ import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A Frame with system information for administrative and debugging purposes.
@@ -65,27 +63,29 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version 01.00.00
  */
-@Configurable
 public class SwingDebugFrame extends JFrame {
 
 	private JScrollPane scrl;
 	private JEditorPane text;
 	private MainController ctrl;
 	
-	// Spring injection
+	// former Spring injection
 	
 	private ClientParameterProvider clientParameterProvider;
 	
 	private ConsoleFacadeRemote consoleFacadeRemote;
 	
-	// end of Spring injection
+	// end of former Spring injection
 
 	SwingDebugFrame(MainController ctrl) {
 		super();
 		this.ctrl = ctrl;
+		
+		setClientParameterProvider(SpringApplicationContextHolder.getBean(ClientParameterProvider.class));
+		setConsoleFacadeRemote(SpringApplicationContextHolder.getBean(ConsoleFacadeRemote.class));
+		init();
 	}
 	
-	@PostConstruct
 	void init() {
 		text = new JEditorPane("text/html", "<html>No component</html>");
 		text.setEditable(false);
@@ -159,19 +159,25 @@ public class SwingDebugFrame extends JFrame {
 		setVisible(false);
 	}
 	
-	@Autowired
 	final void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
 		this.clientParameterProvider = clientParameterProvider;
 	}
 	
-	@Autowired
+	final ClientParameterProvider getClientParameterProvider() {
+		return clientParameterProvider;
+	}
+	
 	final void setConsoleFacadeRemote(ConsoleFacadeRemote consoleFacadeRemote) {
 		this.consoleFacadeRemote = consoleFacadeRemote;
 	}
 
+	final ConsoleFacadeRemote getConsoleFacadeRemote() {
+		return consoleFacadeRemote;
+	}
+
 	private String cmdDbInfo() {
 		try {
-			return consoleFacadeRemote.getDatabaseInformationAsHtml();
+			return getConsoleFacadeRemote().getDatabaseInformationAsHtml();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -180,7 +186,7 @@ public class SwingDebugFrame extends JFrame {
 
 	private String cmdGetServerProps() {
 		try {
-			return consoleFacadeRemote.getSystemPropertiesAsHtml();
+			return getConsoleFacadeRemote().getSystemPropertiesAsHtml();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -204,7 +210,7 @@ public class SwingDebugFrame extends JFrame {
 		final StringBuilder sbClient = new StringBuilder();
 		sbClient.append("<html><b>T_AD_PARAMETER Settings (from Cache):</b>");
 		sbClient.append("<table border=\"1\">");
-		Map<String, String> mpParameters = clientParameterProvider.getAllParameters();
+		Map<String, String> mpParameters = getClientParameterProvider().getAllParameters();
 		List<String>lstSortedKeys = new ArrayList<String>(mpParameters.keySet());
 		Collections.sort(lstSortedKeys);
 		for (String sKey : lstSortedKeys) {
