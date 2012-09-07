@@ -67,34 +67,40 @@ public class SearchFilterCache {
 
 	private Map<Pair<String, String>, EntitySearchFilter> mpEntitySearchFilter = new HashMap<Pair<String, String>, EntitySearchFilter>();
 	
-	private transient TopicNotificationReceiver tnr;
-	private transient MessageListener messageListener;
+	private MessageListener messageListener;
 	
-	private transient String userName;
+	private String userName;
 	
 	// Spring injection
 	
-	private transient SearchFilterDelegate searchFilterDelegate;
+	private SearchFilterDelegate searchFilterDelegate;
+	
+	private TopicNotificationReceiver tnr;
 	
 	// end of Spring injection
 	
 	private SearchFilterCache() {
 		INSTANCE = this;
 	}
-	
+		
 	@Autowired
 	final void setSearchFilterDelegate(SearchFilterDelegate searchFilterDelegate) {
 		this.searchFilterDelegate = searchFilterDelegate;
 	}
 	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// Constructor might not be called - as this instance might be deserialized (tp)
-		if (INSTANCE == null) {
-			INSTANCE = this;
+	final TopicNotificationReceiver getTopicNotificationReceiver() {
+		// Maybe null because client-cache (de)serialization (tp)
+		if (tnr == null) {
+			tnr = SpringApplicationContextHolder.getBean(TopicNotificationReceiver.class);
 		}
+		return tnr;
 	}
-	
+
+	@Autowired
+	final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
+	}
+
 	final SearchFilterDelegate getSearchFilterDelegate() {
 		// Maybe null because client-cache (de)serialization (tp)
 		if (searchFilterDelegate == null) {
@@ -106,15 +112,6 @@ public class SearchFilterCache {
 	public void setUserName(String userName) {
 		this.userName = userName;
 		init();
-	}
-	
-	private void init() {
-		// Constructor might not be called - as this instance might be deserialized (tp)
-		if (INSTANCE == null) {
-			INSTANCE = this;
-		}
-		//if (!wasDeserialized() || !isValid()) //@todo. this cache is user dependant. we need something like 'hasUserChanged(...)'
-		loadSearchFilters();
 	}
 	
 	public final void initMessageListener() {
@@ -159,18 +156,13 @@ public class SearchFilterCache {
 				}			
 			}
 		};
-		tnr.subscribe(getCachingTopic(), messageListener);	
+		getTopicNotificationReceiver().subscribe(getCachingTopic(), messageListener);	
 	}
 	
-	@Override
 	public String getCachingTopic() {
 		return JMSConstants.TOPICNAME_SEARCHFILTERCACHE;
 	}
 	
-	public void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
-		this.tnr = tnr;
-	}
-
 	/**
 	 * @return the one (and only) instance of SearchFilterCache
 	 */
@@ -185,7 +177,7 @@ public class SearchFilterCache {
 	 * initializes the cache for all entity searchfilters
 	 */
 	private void loadSearchFilters() {
-		for (SearchFilter searchFilter : searchFilterDelegate.getAllSearchFilterByUser(userName)) {
+		for (SearchFilter searchFilter : getSearchFilterDelegate().getAllSearchFilterByUser(userName)) {
 			if (isFilterValid(searchFilter)) {
 				if (searchFilter instanceof EntitySearchFilter) {
 					mpEntitySearchFilter.put(new Pair<String, String>(searchFilter.getName(), searchFilter.getOwner()), (EntitySearchFilter)searchFilter);
@@ -195,10 +187,10 @@ public class SearchFilterCache {
 		LOG.info("Filled cache " + this);
 	}
 	
-	@PostConstruct
 	void init() {
 		loadSearchFilters();		
 	}
+
 
 	/**
 	 * gets the searchfilter for the given filter name and owner

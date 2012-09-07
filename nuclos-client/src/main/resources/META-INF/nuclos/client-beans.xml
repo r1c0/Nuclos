@@ -275,10 +275,8 @@
 	</bean>
 	<bean id="lafParameterProvider" class="org.nuclos.client.common.LafParameterProvider"/>
 	
-	<bean id="searchFilterCache" class="org.nuclos.client.searchfilter.SearchFilterCache"
-		factory-bean="deserializingFactoryBean" factory-method="createInstance">
-		<constructor-arg type="java.lang.Class" value="org.nuclos.client.searchfilter.SearchFilterCache" />
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	<bean id="searchFilterCache" class="org.nuclos.client.searchfilter.SearchFilterCache">
+		<!-- property name="topicNotificationReceiver" ref="topicNotificationReceiver"/ -->
 	</bean>
 	<bean id="topic.searchfilterCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
 		<property name="destinationName" value="topic/searchfilterCache"></property>	
