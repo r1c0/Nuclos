@@ -237,6 +237,7 @@ public class StartUp  {
 		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 		startupContext.setClassLoader(cl);
 		startupContext.refresh();
+		LOG.info("Spring startupContext refreshed");
 		startupContext.registerShutdownHook();
 		
 		final Runnable run1 = new Runnable() {
@@ -292,7 +293,7 @@ public class StartUp  {
 						msg.append("Local default time zone is set to server default!\n");
 					}
 					msg.append("Initial local  time zone is: " + Main.getInitialTimeZone().getID());
-					LOG.info(msg);
+					log.info(msg);
 					
 					// Scanning context
 					clientContext = new ClassPathXmlApplicationContext(CLIENT_SPRING_BEANS, false, startupContext);
@@ -301,13 +302,14 @@ public class StartUp  {
 					
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 					clientContext.setClassLoader(cl);
+					final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
+					holder.setClientContext(clientContext);
 					// Thread.yield();
 					clientContext.refresh();
+					log.info("Spring clientContext refreshed");
 					clientContext.registerShutdownHook();
 					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 					
-					final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
-					holder.setClientContext(clientContext);
 					// final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
 					final Resource[] extensions = new Resource[] { clientContext.getResource(EXTENSION_SPRING_BEANS) };
 					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
@@ -359,7 +361,7 @@ public class StartUp  {
 							ctx.refresh();
 							holder.registerSubContext(ctx);
 							
-							log.info("after refreshing spring context " + r);
+							log.info("Spring subcontext refreshed: '" + r + "' last=" + last);
 						}
 					}
 				}

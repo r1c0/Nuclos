@@ -675,5 +675,6 @@
 	<bean id="enumeratedDefaultValueProvider" class="org.nuclos.client.masterdata.ClientEnumeratedDefaultValueProvider" />
 
 	<bean id="serviceLocator" class="org.nuclos.common2.ServiceLocator"/>
-	
+	<bean id="appSubContext" class="org.nuclos.common.SpringApplicationSubContextsHolder"/>
+		
 </beans>
