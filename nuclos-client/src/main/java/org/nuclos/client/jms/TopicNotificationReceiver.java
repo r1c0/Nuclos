@@ -190,15 +190,16 @@ public class TopicNotificationReceiver implements InitializingBean {
 
 				@Override
 				public void run() {
-					// @todo !!! sometimes we hat a deadlock situation here.
-					synchronized (TopicNotificationReceiver.this) {
 						for (TopicInfo i : copy) {
 							WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
 							weakrefmsglistener.subscribe();
-							weakmessagelistener.add(weakrefmsglistener);
+							synchronized (TopicNotificationReceiver.this) {
+								weakmessagelistener.add(weakrefmsglistener);
+							}
 						}
-						deferredSubscribe = false;
-					}
+						synchronized (TopicNotificationReceiver.this) {
+							deferredSubscribe = false;
+						}
 				}
 			};
 			new Thread(run, "TopicNotificationReceiver.realSubscribe").start();
