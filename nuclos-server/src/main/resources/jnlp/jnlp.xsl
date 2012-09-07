@@ -31,7 +31,7 @@
 			<security>
 				<all-permissions />
 			</security>
-			<update check="background" policy="prompt-run"/>
+			<!-- update check="background" policy="prompt-run"/ -->
 			<resources>
 				<!--
 					-XX:+HeapDumpOnOutOfMemoryError
@@ -43,6 +43,12 @@
 				-->
 				<java version="1.6+ 1.7+" initial-heap-size="256m" max-heap-size="512m" java-vm-args="-XX:+HeapDumpOnOutOfMemoryError -XX:+UseThreadPriorities -verbose:gc -ea"/>
 				<jar href="nuclos-client-{$nuclos.version}.jar" main="true" />
+				<xsl:for-each select="jnlp/themes/theme">
+					<extension name="{@name}" href="extensions/themes/theme-{@name}-{@lastmodified}.jnlp" />
+				</xsl:for-each>
+				<xsl:if test="$extensions='true'">
+					<extension name="extension" href="extensions/extension-{$extension-lastmodified}.jnlp" />
+				</xsl:if>
 				<xsl:for-each select="jnlp/jars/jar">
 					<jar href="{text()}" download="{@download}" />
 				</xsl:for-each>
@@ -55,12 +61,6 @@
 				<property name="nuclos.client.singleinstance" value="{$singleinstance}" />
 				<property name="nuclos.client.webstart" value="true" />
 				<property name="java.util.prefs.PreferencesFactory" value="org.nuclos.client.common.prefs.NuclosPreferencesFactory" />
-				<xsl:if test="$extensions='true'">
-					<extension name="extension" href="extensions/extension-{$extension-lastmodified}.jnlp" />
-				</xsl:if>
-				<xsl:for-each select="jnlp/themes/theme">
-					<extension name="{@name}" href="extensions/themes/theme-{@name}-{@lastmodified}.jnlp" />
-				</xsl:for-each>
 			</resources>
 			<application-desc main-class="org.nuclos.client.main.Main">
 				<xsl:for-each select="jnlp/arguments/argument">

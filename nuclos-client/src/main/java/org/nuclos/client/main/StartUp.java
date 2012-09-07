@@ -202,13 +202,13 @@ public class StartUp  {
 		setupClientLogging();
 		
 		final NuclosCriticalErrorHandler criticalErrorHandler = new NuclosCriticalErrorHandler(false);
+		/*
 		if (Boolean.getBoolean("nuclos.client.webstart")) {
-			/*
-			final Thread thread = new Thread(jvc, "JnlpVersionChecker");
-			thread.start();
-			 */
+			// final Thread thread = new Thread(jvc, "JnlpVersionChecker");
+			// thread.start();
 			final JnlpVersionChecker jvc = new JnlpVersionChecker();
 		}
+		 */
 		
 		final ClassLoader cl = this.getClass().getClassLoader();
 
