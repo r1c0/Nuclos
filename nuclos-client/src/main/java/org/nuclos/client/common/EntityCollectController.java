@@ -1088,6 +1088,14 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	public void removePointerChangeListener(ActionListener al) {
 		this.lstPointerChangeListener.remove(al);
 	}
+	
+	public boolean handleException(Exception ex) {
+		if (handlePointerException(ex))
+			return true;
+		if (handleStaleVersionException(ex))
+			return true;
+		return false;
+	}
 
 	/**
 	 * shows <code>NuclosBusinessRuleException</code>

@@ -3302,24 +3302,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					Errors.getInstance().showExceptionDialog(this.getTab(), sErrorMsg, ex);
 				}
 				catch (CommonStaleVersionException ex) {
-					final String sMessage = sMessage1 + ", " + "da er zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert wurde.\n" +
-							"Sie m\u00fcssen den Datensatz neu laden und Ihre \u00c4nderungen dann erneut durchf\u00fchren.\n\n" +
-							getSpringLocaleDelegate().getMessage("CollectController.25","Soll der Datensatz jetzt neu geladen werden?");
-					OverlayOptionPane.showConfirmDialog(getTab(), sMessage,
-							getSpringLocaleDelegate().getMessage("CollectController.9","Datensatz ge\u00e4ndert"),
-							OverlayOptionPane.OK_CANCEL_OPTION, new OvOpAdapter() {
-								@Override
-								public void done(int result) {
-									if (result == OverlayOptionPane.OK_OPTION) {
-										try {
-											refreshCurrentCollectable();
-										}
-										catch (CommonBusinessException ex2) {
-											Errors.getInstance().showExceptionDialog(getTab(), ex2);
-										}
-									}
-								}
-					});
+					handleStaleVersionException(ex);
 				}
 				catch (CommonBusinessException ex) {
 					try {
@@ -3344,6 +3327,35 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		finally {
 			this.setDetailsChangedIgnored(bWasDetailsChangedIgnored);
 		}
+	}
+	
+	protected boolean handleStaleVersionException(Exception ex) {
+		if (!(ex instanceof CommonStaleVersionException)) {
+			return false;
+		}
+		
+		final String sMessage1 = getSpringLocaleDelegate().getMessage(
+				"CollectController.12","Der Datensatz konnte nicht gespeichert werden");
+		
+		final String sMessage = sMessage1 + ", " + "da er zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert wurde.\n" +
+				"Sie m\u00fcssen den Datensatz neu laden und Ihre \u00c4nderungen dann erneut durchf\u00fchren.\n\n" +
+				getSpringLocaleDelegate().getMessage("CollectController.25","Soll der Datensatz jetzt neu geladen werden?");
+		OverlayOptionPane.showConfirmDialog(getTab(), sMessage,
+				getSpringLocaleDelegate().getMessage("CollectController.9","Datensatz ge\u00e4ndert"),
+				OverlayOptionPane.OK_CANCEL_OPTION, new OvOpAdapter() {
+					@Override
+					public void done(int result) {
+						if (result == OverlayOptionPane.OK_OPTION) {
+							try {
+								refreshCurrentCollectable();
+							}
+							catch (CommonBusinessException ex2) {
+								Errors.getInstance().showExceptionDialog(getTab(), ex2);
+							}
+						}
+					}
+		});
+		return true;
 	}
 
 	protected boolean handleSpecialException(Exception ex) {

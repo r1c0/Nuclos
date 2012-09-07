@@ -145,7 +145,7 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 				catch (CommonBusinessException e) {
 					if (controller instanceof EntityCollectController<?>) {
 						EntityCollectController<?> eController = (EntityCollectController<?>) controller;
-						if (!eController.handlePointerException(e)) {
+						if (!eController.handleException(e)) {
 							Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
 						}
 					} else {
