@@ -689,6 +689,10 @@ public class StartUp  {
 		synchronized (lastContextCondition) {
 			lastContextCondition.waitFor();
 		}
+		
+		final SearchFilterCache searchFilterCache = SearchFilterCache.getInstance();
+		searchFilterCache.setUserName(sUserName);
+		
 		log.info("beginning of createMainController processing");
 		try {
 			final String sClassName = LangUtils.defaultIfNull(

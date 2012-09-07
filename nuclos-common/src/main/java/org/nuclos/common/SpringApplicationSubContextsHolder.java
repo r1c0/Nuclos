@@ -45,6 +45,9 @@ public class SpringApplicationSubContextsHolder {
 	}
 
 	public static SpringApplicationSubContextsHolder getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
 		return INSTANCE;
 	}
 	

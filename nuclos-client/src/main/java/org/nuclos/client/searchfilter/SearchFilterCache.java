@@ -70,6 +70,8 @@ public class SearchFilterCache {
 	private transient TopicNotificationReceiver tnr;
 	private transient MessageListener messageListener;
 	
+	private transient String userName;
+	
 	// Spring injection
 	
 	private SearchFilterDelegate searchFilterDelegate;
@@ -77,9 +79,7 @@ public class SearchFilterCache {
 	// end of Spring injection
 	
 	private SearchFilterCache() {
-		if (INSTANCE == null) {
-			INSTANCE = this;
-		}
+		INSTANCE = this;
 	}
 	
 	@Autowired
@@ -87,10 +87,14 @@ public class SearchFilterCache {
 		this.searchFilterDelegate = searchFilterDelegate;
 	}
 	
-	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void setUserName(String userName) {
+		this.userName = userName;
+		init();
+	}
+	
+	private void init() {
 		//if (!wasDeserialized() || !isValid()) //@todo. this cache is user dependant. we need something like 'hasUserChanged(...)'
-		INSTANCE.loadSearchFilters();
+		loadSearchFilters();
 	}
 	
 	public final void initMessageListener() {
@@ -107,7 +111,7 @@ public class SearchFilterCache {
 						final String[] asUsers = (String[])((ObjectMessage)msg).getObject();
 						final Main main = Main.getInstance();
 						final MainController mc = main.getMainController();
-						final String userName = mc.getUserName();
+						// final String userName = mc.getUserName();
 						
 						boolean refresh = true;
 						for (String sUser : asUsers) {
@@ -161,8 +165,7 @@ public class SearchFilterCache {
 	 * initializes the cache for all entity searchfilters
 	 */
 	private void loadSearchFilters() {
-		for (SearchFilter searchFilter : searchFilterDelegate.getAllSearchFilterByUser(
-				Main.getInstance().getMainController().getUserName())) {
+		for (SearchFilter searchFilter : searchFilterDelegate.getAllSearchFilterByUser(userName)) {
 			if (isFilterValid(searchFilter)) {
 				if (searchFilter instanceof EntitySearchFilter) {
 					mpEntitySearchFilter.put(new Pair<String, String>(searchFilter.getName(), searchFilter.getOwner()), (EntitySearchFilter)searchFilter);
@@ -198,7 +201,7 @@ public class SearchFilterCache {
 	 */
 	public EntitySearchFilter getEntitySearchFilter(String sFilterName, String sOwner) {
 		if (StringUtils.isNullOrEmpty(sOwner)) {
-			sOwner = Main.getInstance().getMainController().getUserName();
+			sOwner = userName;
 		}
 
 		for (Pair<String, String> pKey : mpEntitySearchFilter.keySet()) {
@@ -237,7 +240,7 @@ public class SearchFilterCache {
 	 */
 	public boolean filterExists(String sFilterName, String sOwner) {
 		if (sOwner == null) {
-			sOwner = Main.getInstance().getMainController().getUserName();
+			sOwner = userName;
 		}
 
 		return (getEntitySearchFilter(sFilterName, sOwner) != null);
