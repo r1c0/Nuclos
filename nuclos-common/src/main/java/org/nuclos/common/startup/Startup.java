@@ -23,9 +23,13 @@ import java.lang.management.RuntimeMXBean;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Log version and SVN information during startup of client and server.
@@ -35,28 +39,46 @@ import org.apache.log4j.Logger;
  * @author Thomas Pasch
  * @since Nuclos 3.2.0
  */
-public class Startup {
+public class Startup implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(Startup.class);
 	
 	private static final String ENCODING = "UTF-8";
 	
+	private Timer timer;
+	
 	public Startup() {
-		try {
-			final RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
-			final List<String> arguments = RuntimemxBean.getInputArguments();
-			LOG.info("server started with " + arguments);
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		final TimerTask task = new TimerTask() {
 			
-			final String version = IOUtils.toString(getClasspathResource("nuclos-version.properties"), ENCODING);
-			LOG.info("version info\n:" + version);
-			final String info = IOUtils.toString(getClasspathResource("info.txt"), ENCODING);
-			LOG.info("SVN info\n:" + info);
-			final String status = IOUtils.toString(getClasspathResource("status.txt"), ENCODING);
-			LOG.info("SVN status\n:" + status);
-		}
-		catch (Exception e) {
-			LOG.info("Startup constructor failed: " + e);
-		}
+			@Override
+			public void run() {
+				try {
+					final RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
+					final List<String> arguments = RuntimemxBean.getInputArguments();
+					LOG.info("server started with " + arguments);
+					
+					final String version = IOUtils.toString(getClasspathResource("nuclos-version.properties"), ENCODING);
+					LOG.info("version info\n:" + version);
+					final String info = IOUtils.toString(getClasspathResource("info.txt"), ENCODING);
+					LOG.info("SVN info\n:" + info);
+					final String status = IOUtils.toString(getClasspathResource("status.txt"), ENCODING);
+					LOG.info("SVN status\n:" + status);
+				}
+				catch (Exception e) {
+					LOG.info("Startup timer task failed: " + e);
+				}
+			}
+		};
+		timer.schedule(task, 500);
+	}
+
+	@Autowired
+	final void setTimer(Timer timer) {
+		this.timer = timer;
 	}
 	
 	public static InputStream getClasspathResource(String path) throws IOException {

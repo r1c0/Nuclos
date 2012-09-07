@@ -317,5 +317,6 @@
 	<bean id="nuclosConsole" class="org.nuclos.client.console.NuclosConsole" factory-method="newNuclosConsole"/>
 	
 	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
+	<bean id="startup" class="org.nuclos.common.startup.Startup"/>	
 		
 </beans>
