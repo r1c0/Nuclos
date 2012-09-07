@@ -48,7 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class AttributeCache extends AbstractLocalUserCache implements AttributeProvider, InitializingBean {
+public class AttributeCache extends AbstractLocalUserCache implements AttributeProvider {
 	
 	private static final Logger LOG = Logger.getLogger(AttributeCache.class);
 	

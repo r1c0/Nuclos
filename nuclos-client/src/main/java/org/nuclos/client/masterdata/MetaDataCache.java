@@ -46,7 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  *
  */
-public class MetaDataCache extends AbstractLocalUserCache implements InitializingBean {
+public class MetaDataCache extends AbstractLocalUserCache {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataCache.class);
 

@@ -41,7 +41,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 00.01.000
  */
-public class ResourceCache extends AbstractLocalUserCache implements InitializingBean {
+public class ResourceCache extends AbstractLocalUserCache {
 	
 	private static final Logger LOG = Logger.getLogger(ResourceCache.class);
 	

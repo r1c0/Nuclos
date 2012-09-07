@@ -37,7 +37,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.springframework.beans.factory.InitializingBean;
 
-public class TasklistCache extends AbstractLocalUserCache implements InitializingBean {
+public class TasklistCache extends AbstractLocalUserCache {
 	
 	private static final Logger LOG = Logger.getLogger(TasklistCache.class);
 

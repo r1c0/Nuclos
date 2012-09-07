@@ -72,7 +72,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  */
 
-public class StateDelegate extends AbstractLocalUserCache implements MessageListener, InitializingBean, DisposableBean {
+public class StateDelegate extends AbstractLocalUserCache implements MessageListener, DisposableBean {
 	
 	private static StateDelegate INSTANCE;
 	

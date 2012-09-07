@@ -62,6 +62,7 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.common.ejb3.LocalUserCachesFacadeRemote;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Local user properties that cannot be stored on the server, because they are needed before
@@ -84,7 +85,7 @@ public class LocalUserCaches extends java.util.Properties {
 
 	private transient LocalUserCachesFacadeRemote remoteInterface;
 	
-	public interface LocalUserCache extends Serializable {
+	public interface LocalUserCache extends Serializable, InitializingBean {
 		String getCachingTopic();
 		boolean wasDeserialized();
 		void setDeserialized(boolean blnDeserialized);
@@ -93,14 +94,17 @@ public class LocalUserCaches extends java.util.Properties {
 	
 	public static abstract class AbstractLocalUserCache implements LocalUserCache {
 		boolean blnDeserialized = false;
+		
 		@Override
 		public final void setDeserialized(boolean blnDeserialized) {
 			this.blnDeserialized = blnDeserialized;
 		}
+		
 		@Override
 		public final boolean wasDeserialized() {
 			return blnDeserialized;
 		}
+		
 		@Override
 		public final boolean isValid() {
 			return wasDeserialized() && LocalUserCaches.getInstance().checkValid(this);

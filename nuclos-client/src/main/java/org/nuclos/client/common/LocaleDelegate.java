@@ -55,7 +55,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-public class LocaleDelegate extends AbstractLocalUserCache implements SpringLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
+public class LocaleDelegate extends AbstractLocalUserCache implements SpringLocaleDelegate.LookupService, MessageListener, DisposableBean {
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
 	

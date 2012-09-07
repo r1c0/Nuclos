@@ -34,7 +34,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.springframework.beans.factory.InitializingBean;
 
-public class CustomComponentCache extends AbstractLocalUserCache implements InitializingBean {
+public class CustomComponentCache extends AbstractLocalUserCache {
 	
 	private static final Logger LOG = Logger.getLogger(CustomComponentCache.class);
 

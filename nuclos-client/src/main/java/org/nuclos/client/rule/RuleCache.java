@@ -57,7 +57,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
-public class RuleCache extends AbstractLocalUserCache implements InitializingBean {
+public class RuleCache extends AbstractLocalUserCache {
 	
 	private static final Logger LOG = Logger.getLogger(RuleCache.class);
 

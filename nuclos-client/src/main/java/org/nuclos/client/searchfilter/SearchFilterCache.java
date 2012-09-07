@@ -37,6 +37,7 @@ import org.nuclos.client.main.MainController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
@@ -44,7 +45,6 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -74,7 +74,7 @@ public class SearchFilterCache {
 	
 	// Spring injection
 	
-	private SearchFilterDelegate searchFilterDelegate;
+	private transient SearchFilterDelegate searchFilterDelegate;
 	
 	// end of Spring injection
 	
@@ -85,6 +85,22 @@ public class SearchFilterCache {
 	@Autowired
 	final void setSearchFilterDelegate(SearchFilterDelegate searchFilterDelegate) {
 		this.searchFilterDelegate = searchFilterDelegate;
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// Constructor might not be called - as this instance might be deserialized (tp)
+		if (INSTANCE == null) {
+			INSTANCE = this;
+		}
+	}
+	
+	final SearchFilterDelegate getSearchFilterDelegate() {
+		// Maybe null because client-cache (de)serialization (tp)
+		if (searchFilterDelegate == null) {
+			searchFilterDelegate = SpringApplicationContextHolder.getBean(SearchFilterDelegate.class);
+		}
+		return searchFilterDelegate;
 	}
 	
 	public void setUserName(String userName) {

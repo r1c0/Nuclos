@@ -61,7 +61,7 @@ import org.xml.sax.InputSource;
  * @version 01.00.00
  * @todo check if this cache is still needed
  */
-public class GenericObjectLayoutCache extends AbstractLocalUserCache implements InitializingBean {
+public class GenericObjectLayoutCache extends AbstractLocalUserCache {
 	
 	private static final Logger LOG = Logger.getLogger(GenericObjectLayoutCache.class);
 

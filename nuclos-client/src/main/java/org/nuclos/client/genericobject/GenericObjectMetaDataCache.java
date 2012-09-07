@@ -51,7 +51,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class GenericObjectMetaDataCache extends AbstractLocalUserCache implements GenericObjectMetaDataProvider, InitializingBean {
+public class GenericObjectMetaDataCache extends AbstractLocalUserCache implements GenericObjectMetaDataProvider {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectMetaDataCache.class);
 	

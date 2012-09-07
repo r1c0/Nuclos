@@ -62,7 +62,8 @@ import org.springframework.beans.factory.InitializingBean;
  * </p>
  */
 // @Component("metaDataProvider")
-public class MetaDataClientProvider extends AbstractLocalUserCache implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataClientProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, InitializingBean {
+public class MetaDataClientProvider extends AbstractLocalUserCache 
+	implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataClientProvider<EntityMetaDataVO, EntityFieldMetaDataVO> {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);
 	
