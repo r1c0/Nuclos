@@ -127,12 +127,20 @@ public interface GenericObjectFacadeRemote {
 	 * @param stRequiredAttributeIds may be <code>null</code>, which means all attributes are required
 	 * @return list of generic object value objects - without dependants and parent objects!
 	 * @todo restrict permission - check module id!
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	List<GenericObjectWithDependantsVO> getGenericObjects(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds);
+
 	@RolesAllowed("Login")
 	List<GenericObjectWithDependantsVO> getGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds, String customUsage);
 
+	
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition
 	 * @param iModuleId id of module to search for generic objects in
@@ -144,7 +152,16 @@ public interface GenericObjectFacadeRemote {
 	 * @return list of generic object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
+		boolean bIncludeSubModules);
+
 	@RolesAllowed("Login")
 	ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
@@ -152,6 +169,7 @@ public interface GenericObjectFacadeRemote {
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
 		boolean bIncludeSubModules, String customUsage);
 
+	
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition, but
 	 * clears the values of all attributes on which the current user has no read permission
@@ -165,13 +183,23 @@ public interface GenericObjectFacadeRemote {
 	 * @return list of generic object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
+		boolean bIncludeSubModules);
+	
 	@RolesAllowed("Login")
 	ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
 		boolean bIncludeSubModules, String customUsage);
+
 
 	/**
 	 * gets all generic objects that match a given search condition
@@ -184,7 +212,16 @@ public interface GenericObjectFacadeRemote {
 	 * @precondition stRequiredSubEntityNames != null
 	 * @precondition iMaxRowCount > 0
 	 * @postcondition result.size() <= iMaxRowCount
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames,
+		int iMaxRowCount);
+
 	@RolesAllowed("Login")
 	TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
@@ -192,6 +229,7 @@ public interface GenericObjectFacadeRemote {
 		Set<String> stRequiredSubEntityNames, String customUsage,
 		int iMaxRowCount);
 
+	
 	/**
 	 * gets the ids of all leased objects that match a given search expression (ordered, when necessary)
 	 * @param iModuleId id of module to search for leased objects in
@@ -213,12 +251,20 @@ public interface GenericObjectFacadeRemote {
 
 	 * @return list of leased object value objects
 	 * @precondition stRequiredSubEntityNames != null
+	 * @Deprecated use with customUsage
 	 */
+	@Deprecated
+	Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(
+		Integer iModuleId, List<Integer> lstIds,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
+
 	Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(
 		Integer iModuleId, List<Integer> lstIds,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects);
 
+	
 	/**
 	 * creates a new generic object, along with its dependants.
 	 * @param gowdvo containing the generic object data

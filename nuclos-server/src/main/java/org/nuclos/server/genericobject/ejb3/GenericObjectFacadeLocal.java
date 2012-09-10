@@ -132,7 +132,14 @@ public interface GenericObjectFacadeLocal {
 	 * @param stRequiredAttributeIds may be <code>null</code>, which means all attributes are required
 	 * @return list of generic object value objects - without dependants and parent objects!
 	 * @todo restrict permission - check module id!
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	List<GenericObjectWithDependantsVO> getGenericObjects(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds);
+	
 	@RolesAllowed("Login")
 	List<GenericObjectWithDependantsVO> getGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
@@ -147,7 +154,14 @@ public interface GenericObjectFacadeLocal {
 	 * @param bIncludeParentObjects
 	 * @return list of generic object value objects with specified dependants and without parent objects!
 	 * @postcondition result != null
+	 * @Deprecated use with customUsage
 	 */
+	@Deprecated
+	List<GenericObjectWithDependantsVO> getGenericObjects(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
+	
 	List<GenericObjectWithDependantsVO> getGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
@@ -164,13 +178,23 @@ public interface GenericObjectFacadeLocal {
 	 * @return list of generic object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
+		boolean bIncludeSubModules);
+	
 	@RolesAllowed("Login")
 	ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
 		boolean bIncludeSubModules, String customUsage);
+
 
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition, but
@@ -185,7 +209,16 @@ public interface GenericObjectFacadeLocal {
 	 * @return list of generic object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects,
+		boolean bIncludeSubModules);
+	
 	@RolesAllowed("Login")
 	ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
@@ -204,13 +237,23 @@ public interface GenericObjectFacadeLocal {
 	 * @precondition stRequiredSubEntityNames != null
 	 * @precondition iMaxRowCount > 0
 	 * @postcondition result.size() <= iMaxRowCount
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
+		Integer iModuleId, CollectableSearchExpression clctexpr,
+		Set<Integer> stRequiredAttributeIds,
+		Set<String> stRequiredSubEntityNames,
+		int iMaxRowCount);
+	
 	@RolesAllowed("Login")
 	TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(
 		Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds,
 		Set<String> stRequiredSubEntityNames, String customUsage,
 		int iMaxRowCount);
+
 
 	/**
 	 * gets the ids of all generic objects that match a given search condition
@@ -499,8 +542,12 @@ public interface GenericObjectFacadeLocal {
 		Integer genericObjectId, Integer attributeId)
 		throws CommonFinderException;
 
+	@Deprecated
 	Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(Integer iModuleId, List<Integer> lstIds,
-		Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects);
+		Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects);
+	
+	Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(Integer iModuleId, List<Integer> lstIds,
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects);
 
 	List<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchExpression cse);
 	

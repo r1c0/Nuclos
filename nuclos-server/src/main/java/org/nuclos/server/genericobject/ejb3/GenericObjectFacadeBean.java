@@ -409,7 +409,16 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param stRequiredAttributeIds may be <code>null</code>, which means all attributes are required
 	 * @return list of generic object value objects - without dependants and parent objects!
 	 * @todo restrict permission - check module id!
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
+			Set<Integer> stRequiredAttributeIds) {
+
+		return this.getGenericObjects(iModuleId, clctexpr, stRequiredAttributeIds, Collections.<String>emptySet(), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, String customUsage) {
@@ -425,7 +434,14 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param stRequiredSubEntityNames
 	 * @return list of generic object value objects with specified dependants and without parent objects!
 	 * @postcondition result != null
+	 * @Deprecated use with customUsage
 	 */
+	@Deprecated
+	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames) {
+		return helper.getGenericObjects(iModuleId, clctexpr, stRequiredSubEntityNames, this.getCurrentUserName(), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage) {
 		return helper.getGenericObjects(iModuleId, clctexpr, stRequiredSubEntityNames, this.getCurrentUserName(), customUsage);
@@ -439,11 +455,18 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param stRequiredSubEntityNames
 	 * @return list of generic object value objects with specified dependants and without parent objects!
 	 * @postcondition result != null
+	 * @Deprecated use with customUsage
 	 */
+	@Deprecated
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
-		Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects) {
-		return getGenericObjects(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, customUsage);
+		Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
+		return getGenericObjects(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 	}
+	
+	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects) {
+			return getGenericObjects(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, customUsage);
+		}
 
 	/**
 	 * gets all generic objects along with its dependants, that match a given search condition
@@ -456,7 +479,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return list of generic object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
+		return new GenericObjectProxyList(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, boolean bIncludeSubModules, String customUsage) {
@@ -476,7 +507,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return list of generic object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
+		return getPrintableGenericObjectsWithDependants(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, bIncludeParentObjects, bIncludeSubModules, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, boolean bIncludeSubModules, String customUsage) {
@@ -528,8 +567,18 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition stRequiredSubEntityNames != null
 	 * @precondition iMaxRowCount > 0
 	 * @postcondition result.size() <= iMaxRowCount
+	 * @Deprecated use with customUsage
 	 */
 	@RolesAllowed("Login")
+	@Deprecated
+	public TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(Integer iModuleId,
+			CollectableSearchExpression clctexpr, Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames,
+			int iMaxRowCount) {
+		return getRestrictedNumberOfGenericObjects(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), iMaxRowCount);
+	}
+	
+	@RolesAllowed("Login")
+	@Deprecated
 	public TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(Integer iModuleId,
 			CollectableSearchExpression clctexpr, Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage,
 			int iMaxRowCount) {
