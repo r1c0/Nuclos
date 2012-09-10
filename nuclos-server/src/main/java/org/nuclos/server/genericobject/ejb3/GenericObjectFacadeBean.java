@@ -42,6 +42,7 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
@@ -81,6 +82,7 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -632,6 +634,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param gowdvo containing the generic object data
 	 * @param stRequiredSubEntityNames Set<String>
 	 * @return the new generic object, containing the dependants for the specified sub entities.
+	 * @throws CommonFinderException 
+	 * @throws CommonCreateException 
+	 * @throws CommonPermissionException 
+	 * @throws NuclosBusinessRuleException 
 	 *
 	 * @precondition gowdvo.getId() == null
 	 * @precondition Modules.getInstance().isSubModule(iModuleId.intValue()) --> gowdvo.getParentId() != null
@@ -639,7 +645,16 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition stRequiredSubEntityNames != null
 	 *
 	 * @nucleus.permission mayWrite(module)
+	 * 
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public GenericObjectWithDependantsVO create(GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames) 
+			throws NuclosBusinessRuleException, CommonPermissionException, CommonCreateException, CommonFinderException {
+		return create(gowdvo, stRequiredSubEntityNames, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public GenericObjectWithDependantsVO create(GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames, String customUsage)
 			throws CommonPermissionException, NuclosBusinessRuleException, CommonCreateException, CommonFinderException {
@@ -668,7 +683,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition (gowdvo.getDependants() != null) --> gowdvo.getDependants().areAllDependantsNew()
 	 *
 	 * @nucleus.permission mayWrite(module)
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
+			throws CommonPermissionException, NuclosBusinessRuleException, CommonCreateException {
+		return create(gowdvo, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public GenericObjectVO create(GenericObjectWithDependantsVO gowdvo, String customUsage)
 			throws CommonPermissionException, NuclosBusinessRuleException, CommonCreateException {
@@ -840,7 +863,17 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition iModuleId != null
 	 * @precondition lowdcvo.getModuleId() == iModuleId
 	 * @nucleus.permission mayWrite(module)
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public GenericObjectWithDependantsVO modify(Integer iModuleId, GenericObjectWithDependantsVO lowdcvo)
+			throws CommonCreateException, CommonFinderException, CommonRemoveException,
+			CommonPermissionException, CommonStaleVersionException, NuclosBusinessException,
+			CommonValidationException {
+		return modify(iModuleId, lowdcvo, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public GenericObjectWithDependantsVO modify(Integer iModuleId, GenericObjectWithDependantsVO lowdcvo, String customUsage)
 			throws CommonCreateException, CommonFinderException, CommonRemoveException,
@@ -875,7 +908,17 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return same generic object as value object
 	 * @nucleus.permission mayWrite(module)
 	 * @todo change signature into GenericObjectVO modify(GenericObjectWithDependantsVO lowdcvo, boolean bFireSaveEvent)
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent)
+			throws CommonPermissionException, CommonStaleVersionException,
+			NuclosBusinessException, CommonValidationException,
+			CommonCreateException, CommonFinderException, CommonRemoveException{
+		return modify(govo, mpDependants, bFireSaveEvent, true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, String customUsage)
 			throws CommonPermissionException, CommonStaleVersionException,
@@ -894,7 +937,17 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return same generic object as value object
 	 * @nucleus.permission mayWrite(module)
 	 * @todo change signature into GenericObjectVO modify(GenericObjectWithDependantsVO lowdcvo, boolean bFireSaveEvent)
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission)
+			throws CommonPermissionException, CommonStaleVersionException,
+			NuclosBusinessException, CommonValidationException,
+			CommonCreateException, CommonFinderException, CommonRemoveException {
+		return modify(govo, mpDependants, bFireSaveEvent, bCheckPermission, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	
 	@RolesAllowed("Login")
 	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission, String customUsage)
 			throws CommonPermissionException, CommonStaleVersionException,
@@ -1067,7 +1120,13 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws NuclosBusinessRuleException
 	 * @throws CommonCreateException
 	 * @nucleus.permission mayDelete(module, bDeletePhysically)
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	public void remove(GenericObjectWithDependantsVO gowdvo, boolean bDeletePhysically) throws NuclosBusinessException, CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException, CommonCreateException {
+		remove(gowdvo, bDeletePhysically, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
 	@RolesAllowed("Login")
 	public void remove(GenericObjectWithDependantsVO gowdvo, boolean bDeletePhysically, String customUsage) throws NuclosBusinessException, CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException, CommonCreateException {
 		this.debug("Entering remove(GenericObjectWithDependantsVO gowdvo, boolean bDeletePhysically)");

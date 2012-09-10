@@ -231,7 +231,16 @@ public interface GenericObjectFacadeRemote {
 	 * @precondition stRequiredSubEntityNames != null
 	 *
 	 * @nucleus.permission mayWrite(module)
+	 * 
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	GenericObjectWithDependantsVO create(
+		GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames)
+		throws CommonPermissionException, NuclosBusinessRuleException,
+		CommonCreateException, CommonFinderException;
+	
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO create(
 		GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames, String customUsage)
@@ -251,11 +260,18 @@ public interface GenericObjectFacadeRemote {
 	 * @precondition (gowdvo.getDependants() != null) --> gowdvo.getDependants().areAllDependantsNew()
 	 *
 	 * @nucleus.permission mayWrite(module)
+	 * @Deprecated use with customUsage
 	 */
 	@RolesAllowed("Login")
-	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo, String customUsage)
+	@Deprecated
+	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
 		throws CommonPermissionException, NuclosBusinessRuleException,
 		CommonCreateException;
+	
+	@RolesAllowed("Login")
+	GenericObjectVO create(GenericObjectWithDependantsVO gowdvo, String customUsage)
+			throws CommonPermissionException, NuclosBusinessRuleException,
+			CommonCreateException;
 
 	/**
 	 * updates an existing generic object in the database and returns the written object along with its dependants.
@@ -265,7 +281,16 @@ public interface GenericObjectFacadeRemote {
 	 * @precondition iModuleId != null
 	 * @precondition lowdcvo.getModuleId() == iModuleId
 	 * @nucleus.permission mayWrite(module)
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	GenericObjectWithDependantsVO modify(Integer iModuleId,
+		GenericObjectWithDependantsVO lowdcvo) throws CommonCreateException,
+		CommonFinderException, CommonRemoveException,
+		CommonPermissionException, CommonStaleVersionException,
+		NuclosBusinessException, CommonValidationException;
+	
 	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO modify(Integer iModuleId,
 		GenericObjectWithDependantsVO lowdcvo, String customUsage) throws CommonCreateException,
@@ -280,7 +305,17 @@ public interface GenericObjectFacadeRemote {
 	 * @throws NuclosBusinessRuleException
 	 * @throws CommonCreateException
 	 * @nucleus.permission mayDelete(module, bDeletePhysically)
+	 * @Deprecated use with customUsage
 	 */
+	@RolesAllowed("Login")
+	@Deprecated
+	void remove(GenericObjectWithDependantsVO gowdvo,
+		boolean bDeletePhysically) throws NuclosBusinessException,
+		CommonFinderException,
+		CommonRemoveException, CommonPermissionException,
+		CommonStaleVersionException, NuclosBusinessRuleException,
+		CommonCreateException;
+	
 	@RolesAllowed("Login")
 	void remove(GenericObjectWithDependantsVO gowdvo,
 		boolean bDeletePhysically, String customUsage) throws NuclosBusinessException,
