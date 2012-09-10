@@ -169,7 +169,7 @@ public class EventSupportDropListener implements DropTargetListener {
 				EventSupportRepository.getInstance().updateEventSupports();
 				
 				EventSupportTargetTreeNode treeNode = (EventSupportTargetTreeNode) esenTarget.getTreeNode();
-				treeNode.setLstSubNodes(treeNode.getController().createTargetSubNodesByType(treeNode));
+				treeNode.setLstSubNodes(treeNode.getController().createTargetSubNodesByType(treeNode, null));
 				esenTarget.refresh((JTree) targetNode.getComponent(), true);
 			}
 			

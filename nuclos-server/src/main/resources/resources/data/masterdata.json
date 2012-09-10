@@ -2797,11 +2797,7 @@
     "uniquefields": [
       [
         "generation",
-        "eventsupportclass"
-      ],
-      [
-        "generation",
-        "order",
+        "eventsupporttype",
         "eventsupportclass"
       ]
     ],
@@ -2835,6 +2831,20 @@
         "labelres": "nuclos.entityfield.eventsupportevent.supportclass.label",
         "descriptionres": "nuclos.entityfield.eventsupportevent.supportclass.description"
       },
+        {
+        "name": "eventsupporttype",
+        "dbfield": "STREVENTSUPPORTTYPE",
+        "label": "Klasse fuer EventSupportType",
+        "description": "Klasse fuer EventSupportType",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupportevent.supportclasstype.label",
+        "descriptionres": "nuclos.entityfield.eventsupportevent.supportclasstype.description"
+      },
       {
         "name": "order",
         "dbfield": "INTORDER",
@@ -2866,19 +2876,19 @@
   },
    {
     "name": "Zuweisung von EventSupports an Entitaetenereignisse",
-    "entity": "nuclos_eventsupportevent",
+    "entity": "nuclos_eventsupportentity",
     "searchable": true,
     "editable": true,
     "cacheable": false,
-    "dbentity": "T_MD_EVENTSUPPORT_EVENT",
+    "dbentity": "T_MD_EVENTSUPPORT_ENTITY",
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.rulegeneration.label",
     "uniquefields": [
       [
         "eventsupportclass",
-        "state",
         "eventsupporttype",
+        "state",
         "process",    
         "entity"    
       ]
@@ -3363,8 +3373,8 @@
     "uniquefields": [
       [
         "eventsupportclass",
-        "transition",
-        "order"
+        "eventsupporttype",
+        "transition"
       ]
     ],
     "nuclos_entityfield": [
@@ -3396,6 +3406,20 @@
         "unique": true,
         "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
         "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
+      },
+           {
+        "name": "eventsupporttype",
+        "dbfield": "STREVENTSUPPORTTYPE",
+        "label": "Klasse fuer EventSupportType",
+        "description": "Klasse fuer EventSupportType",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupportevent.supportclasstype.label",
+        "descriptionres": "nuclos.entityfield.eventsupportevent.supportclasstype.description"
       },
       {
         "name": "order",
@@ -3439,11 +3463,8 @@
     "uniquefields": [
       [
         "eventsupportclass",
+        "eventsupporttype",
         "jobcontroller"
-      ],
-      [
-        "jobcontroller",
-        "order"
       ]
     ],
     "nuclos_entityfield": [
@@ -3475,6 +3496,20 @@
         "unique": true,
         "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
         "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
+      },
+           {
+        "name": "eventsupporttype",
+        "dbfield": "STREVENTSUPPORTTYPE",
+        "label": "Klasse fuer EventSupportType",
+        "description": "Klasse fuer EventSupportType",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.eventsupportevent.supportclasstype.label",
+        "descriptionres": "nuclos.entityfield.eventsupportevent.supportclasstype.description"
       },
        {
         "name": "description",

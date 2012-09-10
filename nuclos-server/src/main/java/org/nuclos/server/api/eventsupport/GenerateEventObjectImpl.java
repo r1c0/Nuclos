@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.api.eventsupport;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.nuclos.api.EntityObject;
@@ -26,15 +27,15 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class GenerateEventObjectImpl extends AbstractEventObjectWithCache implements org.nuclos.api.eventsupport.GenerateEventObject {
 	
 	private final Generator generator;
-	private final EntityObject sourceObject;
+	private final Collection<EntityObject> sourceObjects;
 	private final EntityObject targetObject;
 	private final EntityObject parameterObject;
 	
-	public GenerateEventObjectImpl(Map<String, Object> eventCache, Generator generator, EntityObject sourceObject, EntityObject targetObject, EntityObject parameterObject) {
+	public GenerateEventObjectImpl(Map<String, Object> eventCache, Generator generator, Collection<EntityObject> sourceObjects, EntityObject targetObject, EntityObject parameterObject) {
 		super(eventCache);
 		
 		this.generator = generator;
-		this.sourceObject = sourceObject;
+		this.sourceObjects = sourceObjects;
 		this.targetObject = targetObject;
 		this.parameterObject = parameterObject;
 	}
@@ -44,9 +45,10 @@ public class GenerateEventObjectImpl extends AbstractEventObjectWithCache implem
 		return generator;
 	}
 
+
 	@Override
-	public EntityObject getSourceObject() {
-		return sourceObject;
+	public Collection<EntityObject> getSourceObjects(){
+		return sourceObjects;
 	}
 
 	@Override

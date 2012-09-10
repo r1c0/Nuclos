@@ -11,7 +11,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import org.nuclos.client.eventsupport.EventSupportDataFlavor;
-import org.nuclos.client.eventsupport.EventSupportTransferable;
+import org.nuclos.client.eventsupport.EventSupportExplorerNodeTransferable;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.EventSupportExplorerNode;
 
@@ -34,7 +34,7 @@ public class EventSupportDragListener implements DragGestureListener {
 			EventSupportTreeNode treeNode = explorerNode.getTreeNode();
 			if (EventSupportTargetType.EVENTSUPPORT.equals(treeNode.getTreeNodeType()))
 			{
-				dge.startDrag(null, new EventSupportTransferable(explorerNode));				
+				dge.startDrag(null, new EventSupportExplorerNodeTransferable(explorerNode));				
 			}
 		}
 	}

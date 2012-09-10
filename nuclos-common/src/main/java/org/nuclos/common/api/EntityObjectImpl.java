@@ -17,23 +17,47 @@
 package org.nuclos.common.api;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.httpclient.util.LangUtils;
+import org.apache.log4j.Logger;
+import org.nuclos.api.EntityObject;
 import org.nuclos.api.Flag;
 import org.nuclos.api.SystemAttribute;
+import org.nuclos.common.EventSupportProvider;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Predicate;
+import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.exception.CommonFatalException;
 
 public class EntityObjectImpl implements org.nuclos.api.EntityObject {
 	
 	private final EntityObjectVO vo;
-
+	private Map<String, Boolean> dependantsLoaded;
+	private static final Logger LOG = Logger.getLogger(EntityObjectImpl.class);
+	
+	private EventSupportProvider evtSupProvider;
+	
 	public EntityObjectImpl(EntityObjectVO vo) {
 		super();
+		
+		evtSupProvider = SpringApplicationContextHolder.getBean(EventSupportProvider.class);
+		
 		if (vo == null) {
 			throw new IllegalArgumentException("vo must not be null");
 		}
+		dependantsLoaded = new HashMap<String, Boolean>();
+		for (String key : vo.getDependants().getEntityNames()) {
+			dependantsLoaded.put(key, !vo.getDependants().getData(key).isEmpty());
+		}
+		
 		this.vo = vo;
 	}
 
@@ -186,7 +210,61 @@ public class EntityObjectImpl implements org.nuclos.api.EntityObject {
 		}
 		return super.equals(obj);
 	}
+
+	public EntityObjectVO getEntityObjectVO() {
+		return this.vo;
+	}
+
+	@Override
+	public String getEntity() {
+		return vo.getEntity();
+	}
 	
+	@Override
+	public Collection<EntityObject> getDependants(String entity) {
+		return getDependants(entity, false);
+	}
 	
-	
+	@Override
+	public Collection<EntityObject> getDependantsWithDeleted(String entity) {
+		return getDependants(entity, true);
+	}
+
+	private Collection<EntityObject> getDependants(String entity, boolean withDeleted) {
+		try {
+			if (!Boolean.TRUE.equals(dependantsLoaded.get(entity))) {
+				vo.getDependants().addAllData(entity, this.evtSupProvider.getDependants(entity));
+				dependantsLoaded.put(entity, true);
+			}
+		} catch (CommonFatalException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		
+		Collection<EntityObjectVO> result = vo.getDependants().getAllData();
+		if (!withDeleted) {
+			result = CollectionUtils.select(result, new Predicate<EntityObjectVO>() {
+				@Override
+				public boolean evaluate(EntityObjectVO t) {
+					return !t.isFlagRemoved();
+				}
+			});
+		}
+		return Collections.unmodifiableCollection(CollectionUtils.transform(result, 
+			new Transformer<EntityObjectVO, EntityObject>() {
+				@Override
+				public EntityObject transform(EntityObjectVO i) {
+					return new EntityObjectImpl(vo);
+				}
+			}));
+	}
+
+	@Override
+	public EntityObject newDependant(String entity) {
+		EntityObjectVO internal = new EntityObjectVO();
+		internal.setEntity(entity);
+		internal.initFields(10, 5);
+		internal.flagNew();
+		vo.getDependants().addData(entity, internal);
+		return new EntityObjectImpl(internal);
+	}
 }

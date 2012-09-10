@@ -14,16 +14,16 @@ public class EventSupportTransitionVO extends EventSupportVO
 	private Boolean bRunAfterwards;
 	
 	
-	public EventSupportTransitionVO(NuclosValueObject nvo, String sEventSupportClass,
+	public EventSupportTransitionVO(NuclosValueObject nvo, String sEventSupportClass, String pEventSupportType, 
 			Integer iTransitionId, Integer iOrder, Boolean bRunAfterwards) {
-		super(nvo, iOrder, sEventSupportClass);
+		super(nvo, iOrder, sEventSupportClass, pEventSupportType);
 		this.iTransitionId = iTransitionId;
 		this.bRunAfterwards = bRunAfterwards;
 	}
 
-	public EventSupportTransitionVO(String sEventSupportClass,
+	public EventSupportTransitionVO(String sEventSupportClass,String pEventSupportType,
 			Integer iTransitionId, Integer iOrder, Boolean bRunAfterwards) {
-		super(iOrder, sEventSupportClass);
+		super(iOrder, sEventSupportClass, pEventSupportType);
 		this.iTransitionId = iTransitionId;
 		this.bRunAfterwards = bRunAfterwards;
 	}
@@ -66,11 +66,9 @@ public class EventSupportTransitionVO extends EventSupportVO
 	@Override
 	public void validate() throws CommonValidationException {
 		super.validate();
-		
-//		if (getTransitionId() == null || getTransitionId().intValue() == 0) {
-//			throw new CommonValidationException("ruleengine.error.validation.rule.name");
-//		}
+		if (getTransitionId() == null || getTransitionId().intValue() == 0) {
+			throw new CommonValidationException("ruleengine.error.validation.rule.name");
+		}
 	}
-	
 	
 }

@@ -67,9 +67,9 @@ public class CustomCodeRuleScanner
 	 * @return
 	 * @throws IOException 
 	 */
-	public Map<Class<?>, List<EventSupportSourceVO>> getExecutableRulesFromClasspath(Class<?>... listOfAllowedInterfaces) throws IOException
+	public Map<String, EventSupportSourceVO> getExecutableRulesFromClasspath(Class<?>... listOfAllowedInterfaces) throws IOException
 	{
-		Map<Class<?>, List<EventSupportSourceVO>> execRuleClasses = new HashMap<Class<?>,List<EventSupportSourceVO>>();
+		Map<String, EventSupportSourceVO> execRuleClasses = new HashMap<String, EventSupportSourceVO>();
 	
 		Environment env = new StandardEnvironment();
 		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(this.cl);				
@@ -121,13 +121,10 @@ public class CustomCodeRuleScanner
 						{
 							for (Class inter : listOfAllowedInterfaces)
 							{
-								// If the resource implmements one of the ruleInterfaces the resource will
-								// be listed as an executable rule
+								// If the resource implements one of the ruleInterfaces the resource will
+								// be listed as an executable eventsupport
 								if (curIF != null && curIF.contains(inter.getName()))
 								{
-									if (execRuleClasses.get(inter) == null) 
-											execRuleClasses.put(inter, new ArrayList<EventSupportSourceVO>());
-
 									ClassMetadata classMetadata = metadataReader.getClassMetadata();
 									AnnotationMetadata anmeta = metadataReader.getAnnotationMetadata();
 									
@@ -135,7 +132,7 @@ public class CustomCodeRuleScanner
 									String ruleDescription = classMetadata.getClassName();
 									String ruleClassName = classMetadata.getClassName();
 									Date ruleClassCompilationDate = new Date(resource.lastModified());
-									
+
 									String rulePackagePath = ClassUtils.convertResourcePathToClassName(env.resolveRequiredPlaceholders(env.resolveRequiredPlaceholders(pfad)));
 									if (rulePackagePath != null && rulePackagePath.trim().length() > 0 && 
 											rulePackagePath.lastIndexOf(".") == rulePackagePath.length() - 1)
@@ -153,9 +150,18 @@ public class CustomCodeRuleScanner
 											ruleDescription = (String) annotationAttributes.get("description");
 										}										
 									}
-									EventSupportSourceVO newRule = new EventSupportSourceVO(ruleName, ruleDescription, ruleClassName, inter.getName(), rulePackagePath, ruleClassCompilationDate);
-									
-									execRuleClasses.get(inter).add(newRule);
+
+									if (!execRuleClasses.containsKey(ruleName)) {
+										List<String> newListOfInterfaces = new ArrayList<String>();
+										newListOfInterfaces.add(inter.getName());
+										EventSupportSourceVO newRule = 
+												new EventSupportSourceVO(ruleName, ruleDescription, ruleClassName, newListOfInterfaces, rulePackagePath, ruleClassCompilationDate);
+										execRuleClasses.put(ruleName, newRule);
+									}
+									else {
+										EventSupportSourceVO eventSupportSourceVO = execRuleClasses.get(ruleName);
+										eventSupportSourceVO.getInterface().add(inter.getName());
+									}
 								}	
 							}
 						}	

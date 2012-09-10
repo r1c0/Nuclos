@@ -825,6 +825,14 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		return StateModelUsagesCache.getInstance().getStateUsages().getStateModel(usagecriteria);
 	}
 
+    
+    /**
+     * @param stateId
+     * @return
+     */
+    public StateVO getState(Integer stateId) {
+    	return stateCache.getState(stateId);
+    }
 	/**
 	 * @param iStateModelId
 	 * @return the id of the statemodel corresponding to <code>usagecriteria</code>.
@@ -1464,7 +1472,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			loccvoBefore.setSourceStateName(sSourceStateName);
 
 			RuleObjectContainerCVO loccvoAfter = facade.fireRule(iSourceStateId, iTargetStateId, loccvoBefore, false, customUsage);
-			evtSupFacade.fireEventSupports(iSourceStateId, iTargetStateId, loccvoBefore, false);
+			loccvoAfter = evtSupFacade.fireStateTransitionEventSupport(iSourceStateId, iTargetStateId, loccvoAfter, false);
 			
 			// check mandatory fields and subform columns
 			EntityObjectVO validation = DalSupportForGO.wrapGenericObjectVO(loccvoAfter.getGenericObject());
@@ -1484,8 +1492,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			loccvoAfterModified.setSourceStateId(iSourceStateId);
 			loccvoAfterModified.setSourceStateNum(iSourceStateNum);
 			loccvoAfterModified.setSourceStateName(sSourceStateName);
-			facade.fireRule(iSourceStateId, iTargetStateId, loccvoAfterModified, true, customUsage);
-			evtSupFacade.fireEventSupports(iSourceStateId, iTargetStateId, loccvoBefore, true);
+
+			loccvoAfterModified = facade.fireRule(iSourceStateId, iTargetStateId, loccvoAfterModified, true, null);
+			evtSupFacade.fireStateTransitionEventSupport(iSourceStateId, iTargetStateId, loccvoAfterModified, true);
+
 		}
 		catch (Exception ex) {
 			throw new NuclosBusinessRuleException(ex.getMessage(), ex);

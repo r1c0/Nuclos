@@ -187,5 +187,12 @@ public interface StateFacadeRemote {
 	StateTransitionVO findStateTransitionBySourceAndTargetState(Integer sourceStateId, Integer targetStateId);
 	
 	List<StateTransitionVO> getOrderedStateTransitionsByStatemodel(Integer moduleId);
-		
+
+	/**
+	 * returns the masterdata of a state as statevo
+	 * 
+	 * @param stateId
+	 * @return
+	 */
+	public StateVO getState(Integer stateId);
 }

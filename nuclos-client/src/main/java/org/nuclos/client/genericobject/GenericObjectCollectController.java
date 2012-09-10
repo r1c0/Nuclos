@@ -100,6 +100,7 @@ import org.nuclos.client.common.TableRowIndicator;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.eventsupport.EventSupportDelegate;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerDelegate;
 import org.nuclos.client.genericobject.actionlisteners.ResetToTemplateUserActionListener;
@@ -1767,9 +1768,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						// .. or the selected state if the details have not been edited.
 						clct = getSelectedCollectable();
 					}
+					
 					readValuesFromEditPanel(clct, false);
 					final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(
 							clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
+
 					GenericObjectDelegate.getInstance().executeBusinessRules(
 							lstRuleVO, go, bSaveAfterRuleExecution, getCustomUsage());
 
@@ -6417,6 +6420,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					return !rulevo.isActive();
 				}
 			});
+			
+			// add EventSupports if existing
+			collRules.addAll(EventSupportDelegate.getInstance().findEventSupportsByUsageAndEvent("org.nuclos.api.eventsupport.CustomSupport", uc));
+			
 			return collRules;
 		} catch (Exception e) {
 			return Collections.EMPTY_LIST;

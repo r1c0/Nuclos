@@ -11,16 +11,14 @@ public class EventSupportEventVO extends EventSupportVO
 	private Integer iProcessId;
 	private Integer iStateId;
 	// Attributes
-	private	String  sEventSupportType;
 	private String  sEntityName;
 	private String  sStateName;
 	private String  sProcessName;
 	
 	public EventSupportEventVO(NuclosValueObject nvo, String sEventSupportClass, String sEventSupportType, Integer iEntity,
 			Integer iProcessId, Integer iStateId, Integer iOrder,String pEntityName,String pStateName, String pProcessName) {
-		super(nvo, iOrder, sEventSupportClass);
+		super(nvo, iOrder, sEventSupportClass,sEventSupportType);
 		
-		this.sEventSupportType = sEventSupportType;
 		this.iEntity = iEntity;
 		this.iProcessId = iProcessId;
 		this.iStateId = iStateId;
@@ -31,9 +29,8 @@ public class EventSupportEventVO extends EventSupportVO
 	
 	public EventSupportEventVO(String sEventSupportClass, String sEventSupportType, Integer iEntity,
 			Integer iProcessId, Integer iStateId, Integer iOrder,String pEntityName,String pStateName, String pProcessName) {
-		super(iOrder, sEventSupportClass);
+		super(iOrder, sEventSupportClass,sEventSupportType);
 		
-		this.sEventSupportType = sEventSupportType;
 		this.iEntity = iEntity;
 		this.iProcessId = iProcessId;
 		this.iStateId = iStateId;
@@ -75,17 +72,6 @@ public class EventSupportEventVO extends EventSupportVO
 
 	public void setProcessName(String sProcessName) {
 		this.sProcessName = sProcessName;
-	}
-
-
-
-	public String getEventSupportType() {
-		return sEventSupportType;
-	}
-
-
-	public void setEventSupportType(String sEventSupportType) {
-		this.sEventSupportType = sEventSupportType;
 	}
 
 	public Integer getEntity() {

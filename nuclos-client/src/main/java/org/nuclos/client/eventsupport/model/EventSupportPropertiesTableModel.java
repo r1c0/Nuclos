@@ -74,6 +74,31 @@ public abstract class EventSupportPropertiesTableModel extends AbstractTableMode
 		}
 	}
 
+	public void switchRows(int rowOne, int rowTwo) {
+		EventSupportVO eseVOOne = getEntries().get(rowOne);
+		EventSupportVO eseVOTwo = getEntries().get(rowTwo);
+		int order = eseVOOne.getOrder();
+		eseVOOne.setOrder(eseVOTwo.getOrder());
+		eseVOTwo.setOrder(order);
+		
+		setModelModified(true);
+		
+		Collections.sort(getEntries(), new Comparator<EventSupportVO>() {		
+			@Override
+			public int compare(EventSupportVO o1, EventSupportVO o2) {
+				return o1.getOrder() > o2.getOrder() ? 1 : o1.getOrder() < o2.getOrder() ? -1: 0;
+			}
+		});
+		
+		if (rowOne <= rowTwo) {
+			fireTableRowsUpdated(rowOne,  rowTwo);			
+		}
+		else {
+			fireTableRowsUpdated(rowTwo, rowOne);
+		}
+
+	}
+	
 	public void moveUp(int selectedRow) {
 		if (selectedRow != 0) {
 			EventSupportVO eseVO = getEntries().get(selectedRow);

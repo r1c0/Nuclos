@@ -36,8 +36,9 @@ public class EventSupportTreeNode implements TreeNode {
 	private boolean isLeaf = false;
 	private EventSupportTreeNode parentNode;
 	private EventSupportManagementController controller;
-
-	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type, boolean isRoot) {
+	private String sSearchString;
+	
+	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type, boolean isRoot, String sSearchString) {
 		super();
 		this.oId = id;		
 		this.sLabel = label;
@@ -47,11 +48,11 @@ public class EventSupportTreeNode implements TreeNode {
 		this.bIsRoot = isRoot;
 		this.parentNode = parentNode;
 		this.controller = controller;
-	
+		this.sSearchString = sSearchString;
 	}
 	
-	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type) {
-		this(controller, parentNode, id, name, label, description, type, false);
+	public EventSupportTreeNode(EventSupportManagementController controller, EventSupportTreeNode parentNode, Object id, String name, String label, String description, EventSupportTargetType type, String sSearchString) {
+		this(controller, parentNode, id, name, label, description, type, false,sSearchString);
 	}
 	
 	@Override
@@ -90,6 +91,14 @@ public class EventSupportTreeNode implements TreeNode {
 		return this.lstSubNodes;		
 	}
 
+	public String getSearchString() {
+		return sSearchString;
+	}
+
+	public void setSearchString(String sSearchString) {
+		this.sSearchString = sSearchString;
+	}
+
 	public boolean isExternalSource() {
 		return this.oId == null;
 	}
@@ -111,8 +120,8 @@ public class EventSupportTreeNode implements TreeNode {
 
 	@Override
 	public void refresh() {
-		if (!isLeaf())
-			setLstSubNodes(getController().createSubNodesByType(this));
+		if (!isLeaf() && getTreeNodeType() != null)
+			setLstSubNodes(getController().createSubNodesByType(this, sSearchString));
 	}
 
 	@Override

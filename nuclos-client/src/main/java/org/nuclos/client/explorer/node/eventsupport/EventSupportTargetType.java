@@ -3,10 +3,12 @@ package org.nuclos.client.explorer.node.eventsupport;
 public enum EventSupportTargetType {
 	
 	ROOT, 
+	ALL_RULES,
 	RULE, 
 	RULEVERSION, 
 	
 	NUCLET, 
+	NUCLETS,
 	
 	ENTITY, 
 	ENTITY_CATEGORIE,

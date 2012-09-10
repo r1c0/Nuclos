@@ -43,7 +43,7 @@ import org.nuclos.api.eventsupport.InsertFinalSupport;
 import org.nuclos.api.eventsupport.InsertSupport;
 import org.nuclos.api.eventsupport.StateChangeFinalSupport;
 import org.nuclos.api.eventsupport.StateChangeSupport;
-import org.nuclos.api.eventsupport.TimelimitSupport;
+import org.nuclos.api.eventsupport.JobSupport;
 import org.nuclos.api.eventsupport.UpdateFinalSupport;
 import org.nuclos.api.eventsupport.UpdateSupport;
 import org.nuclos.common.NuclosEntity;
@@ -81,7 +81,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 	private ApplicationContext parent;
 
-	private Map<Class<?>, List<EventSupportSourceVO>> executableEventSupportFiles;
+	private Map<String, EventSupportSourceVO> executableEventSupportFiles;
 	
 	// End of Spring injection
 
@@ -98,7 +98,7 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 			InsertFinalSupport.class, InsertSupport.class, 
 			StateChangeFinalSupport.class, StateChangeSupport.class,
 			UpdateFinalSupport.class, UpdateSupport.class,
-			TimelimitSupport.class};
+			JobSupport.class};
 	
 	@Autowired
 	private ServletContext servletContext;
@@ -244,35 +244,33 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 
 	public List<EventSupportSourceVO> getExecutableEventSupportFiles()
 	{
+		List<EventSupportSourceVO> retVal = new ArrayList<EventSupportSourceVO>();
 		try {
 			getClassLoader();
+			
+			if (this.executableEventSupportFiles != null)
+				retVal = new ArrayList(this.executableEventSupportFiles.values());
 		}
 		catch (NuclosCompileException e) {
 			throw new NuclosFatalException(e);
 		}
-		List<EventSupportSourceVO> list = new ArrayList<EventSupportSourceVO>();
-	
-		for(Class n : this.executableEventSupportFiles.keySet())
-		{
-			list.addAll(0,this.executableEventSupportFiles.get(n));
-		}
 		
-		return list;
+		return retVal;
 	}
 	
 	public List<EventSupportSourceVO> getExecutableEventSupportFilesByClassType(List<Class<?>> listOfInterfaces)
 	{
-		try {
-			getClassLoader();
-		}
-		catch (NuclosCompileException e) {
-			throw new NuclosFatalException(e);
-		}
 		List<EventSupportSourceVO> list = new ArrayList<EventSupportSourceVO>();
 	
-		for(Class n : listOfInterfaces)
+		for(EventSupportSourceVO eseVO : getExecutableEventSupportFiles())
 		{
-			list.addAll(0,this.executableEventSupportFiles.get(n));
+			for (Class c : listOfInterfaces) {
+				if (eseVO.getInterface().contains(c.getName())) {
+					if (!list.contains(eseVO)) {
+						list.add(eseVO);
+					}
+				}
+			}
 		}
 		
 		return list;

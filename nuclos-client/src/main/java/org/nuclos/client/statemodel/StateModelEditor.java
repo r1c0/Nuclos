@@ -961,7 +961,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 
 	public void removeRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) {
-			int iTransId = ((StateTransition) shapeSelected).getStateTransitionVO().getId();
+			Integer iTransId = ((StateTransition) shapeSelected).getStateTransitionVO().getId();
 			
 			// Rules are available by importing via jar oder creating them in Nuclos in an editor
 			// With first case there is no id avaibable beacuse the rule does not exist as an entry in the database
@@ -972,7 +972,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			else
 			{
 				((StateTransition) shapeSelected).removeEventSupport(
-						new EventSupportTransitionVO(vo.getClassname(), iTransId, vo.getOrder(), true));
+						new EventSupportTransitionVO(vo.getClassname(), vo.getClasstype(), iTransId, vo.getOrder(), true));
 				
 			}
 			List<SortedRuleVO> selectRulesById = RuleRepository.getInstance().selectRulesByTransitionId(iTransId, ((StateTransition) shapeSelected).getRuleIdsWithRunAfterwards());
@@ -990,7 +990,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	public void addRule(SortedRuleVO vo) throws RemoteException {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) 
 		{
-			int iTransId = ((StateTransition) shapeSelected).getStateTransitionVO().getId();
+			Integer iTransId = ((StateTransition) shapeSelected).getStateTransitionVO().getId();
 			
 			if (vo.getId() != null)
 			{
@@ -999,7 +999,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			else
 			{
 				((StateTransition) shapeSelected).addRule(
-						new EventSupportTransitionVO(vo.getClassname(),iTransId, vo.getOrder(),vo.isRunAfterwards()), vo.isRunAfterwards());
+						new EventSupportTransitionVO(vo.getClassname(),vo.getClasstype(),iTransId, vo.getOrder(),vo.isRunAfterwards()), vo.isRunAfterwards());
 			}
 			
 			List<SortedRuleVO> selectRulesById = 
@@ -1020,7 +1020,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	public void updateRule(SortedRuleVO vo) {
 		if (shapeSelected != null && shapeSelected instanceof StateTransition) 
 		{
-			int iTransId = ((StateTransition) shapeSelected).getStateTransitionVO().getId();
+			Integer iTransId = ((StateTransition) shapeSelected).getStateTransitionVO().getId();
 			if (vo.getId() != null)
 			{
 				Pair<Integer, Boolean> rule = null;
@@ -1036,7 +1036,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			{
 				Pair<EventSupportTransitionVO, Boolean> rule = null;
 					rule = ((StateTransition) shapeSelected).getEventSupport(
-							new EventSupportTransitionVO(vo.getClassname(),iTransId, vo.getOrder(), vo.isRunAfterwards())); 
+							new EventSupportTransitionVO(vo.getClassname(),vo.getClasstype(), iTransId, vo.getOrder(), vo.isRunAfterwards())); 
 					if (rule != null) {
 						rule.setY(vo.isRunAfterwards());
 						pnlShapeViewer.getModel().fireModelChanged();

@@ -82,6 +82,7 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
+import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeLocal;
 import org.nuclos.server.genericobject.GeneratorFailedException;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
@@ -398,7 +399,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				// execute rules (before)
 				final List<String> lstActions = new ArrayList<String>();
 				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, false, customUsage);
-
+				executeGenerationEventSupports(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, false);
+				
 				GenericObjectVO created = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(container), customUsage);
 
 				performDeferredActionsFromRules(lstActions, created.getId(), getGenericObjectFacade());
@@ -411,7 +413,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				// execute rules (after)
 				container = new RuleObjectContainerCVO(Event.GENERATION_AFTER, created, dependants);
 				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, new ArrayList<String>(), true, customUsage);
-
+				executeGenerationEventSupports(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, true);
+				
 				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), DalSupportForGO.wrapGenericObjectVO(getGenericObjectFacade().get(created.getId())), null) ;
 			}
 			catch (CommonBusinessException ex) {
@@ -773,6 +776,11 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		return facade.fireGenerationRules(generatoractionvo.getId(), loccvoTargetBeforeRules, loccvoSourceObjects, loccvoParameter, lstActions, generatoractionvo.getProperties(), after, customUsage);
 	}
 
+	private void executeGenerationEventSupports(GeneratorActionVO generatoractionvo, RuleObjectContainerCVO loccvoTargetBeforeRules, Collection<RuleObjectContainerCVO> loccvoSourceObjects, RuleObjectContainerCVO loccvoParameter, List<String> lstActions, Boolean after) throws NuclosBusinessRuleException {
+		EventSupportFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
+		facade.fireGenerationEventSupport(generatoractionvo.getId(), loccvoTargetBeforeRules, loccvoSourceObjects, loccvoParameter, lstActions, generatoractionvo.getProperties(), after);
+	}
+	
 	/**
 	 * copies all dependant records from source object to target object. Copies
 	 * also a basekey and ordernumber attribute value as dependant into target,

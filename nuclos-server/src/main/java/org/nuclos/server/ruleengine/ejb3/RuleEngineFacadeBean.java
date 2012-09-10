@@ -317,18 +317,17 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 					final RuleVO rulevo = iter.next();
 					sCurrentRule = rulevo.getRule();
 
-					if (rulevo.isActive()) {
+					if (rulevo.getId() != null && rulevo.isActive()) {
 						info("Start executing rule \"" + rulevo.getRule() + "\" (" + rulevo.getId() + ")");
 
 						RuleCodeGenerator<NuclosRule> generator = getGenerator(rulevo);
 						final NuclosRule ruleInstance = ccm.getInstance(generator);
 						iHeaderLinesCount = generator.getPrefixAndHeaderLineCount();
-
+						
 						final RuleInterface ri = new RuleInterface(rulevo, loccvoCurrent, roccvoSourceObjects, loccvoParameterObject, lstActions, customUsage);
 						ri.setProperties(mpProperties);
 						ruleInstance.rule(ri);
 						result = ri.getRuleObjectContainerCVOIfAny();
-
 						lstRuleNotifications.addAll(ri.getRuleNotification());
 
 						info("Finished executing rule \"" + rulevo.getRule() + "\"");

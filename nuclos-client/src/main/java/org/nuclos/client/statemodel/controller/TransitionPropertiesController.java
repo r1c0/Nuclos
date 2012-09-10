@@ -178,7 +178,7 @@ public class TransitionPropertiesController {
 							st.getStateTransitionVO().getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(sortedrulevo.getId(), sortedrulevo.isRunAfterwards()));							
 						}
 						else {
-							EventSupportTransitionVO estVO = new EventSupportTransitionVO(sortedrulevo.getClassname(),st.getStateTransitionVO().getId(), sortedrulevo.getOrder(), sortedrulevo.isRunAfterwards());
+							EventSupportTransitionVO estVO = new EventSupportTransitionVO(sortedrulevo.getClassname(),sortedrulevo.getClasstype(),st.getStateTransitionVO().getId(), sortedrulevo.getOrder(), sortedrulevo.isRunAfterwards());
 							st.getStateTransitionVO().getEventSupportWithRunAfterwards().add(new Pair<EventSupportTransitionVO, Boolean>(estVO, estVO.isRunAfterwards()));
 						}
 					}
@@ -198,7 +198,7 @@ public class TransitionPropertiesController {
 							st.getStateTransitionVO().getRuleIdsWithRunAfterwards().add(new Pair<Integer, Boolean>(sortedrulevo.getId(), sortedrulevo.isRunAfterwards()));							
 						}
 						else {
-							EventSupportTransitionVO estVO = new EventSupportTransitionVO(sortedrulevo.getClassname(),st.getStateTransitionVO().getId(), sortedrulevo.getOrder(), sortedrulevo.isRunAfterwards());
+							EventSupportTransitionVO estVO = new EventSupportTransitionVO(sortedrulevo.getClassname(),sortedrulevo.getClasstype(), st.getStateTransitionVO().getId(), sortedrulevo.getOrder(), sortedrulevo.isRunAfterwards());
 							st.getStateTransitionVO().getEventSupportWithRunAfterwards().add(new Pair<EventSupportTransitionVO, Boolean>(estVO, estVO.isRunAfterwards()));
 						}
 					}

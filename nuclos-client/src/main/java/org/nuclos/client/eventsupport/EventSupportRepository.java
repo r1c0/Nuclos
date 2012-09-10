@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.statemodel.StateDelegate;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeRemote;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
@@ -18,9 +20,11 @@ import org.nuclos.server.eventsupport.valueobject.EventSupportGenerationVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTypeVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.job.valueobject.JobVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,23 +35,30 @@ public class EventSupportRepository implements InitializingBean {
 	private static final Logger LOG = Logger.getLogger(EventSupportRepository.class);	
 	
 	// Spring injection
-	private final List<EventSupportSourceVO> lstEventSupportTypes = new ArrayList<EventSupportSourceVO>();
+	private final List<EventSupportTypeVO> lstEventSupportTypes = new ArrayList<EventSupportTypeVO>();
 	private final List<EventSupportSourceVO> lstEventSupports = new ArrayList<EventSupportSourceVO>();
 	
 	private final Map<String, List<EventSupportSourceVO>> mpEventSupportsByType = CollectionUtils.newHashMap();
 	private final Map<String, List<EventSupportEventVO>> mpEventSupportEventsByClass = CollectionUtils.newHashMap();
 	private final Map<String, List<StateModelVO>> mpStatemodelsByClass = CollectionUtils.newHashMap();
-	private final Map<String, List<JobVO>> mpJobsByClass = CollectionUtils.newHashMap();
-	private final Map<String, List<GeneratorActionVO>> mpGenerationsByClass = CollectionUtils.newHashMap();
 	private final Map<String, EventSupportSourceVO> mpEventSupportsByClass = CollectionUtils.newHashMap();
 	private final Map<Integer, List<EventSupportEventVO>> mpEventSupportsByEntity = CollectionUtils.newHashMap();
 	private final Map<Integer, List<EventSupportJobVO>> mpEventSupportsByJob = CollectionUtils.newHashMap();
+	private final Map<String, List<EventSupportSourceVO>> mpEventSupportsByNuclet = CollectionUtils.newHashMap();
 	private final Map<Integer, List<ProcessVO>> mpProcessesByEntity = CollectionUtils.newHashMap();
 			
+	private final Map<String, List<GeneratorActionVO>> mpGenerationsByClass = CollectionUtils.newHashMap();
+	private final Map<String, List<JobVO>> mpJobsByClass = CollectionUtils.newHashMap();
+	
 	private final Map<Integer, Collection<EventSupportTransitionVO>> mpEventSupportsByTransition = CollectionUtils.newHashMap();
 	private final Map<Integer, Collection<EventSupportGenerationVO>> mpEventSupportsByGeneration = CollectionUtils.newHashMap();
 	private final Map<Integer, List<String>> mpEventSupportTypesByGeneration = CollectionUtils.newHashMap();
 	private final Map<Integer, List<String>> mpEventSupportTypesByStatemodel = CollectionUtils.newHashMap();
+	
+	private Map<String, List<EventSupportGenerationVO>> mpGenerationsByNuclet = CollectionUtils.newHashMap();
+	private Map<String, List<EventSupportEventVO>> mpEntitiesByNuclet = CollectionUtils.newHashMap();
+	private Map<String, List<EventSupportTransitionVO>> mpTransitionsByNuclet = CollectionUtils.newHashMap();
+	private Map<String, List<EventSupportJobVO>> mpJobsByNuclet = CollectionUtils.newHashMap();
 	
 	private EventSupportFacadeRemote eventSupportFacadeRemote;
 
@@ -92,30 +103,65 @@ public class EventSupportRepository implements InitializingBean {
 		mpStatemodelsByClass.clear();
 		mpJobsByClass.clear();
 		mpGenerationsByClass.clear();
+		mpEventSupportsByNuclet.clear();
+		mpGenerationsByNuclet.clear();
 		
 		try {
+			List<MasterDataVO> list = MasterDataCache.getInstance().get(NuclosEntity.NUCLET.getEntityName());
+			List<String> lstValidNucletPackages = new ArrayList<String>();
+			
+			mpGenerationsByNuclet = eventSupportFacadeRemote.getGenerationsByUsage();
+			mpJobsByNuclet = eventSupportFacadeRemote.getJobsByUsage();
+			mpEntitiesByNuclet = eventSupportFacadeRemote.getEntitiesByUsage();
+			mpTransitionsByNuclet = eventSupportFacadeRemote.getTransitionsByUsage();
+			
+			for (MasterDataVO mdvo : list) {
+				String curPackage = mdvo.getField("package", String.class);
+				mpEventSupportsByNuclet.put(curPackage, new ArrayList<EventSupportSourceVO>());
+				lstValidNucletPackages.add(curPackage);
+			}
+			mpEventSupportsByNuclet.put("<Default>", new ArrayList<EventSupportSourceVO>());
+			
 			// Cache all useable EventSupport ordered by type
 			Collection<EventSupportSourceVO> allEventSupports = eventSupportFacadeRemote.getAllEventSupports();
 			for (EventSupportSourceVO esVO : allEventSupports)
 			{
+				boolean toNucletPackage = false;
+				for (String sPackage : lstValidNucletPackages) {
+					if (esVO.getPackage().toLowerCase().startsWith(sPackage.toLowerCase())) {
+						mpEventSupportsByNuclet.get(sPackage).add(esVO);
+						toNucletPackage = true;
+						break;
+					}
+				}
+				if (!toNucletPackage) {
+					mpEventSupportsByNuclet.get("<Default>").add(esVO);
+				}
+				
 				mpEventSupportsByClass.put(esVO.getClassname(), esVO);
 				
-				if (!mpEventSupportsByType.containsKey(esVO.getInterface()))
-				{
-					mpEventSupportsByType.put(esVO.getInterface(), new ArrayList<EventSupportSourceVO>());
+				for (String sInterfaces : esVO.getInterface()) {
+					if (!mpEventSupportsByType.containsKey(sInterfaces))
+					{
+						mpEventSupportsByType.put(sInterfaces, new ArrayList<EventSupportSourceVO>());
+					}
+					mpEventSupportsByType.get(sInterfaces).add(
+							new EventSupportSourceVO(esVO.getName(),esVO.getDescription(),esVO.getClassname(), esVO.getInterface(), esVO.getPackage(), esVO.getCreatedAt()));
 				}
-				mpEventSupportsByType.get(esVO.getInterface()).add(
-						new EventSupportSourceVO(esVO.getName(),esVO.getDescription(),esVO.getClassname(), esVO.getInterface(), esVO.getPackage(), esVO.getCreatedAt()));
 			}
 			 
 			// Cache all registered EventSupport Types
-			for (EventSupportSourceVO c: eventSupportFacadeRemote.getAllEventSupportTypes())
+			for (EventSupportTypeVO c: eventSupportFacadeRemote.getAllEventSupportTypes())
 			{
+				String mspLocaledName = SpringLocaleDelegate.getInstance().getMessage(c.getName(), c.getName());
+				String mspLocaledDesc = SpringLocaleDelegate.getInstance().getMessage(c.getDescription(), c.getDescription());
+				c.setName(mspLocaledName);
+				c.setDescription(mspLocaledDesc);
 				lstEventSupportTypes.add(c);
 			}
 			
-		} catch (CommonPermissionException e) {
-			throw new CommonFatalException(e.getMessage(), e);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
 		}
 	}
 	
@@ -141,11 +187,12 @@ public class EventSupportRepository implements InitializingBean {
 		return mpEventSupportsByType.get(EventSupportType);
 	}
 		
-	public List<EventSupportSourceVO> getEventSupportTypes()
+	public List<EventSupportTypeVO> getEventSupportTypes()
 	{
 		return lstEventSupportTypes;
 	}
 	
+		
 	public List<EventSupportSourceVO> getEventSupportsByType(String typename)
 	{
 		return mpEventSupportsByType.containsKey(typename) ? mpEventSupportsByType.get(typename) : new ArrayList<EventSupportSourceVO>();
@@ -179,11 +226,23 @@ public class EventSupportRepository implements InitializingBean {
 		return retVal;
 	}
 	
-	public EventSupportSourceVO getEventSupportTypeByName(String classname)
+	public List<EventSupportSourceVO> searchForEventSupports(String searchString)
 	{
-		EventSupportSourceVO retVal = null;
+		List<EventSupportSourceVO> retVal = new ArrayList<EventSupportSourceVO>();
+	
+		for (EventSupportSourceVO eseVO : lstEventSupports ) {
+			if (eseVO.getName().toLowerCase().contains(searchString.toLowerCase())) {
+				retVal.add(eseVO);
+			}
+		}
+		return retVal;
+	}
+
+	public EventSupportTypeVO getEventSupportTypeByName(String classname)
+	{
+		EventSupportTypeVO retVal = null;
 		
-		for (EventSupportSourceVO esvo : lstEventSupportTypes)
+		for (EventSupportTypeVO esvo : lstEventSupportTypes)
 		{
 			if (esvo.getClassname().equals(classname))
 			{
@@ -205,8 +264,7 @@ public class EventSupportRepository implements InitializingBean {
 		else {
 			Collection<EventSupportGenerationVO> lstesgVO = this.getEventSupportsByGenerationId(genId);
 			for (EventSupportGenerationVO esgVO : lstesgVO) {
-				if (!retVal.contains(esgVO.getEventSupportClass()))
-					retVal.add(this.getEventSupportByClassname(esgVO.getEventSupportClass()).getInterface());
+				retVal.add(esgVO.getEventSupportClassType());
 			}
 			mpEventSupportTypesByGeneration.put(genId, retVal);
 		}
@@ -225,9 +283,8 @@ public class EventSupportRepository implements InitializingBean {
 		else {
 			List<EventSupportTransitionVO> lstesgVO = this.getEventSupportsByStateModelId(modelId);
 			for (EventSupportTransitionVO esgVO : lstesgVO) {
-				String esType = this.getEventSupportByClassname(esgVO.getEventSupportClass()).getInterface();
-				if (!retVal.contains(esType))
-					retVal.add(esType);
+				if (!retVal.contains(esgVO.getEventSupportClassType()))
+					retVal.add(esgVO.getEventSupportClassType());
 			}
 			mpEventSupportTypesByStatemodel.put(modelId, retVal);
 		}
@@ -238,7 +295,7 @@ public class EventSupportRepository implements InitializingBean {
 	public Collection<EventSupportEventVO> getEventSupportsForEntity(Integer entityId)
 	{
 		Collection<EventSupportEventVO> retVal = null;
-		if (mpEventSupportsByEntity.containsValue(entityId))
+		if (mpEventSupportsByEntity.containsKey(entityId))
 		{
 			retVal = mpEventSupportsByEntity.get(entityId);
 		}
@@ -361,17 +418,37 @@ public class EventSupportRepository implements InitializingBean {
 		return retVal;
 	}
 
-	public List<EventSupportEventVO> getEventSupportEventsByClassname(String classname) {
-		List<EventSupportEventVO> retVal;
+	public List<EventSupportEventVO> getEventSupportEntitiesByClassname(String classname, String classtype) {
+		List<EventSupportEventVO> retVal = new ArrayList<EventSupportEventVO>();
 		
 		if (mpEventSupportEventsByClass.containsKey(classname)) {
-			retVal = mpEventSupportEventsByClass.get(classname);
+			List<EventSupportEventVO> lstEventSuppotEntities = mpEventSupportEventsByClass.get(classname);
+			if (classtype != null) {
+				for (EventSupportEventVO eseVO : lstEventSuppotEntities) {
+					if (eseVO.getEventSupportClassType().equals(classtype)) {
+						retVal.add(eseVO);
+					}
+				}				
+			}
+			else {
+				retVal = lstEventSuppotEntities;
+			}
 		}
 		else
 		{
-			retVal  = new ArrayList<EventSupportEventVO>();
-			retVal.addAll(eventSupportFacadeRemote.getEventSupportEventsByClassname(classname));
-			mpEventSupportEventsByClass.put(classname, retVal);
+			List<EventSupportEventVO> lstEventSuppotEntities = eventSupportFacadeRemote.getEventSupportEntitiesByClassname(classname);
+			mpEventSupportEventsByClass.put(classname, lstEventSuppotEntities);
+			if (classtype != null) {
+				for (EventSupportEventVO eseVO : lstEventSuppotEntities) {
+					if (eseVO.getEventSupportClassType().equals(classtype)) {
+						retVal.add(eseVO);
+					}
+				}	
+			}
+			else
+			{
+				retVal.addAll(eventSupportFacadeRemote.getEventSupportEntitiesByClassname(classname));				
+			}
 		}
 		return retVal;
 	}
@@ -421,4 +498,66 @@ public class EventSupportRepository implements InitializingBean {
 		return retVal;
 	}
 	
+	public List<EventSupportSourceVO> getEventSupportSourcesByPackage(String sPackage, String sSeachText) {
+		List<EventSupportSourceVO> retVal;
+		
+		if (sSeachText == null ) {
+			retVal = mpEventSupportsByNuclet.get(sPackage);
+		}
+		else
+		{
+			retVal = new ArrayList<EventSupportSourceVO>();
+			for (EventSupportSourceVO eseVO : mpEventSupportsByNuclet.get(sPackage)) {
+				if (eseVO.getName().toLowerCase().contains(sSeachText.toLowerCase())) {
+					retVal.add(eseVO);
+				}
+			}
+		}
+		
+		return retVal;
+	}
+	
+	public List<EventSupportGenerationVO> getGenerationsByUsage(String nucletid) {
+		
+		List<EventSupportGenerationVO> retVal = new ArrayList<EventSupportGenerationVO>();
+		
+		if (mpGenerationsByNuclet.containsKey(nucletid)) {
+			retVal = mpGenerationsByNuclet.get(nucletid);
+		}
+		
+		return retVal;
+	}
+	
+	public List<EventSupportTransitionVO> getTransitionsByUsage(String nucletid) {
+		
+		List<EventSupportTransitionVO> retVal = new ArrayList<EventSupportTransitionVO>();
+		
+		if (mpTransitionsByNuclet.containsKey(nucletid)) {
+			retVal = mpTransitionsByNuclet.get(nucletid);
+		}
+		
+		return retVal;
+	}
+	
+	public List<EventSupportEventVO> getEntitiesByUsage(String nucletid) {
+		
+		List<EventSupportEventVO> retVal = new ArrayList<EventSupportEventVO>();
+		
+		if (mpEntitiesByNuclet.containsKey(nucletid)) {
+			retVal = mpEntitiesByNuclet.get(nucletid);
+		}
+		
+		return retVal;
+	}
+
+	public List<EventSupportJobVO> getJobsByUsage(String nucletid) {
+		
+		List<EventSupportJobVO> retVal = new ArrayList<EventSupportJobVO>();
+		
+		if (mpJobsByNuclet.containsKey(nucletid)) {
+			retVal = mpJobsByNuclet.get(nucletid);
+		}
+		
+		return retVal;
+	}
 }

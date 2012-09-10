@@ -68164,4 +68164,451 @@
     "locale": "de",
     "text": "Unten"
   }
+  ,
+  {
+    "resourceID": "nuclos.eventsupporttype.custumsupport.name",
+    "locale": "i-default",
+    "text": "Benutzeraktion"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.custumsupport.name",
+    "locale": "en",
+    "text": "User Action"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.custumsupport.name",
+    "locale": "de",
+    "text": "Benutzeraktion"
+  }
+  ,
+  {
+    "resourceID": "nuclos.eventsupporttype.custumsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die bei einer Benutzeraktion ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.custumsupport.description",
+    "locale": "en",
+    "text": "Rule attached to an user action"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.custumsupport.description",
+    "locale": "de",
+    "text": "Regel, die bei einer Benutzeraktion ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.insertfinalsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die nach beim Anlegen eines Datensatzes ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertfinalsupport.description",
+    "locale": "en",
+    "text": "Rule executed after a new entry has been saved"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertfinalsupport.description",
+    "locale": "de",
+    "text": "Regel, die nach beim Anlegen eines Datensatzes ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.insertfinalsupport.name",
+    "locale": "i-default",
+    "text": "Anlegen (im Anschluss)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertfinalsupport.name",
+    "locale": "en",
+    "text": "Insert (Afterwards)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertfinalsupport.name",
+    "locale": "de",
+    "text": "Anlegen (im Anschluss)"
+  },
+   {
+    "resourceID": "nuclos.eventsupporttype.insertsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die vor beim Anlegen eines Datensatzes ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertsupport.description",
+    "locale": "en",
+    "text": "Rule executed before a new entry is saved"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertsupport.description",
+    "locale": "de",
+    "text": "Regel, die vor beim Anlegen eines Datensatzes ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.insertsupport.name",
+    "locale": "i-default",
+    "text": "Anlegen"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertsupport.name",
+    "locale": "en",
+    "text": "Insert"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.insertsupport.name",
+    "locale": "de",
+    "text": "Anlegen"
+  }
+  ,
+   {
+    "resourceID": "nuclos.eventsupporttype.deletesupport.description",
+    "locale": "i-default",
+    "text": "Regel, die vor beim Löschen eines Datensatzes ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletesupport.description",
+    "locale": "en",
+    "text": "Rule executed before deleting an entry"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletesupport.description",
+    "locale": "de",
+    "text": "Regel, die vor beim Löschen eines Datensatzes ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.deletesupport.name",
+    "locale": "i-default",
+    "text": "Löschen"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletesupport.name",
+    "locale": "en",
+    "text": "Delete"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletesupport.name",
+    "locale": "de",
+    "text": "Löschen"
+  }
+   ,
+   {
+    "resourceID": "nuclos.eventsupporttype.deletefinalsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die nach beim Löschen eines Datensatzes ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletefinalsupport.description",
+    "locale": "en",
+    "text": "Rule executed after deleting an entry"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletefinalsupport.description",
+    "locale": "de",
+    "text": "Regel, die nach beim Löschen eines Datensatzes ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.deletefinalsupport.name",
+    "locale": "i-default",
+    "text": "Löschen (im Anschluss)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletefinalsupport.name",
+    "locale": "en",
+    "text": "Delete (Afterwards)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.deletefinalsupport.name",
+    "locale": "de",
+    "text": "Löschen (im Anschluss)"
+  }
+    ,
+   {
+    "resourceID": "nuclos.eventsupporttype.updatesupport.description",
+    "locale": "i-default",
+    "text": "Regel, die vor dem Aktualisieren eines Datensatzes ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatesupport.description",
+    "locale": "en",
+    "text": "Rule executed before updating an entry"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatesupport.description",
+    "locale": "de",
+    "text": "Regel, die vor dem Aktualisieren eines Datensatzes ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.updatesupport.name",
+    "locale": "i-default",
+    "text": "Aktualisieren"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatesupport.name",
+    "locale": "en",
+    "text": "Update"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatesupport.name",
+    "locale": "de",
+    "text": "Aktualisieren"
+  }
+   
+    ,
+   {
+    "resourceID": "nuclos.eventsupporttype.statechangesupport.description",
+    "locale": "i-default",
+    "text": "Regel, die vor einem Statuswechsel ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangesupport.description",
+    "locale": "en",
+    "text": "Rule executed before changing a state by transition"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangesupport.description",
+    "locale": "de",
+    "text": "Regel, die vor einem Statuswechsel ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangesupport.name",
+    "locale": "i-default",
+    "text": "Statuswechsel"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangesupport.name",
+    "locale": "en",
+    "text": "Statechange"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangesupport.name",
+    "locale": "de",
+    "text": "Statuswechsel"
+  }
+    ,
+   {
+    "resourceID": "nuclos.eventsupporttype.statechangefinalsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die nach einem Statuswechsel ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangefinalsupport.description",
+    "locale": "en",
+    "text": "Rule executed after changing a state by transition"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangefinalsupport.description",
+    "locale": "de",
+    "text": "Regel, die nach einem Statuswechsel ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangefinalsupport.name",
+    "locale": "i-default",
+    "text": "Statuswechsel (im Anschluss)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangefinalsupport.name",
+    "locale": "en",
+    "text": "Statechange (Afterwards)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.statechangefinalsupport.name",
+    "locale": "de",
+    "text": "Statuswechsel (im Anschluss)"
+  }
+    ,
+   {
+    "resourceID": "nuclos.eventsupporttype.updatefinalsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die nach dem Aktualisieren eines Datensatzes ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatefinalsupport.description",
+    "locale": "en",
+    "text": "Rule executed after updating an entry"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatefinalsupport.description",
+    "locale": "de",
+    "text": "Regel, die nach dem Aktualisieren eines Datensatzes ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.updatefinalsupport.name",
+    "locale": "i-default",
+    "text": "Aktualisieren (im Anschluss)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatefinalsupport.name",
+    "locale": "en",
+    "text": "Update (Afterwards)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.updatefinalsupport.name",
+    "locale": "de",
+    "text": "Aktualisieren (im Anschluss)"
+  }
+   ,
+   {
+    "resourceID": "nuclos.eventsupporttype.generatefinalsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die nach einem Arbeitsschritt ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatefinalsupport.description",
+    "locale": "en",
+    "text": "Rule executed after processing a word step"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatefinalsupport.description",
+    "locale": "de",
+    "text": "Regel, die nach einem Arbeitsschritt ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.generatefinalsupport.name",
+    "locale": "i-default",
+    "text": "Arbeitsschritt (im Anschluss)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatefinalsupport.name",
+    "locale": "en",
+    "text": "Work step (Afterwards)"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatefinalsupport.name",
+    "locale": "de",
+    "text": "Arbeitsschritt (im Anschluss)"
+  }
+   ,
+   {
+    "resourceID": "nuclos.eventsupporttype.generatesupport.description",
+    "locale": "i-default",
+    "text": "Regel, die vor einem Arbeitsschritt ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatesupport.description",
+    "locale": "en",
+    "text": "Rule executed before processing a word step"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatesupport.description",
+    "locale": "de",
+    "text": "Regel, die vor einem Arbeitsschritt ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.generatesupport.name",
+    "locale": "i-default",
+    "text": "Arbeitsschritt"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatesupport.name",
+    "locale": "en",
+    "text": "Work step"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.generatesupport.name",
+    "locale": "de",
+    "text": "Arbeitsschritt"
+  }
+   ,
+   {
+    "resourceID": "nuclos.eventsupporttype.jobsupport.description",
+    "locale": "i-default",
+    "text": "Regel, die vor einem Job ausgeführt wird"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.jobsupport.description",
+    "locale": "en",
+    "text": "Rule executed before processing a job"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.jobsupport.description",
+    "locale": "de",
+    "text": "Regel, die vor einem Job ausgeführt wird"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupporttype.jobsupport.name",
+    "locale": "i-default",
+    "text": "Job"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.jobsupport.name",
+    "locale": "en",
+    "text": "Job"
+  },
+  {
+    "resourceID": "nuclos.eventsupporttype.jobsupport.name",
+    "locale": "de",
+    "text": "Job"
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.1",
+    "locale": "de",
+    "text": "Bitte geben Sie den Namen und die Beschreibung für die neue Regel an."
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.1",
+    "locale": "i-default",
+    "text": "Bitte geben Sie den Namen und die Beschreibung für die neue Regel an."
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.1",
+    "locale": "en",
+    "text": "Please insert a name and a description for the new rule."
+  }
+  ,
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.2",
+    "locale": "de",
+    "text": "Die Werte werden direkt im Quellcode der Klasse hinterlegt."
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.2",
+    "locale": "i-default",
+    "text": "Die Werte werden direkt im Quellcode der Klasse hinterlegt."
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.2",
+    "locale": "en",
+    "text": "The values will be placed in the class."
+  }
+  ,
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.3",
+    "locale": "de",
+    "text": "(Die Angaben können im Editor noch verändert werden)"
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.3",
+    "locale": "i-default",
+    "text": "(Die Angaben können im Editor noch verändert werden)"
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.infotext.3",
+    "locale": "en",
+    "text": "(You can change all entries in the editor later)"
+  }
+   ,
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.headline",
+    "locale": "de",
+    "text": "Neue Regel: {0}"
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.headline",
+    "locale": "i-default",
+    "text": "Neue Regel: {0}"
+  },
+  {
+    "resourceID": "nuclos.eventsupport.newInstance.headline",
+    "locale": "en",
+    "text": "New Rule: {0}"
+  }
 ]

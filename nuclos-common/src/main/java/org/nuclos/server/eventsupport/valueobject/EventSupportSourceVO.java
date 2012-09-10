@@ -1,6 +1,7 @@
 package org.nuclos.server.eventsupport.valueobject;
 
 import java.util.Date;
+import java.util.List;
 
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -8,14 +9,14 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 public class EventSupportSourceVO extends NuclosValueObject {
 
-	private String sName;;
+	private String sName;
 	private String sDescription;
 	private String sClassname;
-	private String sInterface;
+	private List<String> sInterface;
 	private String sPackage;
 	private Date   dDateOfCompilation;
 	
-	public EventSupportSourceVO(String sName, String sDescription, String sClassname, String sInterface, String sPackage, Date dDateOfCompilation) {
+	public EventSupportSourceVO(String sName, String sDescription, String sClassname, List<String> sInterface, String sPackage, Date dDateOfCompilation) {
 		super();
 		this.sName = sName;
 		this.sDescription = sDescription;
@@ -43,10 +44,10 @@ public class EventSupportSourceVO extends NuclosValueObject {
 	public void setClassname(String sClassname) {
 		this.sClassname = sClassname;
 	}
-	public String getInterface() {
+	public List<String> getInterface() {
 		return sInterface;
 	}
-	public void setInterface(String cInterface) {
+	public void setInterface(List<String> cInterface) {
 		this.sInterface = cInterface;
 	}
 

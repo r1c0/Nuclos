@@ -17,9 +17,13 @@
 package org.nuclos.server.ruleengine.jobs;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.ServerServiceLocator;
+import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeLocal;
+import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
 import org.nuclos.server.job.NuclosJob;
 import org.nuclos.server.job.SchedulableJob;
 import org.nuclos.server.job.valueobject.JobVO;
@@ -45,7 +49,8 @@ public class TimelimitJob extends SchedulableJob implements NuclosJob {//NuclosQ
 		//execute job rules
 
 		final TimelimitRuleFacadeLocal ruleFacade = ServerServiceLocator.getInstance().getFacade(TimelimitRuleFacadeLocal.class);
-
+		final EventSupportFacadeLocal eventSupportFacade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
+		
 		Collection<String> ruleNames = ruleFacade.getJobRules(jobVO.getId());
 		logger.info("Rules to execute: " + ruleNames);
 		for (String sRuleName : ruleNames) {
@@ -53,6 +58,9 @@ public class TimelimitJob extends SchedulableJob implements NuclosJob {//NuclosQ
 			ruleFacade.executeRule(sRuleName, iSessionId);
 		}
 
+		// EventSupports
+		eventSupportFacade.fireTimelimitEventSupport(jobVO.getId());
+		
 		return null;
 	}
 

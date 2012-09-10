@@ -16,6 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel;
 
+import java.util.Date;
+import java.util.List;
+
 import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
@@ -36,6 +39,7 @@ public class SortedRuleVO {
 	private String  sDescription;
 	private boolean bRunAfterwards = false;
 	private String  sClassname;
+	private String  sClasstype;
 	
 	public SortedRuleVO(RuleVO vo) {
 		iOrder = new Integer(-1);
@@ -44,13 +48,14 @@ public class SortedRuleVO {
 		sDescription = vo.getDescription();
 	}
 
-	public SortedRuleVO(EventSupportSourceVO vo, int order, boolean runAfterwards) {
-		iOrder = order;
-		iId = vo.getId();
-		sName = vo.getName();
-		sDescription = vo.getDescription();
-		sClassname = vo.getClassname();
-		this.bRunAfterwards = runAfterwards;
+	public SortedRuleVO(Integer pId, String pName, String pDescription, String pClassname, String pInterface, String pPackage, Date pDateOfCompilation, int pOrder, boolean pRunAfterwards) {
+		iOrder = pOrder;
+		iId = pId;
+		sName = pName;
+		sDescription = pDescription;
+		sClassname = pClassname;
+		sClasstype = pInterface;
+		this.bRunAfterwards = pRunAfterwards;
 	}
 
 	
@@ -73,6 +78,7 @@ public class SortedRuleVO {
 		this.sName = stateModelRuleVO.getName();
 		this.sDescription = stateModelRuleVO.getDescription();
 		this.sClassname = stateModelRuleVO.getClassname();
+		this.sClasstype = stateModelRuleVO.getClasstype();
 	}
 
 	
@@ -122,6 +128,14 @@ public class SortedRuleVO {
 
 	public void setClassname(String sClassname) {
 		this.sClassname = sClassname;
+	}
+
+	public String getClasstype() {
+		return sClasstype;
+	}
+
+	public void setClasstype(String sClasstype) {
+		this.sClasstype = sClasstype;
 	}
 
 	@Override

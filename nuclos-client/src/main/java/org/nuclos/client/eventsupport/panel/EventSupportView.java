@@ -21,16 +21,8 @@ import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
 
 public class EventSupportView extends JPanel {
 
-	EventSupportTreeNode treeEventSupports;
-	EventSupportTargetTreeNode treeEventSupportTargets;
-	
-	EventSupportSourcePropertiesTableModel propertyModel;
-	EventSupportEntityPropertiesTableModel targetEntityModel;
-	EventSupportStatePropertiesTableModel targetStateModel;
-	EventSupportJobPropertiesTableModel targetJobModel;
-	EventSupportGenerationPropertiesTableModel targetGenerationModel;
-	
-	EventSupportSourceView sourceView;
+	EventSupportTreeNode 		treeEventSupports;
+	EventSupportTargetTreeNode  treeEventSupportTargets;
 	
 	Map<ACTIONS, AbstractAction> actionMap;
 	
@@ -42,18 +34,6 @@ public class EventSupportView extends JPanel {
 
 		this.treeEventSupports = pTreeEventSupports;
 		this.treeEventSupportTargets = pTreeEventSupportTargets;
-		
-		if (this.propertyModel == null)
-			this.propertyModel = new EventSupportSourcePropertiesTableModel();
-		if (this.targetEntityModel == null)
-			this.targetEntityModel = new EventSupportEntityPropertiesTableModel();
-		if (this.targetStateModel == null)
-			this.targetStateModel = new EventSupportStatePropertiesTableModel();
-		if (this.targetJobModel == null)
-			this.targetJobModel = new EventSupportJobPropertiesTableModel();
-		if (this.targetGenerationModel == null)
-			this.targetGenerationModel = new EventSupportGenerationPropertiesTableModel();
-
 	}
 
 	public void setActionMap(Map<ACTIONS, AbstractAction> acts) {
@@ -80,16 +60,6 @@ public class EventSupportView extends JPanel {
 		splitpn.setDividerSize(5);
 		this.add(splitpn, BorderLayout.CENTER);
 	}
-	
-	
-	public EventSupportGenerationPropertiesTableModel getTargetGenerationModel() {
-		return targetGenerationModel;
-	}
-
-	public void setTargetGenerationModel(
-			EventSupportGenerationPropertiesTableModel targetGenerationModel) {
-		this.targetGenerationModel = targetGenerationModel;
-	}
 
 	public EventSupportSourceView getSourceViewPanel()
 	{
@@ -108,40 +78,4 @@ public class EventSupportView extends JPanel {
 	public EventSupportTargetTreeNode getTreeEventSupportTargets() {
 		return treeEventSupportTargets;
 	}
-
-
-	public EventSupportSourcePropertiesTableModel getPropertyModel()	{
-		return this.propertyModel;
-	}
-
-	public void setPropertyModel(EventSupportSourcePropertiesTableModel propModel) {
-		this.propertyModel = propModel;
-	}
-	
-	public EventSupportEntityPropertiesTableModel getTargetEntityModel() {
-		return targetEntityModel;
-	}
-
-	public void setTargetEntityModel(EventSupportEntityPropertiesTableModel targetEntityModel) {
-		this.targetEntityModel = targetEntityModel;
-	}
-
-	public EventSupportStatePropertiesTableModel getTargetStateModel()
-	{
-		return this.targetStateModel;
-	}
-	
-	public void setTargetStateModel(EventSupportStatePropertiesTableModel newModel)
-	{
-		this.targetStateModel = newModel;
-	}
-
-	public EventSupportJobPropertiesTableModel getTargetJobModel() {
-		return targetJobModel;
-	}
-
-	public void setTargetJobModel(EventSupportJobPropertiesTableModel targetJobModel) {
-		this.targetJobModel = targetJobModel;
-	}
-	
 }

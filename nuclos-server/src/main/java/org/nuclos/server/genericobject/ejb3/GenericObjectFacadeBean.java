@@ -31,6 +31,12 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.api.eventsupport.DeleteFinalSupport;
+import org.nuclos.api.eventsupport.DeleteSupport;
+import org.nuclos.api.eventsupport.InsertFinalSupport;
+import org.nuclos.api.eventsupport.InsertSupport;
+import org.nuclos.api.eventsupport.UpdateFinalSupport;
+import org.nuclos.api.eventsupport.UpdateSupport;
 import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
@@ -90,6 +96,7 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
+import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeLocal;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.GenericObjectProxyList;
 import org.nuclos.server.genericobject.Modules;
@@ -667,7 +674,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throws CommonPermissionException, NuclosBusinessRuleException, CommonCreateException {
 
 		debug("Entering create(GenericObjectWithDependantsVO)");
-
+		
 		if (gowdvo.getId() != null) {
 			throw new IllegalArgumentException("govo.getId()");
 		}
@@ -682,7 +689,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
 				IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_EVENT);
-		if(useRuleEngineSave){
+		final boolean useEventSupports = this.getUsesEventSupports(iModuleId, InsertSupport.name);
+		if(useRuleEngineSave || useEventSupports){
 			/** @todo check if loccvoResult can safely be ignored */
 			final RuleObjectContainerCVO loccvoResult = fireSaveEvent(Event.CREATE_BEFORE, gowdvo, mpDependants, false, customUsage);
 			mpDependants = loccvoResult.getDependants();
@@ -807,7 +815,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
 				IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
-		if(useRuleEngineSaveAfter){
+		final boolean useFinalEventSupports = this.getUsesEventSupports(iModuleId, InsertFinalSupport.name);
+		
+		if(useRuleEngineSaveAfter || useFinalEventSupports){
 			try {
 				mpDependants = reloadDependants(result, mpDependants, true, customUsage);
 				fireSaveEvent(Event.CREATE_AFTER, result, mpDependants, true, customUsage);
@@ -910,7 +920,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
 				IdUtils.toLongId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_EVENT);
-		if (bFireSaveEvent && useRuleEngineSave) {
+		final boolean useEventSupports = this.getUsesEventSupports(govo.getModuleId(), UpdateSupport.name);
+		
+		if (bFireSaveEvent && (useRuleEngineSave || useEventSupports)) {
 			this.debug("Modifying (Start rules)");
 			final RuleObjectContainerCVO loccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE, govo, mpDependants, false, customUsage);
 			govo = loccvoResult.getGenericObject();
@@ -967,7 +979,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final boolean useRuleEngineSaveAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
 				IdUtils.toLongId(govo.getModuleId())).getEntity(), RuleEventUsageVO.SAVE_AFTER_EVENT);
-		if (bFireSaveEvent && useRuleEngineSaveAfter) {
+		final boolean useFinalEventSupports = this.getUsesEventSupports(govo.getModuleId(), UpdateFinalSupport.name);
+		
+		if (bFireSaveEvent && (useRuleEngineSaveAfter || useFinalEventSupports)) {
 			this.debug("Modifying (Start rules after save)");
 			mpDependants = reloadDependants(result, mpDependants, true, customUsage);
 			this.fireSaveEvent(Event.MODIFY_AFTER, result, mpDependants, true, customUsage);
@@ -991,11 +1005,26 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		if (!Modules.getInstance().getUsesRuleEngine(govo.getModuleId())) {
 			throw new IllegalArgumentException("govo.getModuleId()");
 		}
-		String sEntity = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
-
+		
+		EventSupportFacadeLocal evSuppFacade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
 		RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
-		RuleObjectContainerCVO ruleContainer = facade.fireRule(sEntity, after ? RuleEventUsageVO.SAVE_AFTER_EVENT : RuleEventUsageVO.SAVE_EVENT, new RuleObjectContainerCVO(event, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()), customUsage);
-		return ruleContainer;
+
+		String sEntity = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
+		
+		RuleObjectContainerCVO retVal = facade.fireRule(sEntity, after ? RuleEventUsageVO.SAVE_AFTER_EVENT : RuleEventUsageVO.SAVE_EVENT, 
+				new RuleObjectContainerCVO(event, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()), null);
+		
+		String sSupportType = null;
+		if (event.equals(Event.CREATE_AFTER)) sSupportType = InsertFinalSupport.name;
+		else if (event.equals(Event.CREATE_BEFORE)) sSupportType = InsertSupport.name;
+		else if (event.equals(Event.MODIFY_AFTER)) sSupportType = UpdateFinalSupport.name;
+		else if (event.equals(Event.MODIFY_BEFORE)) sSupportType = UpdateSupport.name;
+		
+		retVal = evSuppFacade.fireSaveEventSupport(govo.getModuleId(),sSupportType, 
+				new RuleObjectContainerCVO(event, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()));
+		
+		return retVal;
+
 	}
 
 	/**
@@ -1012,9 +1041,23 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throw new IllegalArgumentException("govo.getModuleId()");
 		}
 		String sEntityName = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
-
+		RuleObjectContainerCVO ruleObjectContainerCVO = new RuleObjectContainerCVO(after?Event.DELETE_AFTER:Event.DELETE_BEFORE, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap());
+		
 		RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
-		facade.fireRule(sEntityName, after ? RuleEventUsageVO.DELETE_AFTER_EVENT : RuleEventUsageVO.DELETE_EVENT, new RuleObjectContainerCVO(after?Event.DELETE_AFTER:Event.DELETE_BEFORE, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()), customUsage);
+		facade.fireRule(sEntityName, after ? RuleEventUsageVO.DELETE_AFTER_EVENT : RuleEventUsageVO.DELETE_EVENT,ruleObjectContainerCVO, null);
+		
+		EventSupportFacadeLocal evSuppFacade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
+		
+		String sSupportType = null;
+		if (after) {
+			sSupportType = DeleteSupport.name;
+		}
+		else {
+			sSupportType = DeleteFinalSupport.name;
+		}
+		
+		evSuppFacade.fireDeleteEventSupport(govo.getModuleId(),sSupportType, ruleObjectContainerCVO, true);
+
 	}
 
 	/**
@@ -1074,7 +1117,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 			final boolean useRuleEngineDelete = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
 					IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_EVENT);
-			if(useRuleEngineDelete) {
+			final boolean useEventSupports = this.getUsesEventSupports(iModuleId, DeleteSupport.name);
+			
+			if(useRuleEngineDelete || useEventSupports) {
 				this.fireDeleteEvent(gowdvo, gowdvo.getDependants(), false, customUsage);
 			}
 
@@ -1145,7 +1190,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final boolean useRuleEngineDeleteAfter = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
 				IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.DELETE_AFTER_EVENT);
-		if(useRuleEngineDeleteAfter) {
+		final boolean useFinalEventSupports = this.getUsesEventSupports(iModuleId, DeleteFinalSupport.name);
+		
+		if(useRuleEngineDeleteAfter || useFinalEventSupports) {
 			this.fireDeleteEvent(gowdvo, gowdvo.getDependants(), true, customUsage);
 		}
 
@@ -1776,9 +1823,13 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 */
 	@RolesAllowed("ExecuteRulesManually")
 	public void executeBusinessRules(List<RuleVO> lstRuleVO, GenericObjectWithDependantsVO govo, boolean bSaveAfterRuleExecution, String customUsage) throws CommonBusinessException {
-		RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 
-		final RuleObjectContainerCVO loccvo = facade.executeBusinessRules(lstRuleVO, new RuleObjectContainerCVO(Event.USER, govo, govo.getDependants()), false, customUsage);
+		RuleEngineFacadeLocal ruleFacade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
+		EventSupportFacadeLocal eventSupportFacade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
+		
+		RuleObjectContainerCVO loccvo = ruleFacade.executeBusinessRules(lstRuleVO, new RuleObjectContainerCVO(Event.USER, govo, govo.getDependants()), false, null);
+		loccvo = eventSupportFacade.fireCustomEventSupport(govo.getModuleId(), lstRuleVO, loccvo, false);
+
 		if (bSaveAfterRuleExecution) {
 			this.modify(loccvo.getGenericObject(), loccvo.getDependants(true), true, customUsage);
 		}
@@ -1905,6 +1956,29 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			dataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
 		lstDbCondition.add(dataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
 			dataBaseHelper.getDbAccess().getQueryBuilder().literal(event)));
+
+		query.where(dataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
+
+		List<DbTuple> usages = dataBaseHelper.getDbAccess().executeQuery(query);
+
+		return (usages.size() > 0);
+	}
+
+	
+	private boolean getUsesEventSupports(Integer iEntityId, String sEventSupportType) {
+
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbFrom from = query.from("T_MD_EVENTSUPPORT_ENTITY").alias(SystemFields.BASE_ALIAS);
+		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
+
+		columns.add(from.baseColumn("intid", Integer.class).alias("intid"));
+		query.multiselect(columns);
+
+		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();
+		lstDbCondition.add(dataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("intid_t_md_entity", Integer.class),
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(iEntityId)));
+		lstDbCondition.add(dataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("streventsupporttype", String.class),
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(sEventSupportType)));
 
 		query.where(dataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
 

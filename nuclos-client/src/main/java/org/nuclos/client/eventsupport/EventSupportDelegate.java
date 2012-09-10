@@ -10,6 +10,7 @@ import org.jfree.util.Log;
 import org.nuclos.client.statemodel.SortedRuleVO;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.eventsupport.ejb3.EventSupportFacadeRemote;
 import org.nuclos.server.eventsupport.valueobject.EventSupportEventVO;
@@ -18,12 +19,13 @@ import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
+import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 
 public class EventSupportDelegate {
 
 	private static EventSupportDelegate INSTANCE;
-	private static final Logger LOG = Logger.getLogger(EventSupportManagementController.class);	
+	private static final Logger LOG = Logger.getLogger(EventSupportDelegate.class);	
 	
 	private EventSupportDelegate() {}
 	
@@ -45,10 +47,11 @@ public class EventSupportDelegate {
 		List<SortedRuleVO> retVal = new ArrayList<SortedRuleVO> ();
 		try {
 			for (Pair<EventSupportTransitionVO, Boolean> pair : eventSupportsWithRunAfterwards) {
-				EventSupportTransitionVO x = pair.getX();
-				EventSupportSourceVO esvo = EventSupportRepository.getInstance().getEventSupportByClassname(x.getEventSupportClass());
-				SortedRuleVO sortedRuleVO = new SortedRuleVO(null, esvo.getName(), esvo.getDescription(), x.getOrder(), pair.y);
+				EventSupportTransitionVO stVO = pair.getX();
+				EventSupportSourceVO esvo = EventSupportRepository.getInstance().getEventSupportByClassname(stVO.getEventSupportClass());
+				SortedRuleVO sortedRuleVO = new SortedRuleVO(null, esvo.getName(), esvo.getDescription(), stVO.getOrder(), pair.y);
 				sortedRuleVO.setClassname(esvo.getClassname());
+				sortedRuleVO.setClasstype(stVO.getEventSupportClassType());
 				retVal.add(sortedRuleVO);
 			}			
 		} catch (Exception e) {
@@ -74,6 +77,7 @@ public class EventSupportDelegate {
 						EventSupportSourceVO esvo = EventSupportRepository.getInstance().getEventSupportByClassname(pair.getX().getEventSupportClass());
 						SortedRuleVO sortedRuleVO = new SortedRuleVO(null, esvo.getName(),esvo.getDescription(),eset.getOrder(), eset.isRunAfterwards());
 						sortedRuleVO.setClassname(esvo.getClassname());
+						sortedRuleVO.setClasstype(eset.getEventSupportClassType());
 						retVal.add(sortedRuleVO);
 						break;
 					}
@@ -86,43 +90,21 @@ public class EventSupportDelegate {
 		return retVal;
 	}
 	
-//	/**
-//	 * @param collsortedrulevoFilter
-//	 */
-//	public List<SortedRuleVO> filterEventSupportByVO(Collection<SortedRuleVO> collsortedrulevoFilter) {
-//		final List<SortedRuleVO> result = new LinkedList<SortedRuleVO>();
-//
-//		try {
-//			final Map<String, SortedRuleVO> filterMap = CollectionUtils.newHashMap();
-//			for (SortedRuleVO sortedrulevo : collsortedrulevoFilter) {
-//				filterMap.put(sortedrulevo.getName(), sortedrulevo);
-//			}
-//			Map<String, List<EventSupportVO>> eventSupportsByType = EventSupportRepository.getInstance().getEventSupportsByType();
-//			for (List<EventSupportVO> stateModelRuleVO : eventSupportsByType.values()) {
-//				for (EventSupportVO esvo : stateModelRuleVO) {
-//					if (!filterMap.containsKey(esvo.getName())) {
-//						result.add(new SortedRuleVO(esvo));
-//					}				
-//				}
-//			}			
-//		}
-//		catch (Exception e) {
-//			LOG.error(e.getMessage(), e);
-//		}
-//		
-//		return result;
-//	}
-	
 	/**
 	 * @param filterID
 	 */
-	public SortedRuleVO selectEventSupportByClassname(Pair<String, Boolean> pair ) {
+	public List<SortedRuleVO> selectEventSupportByClassname(Pair<String, Boolean> pair ) {
 		
-		SortedRuleVO sortedRuleVO = null;
+		List<SortedRuleVO> sortedRuleVO = new ArrayList<SortedRuleVO>();
 		try {
 			EventSupportSourceVO esvo = EventSupportRepository.getInstance().getEventSupportByClassname(pair.getX());
-			sortedRuleVO = new SortedRuleVO(esvo, 0, pair.getY());
-			
+			for (String sType : esvo.getInterface()) {
+				boolean runAfterwards = true;
+				if (sType.equals("org.nuclos.api.eventsupport.StateChangeSupport"))
+					runAfterwards = false;
+				
+				sortedRuleVO.add(new SortedRuleVO(esvo.getId(), esvo.getName(), esvo.getDescription(),esvo.getClassname(), sType, esvo.getPackage(), esvo.getDateOfCompilation(), 0, runAfterwards));
+			}	
 		} catch (RemoteException e) {
 			LOG.error(e.getMessage(), e);
 		}
@@ -326,8 +308,7 @@ public class EventSupportDelegate {
 			for (StateTransitionVO stVO : StateDelegate.getInstance().getOrderedStateTransitionsByStatemodel(moduleId)) {
 				Collection<EventSupportTransitionVO> eventSupportsByTransitionId = EventSupportRepository.getInstance().getEventSupportsByTransitionId(stVO.getId());
 				for (EventSupportTransitionVO estVO : eventSupportsByTransitionId) {
-					EventSupportSourceVO eventSupportByClassname = EventSupportRepository.getInstance().getEventSupportByClassname(estVO.getEventSupportClass());
-					if (eventSupportByClassname.getInterface().equals(supporttype)) {
+					if (estVO.getEventSupportClassType().equals(supporttype)) {
 						retVal.add(estVO);
 					}
 				}	
@@ -338,5 +319,14 @@ public class EventSupportDelegate {
 		
 		return retVal;
 	}
-	
+
+	public Collection<RuleVO> findEventSupportsByUsageAndEvent(String sEventName, UsageCriteria usagecriteria) {
+		Collection<RuleVO> retVal = new ArrayList<RuleVO>();
+		try {
+			retVal.addAll(eventSupportFacadeRemote.findEventSupportsByUsageAndEntity(sEventName, usagecriteria));
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return retVal;
+	}
 }

@@ -443,8 +443,24 @@ public class StateDelegate extends AbstractLocalUserCache implements MessageList
 		tnr.unsubscribe(this);
 	}
 	
+	/**
+	 * Returns a list of all transitions for a given statemodel ordered by db-field 'order'
+	 * 
+	 * @param moduleId
+	 * @return
+	 */
 	public List<StateTransitionVO> getOrderedStateTransitionsByStatemodel(Integer moduleId) {
 		return stateFacadeRemote.getOrderedStateTransitionsByStatemodel(moduleId);
 	}
 
+	/**
+	 * Returns a state
+	 * 
+	 * @param pStateId
+	 * @return
+	 */
+	public StateVO getState(Integer pStateId) {
+		return stateFacadeRemote.getState(pStateId);
+	}
+	
 }	// class StateDelegate

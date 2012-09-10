@@ -171,34 +171,37 @@ public class MasterDataWrapper {
 		
 		Integer iTransId = mdVO.getField("transitionId") != null ? Integer.parseInt(mdVO.getField("transitionId").toString()) : null;;
 		String  sSupportClass = mdVO.getField("eventsupportclass").toString();
+		String  sSupportClassType = mdVO.getField("eventsupporttype").toString();
 		Integer iOrder = Integer.parseInt(mdVO.getField("order").toString());
 		Boolean bRunAfterwards = 
 				mdVO.getField("runafterwards") != null ? Boolean.parseBoolean(mdVO.getField("runafterwards").toString()) : null;
 		
 		return new EventSupportTransitionVO(new NuclosValueObject(mdVO.getIntId(), mdVO.getCreatedAt(), mdVO.getCreatedBy(), mdVO.getChangedAt(), mdVO.getChangedBy(), mdVO.getVersion()),
-				sSupportClass, iTransId, iOrder, bRunAfterwards);
+				sSupportClass, sSupportClassType, iTransId, iOrder, bRunAfterwards);
 	}
 	
 public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectVO mdVO) {
 		
 		Integer iTransId = Integer.parseInt(mdVO.getFieldId("transition").toString());
 		String  sSupportClass = mdVO.getField("eventsupportclass").toString();
+		String  sSupportClassType = mdVO.getField("eventsupporttype").toString();
 		Integer iOrder = Integer.parseInt(mdVO.getField("order").toString());
 		Boolean bRunAfterwards = 
 				mdVO.getField("runafterwards") != null ? Boolean.parseBoolean(mdVO.getField("runafterwards").toString()) : null;
 		
-		return new EventSupportTransitionVO(sSupportClass, iTransId, iOrder, bRunAfterwards);
+		return new EventSupportTransitionVO(sSupportClass,sSupportClassType,  iTransId, iOrder, bRunAfterwards);
 	}
 
 	public static EventSupportGenerationVO getEventSupportGenerationVO(MasterDataVO mdVO) {
 		String  esgSupClass = mdVO.getField("eventsupportclass").toString();
+		String  sSupportClassType = mdVO.getField("eventsupporttype").toString();
 		Boolean esgRunAfterwards = Boolean.parseBoolean(mdVO.getField("runafterwards").toString());
 		Integer esgOrder = Integer.parseInt(mdVO.getField("order").toString());
 		Integer esgGeneration = Integer.parseInt(mdVO.getField("generationId").toString());
 		
 		EventSupportGenerationVO retVal = new EventSupportGenerationVO(
 				new NuclosValueObject(mdVO.getIntId(), mdVO.getCreatedAt(), mdVO.getCreatedBy(), mdVO.getChangedAt(), mdVO.getChangedBy(), mdVO.getVersion()),
-				esgOrder, esgGeneration,esgSupClass,esgRunAfterwards);
+				esgOrder, esgGeneration,esgSupClass,sSupportClassType, esgRunAfterwards);
 		
 		return retVal;
 	}
@@ -250,13 +253,14 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 
 		// Mandatory fields that cannot be null
 		String eseSupClass = mdVO.getField("eventsupportclass").toString();
+		String  sSupportClassType = mdVO.getField("eventsupporttype").toString();
 		String description = mdVO.getField("description").toString();
 		Integer eseOrder = Integer.parseInt(mdVO.getField("order").toString());
 		Integer iJobId = Integer.parseInt(mdVO.getField("jobcontrollerId").toString());
 		
 		EventSupportJobVO esevo = new EventSupportJobVO(
 				new NuclosValueObject(mdVO.getIntId(), mdVO.getCreatedAt(), mdVO.getCreatedBy(), mdVO.getChangedAt(), mdVO.getChangedBy(), mdVO.getVersion()),
-												description,eseSupClass,eseOrder,iJobId);
+												description,eseSupClass,sSupportClassType, eseOrder,iJobId);
 		
 		return esevo;
 	}
@@ -265,13 +269,14 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 
 		// Mandatory fields that cannot be null
 		String eseSupClass = eoVO.getField("eventsupportclass").toString();
+		String  sSupportClassType = eoVO.getField("eventsupporttype").toString();
 		String description = eoVO.getField("description").toString();
 		Integer eseOrder = Integer.parseInt(eoVO.getField("order").toString());
 		Integer iJobId = eoVO.getFieldId("jobcontroller").intValue();
 		
 		EventSupportJobVO esevo = new EventSupportJobVO(
 				new NuclosValueObject(eoVO.getId().intValue(), eoVO.getCreatedAt(), eoVO.getCreatedBy(), eoVO.getChangedAt(), eoVO.getChangedBy(), eoVO.getVersion()),
-												description,eseSupClass,eseOrder,iJobId);
+												description,eseSupClass,sSupportClassType, eseOrder,iJobId);
 		
 		return esevo;
 	}
@@ -309,13 +314,14 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 
 	public static EventSupportGenerationVO getEventSupportGenerationVO(EntityObjectVO mdVO) {
 		String  esgSupClass = mdVO.getField("eventsupportclass").toString();
+		String  sSupportClassType = mdVO.getField("eventsupporttype").toString();
 		Boolean esgRunAfterwards = Boolean.parseBoolean(mdVO.getField("runafterwards").toString());
 		Integer esgOrder = Integer.parseInt(mdVO.getField("order").toString());
 		Integer esgGeneration = mdVO.getFieldId("generation").intValue();
 		
 		EventSupportGenerationVO retVal = new EventSupportGenerationVO(
 				new NuclosValueObject(mdVO.getId().intValue(), mdVO.getCreatedAt(), mdVO.getCreatedBy(), mdVO.getChangedAt(), mdVO.getChangedBy(), mdVO.getVersion()),
-				esgOrder, esgGeneration,esgSupClass,esgRunAfterwards);
+				esgOrder, esgGeneration,esgSupClass,sSupportClassType, esgRunAfterwards);
 		
 		return retVal;
 	}
@@ -430,6 +436,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		
 		mpFields.put("transitionId", vo.getTransitionId());
 		mpFields.put("eventsupportclass", vo.getEventSupportClass());
+		mpFields.put("eventsupporttype", vo.getEventSupportClassType());
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("runafterwards", vo.isRunAfterwards());
 		
@@ -441,6 +448,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		
 		mpFields.put("jobcontrollerId", vo.getJobControllerId());
 		mpFields.put("eventsupportclass", vo.getEventSupportClass());
+		mpFields.put("eventsupporttype", vo.getEventSupportClassType());
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("description", vo.getDescription());
 		
@@ -452,6 +460,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		
 		mpFields.put("generationId", vo.getGeneration());
 		mpFields.put("eventsupportclass", vo.getEventSupportClass());
+		mpFields.put("eventsupporttype", vo.getEventSupportClassType());
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("runafterwards", vo.isRunAfterwards());
 		
@@ -466,7 +475,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("processId", vo.getProcessId());
 		mpFields.put("eventsupportclass", vo.getEventSupportClass());
-		mpFields.put("eventsupporttype", vo.getEventSupportType());
+		mpFields.put("eventsupporttype", vo.getEventSupportClassType());
 		
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}

@@ -10,7 +10,7 @@ public class EventSupportDataFlavor extends DataFlavor {
 	
 	public EventSupportDataFlavor()
 	{
-		super(EventSupportTransferable.class, dataFlavorPresentableName);
+		super(EventSupportExplorerNodeTransferable.class, dataFlavorPresentableName);
 	}
 	
 	public boolean equals(DataFlavor o) {

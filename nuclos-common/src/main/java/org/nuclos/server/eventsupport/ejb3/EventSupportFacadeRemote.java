@@ -2,7 +2,9 @@ package org.nuclos.server.eventsupport.ejb3;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -14,10 +16,12 @@ import org.nuclos.server.eventsupport.valueobject.EventSupportGenerationVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportJobVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
+import org.nuclos.server.eventsupport.valueobject.EventSupportTypeVO;
 import org.nuclos.server.eventsupport.valueobject.ProcessVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
 /**
@@ -39,7 +43,7 @@ public interface EventSupportFacadeRemote
 	 */
 	public Collection<EventSupportSourceVO> getAllEventSupports() throws CommonPermissionException;
 	
-	public List<EventSupportSourceVO> getAllEventSupportTypes() throws CommonPermissionException;
+	public List<EventSupportTypeVO> getAllEventSupportTypes() throws CommonPermissionException;
 	
 	public Collection<EventSupportSourceVO> getEventSupportsByClasstype(List<Class<?>> listOfinterfaces)
 			throws CommonPermissionException;
@@ -80,7 +84,7 @@ public interface EventSupportFacadeRemote
 	
 	public void deleteEventSupportGeneration(EventSupportGenerationVO eseVOToUpdate);
 
-	public List<EventSupportEventVO> getEventSupportEventsByClassname(String classname);
+	public List<EventSupportEventVO> getEventSupportEntitiesByClassname(String classname);
 	
 	public List<StateModelVO> getStateModelsByEventSupportClassname(String classname);
 	
@@ -89,4 +93,15 @@ public interface EventSupportFacadeRemote
 	public List<GeneratorActionVO> getGenerationsByClassname(String classname);
 
 	public void forceEventSupportCompilation();
+	
+	public Collection<RuleVO> findEventSupportsByUsageAndEntity(String sEventclass, UsageCriteria usagecriteria);
+
+	public Map<String, List<EventSupportGenerationVO>> getGenerationsByUsage();
+	
+	public Map<String, List<EventSupportJobVO>> getJobsByUsage();
+	
+	public Map<String, List<EventSupportEventVO>> getEntitiesByUsage();
+	
+	public Map<String, List<EventSupportTransitionVO>> getTransitionsByUsage();
+	
 }

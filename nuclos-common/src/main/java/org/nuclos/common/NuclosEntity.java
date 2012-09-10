@@ -54,7 +54,7 @@ public enum NuclosEntity {
 	EVENT("event"),
 	EVENTSUPPORTTRANSITION("eventsupporttransition"),
 	EVENTSUPPORTJOB("eventsupportjobs"),
-	EVENTSUPPORTEVENT("eventsupportevent"),
+	EVENTSUPPORTENTITY("eventsupportentity"),
 	EVENTSUPPORTGENERATION("eventsupportgeneration"),
 	FORMUSAGE("formUsage"),
 	REPORTUSAGE("reportUsage"),

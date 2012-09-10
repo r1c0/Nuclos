@@ -177,7 +177,9 @@ public class CodeCollectController extends MasterDataCollectController {
 			pnlEdit.setId(((Integer)clctmd.getId()).longValue());
 		}
 		else {
-			pnlEdit.getJavaEditorPanel().setText("");
+			if (clctmd.getValue("source") != null) {
+				pnlEdit.getJavaEditorPanel().setText((String) clctmd.getValue("source"));
+			}
 			pnlEdit.getJavaEditorPanel().setCaretPosition(0);
 		}
 	}

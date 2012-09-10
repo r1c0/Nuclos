@@ -6,6 +6,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -18,6 +20,7 @@ import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTargetType;
 import org.nuclos.client.explorer.node.eventsupport.EventSupportTreeNode;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
@@ -92,6 +95,21 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 		return isLeaf() ? false : super.getAllowsChildren();
 	}
 	
+	
+	public List<TreeNodeAction> getTreeNodeActions(JTree tree) {
+		
+		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>();
+
+		result.add(new RefreshAction(tree));
+		final ShowInOwnTabAction actShowInOwnTab = new ShowInOwnTabAction(tree);
+		actShowInOwnTab.setEnabled(!this.getTreeNode().needsParent());
+		result.add(actShowInOwnTab);
+
+		result.addAll(getExpandCollapseActions(tree));
+		
+		return result;
+	}
+
 	@Override
 	public Action getTreeNodeActionOnMouseClick(JTree tree) {
 		return new EventSupportTargetShowPropertyAction(tree);
@@ -130,8 +148,10 @@ public class EventSupportTargetExplorerNode extends ExplorerNode<EventSupportTre
 
 		this.getTreeNode().refresh();
 		loadChildren(true);
-		dtm.nodeStructureChanged(this);
-		
+		dtm.nodeStructureChanged(this);		
+		tree.setSelectionRow(0);
 	}
+	
+	
 
 }

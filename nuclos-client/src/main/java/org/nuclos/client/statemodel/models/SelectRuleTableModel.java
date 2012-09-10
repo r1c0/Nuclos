@@ -16,11 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel.models;
 
+
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.List;
-
 import javax.swing.table.AbstractTableModel;
-
 import org.nuclos.client.eventsupport.EventSupportRepository;
 import org.nuclos.client.statemodel.RuleRepository;
 import org.nuclos.client.statemodel.SortedRuleVO;
@@ -93,17 +93,21 @@ public class SelectRuleTableModel extends AbstractTableModel {
 				EventSupportRepository.getInstance().getEventSupportsByTypes(sEventSupportaSupported);
 		
 		for (EventSupportSourceVO esVO : eventSupportsByType) {
-			SortedRuleVO srVO = new SortedRuleVO(esVO, 0, false);		
-			boolean toExclude = false;
-			for (SortedRuleVO srVOExlcude : lstExcludeRules) {
-				if (srVO.getClassname().equals(srVOExlcude.getClassname())) {
-					toExclude = true;
-					break;
-				}
+			for (String sInterfaces : esVO.getInterface()) {
+				if (Arrays.asList(sEventSupportaSupported).contains(sInterfaces) ) {
+					SortedRuleVO srVO = new SortedRuleVO(esVO.getId(), esVO.getName(), esVO.getDescription(), esVO.getClassname(), sInterfaces, esVO.getPackage(),esVO.getDateOfCompilation(), 0, false);		
+					boolean toExclude = false;
+					for (SortedRuleVO srVOExlcude : lstExcludeRules) {
+						if (srVO.getClassname().equals(srVOExlcude.getClassname()) && srVO.getClasstype().equals(srVOExlcude.getClasstype())) {
+							toExclude = true;
+							break;
+						}
+					}
+					if (!toExclude)
+						this.lstRules.add(srVO);
+					lstExcludeRules.add(srVO);
+				}	
 			}
-			
-			if (!toExclude)
-				this.lstRules.add(srVO);
 		}
 	}
 

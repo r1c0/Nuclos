@@ -6,11 +6,14 @@ import java.util.List;
 
 import org.jfree.util.Log;
 import org.nuclos.client.eventsupport.EventSupportRepository;
+import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
+import org.nuclos.server.statemodel.valueobject.StateVO;
+import org.springframework.jdbc.core.StatementCallback;
 
 public class EventSupportStatePropertiesTableModel extends EventSupportPropertiesTableModel {
 
@@ -108,9 +111,12 @@ public class EventSupportStatePropertiesTableModel extends EventSupportPropertie
     }
 	
 	private static String createTransitionString(StateTransitionVO vo) {
-		 String sTransName = "-> " + vo.getStateTarget();
-		 if (vo.getStateSource() != null) {
-			 sTransName = vo.getStateSource() + " " + sTransName;
+		 StateVO stSourceVO = vo.getStateSource() != null ? StateDelegate.getInstance().getState(vo.getStateSource()): null;
+		 StateVO stTargetVO = StateDelegate.getInstance().getState(vo.getStateTarget());
+		 
+		 String sTransName = "-> " + stTargetVO.getNumeral();
+		 if (stSourceVO != null) {
+			 sTransName = stSourceVO.getNumeral() + " " + sTransName;
 		 }
 		 return sTransName;
 	}

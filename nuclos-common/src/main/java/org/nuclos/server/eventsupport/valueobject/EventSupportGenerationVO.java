@@ -1,6 +1,5 @@
 package org.nuclos.server.eventsupport.valueobject;
 
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 
@@ -10,14 +9,14 @@ public class EventSupportGenerationVO extends EventSupportVO {
 	private Integer iGeneration;
 	
 	
-	public EventSupportGenerationVO(NuclosValueObject nvo, Integer pOrder, Integer pGeneration, String pEventSupportClass, Boolean pRunAfterwards) {
-		super(nvo, pOrder, pEventSupportClass);
+	public EventSupportGenerationVO(NuclosValueObject nvo, Integer pOrder, Integer pGeneration, String pEventSupportClass, String pEventSupportType, Boolean pRunAfterwards) {
+		super(nvo, pOrder, pEventSupportClass, pEventSupportType);
 		this.bRunAfterwards = pRunAfterwards;
 		this.iGeneration = pGeneration;
 	}
 	
-	public EventSupportGenerationVO(Integer pOrder, Integer pGeneration, String pEventSupportClass, Boolean pRunAfterwards) {
-		super(pOrder, pEventSupportClass);
+	public EventSupportGenerationVO(Integer pOrder, Integer pGeneration, String pEventSupportClass, String pEventSupportType, Boolean pRunAfterwards) {
+		super(pOrder, pEventSupportClass, pEventSupportType);
 		this.bRunAfterwards = pRunAfterwards;
 		this.iGeneration = pGeneration;
 	}
@@ -48,11 +47,7 @@ public class EventSupportGenerationVO extends EventSupportVO {
 		
 		if (getGeneration() == null || getGeneration().intValue() == 0) {
 			throw new CommonValidationException("ruleengine.error.validation.rule.name");
-		}
-		if (StringUtils.isNullOrEmpty(this.getEventSupportClass())) {
-			throw new CommonValidationException("ruleengine.error.validation.rule.description");
-		}
-	
+		}	
 	}
 	
 }

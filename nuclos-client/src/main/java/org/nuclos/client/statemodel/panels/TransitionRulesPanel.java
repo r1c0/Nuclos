@@ -121,18 +121,13 @@ public class TransitionRulesPanel extends JPanel {
 						result.setSelected(false);
 				}
 				else {
-					try {
-						EventSupportSourceVO eseByClass = EventSupportRepository.getInstance().getEventSupportByClassname(srVO.getClassname());
-						if ("org.nuclos.api.eventsupport.StateChangeFinalSupport".equals(eseByClass.getInterface())) {
-							result.setSelected(true);
-						}
-						else {
-							result.setSelected(false);
-						}
-						result.setEnabled(false);
-					} catch (RemoteException e) {
-						Log.error(e.getMessage(), e);
+					if ("org.nuclos.api.eventsupport.StateChangeFinalSupport".equals(srVO.getClasstype())) {
+						result.setSelected(true);
 					}
+					else {
+						result.setSelected(false);
+					}
+					result.setEnabled(false);
 				}
 				return result;		
 			}
