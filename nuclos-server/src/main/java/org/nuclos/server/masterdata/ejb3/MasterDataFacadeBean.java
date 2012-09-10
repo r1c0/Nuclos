@@ -688,7 +688,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	public MasterDataVO create(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonPermissionException, NuclosBusinessRuleException {
-    	return create(sEntityName, mdvo, mpDependants, null);
+    	return create(sEntityName, mdvo, mpDependants, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
     }
 
 	/**
@@ -830,7 +830,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException {
-    	return modify(sEntityName, mdvo, mpDependants, null);
+    	return modify(sEntityName, mdvo, mpDependants, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
     }
     /**
 	 * modifies an existing master data record.
@@ -993,7 +993,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		boolean bRemoveDependants) throws CommonFinderException,
 		CommonRemoveException, CommonStaleVersionException,
 		CommonPermissionException, NuclosBusinessRuleException {
-    	remove(sEntityName, mdvo, bRemoveDependants, null);
+    	remove(sEntityName, mdvo, bRemoveDependants, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
     }
 
 	/**
