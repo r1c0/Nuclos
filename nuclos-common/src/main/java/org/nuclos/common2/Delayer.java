@@ -7,6 +7,8 @@ import java.util.WeakHashMap;
 
 import javax.swing.SwingUtilities;
 
+import org.nuclos.common.SpringApplicationContextHolder;
+
 public class Delayer<T> extends TimerTask {
 	
 	public static interface IHandler<T> {
@@ -98,7 +100,9 @@ public class Delayer<T> extends TimerTask {
 			throw new IllegalArgumentException();
 		}
 		this.handler = handler;
-		this.gracePeriodMillis = gracePeriodMillis;		
+		this.gracePeriodMillis = gracePeriodMillis;
+		
+		setTimer(SpringApplicationContextHolder.getBean(Timer.class));
 	}
 	
 	final void setTimer(Timer timer) {

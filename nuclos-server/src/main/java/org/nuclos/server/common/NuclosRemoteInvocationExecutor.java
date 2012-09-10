@@ -160,7 +160,7 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 			throw e;
 		}
 		catch (RuntimeException e) {
-			LOG.warn("Transaction rolling back now, because of unexpected " + e + ": " + invoke + "(" + param + ")");
+			LOG.warn("Transaction rolling back now, because of unexpected " + e + ": " + invoke + "(" + param + ")", e);
 			txManager.rollback(tx);
 			throw e;
 		}
