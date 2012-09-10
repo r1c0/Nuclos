@@ -108,7 +108,11 @@ public class RuleCache extends AbstractLocalUserCache {
 		if (INSTANCE == null) {
 			INSTANCE = this;
 		}
-		if (!wasDeserialized() || !isValid()) {
+		init();
+	}
+	
+	final void init() {
+		if (messageListener != null && (!wasDeserialized() || !isValid())) {
 			invalidate(null);
 		}
 	}
@@ -139,6 +143,8 @@ public class RuleCache extends AbstractLocalUserCache {
 			}
 		};
 		tnr.subscribe(getCachingTopic(), messageListener);
+		
+		init();
 	}
 	
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
