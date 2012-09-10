@@ -208,7 +208,7 @@ public class SchemaCache implements SchemaCacheMBean {
       LOG.debug("Invalidating SchemaCache");
       this.currentSchema = null;
       this.currentSchema = getSchemaFromDB();
-      if (schemaOnly) {
+      if (!schemaOnly) {
 	      mpTableColumns.clear();
 		  MBeanAgent.invokeCacheMethodAsMBean(
 				   INSTANCE.getClass(), "initTableColumnsMap", null, null);
