@@ -114,7 +114,10 @@ public class WsdlCodeGenerator implements CodeGenerator {
 					final String oldDigest = reader.readLine();
 					if (oldDigest != null) {
 						LOG.debug("WSDL digest: old: " + oldDigest + " new: " + realDigest);
-						recompileIsNecessary = !oldDigest.equals(realDigest);
+						recompileIsNecessary =
+								(!oldDigest.equals(realDigest)
+									|| webservice.isChanged())
+										&& !webservice.isRemoved();
 						// force recompile for testing
 						// recompileIsNecessary = true;
 					}
@@ -143,6 +146,8 @@ public class WsdlCodeGenerator implements CodeGenerator {
 					wsdlOut.close();
 					wsdlDigestOut.close();
 				}
+				
+				generatedSourceFolder.mkdirs();
 
 				// cleanup
 				if (generatedSourceFolder.exists()) {

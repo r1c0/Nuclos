@@ -103,6 +103,8 @@ class NuclosJavaCompiler implements Closeable {
 					NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH)));
 			classpath.add(NuclosJavaCompilerComponent.JARFILE);
 			stdFileManager.setLocation(StandardLocation.CLASS_PATH, new ArrayList<File>(classpath));
+			stdFileManager.setLocation(StandardLocation.SOURCE_PATH, 
+					Collections.singleton(nuclosJavaCompilerComponent.getSourceOutputPath()));
 			stdFileManager.setLocation(StandardLocation.SOURCE_OUTPUT, 
 					Collections.singleton(nuclosJavaCompilerComponent.getSourceOutputPath()));
 			stdFileManager.setLocation(StandardLocation.CLASS_OUTPUT, 
@@ -147,7 +149,7 @@ class NuclosJavaCompiler implements Closeable {
 
 		if (sources.size() > 0) {
 			List<String> options = Arrays.asList("-g");
-
+			
 			ByteArrayOutputFileManager byteFileManager = new ByteArrayOutputFileManager(stdFileManager);
 			CompilationTask task = javac.getTask(null, byteFileManager, diagnosticListener, options, null, sources.keySet());
 
