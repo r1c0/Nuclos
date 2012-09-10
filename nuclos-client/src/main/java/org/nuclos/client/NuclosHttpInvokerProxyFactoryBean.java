@@ -64,6 +64,7 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 				LOG.debug(entry.getKey() + ": " + String.valueOf(entry.getValue()));
 			}
 		}
+		invocation.addAttribute("org.nuclos.api.context.MessageReceiverContext", ctx.getMessageReceiver());
 		
 		final long before;
 		if (PROFILE) {

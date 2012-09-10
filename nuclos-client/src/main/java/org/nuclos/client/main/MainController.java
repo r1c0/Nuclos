@@ -142,6 +142,8 @@ import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.OvOpAdapter;
+import org.nuclos.client.ui.OverlayOptionPane;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
@@ -165,6 +167,7 @@ import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription;
+import org.nuclos.common.api.ApiMessageImpl;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -2441,7 +2444,29 @@ public class MainController {
 			{
 				final Object objMessage = ((ObjectMessage) msg).getObject();
 
-				if (objMessage.getClass().equals(RuleNotification.class)) {
+				if (objMessage.getClass().equals(ApiMessageImpl.class)) {
+					final ApiMessageImpl apiMsg = (ApiMessageImpl) ((ObjectMessage) msg).getObject();
+					LOG.info("Handle " + apiMsg);
+					Component parent = null;
+					if (apiMsg.getReceiverId() != null) {
+						MainFrameTab target = MainFrameTab.getMainFrameTab(apiMsg.getReceiverId());
+						parent = target;
+						if (target != null) {
+							if (apiMsg.getMessage().isOverlay()) {
+								OverlayOptionPane.showMessageDialog(target, apiMsg.getMessage().getMessage(), apiMsg.getMessage().getTitle(), new OvOpAdapter() {});
+								return;
+							}
+						} else {
+							LOG.warn(String.format("Receiver with id %s not found!", apiMsg.getReceiverId()));
+						}
+					}
+					
+					if (parent == null) {
+						parent = Main.getInstance().getMainFrame();
+					}
+					JOptionPane.showMessageDialog(parent, apiMsg.getMessage().getMessage(), apiMsg.getMessage().getTitle(), JOptionPane.INFORMATION_MESSAGE);
+				}
+				else if (objMessage.getClass().equals(RuleNotification.class)) {
 					final RuleNotification notification = (RuleNotification) ((ObjectMessage) msg).getObject();
 					getNotificationDialog().addMessage(notification);
 					switch (notification.getPriority()) {

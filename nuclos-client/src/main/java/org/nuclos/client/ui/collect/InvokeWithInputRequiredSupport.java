@@ -28,6 +28,7 @@ import org.nuclos.api.context.InputRequiredException;
 import org.nuclos.api.context.InputSpecification;
 import org.nuclos.client.NuclosHttpInvokerAttributeContext;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -45,10 +46,13 @@ public class InvokeWithInputRequiredSupport {
 		this.ctx = ctx;
 	}
 
-	public void invoke(CommonRunnable runnable, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
+	public void invoke(CommonRunnable runnable, Map<String, Serializable> context, MainFrameTab parent) throws CommonBusinessException {
 		try {
 			ctx.setSupported(true);
 			ctx.putAll(context);
+			if (parent != null) {
+				ctx.setMessageReceiver(parent.getId());
+			}
 			try {
 				runnable.run();
 				context.clear();
@@ -56,6 +60,7 @@ public class InvokeWithInputRequiredSupport {
 			finally {
 				ctx.clear();
 				ctx.setSupported(false);
+				ctx.setMessageReceiver(null);
 			}
 		}
 		catch (CommonBusinessException cbex) {
@@ -80,7 +85,7 @@ public class InvokeWithInputRequiredSupport {
 		}
 	}
 
-	private void handleInputRequiredException(InputRequiredException ex, CommonRunnable r, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
+	private void handleInputRequiredException(InputRequiredException ex, CommonRunnable r, Map<String, Serializable> context, MainFrameTab parent) throws CommonBusinessException {
 		String title = Main.getInstance().getMainFrame().getTitle();
 		
 		if (ex.getInputSpecification() != null) {

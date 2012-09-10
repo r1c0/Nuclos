@@ -63,6 +63,11 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 	/**
 	 * Spring injected.
 	 */
+	private MessageReceiverContext messageReceiverContext;
+	
+	/**
+	 * Spring injected.
+	 */
 	private PlatformTransactionManager txManager;
 	
 	public NuclosRemoteInvocationExecutor() {
@@ -96,6 +101,13 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 		this.userContext = userContext;
 	}
 	
+	/**
+	 * Spring injected.
+	 */
+	public void setMessageReceiverContext(MessageReceiverContext messageReceiverContext) {
+		this.messageReceiverContext = messageReceiverContext;
+	}
+		
 	/**
 	 * Spring injected.
 	 */
@@ -133,6 +145,10 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 					}
 				}
 				inputContext.set(context);
+			}
+			if (invoke.getAttribute("org.nuclos.api.context.MessageReceiverContext") != null) {
+				final Integer context = (Integer) invoke.getAttribute("org.nuclos.api.context.MessageReceiverContext");
+				messageReceiverContext.setId(context);
 			}
 			
 			if (PROFILE) {

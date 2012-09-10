@@ -170,12 +170,16 @@
 	<bean id="remoteInvocationExecutor" class="org.nuclos.server.common.NuclosRemoteInvocationExecutor"
 		depends-on="nucletDalProvider" destroy-method="destroy">
 		<property name="inputContext" ref="inputContext"/>
+		<property name="messageReceiverContext" ref="messageReceiverContext"/>
 		<property name="nuclosRemoteContextHolder" ref="nuclosRemoteContextHolder"/>
 		<property name="nuclosUserDetailsContextHolder" ref="nuclosUserDetailsContextHolder"/>
 		<property name="platformTransactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="inputContext" class="org.nuclos.api.context.SpringInputContext" destroy-method="destroy" factory-method="getInstance">
+	</bean>
+	
+	<bean id="messageReceiverContext" class="org.nuclos.server.common.MessageReceiverContext" destroy-method="destroy" factory-method="getInstance">
 	</bean>
 
 	<!-- Transaction and Rollback -->
@@ -192,6 +196,10 @@
 	<bean id="apiUserSettingsService" class="org.nuclos.server.common.ejb3.ApiUserSettingsService"/>
 	
 	<bean id="apiServerPropertyService" class="org.nuclos.server.common.ejb3.ApiServerPropertyService"/>
+	
+	<bean id="apiMessageContextService" class="org.nuclos.server.common.ejb3.ApiMessageContextService"/>
+	
+	<bean id="apiMessageContext" class="org.nuclos.api.context.MessageContext"/>
 
 	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean">
 		<qualifier value="masterDataService"/>

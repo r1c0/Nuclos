@@ -39,6 +39,8 @@ public class NuclosHttpInvokerAttributeContext implements DisposableBean {
 		}
 	};
 	
+	private ThreadLocal<Integer> messageReceiver = new ThreadLocal<Integer>();
+	
 	public NuclosHttpInvokerAttributeContext() {
 	}
 
@@ -84,6 +86,17 @@ public class NuclosHttpInvokerAttributeContext implements DisposableBean {
 		return result;
 	}
 	
+	public void setMessageReceiver(Integer id) {
+		messageReceiver.set(id);
+	}
+	
+	public Serializable getMessageReceiver() {
+		if (messageReceiver == null) {
+			return null;
+		}
+		return messageReceiver.get();
+	}
+	
 	// @PreDestroy
 	public synchronized void destroy() {
 		if (supported != null) {
@@ -92,7 +105,13 @@ public class NuclosHttpInvokerAttributeContext implements DisposableBean {
 		if (threadLocal != null) {
 			threadLocal.remove();
 		}
+		if (messageReceiver != null) {
+			messageReceiver.remove();
+		}
 		supported = null;
 		threadLocal = null;
+		messageReceiver = null;
 	}
+
+	
 }

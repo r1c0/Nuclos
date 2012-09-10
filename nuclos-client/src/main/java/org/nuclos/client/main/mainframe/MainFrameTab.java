@@ -42,8 +42,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -111,6 +114,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	public static final String IMAGE_ICON_PROPERTY = "NOVABIT_DESKTOP_ICON";
 
 	private static final Logger LOG = Logger.getLogger(MainFrameTab.class);
+	
+	private static final Map<Integer, WeakReference<MainFrameTab>> tabs = new ConcurrentHashMap<Integer, WeakReference<MainFrameTab>>();
+	private static int nextId = 10000;
+	
+	private final int id;
 
 	private final List<MainFrameTabListener> mainFrameTabListeners = new ArrayList<MainFrameTabListener>();
 
@@ -283,6 +291,17 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		});
 		setupDragDrop();
+		
+		id = nextId();
+		tabs.put(new Integer(id), new WeakReference<MainFrameTab>(this));
+	}
+	
+	private int nextId() {
+		synchronized (tabs) {
+			int result = nextId;
+			nextId++;
+			return result;
+		}
 	}
 
 	protected void setupDragDrop() {
@@ -1787,6 +1806,32 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			LOG.warn("No parent tab found");
 			return false;
 		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		tabs.remove(id);
+		super.finalize();
+	}
+	
+	public static MainFrameTab getMainFrameTab(Integer id) {
+		if (id == null)
+			return null;
+		
+		WeakReference<MainFrameTab> ref = tabs.get(id);
+		if (ref != null) {
+			if (ref.get() != null) {
+				return ref.get();
+			} else {
+				tabs.remove(id);
+			}
+		}
+		
+		return null;
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 }  // class CommonJInternalFrame

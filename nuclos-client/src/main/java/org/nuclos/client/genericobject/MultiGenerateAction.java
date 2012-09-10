@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action;
 import org.nuclos.common.NuclosFatalException;
@@ -45,7 +46,7 @@ import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
  */
 class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Long>, GenerationResult> {
 
-	private final JComponent parent;
+	private final MainFrameTab parent;
 	private final GeneratorActionVO generatoractionvo;
 
 	// former Spring injection
@@ -54,7 +55,7 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	
 	// end of former Spring injection
 
-	MultiGenerateAction(JComponent parent, GeneratorActionVO generatoractionvo) {
+	MultiGenerateAction(MainFrameTab parent, GeneratorActionVO generatoractionvo) {
 		this.parent = parent;
 		this.generatoractionvo = generatoractionvo;
 		
