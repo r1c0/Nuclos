@@ -4809,7 +4809,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			}
 			SearchFilter changedItem = (SearchFilter) e.getItem();
 			if (changedItem == mainFilter) {
-				cmdResetMainFilter();
+//				cmdResetMainFilter();
 			} else {
 				setMainFilter((SearchFilter) e.getItem());
 			}

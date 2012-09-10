@@ -335,10 +335,10 @@ public class SearchFilterBar implements ItemSelectable {
 			Rectangle bounds = getBounds();
 			
 			if (mouseOver) {
-//				if (sf != selected) {
+				if (sf != selected) {
 					g2.setColor(mouseOverBackground);
 					g2.fillRoundRect(0, 5, bounds.width, bounds.height-8, 4, 4);
-//				}
+				}
 			}
 			
 			super.paintComponent(g2);
@@ -402,7 +402,8 @@ public class SearchFilterBar implements ItemSelectable {
 //			}
 				
 			if (sf == selected) {
-				g2.setColor(mouseOver?NuclosThemeSettings.BACKGROUND_ROOTPANE:NuclosThemeSettings.BACKGROUND_PANEL);
+//				g2.setColor(mouseOver?NuclosThemeSettings.BACKGROUND_ROOTPANE:NuclosThemeSettings.BACKGROUND_PANEL);
+				g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
 				final int w = 24;
 				final int h = 12;
 				int x = bounds.width/2-w/2;
