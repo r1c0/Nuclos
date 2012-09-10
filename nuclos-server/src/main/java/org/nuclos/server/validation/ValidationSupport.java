@@ -31,7 +31,9 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.validation.annotation.Validation;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.support.AopUtils;
@@ -120,6 +122,9 @@ public class ValidationSupport implements BeanPostProcessor {
 		}
 		if (dependants != null) {
 			for (String entity : dependants.getEntityNames()) {
+				if (entity.startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX)
+						|| entity.startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX))
+					continue;
 				for (EntityObjectVO eo2 : dependants.getData(entity)) {
 					// ensure that entity name is set!
 					if (eo2.isFlagRemoved()) {
