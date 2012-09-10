@@ -3789,8 +3789,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	public void cmdChangeState(final StateWrapper stateNew) {
 		if (isHistoricalView())
 			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
-		if (!getCollectState().isDetailsMode())
-			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detailmodus m\u00f6glich."));
+		if (!getCollectState().isDetailsMode() && !getCollectState().isResultMode())
+			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detail- order Ergebnisansicht m\u00f6glich."));
 
 //		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
 //
