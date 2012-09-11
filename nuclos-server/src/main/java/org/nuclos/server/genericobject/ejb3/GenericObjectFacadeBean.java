@@ -654,7 +654,14 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 	 * @return list of leased object value objects
 	 * @precondition stRequiredSubEntityNames != null
+	 * @Deprecated use with customUsage
 	 */
+	@Deprecated
+	public Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(Integer iModuleId, List<Integer> lstIds,
+			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
+		return getGenericObjectsMore(iModuleId, lstIds, stRequiredAttributeIds, stRequiredSubEntityNames, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY), bIncludeParentObjects);
+	}
+	
 	public Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(Integer iModuleId, List<Integer> lstIds,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, String customUsage, boolean bIncludeParentObjects) {
 
