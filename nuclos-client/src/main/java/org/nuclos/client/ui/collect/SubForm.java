@@ -2276,7 +2276,8 @@ public class SubForm extends JPanel
 				if (event instanceof KeyEvent && !fixed) {
 					final KeyEvent ke = (KeyEvent)event;
 		            if(ke.isShiftDown() || ke.isControlDown()) {
-		            	sNextColumn = getComponentBefore((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
+		            	sNextColumn = getSelectedColumn() == -1 ? null
+		            			: getComponentBefore((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
 		            }
 				}
 

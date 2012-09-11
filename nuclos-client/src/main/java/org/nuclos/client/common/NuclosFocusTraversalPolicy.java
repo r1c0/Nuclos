@@ -238,7 +238,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 	@Override
 	public Component getComponentBefore(Container aContainer, Component aComponent) {
 		// @see  	NUCLOS-1018 - prevent a stack overflow 
-		Component c =  _getComponentAfter(aContainer, aComponent);
+		Component c =  _getComponentBefore(aContainer, aComponent);
 		componentBefore = null; // reset component before.
 		
 		return c;
