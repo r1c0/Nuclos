@@ -104,7 +104,7 @@ public class NuclosImport extends AbstractImport {
 
 				ImportFileLineIterator lines;
 				try {
-					lines = new ImportFileLineIterator(getFile(), importstructure.getHeaderLineCount(), importstructure.getDelimiter());
+					lines = new ImportFileLineIterator(getFile(), importstructure.getHeaderLineCount(), importstructure.getDelimiter(), importstructure.getEncoding());
 				}
 				catch(IOException e) {
 					throw new NuclosFileImportException(e);

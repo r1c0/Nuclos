@@ -64,6 +64,7 @@ public class ImportStructure {
 
 	private final String name;
 	private final String sDelimiter;
+	private final String sEncoding;
 	private final Integer iHeaderLineCount;
 	private final boolean bInsert;
 	private final boolean bUpdate;
@@ -84,6 +85,7 @@ public class ImportStructure {
 
 			this.name = (String) mdcvoStructure.getField("name");
 			this.sDelimiter = (String) mdcvoStructure.getField("delimiter");
+			this.sEncoding = (String) mdcvoStructure.getField("encoding");
 			this.iHeaderLineCount = (Integer) mdcvoStructure.getField("headerlines");
 			this.bInsert = (Boolean) mdcvoStructure.getField("insert");
 			this.bUpdate = (Boolean) mdcvoStructure.getField("update");
@@ -171,6 +173,10 @@ public class ImportStructure {
 
 	public String getDelimiter() {
 		return this.sDelimiter;
+	}
+
+	public String getEncoding() {
+		return this.sEncoding;
 	}
 
 	public Integer getHeaderLineCount() {

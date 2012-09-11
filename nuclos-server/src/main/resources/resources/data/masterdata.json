@@ -349,6 +349,21 @@
         "unique": false,
         "labelres": "nuclet.foreign.label"
       }
+      {
+        "name": "encoding",
+        "dbfield": "STRENCODING",
+        "label": "Dateiencoding",
+        "description": "Dateiencoding",
+        "datatype": "java.lang.String",
+        "datascale": 30,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "entityfieldDefault": "Cp1252",
+        "labelres": "nuclos.entityfield.import.encoding.label",
+        "descriptionres": "nuclos.entityfield.import.encoding.description"
+      },
     ]
   },
   {

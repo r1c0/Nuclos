@@ -45,11 +45,10 @@ public class ImportFileLineIterator implements Iterator<String[]> {
 	private BufferedReader reader;
 	private final CSVParser parser;
 
-	public ImportFileLineIterator(GenericObjectDocumentFile importfile, int headerlines, String delimiter) throws IOException {
+	public ImportFileLineIterator(GenericObjectDocumentFile importfile, int headerlines, String delimiter, String encoding) throws IOException {
 		this.lineCount = ImportUtils.countLines(importfile, delimiter);
 		
 		// @see NUCLOS-620
-		String encoding = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_DEFAULT_ENCODING);
 		if (encoding == null) 
 			encoding = "Cp1252";
 		// test encoding.

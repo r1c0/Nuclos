@@ -3105,6 +3105,21 @@
     "text": "Feldtrennzeichen"
   },
   {
+    "resourceID": "nuclos.entityfield.import.encoding.label",
+    "locale": "i-default",
+    "text": "File encoding"
+  },
+  {
+    "resourceID": "nuclos.entityfield.import.encoding.label",
+    "locale": "en",
+    "text": "File encoding"
+  },
+  {
+    "resourceID": "nuclos.entityfield.import.encoding.label",
+    "locale": "de",
+    "text": "Dateiencoding"
+  },
+  {
     "resourceID": "R00012653",
     "locale": "i-default",
     "text": "Import type"
@@ -16358,17 +16373,32 @@
   {
     "resourceID": "nuclos.entityfield.import.delimiter.description",
     "locale": "i-default",
-    "text": "Fied separator"
+    "text": "Field separator"
   },
   {
     "resourceID": "nuclos.entityfield.import.delimiter.description",
     "locale": "en",
-    "text": "Fied separator"
+    "text": "Field separator"
   },
   {
     "resourceID": "nuclos.entityfield.import.delimiter.description",
     "locale": "de",
     "text": "Feldtrennzeichen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.import.encoding.description",
+    "locale": "i-default",
+    "text": "File encoding"
+  },
+  {
+    "resourceID": "nuclos.entityfield.import.encoding.description",
+    "locale": "en",
+    "text": "File encoding"
+  },
+  {
+    "resourceID": "nuclos.entityfield.import.encoding.description",
+    "locale": "de",
+    "text": "Dateiencoding"
   },
   {
     "resourceID": "nuclos.entityfield.import.name.description",
