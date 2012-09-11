@@ -102,6 +102,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -1421,7 +1422,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 			for(WYSIWYGComponent comp : ctrlPanel.getAllComponents()) {
 				String sFieldName = (String)comp.getProperties().getProperty(PROPERTY_LABELS.NAME).getValue();
-				if(oldField.equals(sFieldName)) {
+				if(LangUtils.equals(oldField, sFieldName)) {
 					if(removeOldField)
 						ctrlPanel.getEditorPanel().getTableLayoutUtil().removeComponentFromLayout(comp);
 					else {
