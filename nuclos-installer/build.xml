@@ -63,8 +63,10 @@
 			<arg value="clean" />
 		</artifact:mvn>
 	</target>
+	
+	<target name="prepare" depends="prepare1,prepare2,prepare3"/>
 
-	<target name="prepare">
+	<target name="prepare1">
 		<mkdir dir="${dist.resources.dir}" />
 
 		<!-- build all modules including webstart -->
@@ -81,13 +83,18 @@
 		</copy>
 		<copy file="conf/splash-screen.gif" todir="${dist.resources.dir}/webapp/app">
 		</copy>
+	</target>
+	
+	<target name="prepare2" unless="nopack200">
 		<apply executable="./modjar.sh" relative="true" failifexecutionfails="true" failonerror="true" parallel="true">
 			<arg value="${dist.resources.dir}/webapp/app"/>
 			<fileset dir="${dist.resources.dir}/webapp/app">
 				<include name="*.jar"/>
 			</fileset>
 		</apply>
-
+	</target>
+		
+	<target name="prepare3">
 		<copy todir="${dist.resources.dir}/webapp/WEB-INF">
 			<fileset dir="${lib.dir}" includes="axislibs/" />
 		</copy>
