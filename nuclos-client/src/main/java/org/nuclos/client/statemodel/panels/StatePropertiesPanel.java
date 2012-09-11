@@ -1517,14 +1517,14 @@ public class StatePropertiesPanel extends JPanel {
 
 	public StatePropertiesPanel() {
 		super(new BorderLayout());
+		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+
 		final JTabbedPane tabpn = new JTabbedPane();
 		this.add(tabpn, BorderLayout.CENTER);
 		tabpn.addTab(SpringLocaleDelegate.getInstance().getMessage(
 				"StatePropertiesPanel.6","Eigenschaften"), newStateBasicPropertiesPanel());
 		tabpn.addTab(SpringLocaleDelegate.getInstance().getMessage(
-				"StatePropertiesPanel.9","Berechtigungen"), pnlStateDependantRights);
-		
-		setSpringLocaleDelegate(SpringApplicationContextHolder.getBean(SpringLocaleDelegate.class));
+				"StatePropertiesPanel.9","Berechtigungen"), pnlStateDependantRights);		
 	}
 	
 	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
