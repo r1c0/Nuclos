@@ -133,10 +133,13 @@
         <minimum-size height="22" width="15" />
         <preferred-size height="22" width="50" />
       </collectable-component>
-      <collectable-component fill-control-horizontally="yes" name="encoding" columns="3" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="control">
-        <tablelayout-constraints col1="3" col2="3" row1="9" row2="9" hAlign="0" vAlign="1" />
+      <collectable-component fill-control-horizontally="yes" name="encoding" columns="3" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="3" col2="3" row1="9" row2="9" hAlign="2" vAlign="1" />
         <minimum-size height="22" width="35" />
         <preferred-size height="20" width="70" />
+        <valuelist-provider type="enum">
+          <parameter name="showEnum" value="org.nuclos.common.fileimport.ImportChartset" />
+        </valuelist-provider>
       </collectable-component>
     </panel>
   </panel>

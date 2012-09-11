@@ -58260,6 +58260,111 @@
     "text": "Direktimport"
   },
   {
+    "resourceID": "import.charset.us_ascii",
+    "locale": "i-default",
+    "text": "US-ASCII"
+  },
+  {
+    "resourceID": "import.charset.us_ascii",
+    "locale": "en",
+    "text": "US-ASCII"
+  },
+  {
+    "resourceID": "import.charset.us_ascii",
+    "locale": "de",
+    "text": "US-ASCII"
+  },
+  {
+    "resourceID": "import.charset.iso_8859_1",
+    "locale": "i-default",
+    "text": "ISO-8859-1"
+  },
+  {
+    "resourceID": "import.charset.iso_8859_1",
+    "locale": "en",
+    "text": "ISO-8859-1"
+  },
+  {
+    "resourceID": "import.charset.iso_8859_1",
+    "locale": "de",
+    "text": "ISO-8859-1"
+  },
+  {
+    "resourceID": "import.charset.cp_1252",
+    "locale": "i-default",
+    "text": "CP-1252"
+  },
+  {
+    "resourceID": "import.charset.cp_1252",
+    "locale": "en",
+    "text": "CP-1252"
+  },
+  {
+    "resourceID": "import.charset.cp_1252",
+    "locale": "de",
+    "text": "CP-1252"
+  },
+  {
+    "resourceID": "import.charset.utf_8",
+    "locale": "i-default",
+    "text": "UTF-8"
+  },
+  {
+    "resourceID": "import.charset.utf_8",
+    "locale": "en",
+    "text": "UTF-8"
+  },
+  {
+    "resourceID": "import.charset.utf_8",
+    "locale": "de",
+    "text": "UTF-8"
+  },
+  {
+    "resourceID": "import.charset.utf_16",
+    "locale": "i-default",
+    "text": "UTF-16"
+  },
+  {
+    "resourceID": "import.charset.utf_16",
+    "locale": "en",
+    "text": "UTF-16"
+  },
+  {
+    "resourceID": "import.charset.utf_16",
+    "locale": "de",
+    "text": "UTF-16"
+  },
+  {
+    "resourceID": "import.charset.utf_16be",
+    "locale": "i-default",
+    "text": "UTF-16BE"
+  },
+  {
+    "resourceID": "import.charset.utf_16be",
+    "locale": "en",
+    "text": "UTF-16BE"
+  },
+  {
+    "resourceID": "import.charset.utf_16be",
+    "locale": "de",
+    "text": "UTF-16BE"
+  },
+  {
+    "resourceID": "import.charset.utf_16le",
+    "locale": "i-default",
+    "text": "UTF-16LE"
+  },
+  {
+    "resourceID": "import.charset.utf_16le",
+    "locale": "en",
+    "text": "UTF-16LE"
+  },
+  {
+    "resourceID": "import.charset.utf_16le",
+    "locale": "de",
+    "text": "UTF-16LE"
+  },
+  {
     "resourceID": "import.validation.fileimport.invalidstructure",
     "locale": "i-default",
     "text": "The used import structure definition \"{0}\" is invalid. Please review its settings in the details view and save it again."
