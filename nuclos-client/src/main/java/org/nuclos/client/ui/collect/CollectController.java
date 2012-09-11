@@ -4790,8 +4790,18 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public SearchFilter getMainFilter() {
 		return mainFilter;
 	}
-
+	
 	public void setMainFilter(SearchFilter mainFilter) {
+		this.mainFilter = mainFilter;
+		getResultPanel().getSearchFilterBar().setSelected(mainFilter, true);
+	}
+	
+	public void setMainFilter(SearchFilter mainFilter, boolean notifyListener) {
+		this.mainFilter = mainFilter;
+		getResultPanel().getSearchFilterBar().setSelected(mainFilter, notifyListener);
+	}
+
+	private void _setMainFilterAndSearch(SearchFilter mainFilter) {
 		this.mainFilter = mainFilter;
 		getResultController().getSearchResultStrategy().cmdSearch();
 	}
@@ -4811,7 +4821,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			if (changedItem == mainFilter) {
 //				cmdResetMainFilter();
 			} else {
-				setMainFilter((SearchFilter) e.getItem());
+				_setMainFilterAndSearch((SearchFilter) e.getItem());
 			}
 			actResetMainFilter.setEnabled(mainFilter != null);
 		}

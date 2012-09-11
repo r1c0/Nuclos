@@ -35,6 +35,7 @@ import org.nuclos.client.LaunchListener;
 import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common2.StringUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -222,7 +223,7 @@ public class Main {
 			log.info("Client launched without arguments.");
 		}
 
-		Map<String, LaunchListener> listeners = SpringApplicationContextHolder.getApplicationContext().getBeansOfType(LaunchListener.class);
+		Map<String, LaunchListener> listeners = SpringApplicationSubContextsHolder.getInstance().getBeansOfType(LaunchListener.class);
 		for (Map.Entry<String, LaunchListener> listener : listeners.entrySet()) {
 			log.info("Notify LaunchListener " + listener.getKey());
 			try {

@@ -99,7 +99,11 @@ public class SearchFilterBar implements ItemSelectable {
 	}
 	
 	public void setSelected(SearchFilter selected) {
-		boolean revalidate = !LangUtils.equals(this.selected, selected);
+		setSelected(selected, true);
+	}
+	
+	public void setSelected(SearchFilter selected, boolean notifyListener) {
+		boolean revalidate = notifyListener? !LangUtils.equals(this.selected, selected) : false;
 		this.selected = selected;
 		
 		if (revalidate) {

@@ -17,7 +17,9 @@
 package org.nuclos.common;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
@@ -122,6 +124,38 @@ public class SpringApplicationSubContextsHolder {
 			throw new NuclosFatalException(e);
 		} 
 		return bean;
+	}
+	
+	public <T> Map<String, T> getBeansOfType(Class<T> c) {		
+		Map<String, T> result = new HashMap<String, T>();
+		try{
+			final List<AbstractXmlApplicationContext> subs;
+			synchronized (this) {
+				subs = (List<AbstractXmlApplicationContext>) subContexts.clone();
+			}
+			if (subs.isEmpty()) {
+				Map<String, T> subResult = clientContext.getBeansOfType(c);
+				if (subResult != null) {
+					result.putAll(subResult);
+				}
+			}
+			else {
+				for (AbstractXmlApplicationContext sub : subs) {
+					Map<String, T> subResult = sub.getBeansOfType(c);
+					if (subResult != null) {
+						for (String key : subResult.keySet()) {
+							if (result.containsKey(key)) {
+								throw new NuclosFatalException(String.format("getBeansOfType(%s) failed! Duplicate key \"%s\" in result", c.getName(), key));
+							}
+							result.put(key, subResult.get(key));
+						}
+					}
+				}
+			}
+		} catch (BeansException e) {
+			throw new NuclosFatalException(e);
+		} 
+		return result;
 	}
 
 }
