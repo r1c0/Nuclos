@@ -791,8 +791,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		//cpSearchState.setOpaque(false);
 		//toolSearchState.add(cpSearchState);
 		//toolSearchState.add(Box.createHorizontalStrut(5));
-		this.getSearchPanel().addToolBarComponent(new ColoredLabel(jComboBox,
-				getSpringLocaleDelegate().getMessage("nuclos.entityfield.eo.state.label","Status")), 6);
+		ColoredLabel lbSearchBox = new ColoredLabel(jComboBox,
+				getSpringLocaleDelegate().getMessage("nuclos.entityfield.eo.state.label","Status"));
+		lbSearchBox.setName("blSearchState");
+		this.getSearchPanel().addToolBarComponent(lbSearchBox, 6);
 
 		//pnlCustomToolBarAreaSearch.add(toolSearchState, gbc);
 		setSearchStatesAccordingToUsageCriteria(new UsageCriteria(iModuleId, null, null));
