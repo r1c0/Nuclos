@@ -211,7 +211,7 @@ public class LoginController extends Controller<Component> {
 			ApplicationProperties.getInstance().getCurrentVersion().getShortName());
 		final JFrame frame = new JFrame(sTitle);
 		frame.setName("frmLogin");
-		// frame.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
+		frame.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
 		frame.getContentPane().add(optpn, BorderLayout.CENTER);
 		frame.pack();
 		frame.setResizable(false);
