@@ -375,7 +375,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					@Override
 					public void run() {
 						try {
-							iCurrentLayoutId = null; // reset current loaded layout. @see NUCLOS-1085
 							reloadLayoutForSearchTab();
 
 							Utils.setComponentFocus(sFieldName, getSearchPanel().getEditView(), null, false);
@@ -4603,12 +4602,40 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	@Override
 	protected void _clearSearchFields() {
-		super._clearSearchFields();
+		final boolean bUsageCriteriaFieldListenersWereAdded = getUsageCriteriaFieldListenersAdded(true);
+		this.removeUsageCriteriaFieldListeners(true);
+
+		CollectableComponentModel clctcompmodelUsageCriteriaFieldChanged = null;
+		// remember if field have to change
+		for (String sUsageCriteriaFieldName : getUsageCriteriaFieldNames()) {
+			final CollectableComponentModel clctcompmodel = getEditView(true).getModel().getCollectableComponentModelFor(sUsageCriteriaFieldName);
+			if (clctcompmodel != null) {
+				if (!clctcompmodel.getField().isNull()) {
+					clctcompmodelUsageCriteriaFieldChanged = clctcompmodel;
+					break;
+				}
+			}
+		}
+		CollectableField oldUsageCriteriaField = clctcompmodelUsageCriteriaFieldChanged == null ? null : clctcompmodelUsageCriteriaFieldChanged.getField();
+
+		try {
+			super._clearSearchFields();
+		}
+		finally {
+			if (bUsageCriteriaFieldListenersWereAdded)
+				this.addUsageCriteriaFieldListeners(true);
+		}
 
 		for (SearchConditionSubFormController subformctl : getSubFormControllersInSearch())
 			subformctl.clear();
 
 		getSearchStateBox().getJComboBox().setSelectedIndex(-1);
+		
+		// invoke.
+		if (clctcompmodelUsageCriteriaFieldChanged != null) {
+			getCollectableComponentModelListenerForUsageCriteriaFields(true).collectableFieldChangedInModel(
+					new CollectableComponentModelEvent(clctcompmodelUsageCriteriaFieldChanged, oldUsageCriteriaField, clctcompmodelUsageCriteriaFieldChanged.getField()));
+		}
 	}
 
 	/**

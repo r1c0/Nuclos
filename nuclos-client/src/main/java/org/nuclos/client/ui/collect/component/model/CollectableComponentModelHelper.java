@@ -16,7 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component.model;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +41,13 @@ public class CollectableComponentModelHelper {
 	}
 
 	public synchronized void removeCollectableComponentModelListener(CollectableComponentModelListener l) {
-		this.lstListeners.remove(l);
+		for (Iterator iterator = lstListeners.iterator(); iterator.hasNext();) {
+			CollectableComponentModelListener listener = (CollectableComponentModelListener) iterator.next();
+			if (listener.equals(l)) {
+				iterator.remove();
+				break;
+			}	
+		}
 	}
 
 	public synchronized void addCollectableComponentModelListener(CollectableComponentModelListener l) {

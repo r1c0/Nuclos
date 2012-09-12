@@ -51,5 +51,21 @@ class CollectableComponentModelAdapter extends EventAdapter implements Collectab
 			l.valueToBeChanged(e);
 		}
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		final CollectableComponentModelListener l = (CollectableComponentModelListener) wrapped.get();
+		if (l != null) {
+			return l.equals(obj);
+		}
+		return super.equals(obj);
+	}
+	@Override
+	public int hashCode() {
+		final CollectableComponentModelListener l = (CollectableComponentModelListener) wrapped.get();
+		if (l != null) {
+			return l.hashCode();
+		}
+		return super.hashCode();
+	}
 }
