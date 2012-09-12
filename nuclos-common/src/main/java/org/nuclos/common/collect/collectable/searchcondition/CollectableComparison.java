@@ -117,7 +117,7 @@ public final class CollectableComparison extends AtomicCollectableSearchConditio
 		assert this.getComparisonOperator().getOperandCount() > 1;
 		final CollectableField comparand = getComparand();
 		final CollectableEntityField field = getEntityField();
-		String format = field.getFormatOutput();
+		String format = field.getFormatInput();
 		if (format == null) {
 			if (Date.class.isAssignableFrom(field.getJavaClass())) {
 				if (comparand.getValue() != null && comparand.getValue().toString().equals(RelativeDate.today().toString()))
@@ -125,12 +125,8 @@ public final class CollectableComparison extends AtomicCollectableSearchConditio
 				return SpringLocaleDelegate.getInstance().getDateFormat().format(comparand.getValue());
 			}
 		}
-		if (format == null) {
-			return comparand.toString();
-		}
-		else {
-			return CollectableFieldFormat.getInstance(comparand.getClass()).format(format, comparand.getValue());
-		}
+		
+		return CollectableFieldFormat.getInstance(field.getJavaClass()).format(format, comparand.getValue());
 	}
 
 	@Override

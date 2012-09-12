@@ -537,43 +537,13 @@ public abstract class CollectableFieldFormat {
 				ParseException pe = null;
 				if (sInputFormat != null) {
 					try {
-						double value;
-						DecimalFormat df;
-						// try to test if input is in english or german locale is used for input.
-						// therefore we have to remove 0´s at the end of input format. 
-						String sOriginInputFormat = sInputFormat;
-						int idxDot = sInputFormat.lastIndexOf(".");
-						if (idxDot != -1)
-							sInputFormat = sInputFormat.substring(0, idxDot + 1)
-								+ sInputFormat.substring(idxDot + 1).replaceAll("0", "#");
-						int iTrim = 0;
-						if (idxDot != -1)
-							iTrim = sInputFormat.substring(idxDot + 1).length();
-						df = (DecimalFormat) DecimalFormat.getInstance(Locale.GERMAN);
-						df.applyPattern(sInputFormat);
-						value = df.parse(sText).doubleValue();
-						if (df.format(value).equals(sText)
-								|| df.format(value).equals(sText.length() > iTrim ? sText.subSequence(0,  sText.length() - iTrim - 1) : sText))
-							return value; // must be right
-						df.applyPattern(sOriginInputFormat);
-						// test if we get an text in right input format.
-						if (df.format(value).equals(sText))
-							return value; // must be right
-
-						df = (DecimalFormat) DecimalFormat.getInstance(Locale.ENGLISH);
-						df.applyPattern(sOriginInputFormat);
-						value = df.parse(sText).doubleValue();
-						//if (df.format(value).equals(sText)
-								//|| df.format(value).equals(sText.length() > iTrim ? sText.subSequence(0,  sText.length() - iTrim - 1) : sText))
-							//return value; // must be right
-						
-						//return new DecimalFormat().parse(sText).doubleValue();
-						return value;
+						return new DecimalFormat(sInputFormat).parse(sText).doubleValue();
 					}
 					catch (ParseException ex) {
 						pe = ex;
 					}
 				}
+				
 				try {
 					return NumberFormat.getNumberInstance().parse(sText).doubleValue();
 				}
