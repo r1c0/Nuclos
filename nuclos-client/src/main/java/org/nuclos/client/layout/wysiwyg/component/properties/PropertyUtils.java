@@ -195,6 +195,10 @@ public class PropertyUtils implements LayoutMLConstants {
 	 * @throws CommonBusinessException
 	 */
 	private static void setDefaultValuesForWYSIWYGCollectableCheckBox(ComponentProperties properties) throws CommonBusinessException{
+		PropertyValueBorder propertyValueBorder = new PropertyValueBorder();
+		propertyValueBorder.setClearBorder(true);
+		properties.setProperty(WYSIWYGLayoutEditorPanel.PROPERTY_BORDER, propertyValueBorder, Border.class);
+
 		properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_CHECKBOX_PREFERREDSIZE), DEFAULTVALUE_CHECKBOX_PREFERREDSIZE.getClass());
 		properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_SHOWONLY, new PropertyValueString(ATTRIBUTEVALUE_CONTROL), String.class);
 		properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyValueBoolean(true), boolean.class);		
