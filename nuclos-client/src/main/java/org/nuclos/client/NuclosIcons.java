@@ -78,17 +78,8 @@ public class NuclosIcons {
 		ImageIcon resourceIcon = getResource("NCL_MAINFRAME_TITLE");
 		if (resourceIcon != null)
 			return resourceIcon;
-		return getDefaultFrameIcon();
+		return StartIcons.getInstance().getDefaultFrameIcon();
 	}
-
-	public ImageIcon getDefaultFrameIcon() {
-		String sFrameIconFileName = LangUtils.defaultIfNull(
-			ApplicationProperties.getInstance().getFrameIconFileName(),
-			"org/nuclos/client/images/nucleus-16x16-whitecircle.png"
-		);
-		return this.getCachedImageIcon(sFrameIconFileName);
-	}
-	
 	
 	/**
 	 * @return an image icon that should be watermark image in search panels. 

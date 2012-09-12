@@ -55,6 +55,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.StartIcons;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.ShutdownActions;
@@ -211,7 +212,7 @@ public class LoginController extends Controller<Component> {
 			ApplicationProperties.getInstance().getCurrentVersion().getShortName());
 		final JFrame frame = new JFrame(sTitle);
 		frame.setName("frmLogin");
-		//frame.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
+		frame.setIconImage(StartIcons.getInstance().getDefaultFrameIcon().getImage());
 		frame.getContentPane().add(optpn, BorderLayout.CENTER);
 		frame.pack();
 		frame.setResizable(false);
@@ -340,7 +341,7 @@ public class LoginController extends Controller<Component> {
 			ApplicationProperties.getInstance().getCurrentVersion().getShortName());
 		final JDialog dialog = optpn.createDialog(frame, sTitle);
 		dialog.setName("dlgLogin");
-		dialog.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
+		dialog.setIconImage(StartIcons.getInstance().getDefaultFrameIcon().getImage());
 		dialog.pack();
 		dialog.setResizable(false);
 		dialog.setLocationRelativeTo(frame);

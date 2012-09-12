@@ -42,6 +42,7 @@ import javax.swing.event.DocumentListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.StartIcons;
 import org.nuclos.client.ui.BackgroundPanel;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.common.NuclosBusinessException;
@@ -122,7 +123,7 @@ public class ChangePasswordPanel extends BackgroundPanel implements DocumentList
 		String title = props.getLoginResource(LocalUserProperties.KEY_CHANGEPASSWORD_TITLE);
 		final JDialog dialog = new JDialog(parent, title, true);
 		dialog.setName("dlgLogin");
-		dialog.setIconImage(NuclosIcons.getInstance().getDefaultFrameIcon().getImage());
+		dialog.setIconImage(StartIcons.getInstance().getDefaultFrameIcon().getImage());
 		dialog.getContentPane().add(optpn);
 		dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		dialog.addWindowListener(new WindowAdapter() {

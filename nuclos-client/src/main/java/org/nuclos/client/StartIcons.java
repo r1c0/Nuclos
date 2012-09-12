@@ -45,6 +45,14 @@ public class StartIcons {
 		return getImageIcon(sCustomerIconFilename);		
 	}
 
+	public ImageIcon getDefaultFrameIcon() {
+		String sFrameIconFileName = LangUtils.defaultIfNull(
+			ApplicationProperties.getInstance().getFrameIconFileName(),
+			"org/nuclos/client/images/nucleus-16x16-whitecircle.png"
+		);
+		return getImageIcon(sFrameIconFileName);
+	}
+	
 	private ImageIcon getImageIcon(String sFileName) {
 		try {
 			return new ImageIcon(getClass().getClassLoader().getResource(sFileName));

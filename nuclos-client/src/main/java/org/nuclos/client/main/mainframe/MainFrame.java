@@ -81,6 +81,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.StartIcons;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.ComponentNameSetter;
 import org.nuclos.client.common.KeyBindingProvider;
@@ -2175,7 +2176,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		if (result == null) {
 			if (NuclosEntity.isNuclosEntity(entity)) {
-				result = nuclosIcons.getDefaultFrameIcon();
+				result = StartIcons.getInstance().getDefaultFrameIcon();
 			} else {
 				result = Icons.getInstance().getIconTabGeneric();
 			}
