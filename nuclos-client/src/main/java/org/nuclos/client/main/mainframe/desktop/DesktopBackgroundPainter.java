@@ -21,8 +21,8 @@ import java.awt.Graphics2D;
 
 import javax.swing.ImageIcon;
 
-import org.apache.commons.httpclient.util.LangUtils;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
+import org.nuclos.common2.LangUtils;
 
 public class DesktopBackgroundPainter {
 	

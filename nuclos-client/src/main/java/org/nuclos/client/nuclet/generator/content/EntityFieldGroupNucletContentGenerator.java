@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.nuclet.generator.content;
 
-import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -24,6 +23,7 @@ import org.nuclos.client.nuclet.generator.NucletGenerator;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
 public class EntityFieldGroupNucletContentGenerator extends AbstractNucletContentGenerator {

@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.api.EntityObject;
 import org.nuclos.api.Flag;
@@ -35,6 +34,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 
 public class EntityObjectImpl implements org.nuclos.api.EntityObject {

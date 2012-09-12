@@ -142,10 +142,10 @@
 			<groupId>commons-digester</groupId>
 			<artifactId>commons-digester</artifactId>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
-		</dependency>
+		</dependency -->
 		<!-- notfound: commons-javaflow-20060411 -->
 		<dependency>
 			<groupId>commons-lang</groupId>

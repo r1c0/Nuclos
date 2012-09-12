@@ -16,7 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.api;
 
-import org.apache.commons.httpclient.util.LangUtils;
+import org.nuclos.common2.LangUtils;
+
 
 public class StateImpl implements org.nuclos.api.State {
 	

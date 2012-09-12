@@ -171,10 +171,20 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<dependency>
+			<!-- dependency>
 				<groupId>commons-httpclient</groupId>
 				<artifactId>commons-httpclient</artifactId>
 				<version>3.1</version>
+			</dependency -->
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>4.2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.2.1</version>
 			</dependency>
 			<!-- notfound: commons-javaflow-20060411 -->
 			<dependency>

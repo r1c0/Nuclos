@@ -16,19 +16,20 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Locale;
 
+import org.apache.http.client.HttpClient;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor;
 
-public class NuclosHttpInvokerRequestExecutor extends AuthenticationSimpleHttpInvokerRequestExecutor {
+public class NuclosHttpInvokerRequestExecutor extends SecuredBasicAuthHttpInvokerRequestExecutor {
+	
+	public NuclosHttpInvokerRequestExecutor() {
+	}
 
 	@Override
-	protected void prepareConnection(HttpURLConnection con, int contentLength) throws IOException {
+	public void setHttpClient(HttpClient httpClient) {
 		LocaleContextHolder.setLocale( new Locale("en", "UK"), true);
-		super.prepareConnection(con, contentLength);
+		super.setHttpClient(httpClient);
 	}
 
 	

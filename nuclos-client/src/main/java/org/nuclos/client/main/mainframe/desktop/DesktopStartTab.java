@@ -48,7 +48,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.TransferHandler;
 
-import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 import org.nuclos.api.ui.DesktopItemFactory;
@@ -70,6 +69,7 @@ import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;

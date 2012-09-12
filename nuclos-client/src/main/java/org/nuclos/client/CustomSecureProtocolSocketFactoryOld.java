@@ -16,20 +16,34 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.UnknownHostException;
+
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.HttpClientError;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
-public class CustomSecureProtocolSocketFactory extends SSLSocketFactory {
+/**
+ * This is in use for ActiveMQ (that uses Apache Commons HttpClient under the hood) only.
+ */
+public class CustomSecureProtocolSocketFactoryOld implements SecureProtocolSocketFactory {
 
 	private static final Logger log = Logger.getLogger(CustomSecureProtocolSocketFactory.class);
 
 	private SSLContext sslcontext = null;
 
-	public CustomSecureProtocolSocketFactory() {
-		super(createCustomSSLContext(), ALLOW_ALL_HOSTNAME_VERIFIER);
+	public CustomSecureProtocolSocketFactoryOld() {
+		super();
 	}
 
 	private static SSLContext createCustomSSLContext() {
@@ -39,7 +53,7 @@ public class CustomSecureProtocolSocketFactory extends SSLSocketFactory {
 			return context;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			throw new IllegalStateException(e);
+			throw new HttpClientError(e.toString());
 		}
 	}
 
@@ -50,17 +64,14 @@ public class CustomSecureProtocolSocketFactory extends SSLSocketFactory {
 		return this.sslcontext;
 	}
 
-	/*
 	@Override
 	public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort) throws IOException, UnknownHostException {
 		return getSSLContext().getSocketFactory().createSocket(host, port, clientHost, clientPort);
 	}
-	 */
 
-	/*
 	@Override
 	public Socket createSocket(final String host, final int port, final InetAddress localAddress, final int localPort, final HttpConnectionParams params)
-			throws IOException, UnknownHostException {
+			throws IOException, UnknownHostException, ConnectTimeoutException {
 		if (params == null) {
 			throw new IllegalArgumentException("Parameters may not be null");
 		}
@@ -77,16 +88,12 @@ public class CustomSecureProtocolSocketFactory extends SSLSocketFactory {
 			return socket;
 		}
 	}
-	 */
 
-	/*
 	@Override
 	public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
 		return getSSLContext().getSocketFactory().createSocket(host, port);
 	}
-	 */
 
-	/*
 	@Override
 	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
 		return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
@@ -101,6 +108,5 @@ public class CustomSecureProtocolSocketFactory extends SSLSocketFactory {
 	public int hashCode() {
 		return CustomSecureProtocolSocketFactory.class.hashCode();
 	}
-	 */
 
 }

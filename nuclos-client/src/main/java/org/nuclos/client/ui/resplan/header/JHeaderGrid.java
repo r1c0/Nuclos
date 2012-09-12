@@ -44,7 +44,6 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.text.View;
 
-import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.painter.Painter;
 import org.jdesktop.swingx.renderer.CellContext;
@@ -59,6 +58,7 @@ import org.nuclos.client.ui.util.MultiActionMouseHandler.MouseActionHandler;
 import org.nuclos.client.ui.util.Orientation;
 import org.nuclos.client.ui.util.PainterUtils;
 import org.nuclos.client.ui.util.Range;
+import org.nuclos.common2.LangUtils;
 
 public class JHeaderGrid<E> extends JComponent implements ListDataListener {
 
