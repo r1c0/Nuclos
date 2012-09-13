@@ -388,7 +388,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private final CollectableComponentModelListener ccmlistenerSearchChanged = new CollectableComponentModelAdapter() {
 		@Override
 		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
-			assert GenericObjectCollectController.this.getCollectStateModel().getOuterState() == CollectStateConstants.OUTERSTATE_SEARCH;
+			// not true/valid for BMW_FDM, hence commented out (tp)
+			// assert GenericObjectCollectController.this.getCollectStateModel().getOuterState() == CollectStateConstants.OUTERSTATE_SEARCH;
 
 			// Note that we want to call "searchChanged()" on every change, not only valid changes:
 			GenericObjectCollectController.this.searchChanged(ev.getSearchComponentModel());
