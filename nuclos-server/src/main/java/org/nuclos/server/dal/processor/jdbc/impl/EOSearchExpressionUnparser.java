@@ -537,7 +537,8 @@ public class EOSearchExpressionUnparser {
 			final String tableAlias;
 			if (entityField.getCalcFunction() == null) {
 				// 'stringified' nuclos reference field case 
-				if (entityField.getForeignEntity() != null && (dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_"))) {
+				if (entityField.getForeignEntity() != null && 
+						(dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_") || dbColumn.startsWith("OBJVALUE_"))) {
 					tableAlias = TableAliasSingleton.getInstance().getAlias(entityField);
 					
 					// It might be that the stringified reference used in the condition is not used for a join so far... (tp)

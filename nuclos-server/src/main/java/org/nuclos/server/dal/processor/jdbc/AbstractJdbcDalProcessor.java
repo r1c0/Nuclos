@@ -294,7 +294,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 			if (column instanceof ColumnToRefFieldVOMapping) {
 				final EntityFieldMetaDataVO meta = ((ColumnToRefFieldVOMapping<?>) column).getMeta();
 				final String dbColumn = meta.getDbColumn();
-				if (meta.getForeignEntity() != null && (dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_"))) {
+				if (meta.getForeignEntity() != null && (dbColumn.startsWith("STRVALUE_") || dbColumn.startsWith("INTVALUE_") || dbColumn.startsWith("OBJVALUE_"))) {
 					continue;
 				}
 			}
