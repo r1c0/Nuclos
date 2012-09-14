@@ -179,7 +179,14 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 
                     DbGenericType type = getDbGenericType(metadata.getColumnType(i + 1), metadata.getColumnTypeName(i + 1));
                     if (type != null) {
-                        Class<?> javaType = type.getPreferredJavaType();
+                    	Class<?> javaType = type.getPreferredJavaType();
+                    	// override java type here @todo this is not the right place.
+                    	if (type == DbGenericType.NUMERIC) {
+                    		if (metadata.getScale(i+1) == 0)
+                    			javaType = Integer.class;
+                    		else
+                    			javaType = Double.class;
+                    	}
                         column.setColumnClassName(javaType.getName());
                         javaTypes[i] = javaType;
                     } else {
