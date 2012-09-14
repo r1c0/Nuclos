@@ -68,11 +68,6 @@ public abstract class CollectableUtils {
 	 */
 	public static void validateFieldType(CollectableField clctf, CollectableEntityField clctef)
 			throws CollectableFieldValidationException {
-		// HACK as clctef.getFieldType() return 2 but clctf.getFieldType() return 1
-		// TODO: real fix (tp)
-		if (clctef.getName().equals("nuclosStateIcon")) {
-			return;
-		}
 		if (clctf.getFieldType() != clctef.getFieldType() && !NuclosEOField.isEOFieldWithForceValueSearch(clctef.getName())) {
 			String msg;
 			if(clctef.getFieldType() == CollectableEntityField.TYPE_VALUEFIELD)
