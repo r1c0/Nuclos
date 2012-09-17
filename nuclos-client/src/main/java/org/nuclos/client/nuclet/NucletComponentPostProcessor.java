@@ -24,6 +24,7 @@ import org.nuclos.api.ui.annotation.NucletComponent;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 
@@ -35,7 +36,7 @@ public class NucletComponentPostProcessor implements BeanPostProcessor, Ordered 
 	public NucletComponentPostProcessor() {
 	}
 	
-	// @Autowired
+	@Autowired
 	public void setNucletComponentRepository(NucletComponentRepository ncr) {
 		this.ncr = ncr;
 	}
