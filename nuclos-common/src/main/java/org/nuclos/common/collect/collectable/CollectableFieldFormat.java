@@ -537,6 +537,20 @@ public abstract class CollectableFieldFormat {
 				ParseException pe = null;
 				if (sInputFormat != null) {
 					try {
+						int idxDot = sText.lastIndexOf(".");
+						int idxComma = sText.lastIndexOf(",");
+						
+						if (idxDot > idxComma) {
+							sText = sText.replaceAll(",", "");
+							if (!SpringLocaleDelegate.getInstance().getNumberFormat().equals(NumberFormat.getInstance(Locale.ENGLISH))) {
+								sText = sText.replaceAll("\\.", ",");
+							}
+						} else {
+							sText = sText.replaceAll("\\.", "");
+							if (SpringLocaleDelegate.getInstance().getNumberFormat().equals(NumberFormat.getInstance(Locale.ENGLISH))) {
+								sText = sText.replaceAll(",", "\\.");
+							}
+						}
 						return new DecimalFormat(sInputFormat).parse(sText).doubleValue();
 					}
 					catch (ParseException ex) {
