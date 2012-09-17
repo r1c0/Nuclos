@@ -610,7 +610,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			}
 			// ???
 			else {
-				if (f.startsWith("STRVALUE_") || f.startsWith("INTVALUE_")) {
+				if (f.startsWith("STRVALUE_") || f.startsWith("INTVALUE_") || f.startsWith("OBJVALUE_")) {
 					alias = tableAliasSingleton.getAlias(m);
 					add = true;
 				}
