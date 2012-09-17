@@ -299,10 +299,16 @@ public interface MasterDataFacadeLocal {
 	 * @return the masterdata object with the given entity and id.
 	 * @throws CommonFinderException
 	 * @throws CommonPermissionException
+	 * @Deprecated use with customUsage
 	 */
+	@Deprecated
 	MasterDataWithDependantsVO getWithDependants(
-		String sEntityName, Integer iId, String customUsage) throws CommonFinderException,
+		String sEntityName, Integer iId) throws CommonFinderException,
 		NuclosBusinessException, CommonPermissionException;
+	
+	MasterDataWithDependantsVO getWithDependants(
+			String sEntityName, Integer iId, String customUsage) throws CommonFinderException,
+			NuclosBusinessException, CommonPermissionException;
 
 	/**
 	 * @param sEntityName
