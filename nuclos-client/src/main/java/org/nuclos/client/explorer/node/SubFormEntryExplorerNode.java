@@ -19,6 +19,7 @@ package org.nuclos.client.explorer.node;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
+import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -52,11 +54,14 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.SubFormEntryTreeNode;
 import org.nuclos.server.navigation.treenode.SubFormTreeNode;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -103,8 +108,9 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		public static final int KEY = KeyEvent.VK_DELETE;
 
     	private Integer iObjectId = null;
-    	private Integer iModuleId = null;
+    	private String sEntity = null;
     	private String sSubFormEntity = null;
+    	private String sSubFormForeignField = null;
 
         public RemoveAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, 
@@ -114,15 +120,19 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 			if (tnParent instanceof SubFormExplorerNode && ((SubFormExplorerNode) tnParent).getTreeNode() instanceof SubFormTreeNode) {
 				SubFormTreeNode sfTreeNode = (SubFormTreeNode) ((SubFormExplorerNode) tnParent).getTreeNode();
 
-				iObjectId = sfTreeNode.getGenericObjectTreeNode().getId();
-				iModuleId = sfTreeNode.getGenericObjectTreeNode().getModuleId();
-				Integer iStateId = sfTreeNode.getGenericObjectTreeNode().getStatusId();
-				String sModuleEntity = MetaDataClientProvider.getInstance().getEntity(iModuleId.longValue()).getEntity();
+				iObjectId = IdUtils.unsafeToId(sfTreeNode.getTreeNodeObject().getId());
+				sEntity = sfTreeNode.getTreeNodeObject().getEntityName();
 				sSubFormEntity = sfTreeNode.getMasterDataVO().getField("entity", String.class);
-				String sSubFormForeignField = sfTreeNode.getMasterDataVO().getField("field", String.class);
+				sSubFormForeignField = sfTreeNode.getMasterDataVO().getField("field", String.class);
 
-				setEnabled(SecurityCache.getInstance().isWriteAllowedForModule(sModuleEntity, iObjectId) &&
-					SecurityCache.getInstance().getSubFormPermission(sSubFormEntity, iStateId).includesWriting());
+				if(Modules.getInstance().isModuleEntity(sEntity)) {
+					Integer iStateId = ((GenericObjectTreeNode)sfTreeNode.getTreeNodeObject()).getStatusId();
+					setEnabled(SecurityCache.getInstance().isWriteAllowedForModule(sEntity, iObjectId) &&
+						SecurityCache.getInstance().getSubFormPermission(sSubFormEntity, iStateId).includesWriting());
+				} else {
+					// @todo have we not permissions on subform in a masterdata object?
+					setEnabled(SecurityCache.getInstance().isWriteAllowedForModule(sEntity, iObjectId));
+				}
 			} else {
 				setEnabled(false);
 			}
@@ -164,15 +174,29 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		}
 
 	    private void remove(JTree tree){
-			if (iObjectId != null && iModuleId != null && sSubFormEntity != null) {
+			if (iObjectId != null && sEntity != null && sSubFormEntity != null) {
 				try {
-					GenericObjectWithDependantsVO gowdVO = GenericObjectDelegate.getInstance().getWithDependants(iObjectId, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
-					for (EntityObjectVO mdVO : gowdVO.getDependants().getData(sSubFormEntity)) {
-						if (mdVO.getId().equals(getTreeNode().getId())) {
-							mdVO.flagRemove();
+					if(Modules.getInstance().isModuleEntity(sEntity)) {
+						GenericObjectWithDependantsVO gowdVO = GenericObjectDelegate.getInstance().getWithDependants(iObjectId, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+						for (EntityObjectVO mdVO : gowdVO.getDependants().getData(sSubFormEntity)) {
+							if (mdVO.getId().equals(getTreeNode().getId())) {
+								mdVO.flagRemove();
+							}
+						}
+						GenericObjectDelegate.getInstance().update(gowdVO, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+					} else {
+						if (sSubFormForeignField != null) {
+							MasterDataVO mdvo = MasterDataDelegate.getInstance().get(sEntity, iObjectId);
+							List<EntityObjectVO> dependants = new ArrayList<EntityObjectVO>(MasterDataDelegate.getInstance().getDependantMasterData(sSubFormEntity, sSubFormForeignField, iObjectId));
+							for (EntityObjectVO mdVO : dependants) {
+								if (mdVO.getId().equals(getTreeNode().getId())) {
+									mdVO.flagRemove();
+								}
+							}
+							MasterDataDelegate.getInstance().update(sEntity, mdvo, new DependantMasterDataMap(sSubFormEntity, dependants), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						}
 					}
-					GenericObjectDelegate.getInstance().update(gowdVO, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+					
 					javax.swing.tree.TreeNode tnParent = SubFormEntryExplorerNode.this.getParent();
 					if (tnParent instanceof SubFormExplorerNode){
 						((SubFormExplorerNode)tnParent).refresh(tree);
@@ -201,11 +225,8 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		if (tnParent instanceof SubFormExplorerNode && ((SubFormExplorerNode) tnParent).getTreeNode() instanceof SubFormTreeNode) {
 			SubFormTreeNode sfTreeNode = (SubFormTreeNode) ((SubFormExplorerNode) tnParent).getTreeNode();
 
-			Integer iObjectId = sfTreeNode.getGenericObjectTreeNode().getId();
-			Integer iModuleId = sfTreeNode.getGenericObjectTreeNode().getModuleId();
-			String sModuleEntity = MetaDataClientProvider.getInstance().getEntity(iModuleId.longValue()).getEntity();
+			String sModuleEntity = sfTreeNode.getTreeNodeObject().getEntityName();
 			String sSubFormEntity = sfTreeNode.getMasterDataVO().getField("entity", String.class);
-			String sSubFormForeignField = sfTreeNode.getMasterDataVO().getField("field", String.class);
 
 			for (EntityFieldMetaDataVO efMeta : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(sSubFormEntity).values()) {
 				if (efMeta.getForeignEntity() != null && !efMeta.getForeignEntity().equals(sModuleEntity)) {

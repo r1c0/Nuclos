@@ -189,7 +189,7 @@ public interface TreeNodeFacadeRemote {
         boolean bLoadSubNodes) throws CommonFinderException,
         CommonPermissionException;
 
-	SubFormTreeNode getSubFormTreeNode(GenericObjectTreeNode node, MasterDataVO mdVO);
+	SubFormTreeNode getSubFormTreeNode(TreeNode node, MasterDataVO mdVO);
 
 	void addNucletContents(Long nucletId, Set<AbstractNucletContentEntryTreeNode> contents) throws NuclosBusinessException;
 

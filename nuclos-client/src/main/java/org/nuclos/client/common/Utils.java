@@ -40,6 +40,7 @@ import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
+import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultEditView;
@@ -48,6 +49,7 @@ import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.caching.NBCache;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -64,15 +66,16 @@ import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.MakeMasterDataValueIdField;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 /**
  * Utility methods for Nucleus client.
@@ -452,8 +455,10 @@ public class Utils {
 			} else {
 				MasterDataMetaVO metaData = MasterDataDelegate.getInstance().getMetaData(entityName);
 				CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(metaData);
-				MasterDataVO mdvo = MasterDataDelegate.getInstance().get(entityName, intId);
-				clct = new CollectableMasterData(clcte, mdvo);
+				List<EntityAndFieldName> dependantEntities = new ArrayList<EntityAndFieldName>(
+						MasterDataDelegate.getInstance().getSubFormEntitiesByMasterDataEntity(entityName, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY)));
+				MasterDataWithDependantsVO mdvo = MasterDataDelegate.getInstance().getWithDependants(entityName, intId, dependantEntities);
+				clct = new CollectableMasterDataWithDependants(clcte, mdvo);
 			}
 		}
 		return clct;

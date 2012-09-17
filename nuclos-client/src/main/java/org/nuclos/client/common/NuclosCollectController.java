@@ -1504,4 +1504,5 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	public String getCustomUsage() {
 		return null;
 	}
+	
 }	// class NuclosCollectController

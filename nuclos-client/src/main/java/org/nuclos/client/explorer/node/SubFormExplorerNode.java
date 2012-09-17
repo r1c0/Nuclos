@@ -28,11 +28,12 @@ import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.common.EntityCollectController;
+import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.explorer.ExplorerNode;
-import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
-import org.nuclos.client.genericobject.GenericObjectCollectController;
-import org.nuclos.client.genericobject.GenericObjectDelegate;
+import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
@@ -41,6 +42,7 @@ import org.nuclos.common.MutableBoolean;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.SubFormTreeNode;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -86,38 +88,38 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 		UIUtils.runCommand(parent, new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				Integer iTargetObjectId = getTreeNode().getGenericObjectTreeNode().getId();
-				Integer iTargetModuleId = getTreeNode().getGenericObjectTreeNode().getModuleId();
+				Integer iTargetObjectId = IdUtils.unsafeToId(getTreeNode().getTreeNodeObject().getId());
 				final String sTargetSubFormEntity = getTreeNode().getMasterDataVO().getField("entity", String.class);
 				String sTargetSubFormForeignField = getTreeNode().getMasterDataVO().getField("field", String.class);
 
-				final GenericObjectCollectController goController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iTargetModuleId, null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+				final NuclosCollectController clctController
+					= NuclosCollectControllerFactory.getInstance().newCollectController(getTreeNode().getTreeNodeObject().getEntityName(), null, ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
-				goController.runViewSingleCollectable(
-					CollectableGenericObjectWithDependants.newCollectableGenericObject(
-						GenericObjectDelegate.getInstance().get(iTargetObjectId)), false);
+				clctController.runViewSingleCollectable(Utils.getCollectable(getTreeNode().getTreeNodeObject().getEntityName(), iTargetObjectId), false);
 
-				try {
-					int[] importResult = goController.dropOnSubForm(sTargetSubFormEntity, transferable);
-					if (importResult[0] > 0) {
-						try {
-							goController.save();
-							refresh(tree);
-							goController.getTab().dispose();
-						} catch (Exception e) {
-							// save failed... open controller
-							goController.getTab().setVisible(true);
-							showBubbleCenter(goController.getTab(), 
-									getSpringLocaleDelegate().getMessage("SubFormExplorerNode.1", "Ein Bearbeitungsfenster Objekt wurde geöffnet, ein Speichern ohne Benutzereingriff ist nicht möglich.<br/> Bitte prüfen Sie die Meldung: {0}", Errors.formatErrorForBubble(e.getMessage())));
+				if (clctController instanceof EntityCollectController) {
+					try {
+						int[] importResult = ((EntityCollectController)clctController).dropOnSubForm(sTargetSubFormEntity, transferable);
+						if (importResult[0] > 0) {
+							try {
+								clctController.save();
+								refresh(tree);
+								clctController.getTab().dispose();
+							} catch (Exception e) {
+								// save failed... open controller
+								clctController.getTab().setVisible(true);
+								showBubbleCenter(clctController.getTab(), 
+										getSpringLocaleDelegate().getMessage("SubFormExplorerNode.1", "Ein Bearbeitungsfenster Objekt wurde geöffnet, ein Speichern ohne Benutzereingriff ist nicht möglich.<br/> Bitte prüfen Sie die Meldung: {0}", Errors.formatErrorForBubble(e.getMessage())));
+							}
 						}
+						if (importResult[1] > 0) {
+							showBubbleRight(tree, 
+									getSpringLocaleDelegate().getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", importResult[1]));
+						}
+					} catch (NuclosBusinessException nbe) {
+						// dropped failed
+						showBubbleRight(tree, nbe.getMessage());
 					}
-					if (importResult[1] > 0) {
-						showBubbleRight(tree, 
-								getSpringLocaleDelegate().getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", importResult[1]));
-					}
-				} catch (NuclosBusinessException nbe) {
-					// dropped failed
-					showBubbleRight(tree, nbe.getMessage());
 				}
 			}
 		});

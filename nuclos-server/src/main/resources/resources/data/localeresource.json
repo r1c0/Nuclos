@@ -57615,47 +57615,47 @@
     "text": "Cron Ausdruck verwenden."
   },
   {
-    "resourceID": "GenericObjectCollectController.102",
+    "resourceID": "EntityCollectController.102",
     "locale": "i-default",
     "text": "You have no permission to write this subform."
   },
   {
-    "resourceID": "GenericObjectCollectController.102",
+    "resourceID": "EntityCollectController.102",
     "locale": "en",
     "text": "You have no permission to write this subform."
   },
   {
-    "resourceID": "GenericObjectCollectController.102",
+    "resourceID": "EntityCollectController.102",
     "locale": "de",
     "text": "Sie haben kein Schreibberechtigung für dieses Unterformular."
   },
   {
-    "resourceID": "GenericObjectCollectController.103",
+    "resourceID": "EntityCollectController.103",
     "locale": "i-default",
     "text": "No subform description found in layout."
   },
   {
-    "resourceID": "GenericObjectCollectController.103",
+    "resourceID": "EntityCollectController.103",
     "locale": "en",
     "text": "No subform description found in layout."
   },
   {
-    "resourceID": "GenericObjectCollectController.103",
+    "resourceID": "EntityCollectController.103",
     "locale": "de",
     "text": "Unterformular ist nicht im Layout vorhanden."
   },
   {
-    "resourceID": "GenericObjectCollectController.104",
+    "resourceID": "EntityCollectController.104",
     "locale": "i-default",
     "text": "Subform does not contain a foreign field to entity {0}."
   },
   {
-    "resourceID": "GenericObjectCollectController.104",
+    "resourceID": "EntityCollectController.104",
     "locale": "en",
     "text": "Subform does not contain a foreign field to entity {0}."
   },
   {
-    "resourceID": "GenericObjectCollectController.104",
+    "resourceID": "EntityCollectController.104",
     "locale": "de",
     "text": "Dieses Unterformular enthält keine Referenzspalte zur Entität {0}."
   },

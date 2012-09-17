@@ -43,9 +43,18 @@ public class SubFormTreeNode<Id> extends DynamicTreeNode<Id>{
 	public SubFormTreeNode(Id id, TreeNode node, MasterDataVO mdVO) {
 	    super(id, node, mdVO);
     }
+	
+	@Override
+	public String getEntityName() {
+		if (getTreeNodeObject() instanceof GenericObjectTreeNode)
+			return ((GenericObjectTreeNode)getTreeNodeObject()).getEntityName();
+		else if (getTreeNodeObject() instanceof MasterDataTreeNode)
+			return ((MasterDataTreeNode)getTreeNodeObject()).getEntityName();
+		throw new IllegalStateException("treenodeobject not instance of MasterData- or GenericObjectTreeNode.");
+	}
 
-	public GenericObjectTreeNode getGenericObjectTreeNode(){
-		return (GenericObjectTreeNode) super.getTreeNode();
+	public TreeNode getTreeNodeObject(){
+		return super.getTreeNode();
 	}
 
 	@Override
@@ -60,7 +69,7 @@ public class SubFormTreeNode<Id> extends DynamicTreeNode<Id>{
 
 	@Override
     public TreeNode refreshed() {
-	    return Utils.getTreeNodeFacade().getSubFormTreeNode(getGenericObjectTreeNode(), getMasterDataVO());
+	    return Utils.getTreeNodeFacade().getSubFormTreeNode(super.getTreeNode(), getMasterDataVO());
     }
 	
 }

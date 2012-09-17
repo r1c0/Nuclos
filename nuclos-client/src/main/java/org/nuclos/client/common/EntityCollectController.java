@@ -20,11 +20,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.IllegalComponentStateException;
 import java.awt.Rectangle;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,9 +62,15 @@ import org.apache.log4j.Logger;
 import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.AbstractDetailsSubFormController.DetailsSubFormTableModel;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenerationController;
+import org.nuclos.client.genericobject.GenericObjectDelegate;
+import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
+import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
+import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
+import org.nuclos.client.masterdata.datatransfer.MasterDataVOTransferable;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.scripting.context.CollectControllerScriptContext;
@@ -83,6 +92,7 @@ import org.nuclos.client.ui.collect.component.model.SearchEditModel;
 import org.nuclos.client.ui.collect.result.ResultActionCollection;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.PointerCollection;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -96,6 +106,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.validation.FieldValidationError;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -1398,6 +1409,104 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	@Override
 	public String getCustomUsage() {
 		return customUsage;
+	}	/**
+	 *
+	 * @param subFormEntity
+	 * @param t
+	 * @return count imported | count not imported
+	 * @throws NuclosBusinessException
+	 */
+   public int[] dropOnSubForm(String subFormEntity, Transferable t) throws NuclosBusinessException {
+
+		boolean subFormFound = false;
+		int[] result = new int[]{0,0};
+
+		try {
+			for (DetailsSubFormController subFormCtrl : getSubFormControllersInDetails()) {
+				if (subFormCtrl instanceof MasterDataSubFormController
+					&& subFormCtrl.getEntityAndForeignKeyFieldName().getEntityName().equals(subFormEntity)) {
+					subFormFound = true;
+
+					if (!subFormCtrl.getSubForm().isEnabled()) {
+						throw new NuclosBusinessException(
+								getSpringLocaleDelegate().getMessage("EntityCollectController.102", "Unterformular ist nicht aktiv."));
+					}
+
+					String entityLabel = null;
+					boolean noReferenceFound = false;
+					if (t.isDataFlavorSupported(TransferableGenericObjects.dataFlavor)) {
+						final List<?> lstloim = (List<?>) t.getTransferData(TransferableGenericObjects.dataFlavor);
+		                for (Object o : lstloim) {
+		                	if (o instanceof GenericObjectIdModuleProcess) {
+		                		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
+		                		Integer entityId = goimp.getModuleId();
+		                		String entity = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(entityId)).getEntity();
+		                		entityLabel = getSpringLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(
+		                				IdUtils.toLongId(entityId)));
+	
+		                        try {
+		                        	if (!subFormCtrl.insertNewRowWithReference(
+		                        		entity, Utils.getCollectable(entity, goimp.getGenericObjectId()),
+		                        		true)) {
+		                        		result[1] = result[1]+1;
+			                		} else {
+			                			result[0] = result[0]+1;
+			                		}
+		                        }
+		                        catch(NuclosBusinessException e) {
+		        					LOG.error("dropOnSubForm failed: " + e, e);
+		                        	noReferenceFound = true;
+		                        }
+		                        catch(CommonBusinessException e) {
+		        					LOG.error("dropOnSubForm failed: " + e, e);
+		                        }
+		                	}
+		                }
+					} else if (t.isDataFlavorSupported(MasterDataIdAndEntity.dataFlavor)) {
+						final List<?> lstloim = (List<?>) t.getTransferData(MasterDataIdAndEntity.dataFlavor);
+		                for (Object o : lstloim) {
+		                	if (o instanceof MasterDataIdAndEntity) {
+		                		MasterDataIdAndEntity mdiae = (MasterDataIdAndEntity) o;
+		                		String entity = mdiae.getEntity();
+		                		entityLabel = getSpringLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(mdiae.getEntity()));
+	
+		                        try {
+		                        	if (!subFormCtrl.insertNewRowWithReference(
+		                        		entity, Utils.getCollectable(entity, IdUtils.unsafeToId(mdiae.getId())),
+		                        		true)) {
+		                        		result[1] = result[1]+1;
+			                		} else {
+			                			result[0] = result[0]+1;
+			                		}
+		                        }
+		                        catch(NuclosBusinessException e) {
+		        					LOG.error("dropOnSubForm failed: " + e, e);
+		                        	noReferenceFound = true;
+		                        }
+		                        catch(CommonBusinessException e) {
+		        					LOG.error("dropOnSubForm failed: " + e, e);
+		                        }
+		                	}
+		                }
+					}
+					
+	                if (noReferenceFound) {
+	                	throw new NuclosBusinessException(
+	                			getSpringLocaleDelegate().getMessage("EntityCollectController.104", "Dieses Unterformular enthält keine Referenzspalte zur Entität {0}.", entityLabel));
+	                }
+				}
+			}
+		} catch(UnsupportedFlavorException e) {
+			LOG.error("dropOnSubForm failed: " + e, e);
+	    } catch(IOException e) {
+			LOG.error("dropOnSubForm failed: " + e, e);
+	    }
+
+		if (!subFormFound) {
+			throw new NuclosBusinessException(getSpringLocaleDelegate().getMessage("EntityCollectController.103", "Unterformular ist nicht im Layout vorhanden."));
+		}
+		return result;
 	}
+
 	
 }

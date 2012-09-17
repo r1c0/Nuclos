@@ -357,9 +357,12 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 			if (active) {
 				if(!org.apache.commons.lang.StringUtils.isBlank(foldername)) {
-					SubFormTreeNode treenode = new SubFormTreeNode<Integer>(null, node, mdvoSub);
-					treenode.getSubNodes();
-					subforms.put(sortOrder, Collections.singletonList(treenode));
+					if (node instanceof GenericObjectTreeNode 
+							|| node instanceof MasterDataTreeNode) { // only allow Treenodes of those types.
+						SubFormTreeNode treenode = new SubFormTreeNode<Integer>(null, node, mdvoSub);
+						treenode.getSubNodes();
+						subforms.put(sortOrder, Collections.singletonList(treenode));
+					}
 				}
 				else {
 					if(Modules.getInstance().isModuleEntity(entity)) {
@@ -875,7 +878,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		return new DynamicTreeNode<Integer>(null, node, mdVO);
 	}
 
-	public SubFormTreeNode getSubFormTreeNode(GenericObjectTreeNode node, MasterDataVO mdVO) {
+	public SubFormTreeNode getSubFormTreeNode(TreeNode node, MasterDataVO mdVO) {
 		return new SubFormTreeNode(null, node, mdVO);
 	}
 

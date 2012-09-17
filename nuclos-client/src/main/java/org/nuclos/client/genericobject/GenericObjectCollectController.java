@@ -22,14 +22,12 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -6241,78 +6239,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	} // inner class GenericObjectCollectableComponentsProvider
 
-	/**
-	 *
-	 * @param subFormEntity
-	 * @param t
-	 * @return count imported | count not imported
-	 * @throws NuclosBusinessException
-	 */
-    public int[] dropOnSubForm(String subFormEntity, Transferable t) throws NuclosBusinessException{
-
-		boolean subFormFound = false;
-		int[] result = new int[]{0,0};
-
-		try {
-			for (DetailsSubFormController subFormCtrl : getSubFormControllersInDetails()) {
-				if (subFormCtrl instanceof MasterDataSubFormController
-					&& subFormCtrl.getEntityAndForeignKeyFieldName().getEntityName().equals(subFormEntity)) {
-					subFormFound = true;
-
-					if (!subFormCtrl.getSubForm().isEnabled()) {
-						throw new NuclosBusinessException(
-								getSpringLocaleDelegate().getMessage("GenericObjectCollectController.102", "Unterformular ist nicht aktiv."));
-					}
-
-					String entityLabel = null;
-					boolean noReferenceFound = false;
-
-					final List<?> lstloim = (List<?>) t.getTransferData(TransferableGenericObjects.dataFlavor);
-	                for (Object o : lstloim) {
-	                	if (o instanceof GenericObjectIdModuleProcess) {
-	                		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
-	                		Integer entityId = goimp.getModuleId();
-	                		String entity = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(entityId)).getEntity();
-	                		entityLabel = getSpringLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(
-	                				IdUtils.toLongId(entityId)));
-
-	                        try {
-	                        	if (!subFormCtrl.insertNewRowWithReference(
-	                        		entity, new CollectableGenericObjectWithDependants(
-	                        			GenericObjectDelegate.getInstance().getWithDependants(goimp.getGenericObjectId(), getCustomUsage())),
-	                        		true)) {
-	                        		result[1] = result[1]+1;
-		                		} else {
-		                			result[0] = result[0]+1;
-		                		}
-	                        }
-	                        catch(NuclosBusinessException e) {
-	        					LOG.error("dropOnSubForm failed: " + e, e);
-	                        	noReferenceFound = true;
-	                        }
-	                        catch(CommonBusinessException e) {
-	        					LOG.error("dropOnSubForm failed: " + e, e);
-	                        }
-	                	}
-	                }
-
-	                if (noReferenceFound) {
-	                	throw new NuclosBusinessException(
-	                			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.104", "Dieses Unterformular enthält keine Referenzspalte zur Entität {0}.", entityLabel));
-	                }
-				}
-			}
-		} catch(UnsupportedFlavorException e) {
-			LOG.error("dropOnSubForm failed: " + e, e);
-	    } catch(IOException e) {
-			LOG.error("dropOnSubForm failed: " + e, e);
-	    }
-
-		if (!subFormFound) {
-			throw new NuclosBusinessException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.103", "Unterformular ist nicht im Layout vorhanden."));
-		}
-		return result;
-	}
 
     public void runViewSingleCollectable(CollectableGenericObjectWithDependants clct, boolean bShow, CommonRunnable pAfterLoadingRunnable) {
 		this.subFormsLoader.setAfterLoadingRunnable(pAfterLoadingRunnable);
