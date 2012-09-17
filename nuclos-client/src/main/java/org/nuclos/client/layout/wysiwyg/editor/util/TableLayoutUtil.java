@@ -615,14 +615,13 @@ public class TableLayoutUtil {
 			// Check rules
 			List<Object> wysiwygComponents = new ArrayList<Object>();
 			root.getWYSIWYGComponents(WYSIWYGComponent.class, root, wysiwygComponents);
-			
 			for (Object o : wysiwygComponents) {
 				if (o instanceof WYSIWYGComponent) {
 					WYSIWYGComponent comp = (WYSIWYGComponent)o;
 					if (comp.getLayoutMLRulesIfCapable() != null) {
 						for (LayoutMLRule rule : new Vector<LayoutMLRule>(comp.getLayoutMLRulesIfCapable().getRules())) {
 							LayoutMLRuleActions actions = rule.getLayoutMLRuleActions();
-							for (LayoutMLRuleAction action : new Vector<LayoutMLRuleAction>(actions.getSingleActions())) {
+							for (LayoutMLRuleAction action : new Vector<LayoutMLRuleAction>(actions.getSingleActions())) {								
 								if (c instanceof WYSIWYGSubForm) {
 									WYSIWYGSubForm subForm = (WYSIWYGSubForm)c;
 									// NUCLEUSINT-436 action.getEntity may be null - but still valid
@@ -639,7 +638,8 @@ public class TableLayoutUtil {
 									// a label is never a valid target of a rule, it has just the same entity as the rule component
 									if(!(c instanceof WYSIWYGCollectableLabel)) {
 										if(action.getTargetComponent().equals(
-											collectableComponent.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_NAME).getValue())) {
+											collectableComponent.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_NAME).getValue())
+											&& (action.getEntity() == null || action.getEntity().equals(c.getParentEditor().getMetaInformation().getCollectableEntity().getName()))) {
 											if (bShowExceptions)
 												throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_COMPONENT_NOT_DELETABLE_TARGET_OF_RULE);
 											actions.removeActionFromActions(action); // @see NUCLOSINT-1468
