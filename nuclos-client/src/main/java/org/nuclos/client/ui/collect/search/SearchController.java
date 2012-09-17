@@ -189,7 +189,9 @@ public class SearchController<Clct extends Collectable> extends CommonController
 		@Override
 		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
 			final CollectController<Clct> cc = getCollectController();
-			assert cc.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_SEARCH;
+			
+			// not true/valid for BMW_FDM, hence commented out (tp)
+			// assert cc.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_SEARCH;
 
 			// Note that we want to call "searchChanged()" on every change, not only valid changes:
 			cc.searchChanged(ev.getSearchComponentModel());
