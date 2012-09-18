@@ -20,13 +20,11 @@ public interface EventSupportFacadeLocal {
 	
 	public Collection<EventSupportTransitionVO> getEventSupportsByTransitionId(Integer transId) throws CommonFinderException, CommonPermissionException  ;
 	
-	public Collection<RuleVO> findEntityEventSupportByUsage(String sEventclass, UsageCriteria usagecriteria);
-	
 	public void fireTimelimitEventSupport(Integer jobId);
 	
 	public RuleObjectContainerCVO fireSaveEventSupport(Integer iEntityId, String sEventSupportType, RuleObjectContainerCVO loccvoCurrent);
 	
-	public void fireDeleteEventSupport(Integer iEntityId, String sEventSupportType, RuleObjectContainerCVO loccvoCurrent, boolean isLogical) ;
+	public void fireDeleteEventSupport(Integer iEntityId, String sEventSupportType, UsageCriteria usagecriteria, RuleObjectContainerCVO loccvoCurrent, boolean isLogical);
 	
 	public RuleObjectContainerCVO fireCustomEventSupport(Integer iEntityId, List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, boolean bIgnoreExceptions);
 	

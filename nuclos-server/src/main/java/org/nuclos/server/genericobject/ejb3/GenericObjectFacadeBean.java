@@ -1164,9 +1164,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		else {
 			sSupportType = DeleteFinalSupport.name;
 		}
-		
-		evSuppFacade.fireDeleteEventSupport(govo.getModuleId(),sSupportType, ruleObjectContainerCVO, true);
 
+		final UsageCriteria usage = govo.getUsageCriteria(getAttributeCache(), customUsage);
+		
+		evSuppFacade.fireDeleteEventSupport(govo.getModuleId(), sSupportType, usage, ruleObjectContainerCVO, true);
 	}
 
 	/**
