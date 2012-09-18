@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
+import groovyjarjarasm.asm.tree.IntInsnNode;
+
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -47,6 +49,7 @@ public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
 	public DefaultMasterDataTreeNode(String sEntity, MasterDataVO mdvo) {
 		super(sEntity, mdvo.getIntId());
 		this.mdvo = mdvo;
+		init();
 	}
 	
 	// @PostConstruct
