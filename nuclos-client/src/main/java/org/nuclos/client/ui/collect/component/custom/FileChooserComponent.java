@@ -172,6 +172,11 @@ public class FileChooserComponent extends JPanel {
 	}
 
 	@Override
+	public Font getFont() {
+		return cmpFileName == null ? super.getFont() : cmpFileName.getFont();
+	}
+
+	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
 		if (cmpFileName != null)
