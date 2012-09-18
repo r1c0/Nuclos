@@ -45,6 +45,17 @@ public class LabeledListOfValues extends LabeledComponent {
 	public ListOfValues getListOfValues() {
 		return this.lov;
 	}
+	
+	public java.awt.Font getFont() {
+		return lov == null ? super.getFont() : lov.getFont();
+	};
+	
+	public void setFont(java.awt.Font font) {
+		if (lov == null) 
+			super.setFont(font);
+		else
+			lov.setFont(font);
+	};
 
 	@Override
 	public JComponent getControlComponent() {

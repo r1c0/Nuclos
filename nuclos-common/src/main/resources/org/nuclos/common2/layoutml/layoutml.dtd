@@ -85,7 +85,7 @@ expandable (%boolean;) #IMPLIED
 continuous-layout (%boolean;) #IMPLIED
 >
 
-<!ELEMENT subform ((%layoutconstraints;)?,(%borders;),(%sizes;),initial-sorting-order?,background?,description?,
+<!ELEMENT subform ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,initial-sorting-order?,background?,description?,
     subform-column*,new-enabled?,edit-enabled?,delete-enabled?,clone-enabled?)>
 <!ATTLIST subform
 name CDATA #IMPLIED

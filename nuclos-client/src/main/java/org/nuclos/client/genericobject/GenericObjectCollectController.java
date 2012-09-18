@@ -1882,7 +1882,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				subformcontroller.getSubForm().setRowHeight(subformcontroller.getPrefs().getInt(TableRowIndicator.SUBFORM_ROW_HEIGHT, 
 						subformcontroller.getSubForm().isDynamicRowHeightsDefault() ? 
 								SubForm.DYNAMIC_ROW_HEIGHTS : 
-								SubForm.MIN_ROWHEIGHT));
+									subformcontroller.getSubForm().getMinRowHeight()));
 			}
 			
 			SubForm subform = subformcontroller.getSubForm();

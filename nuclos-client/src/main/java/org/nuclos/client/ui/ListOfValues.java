@@ -301,7 +301,20 @@ public class ListOfValues extends JPanel {
 			btnBrowse.setEnabled(!qsonly);
 		}
 	}
-
+	
+	public java.awt.Font getFont() {
+		return tf == null ? super.getFont() : tf.getFont();
+	};
+	
+	public void setFont(java.awt.Font font) {
+		if (tf != null && cbxQuickChooser != null) {
+			tf.setFont(font);
+			cbxQuickChooser.setFont(font);
+		} else {
+			super.setFont(font);
+		}
+	};
+	
 	public JTextField getJTextField() {
 		return this.tf;
 	}

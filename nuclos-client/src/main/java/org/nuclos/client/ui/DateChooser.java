@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -224,7 +225,17 @@ public class DateChooser extends JComponent implements Serializable {
 
 		assert isTodayRelative() == bTodayIsRelative;
 	}
+	
+	@Override
+	public void setFont(Font f) {
+		tfDate.setFont(f);		
+	}
 
+	@Override
+	public Font getFont() {
+		return tfDate.getFont();
+	}
+	
 	public void setOutputFormat(String sPattern) {
 		this.dateformatTextField = new SimpleDateFormat(sPattern);
 		this.sPattern = sPattern;

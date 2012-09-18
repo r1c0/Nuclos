@@ -994,6 +994,8 @@ public class WYSIWYGStringsAndLabels {
 		public static final String FILL_HORIZONTALLY = "Horizontal strecken";
 
 		public static final String COLUMNWIDTH = "Spaltenbreite";
+		
+		public static final String OPTIONS = "Auswahlwerte";
 
 		public static final String ICON = "Icon";
 

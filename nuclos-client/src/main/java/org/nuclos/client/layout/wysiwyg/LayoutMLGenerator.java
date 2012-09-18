@@ -277,6 +277,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(subform.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(subform, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(subform.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(subform.getProperties(), blockDeep + 1));
 		//NUCLEUSINT-563
 		List<String> subformColumns = subform.getParentEditor().getMetaInformation().getSubFormColumns(subform.getEntityName());
 		if (subform.getProperties().getProperty(WYSIWYGSubForm.PROPERTY_INITIALSORTINGORDER).getValue() != null)

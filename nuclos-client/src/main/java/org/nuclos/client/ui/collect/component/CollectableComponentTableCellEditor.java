@@ -20,6 +20,7 @@ import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.InputVerifier;
@@ -267,7 +268,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 		if (!this.isSearchable() && clctcomp instanceof CollectableComboBox) {
 			final CollectableComboBox clctcombobox = (CollectableComboBox)clctcomp;
 			((JTextField)clctcombobox.getJComboBox().getEditor().getEditorComponent()).setInputVerifier(trueInputVerifier);
-			subformMinRowHeight = true;
+			//subformMinRowHeight = true;
 		}
 		if (!this.isSearchable() && clctcomp instanceof CollectableListOfValues) {
 			final CollectableListOfValues clctlov = (CollectableListOfValues)clctcomp;
@@ -305,8 +306,22 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 			if (subformMinRowHeight) {
 				add(editor, "0,0");
 			} else {
-				add(editor, BorderLayout.NORTH);
+				add(editor, BorderLayout.CENTER);
 			}
+		}
+		
+		@Override
+		public Font getFont() {
+			if (this.editor != null)
+				return this.editor.getFont();
+			return super.getFont();
+		}
+		
+		@Override
+		public void setFont(Font font) {
+			super.setFont(font);
+			if (this.editor != null)
+				this.editor.setFont(font);
 		}
 
 		@Override

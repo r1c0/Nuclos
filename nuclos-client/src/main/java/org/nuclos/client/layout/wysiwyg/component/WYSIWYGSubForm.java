@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -75,10 +76,14 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_SUBF
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_POPUP;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertySetMethod;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyUtils;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBoolean;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueFont;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueInitialSortingOrder;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueInteger;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString;
@@ -106,6 +111,7 @@ import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.client.ui.event.TableColumnModelAdapter;
+import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
@@ -155,7 +161,8 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 
 	public static final String[][] PROPERTY_VALUES_STATIC = new String[][]{{PROPERTY_TOOLBARORIENTATION, ATTRIBUTEVALUE_HORIZONTAL, ATTRIBUTEVALUE_VERTICAL, ATTRIBUTEVALUE_HIDE}};
 
-	private static final String[] PROPERTY_NAMES = new String[]{PROPERTY_NAME, PROPERTY_ENTITY, PROPERTY_FOREIGNKEY, PROPERTY_TOOLBARORIENTATION, PROPERTY_PREFFEREDSIZE, PROPERTY_ENABLED, PROPERTY_DYNAMIC_CELL_HEIGHTS_DEFAULT, PROPERTY_BACKGROUNDCOLOR, PROPERTY_BORDER, PROPERTY_UNIQUEMASTERCOLUMN, PROPERTY_CONTROLLERTYPE, PROPERTY_PARENT_SUBFORM,
+	private static final String[] PROPERTY_NAMES = new String[]{PROPERTY_NAME, 
+		PROPERTY_FONT, PROPERTY_ENTITY, PROPERTY_FOREIGNKEY, PROPERTY_TOOLBARORIENTATION, PROPERTY_PREFFEREDSIZE, PROPERTY_ENABLED, PROPERTY_DYNAMIC_CELL_HEIGHTS_DEFAULT, PROPERTY_BACKGROUNDCOLOR, PROPERTY_BORDER, PROPERTY_UNIQUEMASTERCOLUMN, PROPERTY_CONTROLLERTYPE, PROPERTY_PARENT_SUBFORM,
 		PROPERTY_NEW_ENABLED, PROPERTY_EDIT_ENABLED, PROPERTY_DELETE_ENABLED, PROPERTY_CLONE_ENABLED};
 
 	private static final PropertyClass[] PROPERTY_CLASSES = new PropertyClass[]{
@@ -176,7 +183,8 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 			new PropertyClass(PROPERTY_EDIT_ENABLED, NuclosScript.class),
 			new PropertyClass(PROPERTY_DELETE_ENABLED, NuclosScript.class),
 			new PropertyClass(PROPERTY_CLONE_ENABLED, NuclosScript.class),
-			new PropertyClass(PROPERTY_DYNAMIC_CELL_HEIGHTS_DEFAULT, boolean.class)};
+			new PropertyClass(PROPERTY_DYNAMIC_CELL_HEIGHTS_DEFAULT, boolean.class),
+			new PropertyClass(PROPERTY_FONT, Font.class)};
 
 	private static final PropertySetMethod[] PROPERTY_SETMETHODS = new PropertySetMethod[]{
 			new PropertySetMethod(PROPERTY_NAME, "setName"),
@@ -186,6 +194,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 			new PropertySetMethod(PROPERTY_ENABLED, "setEnabled"),
 			new PropertySetMethod(PROPERTY_BACKGROUNDCOLOR, "setBackground"),
 			new PropertySetMethod(PROPERTY_BORDER, "setBorder"),
+			new PropertySetMethod(PROPERTY_FONT, "setFont"), 
 			new PropertySetMethod(PROPERTY_DESCRIPTION, "setToolTipText"),
 			new PropertySetMethod(PROPERTY_TOOLBARORIENTATION, "setToolbarOrientation"),
 			new PropertySetMethod(PROPERTY_INITIALSORTINGORDER, "setInitialSortingOrder")
@@ -208,6 +217,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 			new PropertyFilter(PROPERTY_NEW_ENABLED, ENABLED),
 			new PropertyFilter(PROPERTY_EDIT_ENABLED, ENABLED),
 			new PropertyFilter(PROPERTY_DELETE_ENABLED, ENABLED),
+			new PropertyFilter(PROPERTY_FONT, ENABLED),
 			new PropertyFilter(PROPERTY_CLONE_ENABLED, ENABLED),
 			new PropertyFilter(PROPERTY_DYNAMIC_CELL_HEIGHTS_DEFAULT, ENABLED)
 			};
@@ -840,6 +850,24 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 		return PROPERTIES_TO_LAYOUTML_ATTRIBUTES;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see javax.swing.JComponent#setFont(java.awt.Font)
+	 */
+	@Override
+	public void setFont(Font font) {
+		if (subform != null) {
+			subform.setFont(font);
+		}
+	}
+
+	@Override
+	public Font getFont() {
+		if (subform != null) {
+			return subform.getFont();
+		}
+		return super.getFont();
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#getAdditionalContextMenuItems(int)

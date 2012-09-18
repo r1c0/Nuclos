@@ -618,7 +618,7 @@ public abstract class SubFormController extends MainFrameTabController
 
 	private int getPreferredRowHeight(SubForm.SubFormTableModel subformtablemodel) {
 		final JTable tbl = this.getJTable();
-		int result = SubForm.MIN_ROWHEIGHT;
+		int result = getSubForm().getMinRowHeight();
 		for (Enumeration<TableColumn> enumeration = tbl.getColumnModel().getColumns(); enumeration.hasMoreElements();) {
 			final TableColumn column = enumeration.nextElement();
 			final CollectableEntityField clctef = subformtablemodel.getCollectableEntityField(column.getModelIndex());

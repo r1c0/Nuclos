@@ -179,8 +179,8 @@ public class TableRowIndicator extends MouseInputAdapter {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (clctcontroller.getSubForm().isDynamicRowHeights()) {
-						clctcontroller.getSubForm().setRowHeight(SubForm.MIN_ROWHEIGHT);
-						setHighForAllRows(SubForm.MIN_ROWHEIGHT);	
+						clctcontroller.getSubForm().setRowHeight(clctcontroller.getSubForm().getMinRowHeight());
+						setHighForAllRows(clctcontroller.getSubForm().getMinRowHeight());	
 					} else {
 						clctcontroller.getSubForm().setRowHeight(SubForm.DYNAMIC_ROW_HEIGHTS);
 						setRowHeightInPreferences(SubForm.DYNAMIC_ROW_HEIGHTS);
@@ -200,8 +200,8 @@ public class TableRowIndicator extends MouseInputAdapter {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					clctcontroller.getSubForm().setRowHeight(SubForm.MIN_ROWHEIGHT);
-					setHighForAllRows(SubForm.MIN_ROWHEIGHT);	
+					clctcontroller.getSubForm().setRowHeight(clctcontroller.getSubForm().getMinRowHeight());
+					setHighForAllRows(clctcontroller.getSubForm().getMinRowHeight());	
 				}
 			});
 			mi.setEnabled(!clctcontroller.getSubForm().isDynamicRowHeights());

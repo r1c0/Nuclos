@@ -586,7 +586,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		if (subform.isDynamicRowHeights()) {
 			for (int i = 0; i < getExternalTable().getRowCount(); i++) {
 				if (i < getHeaderTable().getRowCount()) {
-					getHeaderTable().setRowHeight(i, Math.max(SubForm.MIN_ROWHEIGHT, getExternalTable().getRowHeight(i)));
+					getHeaderTable().setRowHeight(i, Math.max(subform.getMinRowHeight(), getExternalTable().getRowHeight(i)));
 				}
 			}
 		} else {

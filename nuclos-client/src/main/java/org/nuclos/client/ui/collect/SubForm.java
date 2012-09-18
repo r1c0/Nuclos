@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -71,6 +72,7 @@ import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -98,6 +100,7 @@ import org.nuclos.client.common.NuclosCollectableTextArea;
 import org.nuclos.client.common.SearchConditionSubFormController.SearchConditionTableModel;
 import org.nuclos.client.common.SubFormController.FocusListSelectionListener;
 import org.nuclos.client.common.Utils;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueFont;
 import org.nuclos.client.scripting.ScriptEvaluator;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
@@ -868,7 +871,7 @@ public class SubForm extends JPanel
 
 	public void setRowHeight(int iHeight) {
 		if (DYNAMIC_ROW_HEIGHTS == iHeight) {
-			this.subformtbl.setRowHeight(MIN_ROWHEIGHT);
+			this.subformtbl.setRowHeight(getMinRowHeight());
 			this.dynamicRowHeights = true;
 			this.rowHeightCtrl.clear();
 			this.subformtbl.updateRowHeights();
@@ -1074,6 +1077,21 @@ public class SubForm extends JPanel
 	public void setInitialSortingOrder(String sColumnName, String sInitialSortingOrder) {
 		this.sInitialSortingColumn = sColumnName;
 		this.sInitialSortingOrder = sInitialSortingOrder;
+	}
+	
+	private Font font;
+	public void setFont(Font font) {
+		this.font = font;
+	}
+	
+	public Font getFont() {
+		return font != null ? font : super.getFont();
+	}
+	
+	public int getMinRowHeight() {
+		if (font == null)
+			return MIN_ROWHEIGHT;
+		return Math.max((int)(getFontMetrics(font).getHeight() + subformtbl.getRowMargin() + 7), MIN_ROWHEIGHT);
 	}
 
 	/**
@@ -2148,7 +2166,7 @@ public class SubForm extends JPanel
 				if (iHeight > 0) {
 					setRowHeightStrict(iRow, subform.getValidRowHeight(iHeight));
 				} else {
-					setRowHeight(iRow, MIN_ROWHEIGHT);
+					setRowHeight(iRow, subform.getMinRowHeight());
 				}
 			}
 		}
@@ -2658,14 +2676,24 @@ public class SubForm extends JPanel
 			}
 
 			if (subform != null && result instanceof DynamicRowHeightSupport) {
-				return new DynamicRowHeightCellRenderer(
+				result = new DynamicRowHeightCellRenderer(
 						result,
 						(DynamicRowHeightSupport) result,
 						iColumn,
 						subform.rowHeightCtrl);
-			} else {
-				return result;
 			}
+
+			final TableCellRenderer cellRender = result;
+			return new TableCellRenderer() {
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value,
+						boolean isSelected, boolean hasFocus, int row, int column) {
+					Component c = cellRender.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					if (c != null && c.getFont() != null && subform != null)
+						c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+					return c;
+				}
+			};
 		}
 
 		private TableCellRenderer getCellRendererFromClassField(CollectableEntityField entityField, String classFieldname, int iRow) {
@@ -2717,7 +2745,47 @@ public class SubForm extends JPanel
 			if (result == null) {
 				result = getCellEditor(iRow, ((SubFormTableModel) getModel()).getColumn(clctefTarget));
 			}
-			return result;
+			
+			final TableCellEditor cellEditor = result;
+			return new TableCellEditor() {
+				@Override
+				public boolean stopCellEditing() {
+					return cellEditor.stopCellEditing();
+				}
+				@Override
+				public boolean shouldSelectCell(EventObject anEvent) {
+					return cellEditor.shouldSelectCell(anEvent);
+				}
+				
+				@Override
+				public void removeCellEditorListener(CellEditorListener l) {
+					cellEditor.removeCellEditorListener(l);
+				}
+				@Override
+				public boolean isCellEditable(EventObject anEvent) {
+					return cellEditor.isCellEditable(anEvent);
+				}
+				@Override
+				public Object getCellEditorValue() {
+					return cellEditor.getCellEditorValue();
+				}
+				@Override
+				public void cancelCellEditing() {
+					cellEditor.cancelCellEditing();
+				}
+				@Override
+				public void addCellEditorListener(CellEditorListener l) {
+					cellEditor.addCellEditorListener(l);
+				}
+				@Override
+				public Component getTableCellEditorComponent(JTable table, Object value,
+						boolean isSelected, int row, int column) {
+					Component c = cellEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
+					if (c != null && c.getFont() != null && subform != null)
+						c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+					return c;
+				}
+			};
 		}
 
 		@Override
@@ -2740,7 +2808,47 @@ public class SubForm extends JPanel
 			if (result == null) {
 				result = super.getCellEditor(iRow, iColumn);
 			}
-			return result;
+			
+			final TableCellEditor cellEditor = result;
+			return new TableCellEditor() {
+				@Override
+				public boolean stopCellEditing() {
+					return cellEditor.stopCellEditing();
+				}
+				@Override
+				public boolean shouldSelectCell(EventObject anEvent) {
+					return cellEditor.shouldSelectCell(anEvent);
+				}
+				
+				@Override
+				public void removeCellEditorListener(CellEditorListener l) {
+					cellEditor.removeCellEditorListener(l);
+				}
+				@Override
+				public boolean isCellEditable(EventObject anEvent) {
+					return cellEditor.isCellEditable(anEvent);
+				}
+				@Override
+				public Object getCellEditorValue() {
+					return cellEditor.getCellEditorValue();
+				}
+				@Override
+				public void cancelCellEditing() {
+					cellEditor.cancelCellEditing();
+				}
+				@Override
+				public void addCellEditorListener(CellEditorListener l) {
+					cellEditor.addCellEditorListener(l);
+				}
+				@Override
+				public Component getTableCellEditorComponent(JTable table, Object value,
+						boolean isSelected, int row, int column) {
+					Component c = cellEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
+					if (c != null && c.getFont() != null && subform != null)
+						c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+					return c;
+				}
+			};
 		}
 
 		/**
@@ -2822,7 +2930,6 @@ public class SubForm extends JPanel
 			if (subform != null && e.getFirstRow() != TableModelEvent.HEADER_ROW) {
 				if (e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE) {
 					subform.rowHeightCtrl.clear();
-					invalidateRowHeights();
 				} else {
 					for (int iRow = e.getFirstRow(); iRow <= e.getLastRow(); iRow++) {
 						if (e.getColumn() == TableModelEvent.ALL_COLUMNS) {
@@ -2833,12 +2940,13 @@ public class SubForm extends JPanel
 					}
 				}
 			}
+			invalidateRowHeights();
 		}
 
 		boolean invalidateRowHeights = false;
 
 		private void invalidateRowHeights() {
-			if (!invalidateRowHeights) {
+			if (subform != null && !invalidateRowHeights) {
 				invalidateRowHeights = true;
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
@@ -3450,7 +3558,7 @@ public class SubForm extends JPanel
 	}
 
 	public int getValidRowHeight(int iHeight) {
-		return Math.max(MIN_ROWHEIGHT-subformtbl.getRowMargin(), Math.min(MAX_DYNAMIC_ROWHEIGHT, iHeight));
+		return Math.max(getMinRowHeight()-subformtbl.getRowMargin(), Math.min(MAX_DYNAMIC_ROWHEIGHT, iHeight));
 	}
 
 	public boolean isDynamicRowHeights() {

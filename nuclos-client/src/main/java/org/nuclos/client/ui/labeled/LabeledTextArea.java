@@ -74,6 +74,14 @@ public class LabeledTextArea extends LabeledTextComponent {
 			return ta.requestFocusInWindow();
 		}
 		
+		public java.awt.Font getFont() {
+			return ta.getFont();
+		};
+		
+		public void setFont(java.awt.Font font) {
+			ta.setFont(font);
+		};
+		
 	};
 
 	public LabeledTextArea() {

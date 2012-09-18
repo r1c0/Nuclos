@@ -29,6 +29,7 @@ import org.nuclos.client.ui.collect.component.AbstractCollectableComponent;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.File;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -140,5 +141,13 @@ public abstract class AbstractCollectableFileChooser extends AbstractCollectable
 			
 			return comp;
 		}
+		
+		@Override
+		protected void setValue(Object value) {
+			if (value instanceof AtomicCollectableSearchCondition)
+				setText(((AtomicCollectableSearchCondition)value).getComparandAsString());
+			else
+				setText((value == null) ? "" : value.toString());
+	    }
 	}
 }  // class AbstractCollectableFileChooser

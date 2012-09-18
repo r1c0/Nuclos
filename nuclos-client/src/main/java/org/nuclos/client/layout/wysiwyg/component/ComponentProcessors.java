@@ -17,6 +17,7 @@
 package org.nuclos.client.layout.wysiwyg.component;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.util.HashMap;
 
 import javax.swing.JLabel;
@@ -30,6 +31,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyUtils;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBoolean;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBorder;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueFont;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
@@ -592,9 +594,11 @@ public class ComponentProcessors implements LayoutMLConstants {
 			//NUCLEUSINT-803
 			properties.setProperty(WYSIWYGSubForm.PROPERTY_TOOLBARORIENTATION, new PropertyValueString(ATTRIBUTEVALUE_VERTICAL), String.class);
 			properties.setProperty(WYSIWYGSubForm.PROPERTY_DYNAMIC_CELL_HEIGHTS_DEFAULT, new PropertyValueBoolean(Boolean.FALSE), Boolean.class);
+
 			subform.setProperties(properties);
 			
 			subform.setMinimumSize(DEFAULTVALUE_SUBFORM_MINIMUMSIZE);
+			subform.setFont(subform.getFont());
 
 			return subform;
 		}

@@ -19,7 +19,9 @@ package org.nuclos.client.ui.collect.component.custom;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
@@ -88,14 +90,17 @@ public class FileChooserComponent extends JPanel {
 	private static final TableLayoutConstraints TLC_NAME = new TableLayoutConstraints(1, 0);
 
 	public FileChooserComponent() {
-		super(new TableLayout(COLS, ROWS));
+		//super(new TableLayout(COLS, ROWS));
+		super(new BorderLayout());
 		this.setOpaque(true);
 		this.init();
 	}
 
 	private void init() {
-		this.add(labIcon, TLC_ICON);
-		this.add(cmpFileName, TLC_NAME);
+		//this.add(labIcon, TLC_ICON);
+		//this.add(cmpFileName, TLC_NAME);
+		this.add(labIcon, BorderLayout.WEST);
+		this.add(cmpFileName, BorderLayout.CENTER);
 		//this.add(btnBrowse, BorderLayout.EAST);
 		this.btnBrowse.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"file.chooser.component.tooltip", "Datei ausw\u00e4hlen"));
@@ -164,6 +169,13 @@ public class FileChooserComponent extends JPanel {
 			cmpFileName.setForeground(fg);
 			btnBrowse.setForeground(fg);
 		}
+	}
+
+	@Override
+	public void setFont(Font font) {
+		super.setFont(font);
+		if (cmpFileName != null)
+			cmpFileName.setFont(font);
 	}
 
 }  // class FileChooserComponent

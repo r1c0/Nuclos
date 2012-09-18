@@ -215,7 +215,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		this.getSubForm().setRowHeight(this.getPrefs().getInt(TableRowIndicator.SUBFORM_ROW_HEIGHT, 
 				this.getSubForm().isDynamicRowHeightsDefault() ? 
 						SubForm.DYNAMIC_ROW_HEIGHTS : 
-						SubForm.MIN_ROWHEIGHT));
+							this.getSubForm().getMinRowHeight()));
 
 		this.getSubForm().getJTable().getTableHeader().addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
