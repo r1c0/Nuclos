@@ -249,7 +249,8 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 				} else {
 					final Thread collectiveThread = new Thread("ReportExecutionCollectController.execReport") {
 						{
-							BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
+							// do not set dialog visible per default. @see NUCLOS-1064
+							//BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
 						}
 
 						@Override
@@ -291,7 +292,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 									}
 									bIsFirstOfMany = false;
 								}
-								BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
+								//BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
 							} catch (final Exception ex) {
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
