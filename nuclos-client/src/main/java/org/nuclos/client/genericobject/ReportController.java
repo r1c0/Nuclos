@@ -236,7 +236,8 @@ public class ReportController extends Controller<JComponent> {
 
 		// show Background Process dialog for file attachment information.
 		if (bFilesBeAttached) {
-			SwingUtilities.invokeLater(new StatusDialogRunnable(pnlSelection));
+			// do not set dialog visible per default. @see NUCLOS-1064
+			//SwingUtilities.invokeLater(new StatusDialogRunnable(pnlSelection));
 		}
 
 		final ReportVO reportvo = entry.getReport();
