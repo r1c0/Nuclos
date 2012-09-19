@@ -1129,8 +1129,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		else if (event.equals(Event.MODIFY_AFTER)) sSupportType = UpdateFinalSupport.name;
 		else if (event.equals(Event.MODIFY_BEFORE)) sSupportType = UpdateSupport.name;
 		
-		retVal = evSuppFacade.fireSaveEventSupport(govo.getModuleId(),sSupportType, 
-				new RuleObjectContainerCVO(event, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()));
+		retVal = evSuppFacade.fireSaveEventSupport(govo.getModuleId(),sSupportType, retVal);
 		
 		return retVal;
 
