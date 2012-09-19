@@ -685,7 +685,7 @@ public class UIUtils {
 
 	}	// inner class DefaultCommandHandler
 
-	public static void showWaitCursorForFrame(Component parent, boolean bShow) {
+	public static void showWaitCursorForFrame(final Component parent, boolean bShow) {
 		if (parent == null) {
 			LOG.debug("Cannot set wait cursor, as component is null");
 			return;
@@ -694,7 +694,11 @@ public class UIUtils {
 		if (bShow) {
 			// Every frame gets its own glasspane, especially every mdi child window
 			if (parent instanceof MainFrameTab) {
-				((MainFrameTab) parent).lockLayer();
+				UIUtils.invokeOnDispatchThread(new Runnable() {
+					@Override
+					public void run() {
+						((MainFrameTab) parent).lockLayer();
+					}});
 			}
 			else if (parent instanceof JFrame) {
 				final JFrame frm = (JFrame) parent;
@@ -707,7 +711,11 @@ public class UIUtils {
 		}
 		else {
 			if (parent instanceof MainFrameTab) {
-				((MainFrameTab) parent).unlockLayer();
+				UIUtils.invokeOnDispatchThread(new Runnable() {
+					@Override
+					public void run() {
+						((MainFrameTab) parent).unlockLayer();
+					}});
 			}
 			else if (parent instanceof JFrame) {
 				final JFrame frm = (JFrame) parent;
