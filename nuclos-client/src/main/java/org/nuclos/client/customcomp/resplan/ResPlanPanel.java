@@ -902,7 +902,7 @@ public class ResPlanPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			UIUtils.runShortCommand(resPlan, new CommonRunnable() {
+			UIUtils.runCommand(resPlan, new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
 					final MainFrameTab tabIfAny = new MainFrameTab();

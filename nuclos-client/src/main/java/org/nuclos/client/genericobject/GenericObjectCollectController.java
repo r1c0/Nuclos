@@ -1923,11 +1923,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private void setInitialComponentFocusInSearchTab() {
-		Utils.setInitialComponentFocus(getSearchPanel().getEditView(), mpsubformctlSearch);
+		if (getSearchPanel() != null)
+			Utils.setInitialComponentFocus(getSearchPanel().getEditView(), mpsubformctlSearch);
 	}
 
 	private void setInitialComponentFocusInDetailsTab() {
-		Utils.setInitialComponentFocus(getDetailsPanel().getEditView(), mpsubformctlDetails);
+		if (getDetailsPanel() != null)
+			Utils.setInitialComponentFocus(getDetailsPanel().getEditView(), mpsubformctlDetails);
 	}
 
 	/**
