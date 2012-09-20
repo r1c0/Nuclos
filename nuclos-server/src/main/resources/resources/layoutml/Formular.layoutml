@@ -44,7 +44,9 @@
                 <valuelist-provider type="process"/>
               </subform-column>
               <subform-column name="module" enabled="yes" visible="yes" insertable="no" controltype="combobox">
-                <valuelist-provider type="entityId"/>
+                <valuelist-provider type="entityId">
+                	<parameter name="menupath" value="optional" />
+               	</valuelist-provider>
               </subform-column>
               <subform-column name="state" enabled="yes" visible="yes" insertable="no" controltype="combobox">
                 <valuelist-provider type="statusNumeral">
