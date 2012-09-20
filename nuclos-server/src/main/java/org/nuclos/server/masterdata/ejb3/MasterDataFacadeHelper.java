@@ -992,6 +992,13 @@ public class MasterDataFacadeHelper {
 			}
 
 			//create or modify dependant data
+			DependantMasterDataMap otherDependants = mdvoDependant.getDependants(); 
+			for (String sOtherDependantEntityName : otherDependants.getEntityNames()) {
+				for (EntityObjectVO mdvoOtherDependant : otherDependants.getData(sOtherDependantEntityName)) {
+					String sRefField = MetaDataServerProvider.getInstance().getRefField(sDependantEntityName, sOtherDependantEntityName).getField();
+					mdvoOtherDependant.getFieldIds().put(sRefField, IdUtils.toLongId(iReferenceId));
+				}
+			}
 			createOrModifyDependants(mdvoDependant.getDependants(), sDependantEntityName, sUserName, bValidate, null, mpEntityAndParentEntityName, customUsage);
 			return iReferenceId;
 		}
