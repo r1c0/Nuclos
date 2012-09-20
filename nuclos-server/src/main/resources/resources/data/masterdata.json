@@ -7568,6 +7568,7 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
+        "labelres": "nuclos.entityfield.ruleUsage.order.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.order.description"
       }
       {
