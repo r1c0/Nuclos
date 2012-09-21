@@ -130,6 +130,7 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonRunnable;
@@ -1369,6 +1370,10 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		final DependantCollectableMasterDataMap result = new DependantCollectableMasterDataMap();
 
 		for (DetailsSubFormController<CollectableEntityObject> subformctl : this.getSubFormControllersInDetails()) {
+			EntityMetaDataVO eMeta = MetaDataClientProvider.getInstance().getEntity(subformctl.getCollectableEntity().getName());
+			if (!eMeta.isEditable()) {
+				continue;
+			}
 			// if (subformctl.getSubForm().isEnabled() &&
 			// subformctl.getSubForm().getParentSubForm() == null) {
 			// NUCLEUSINT-1119

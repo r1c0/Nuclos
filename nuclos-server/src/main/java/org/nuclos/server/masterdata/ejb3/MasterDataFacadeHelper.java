@@ -854,8 +854,12 @@ public class MasterDataFacadeHelper {
 	public void removeDependants(DependantMasterDataMap mpDependants, String customUsage)
 			throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException {
 		for (String sDependantEntityName : mpDependants.getEntityNames()) {
+			EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(sDependantEntityName);
+			if (!eMeta.isEditable()) {
+				continue;
+			}
 			if (!masterDataMetaCache.getMetaData(sDependantEntityName).isDynamic()
-				&& !MetaDataServerProvider.getInstance().getEntity(sDependantEntityName).isStateModel()) {
+				&& !eMeta.isStateModel()) {
 				for (EntityObjectVO mdvoDependant : mpDependants.getData(sDependantEntityName)) {
 
 					removeDependants(mdvoDependant.getDependants(), customUsage);
@@ -902,12 +906,16 @@ public class MasterDataFacadeHelper {
 
 		for (String sDependantEntityName : mpDependants.getEntityNames()) {
 			for (EntityObjectVO mdvoDependant : mpDependants.getData(sDependantEntityName)) {
+				EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(sDependantEntityName);
+				if (!eMeta.isEditable()) {
+					continue;
+				}
 				// create/modify the row:
 				Integer intid = null;
 				if (mpDependantsWithId != null && !mpDependantsWithId.isEmpty()) {
 					intid = mpDependantsWithId.get(mdvoDependant);
 				}
-				if(MetaDataServerProvider.getInstance().getEntity(sDependantEntityName).isStateModel()) {
+				if(eMeta.isStateModel()) {
 					try {
 						mdvoDependant.setEntity(sDependantEntityName);
 						GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(mdvoDependant);

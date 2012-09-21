@@ -316,6 +316,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			// care only about dependant data which are on the highest level
 			if (collSubEntities.get(eafn) == null) {
 				final String entity = eafn.getEntityName();
+				EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(entity);
+				if (!eMeta.isEditable()) {
+					continue;
+				}
 				final String sForeignKeyFieldName = LangUtils.defaultIfNull(eafn.getFieldName(),
 						ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
 				Collection<MasterDataVO> collmdVO = getMasterDataFacade().getDependantMasterData(
