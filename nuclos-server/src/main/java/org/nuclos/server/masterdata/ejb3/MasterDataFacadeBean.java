@@ -83,6 +83,7 @@ import org.nuclos.server.attribute.ejb3.LayoutFacadeLocal;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.MasterDataMetaCache;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
@@ -1203,6 +1204,10 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				// first subform in hierarchie found or
 				// child subfrom found
 				final String entity = eafn.getEntityName();
+				EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(entity);
+				if (!eMeta.isEditable()) {
+					continue;
+				}
 				if((mpEntityAndParentEntityName.get(eafn) == null && sParentEntity == null)
 					|| (mpEntityAndParentEntityName.get(eafn) != null 
 					&& mpEntityAndParentEntityName.get(eafn).equals(sParentEntity))) {

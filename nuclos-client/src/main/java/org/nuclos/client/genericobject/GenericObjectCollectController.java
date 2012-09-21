@@ -3046,6 +3046,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		for (DetailsSubFormController<CollectableEntityObject> subformctl : sfControllers) {
 			final String subEntity = subformctl.getCollectableEntity().getName();
+			EntityMetaDataVO eMeta = MetaDataClientProvider.getInstance().getEntity(subEntity);
+			if (!eMeta.isEditable()) {
+				continue;
+			}
 
 			if ("nuclos_generalsearchdocument".equals(subEntity)) {
 				String sPath = (String)Modules.getInstance().getModuleById(iModuleId).getField("documentPath");
