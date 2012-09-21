@@ -984,7 +984,7 @@ public class MasterDataFacadeHelper {
 			}
 
 			for (String sDependantMasterDataEntityName : mdvoDependant.getDependants().getEntityNames()) {
-				String sForeignKeyFieldName = getForeignKeyFieldName(sEntityName, sDependantMasterDataEntityName, mpEntityAndParentEntityName);
+				String sForeignKeyFieldName = getForeignKeyFieldName(sDependantEntityName, sDependantMasterDataEntityName, mpEntityAndParentEntityName);
 
 				if (sForeignKeyFieldName != null) {
 					for (EntityObjectVO mdvo : mdvoDependant.getDependants().getData(sDependantMasterDataEntityName)) {
