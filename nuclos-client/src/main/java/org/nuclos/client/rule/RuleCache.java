@@ -307,32 +307,48 @@ public class RuleCache extends AbstractLocalUserCache {
 			if (sEntity == null || sEntity.equals(NuclosEntity.RULE.getEntityName())) {
 				mpAllRules.clear();
 				mpAllRulesByName.clear();
-				for (RuleVO ruleVO : ruleDelegate.getAllRules()) {
-					mpAllRules.put(ruleVO.getId(), ruleVO);
-					mpAllRulesByName.put(ruleVO.getRule(), ruleVO);
+				try {
+					for (RuleVO ruleVO : ruleDelegate.getAllRules()) {
+						mpAllRules.put(ruleVO.getId(), ruleVO);
+						mpAllRulesByName.put(ruleVO.getRule(), ruleVO);
+					}					
+				} catch (CommonFatalException e) {
+					// ignore.
 				}
 				mpAllTimelimitRules.clear();
-				for (RuleVO ruleVO : timelimitRuleDelegate.getAllTimelimitRules()) {
-					mpAllTimelimitRules.put(ruleVO.getId(), ruleVO);
+				try {
+					for (RuleVO ruleVO : timelimitRuleDelegate.getAllTimelimitRules()) {
+						mpAllTimelimitRules.put(ruleVO.getId(), ruleVO);
+					}					
+				} catch (CommonFatalException e) {
+					// ignore.
 				}
 			}
 			
 			if (sEntity == null || sEntity.equals(NuclosEntity.RULEUSAGE.getEntityName())) {
 				mpAllRuleEventByRuleId.clear();
-				for (RuleEventUsageVO ruleEventUsageVO : ruleDelegate.getAllRuleEventUsage()) {
-					Collection<RuleEventUsageVO> lstAllRuleEventByRuleId = mpAllRuleEventByRuleId.get(ruleEventUsageVO.getRuleId());
-					if (lstAllRuleEventByRuleId == null) {
-						lstAllRuleEventByRuleId = new ArrayList<RuleEventUsageVO>();
-					}
-					lstAllRuleEventByRuleId.add(ruleEventUsageVO);
-					mpAllRuleEventByRuleId.put(ruleEventUsageVO.getRuleId(), lstAllRuleEventByRuleId);
+				try {
+					for (RuleEventUsageVO ruleEventUsageVO : ruleDelegate.getAllRuleEventUsage()) {
+						Collection<RuleEventUsageVO> lstAllRuleEventByRuleId = mpAllRuleEventByRuleId.get(ruleEventUsageVO.getRuleId());
+						if (lstAllRuleEventByRuleId == null) {
+							lstAllRuleEventByRuleId = new ArrayList<RuleEventUsageVO>();
+						}
+						lstAllRuleEventByRuleId.add(ruleEventUsageVO);
+						mpAllRuleEventByRuleId.put(ruleEventUsageVO.getRuleId(), lstAllRuleEventByRuleId);
+					}					
+				} catch (CommonFatalException e) {
+					// ignore.
 				}
 			}
 			
 			if (sEntity == null || sEntity.equals(NuclosEntity.RULEGENERATION.getEntityName())) {
 				mpAllAdGenerations.clear();
-				for (GeneratorActionVO generatorActionVO : ruleDelegate.getAllAdGenerationsWithRule()) {
-					mpAllAdGenerations.add(generatorActionVO);
+				try {
+					for (GeneratorActionVO generatorActionVO : ruleDelegate.getAllAdGenerationsWithRule()) {
+						mpAllAdGenerations.add(generatorActionVO);
+					}					
+				} catch (CommonFatalException e) {
+					// ignore.
 				}
 				
 				mpAllAdGenerationsByRuleId.clear(); // we cannot recreate cache here. since we do not have an rule id in generatorActionVO
@@ -342,20 +358,24 @@ public class RuleCache extends AbstractLocalUserCache {
 				
 				mpAllRuleGenerationsForRuleId.clear();
 				mpAllRuleGenerationsForGenerationId.clear();
-				for (RuleEngineGenerationVO ruleGenerationVO : ruleDelegate.getAllRuleGenerations()) {
-					Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForRuleId = mpAllRuleGenerationsForRuleId.get(ruleGenerationVO.getRuleId());
-					if (lstAllRuleGenerationsForRuleId == null) {
-						lstAllRuleGenerationsForRuleId = new ArrayList<RuleEngineGenerationVO>();
-					}
-					lstAllRuleGenerationsForRuleId.add(ruleGenerationVO);
-					mpAllRuleGenerationsForRuleId.put(ruleGenerationVO.getRuleId(), lstAllRuleGenerationsForRuleId);
-		
-					Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForGenerationId = mpAllRuleGenerationsForGenerationId.get(ruleGenerationVO.getGenerationId());
-					if (lstAllRuleGenerationsForGenerationId == null) {
-						lstAllRuleGenerationsForGenerationId = new ArrayList<RuleEngineGenerationVO>();
-					}
-					lstAllRuleGenerationsForGenerationId.add(ruleGenerationVO);
-					mpAllRuleGenerationsForGenerationId.put(ruleGenerationVO.getGenerationId(), lstAllRuleGenerationsForGenerationId);
+				try {
+					for (RuleEngineGenerationVO ruleGenerationVO : ruleDelegate.getAllRuleGenerations()) {
+						Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForRuleId = mpAllRuleGenerationsForRuleId.get(ruleGenerationVO.getRuleId());
+						if (lstAllRuleGenerationsForRuleId == null) {
+							lstAllRuleGenerationsForRuleId = new ArrayList<RuleEngineGenerationVO>();
+						}
+						lstAllRuleGenerationsForRuleId.add(ruleGenerationVO);
+						mpAllRuleGenerationsForRuleId.put(ruleGenerationVO.getRuleId(), lstAllRuleGenerationsForRuleId);
+			
+						Collection<RuleEngineGenerationVO> lstAllRuleGenerationsForGenerationId = mpAllRuleGenerationsForGenerationId.get(ruleGenerationVO.getGenerationId());
+						if (lstAllRuleGenerationsForGenerationId == null) {
+							lstAllRuleGenerationsForGenerationId = new ArrayList<RuleEngineGenerationVO>();
+						}
+						lstAllRuleGenerationsForGenerationId.add(ruleGenerationVO);
+						mpAllRuleGenerationsForGenerationId.put(ruleGenerationVO.getGenerationId(), lstAllRuleGenerationsForGenerationId);
+					}					
+				} catch (CommonFatalException e) {
+					// ignore.
 				}
 			}
 			
