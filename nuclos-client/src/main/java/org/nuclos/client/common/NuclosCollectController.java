@@ -53,6 +53,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.datasource.NuclosSearchConditionUtils;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.main.Main;
@@ -102,7 +103,9 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -1444,6 +1447,12 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			throws CommonBusinessException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+
+	@Override
+	protected Clct findCollectableById(String sEntity, Object oId, Collection<EntityFieldMetaDataVO> fields) throws CommonBusinessException {
+		return findCollectableById(sEntity, oId);
 	}
 
 	@Override

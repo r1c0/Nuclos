@@ -86,7 +86,9 @@ import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
@@ -321,6 +323,11 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	@Override
 	public CollectableRule findCollectableById(String sEntity, Object oId) throws CommonBusinessException {
 		return new CollectableRule(this.ruledelegate.get((Integer) oId));
+	}
+	
+	@Override
+	protected CollectableRule findCollectableById(String sEntity, Object oId, Collection<EntityFieldMetaDataVO> fields) throws CommonBusinessException {
+		return findCollectableByIdWithoutDependants(sEntity, oId);
 	}
 
 	@Override

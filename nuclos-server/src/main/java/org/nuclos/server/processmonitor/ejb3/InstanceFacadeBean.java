@@ -335,7 +335,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 					sourceGoVO.setAttribute(new DynamicAttributeVO(iRealRuntimeId, null, new Double(realEndMillis-realStartMillis)));
 				}
 
-				getGenericObjectFacade().modify(sourceGoVO, null, false, false, null);
+				getGenericObjectFacade().modify(sourceGoVO, null, false, false, false, null);
 
 				return dateRealEnd;
 			}
@@ -406,7 +406,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 			targetGoVO.setAttribute(new DynamicAttributeVO(iPlanRuntimeId, null, new Double(calendar.getTimeInMillis() - planStartMillis)));
 			targetGoVO.setAttribute(new DynamicAttributeVO(iRealStartId,   null, new DateTime(targetGoVO.getCreatedAt())));
 
-			getGenericObjectFacade().modify(targetGoVO, null, false, false, null);
+			getGenericObjectFacade().modify(targetGoVO, null, false, false, false, null);
 
 		} catch (CommonFinderException e) {
 			throw new CommonFatalException(e);

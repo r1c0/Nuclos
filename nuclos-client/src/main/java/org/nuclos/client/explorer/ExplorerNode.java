@@ -206,6 +206,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	public void loadChildren(boolean bLoadAllAvailableSubNodes) {
 		if (!this.getChildrenHaveBeenLoaded()) {
+			this.bChildrenHaveBeenLoaded = true;
 			log.debug("START loadChildren");
 			for (TreeNode treenodeChild : this.getTreeNode().getSubNodes()) {
 				final ExplorerNode<TreeNode> explorernodeChild = (ExplorerNode<TreeNode>) ExplorerNodeFactory.getInstance().newExplorerNode(treenodeChild, false);
@@ -214,7 +215,6 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 					explorernodeChild.loadChildren(bLoadAllAvailableSubNodes);
 				}
 			}
-			this.bChildrenHaveBeenLoaded = true;
 			log.debug("FINISHED loadChildren");
 		}
 		assert this.getChildrenHaveBeenLoaded();

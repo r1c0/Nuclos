@@ -282,21 +282,9 @@ public class GenericObjectFacadeHelper {
 
 		try {
 			// @todo: genericObjectId makes no sense as an entityName
-			this.getMasterDataFacade().modifyDependants(entityname,iGenericObjectId,false,mpDependants, customUsage);
-		}
-		catch (CommonFinderException ex) {
-			// This must never happen when inserting a new object:
-			throw new CommonFatalException(ex);
+			this.getMasterDataFacade().createDependants(entityname,iGenericObjectId,false,mpDependants, customUsage);
 		}
 		catch (CommonPermissionException ex) {
-			// This must never happen when inserting a new object:
-			throw new CommonFatalException(ex);
-		}
-		catch (CommonStaleVersionException ex) {
-			// This must never happen when inserting a new object:
-			throw new CommonFatalException(ex);
-		}
-		catch (CommonRemoveException ex) {
 			// This must never happen when inserting a new object:
 			throw new CommonFatalException(ex);
 		}

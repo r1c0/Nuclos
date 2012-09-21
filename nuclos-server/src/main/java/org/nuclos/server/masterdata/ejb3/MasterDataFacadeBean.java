@@ -1236,8 +1236,33 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		}
 		return mpDependants;
 	}
-
-	/**
+    
+    /**
+	 * create the given dependants (local use only).
+	 *
+	 * @param dependants
+	 * @precondition mpDependants != null
+	 */
+    public void createDependants(String entityName, Integer id, Boolean removed,
+		DependantMasterDataMap dependants, String customUsage) throws CommonCreateException, CommonPermissionException {
+    	try {
+    		createOrModifyDependants(entityName, id, removed, dependants, false, false, customUsage);
+    	}
+		catch (CommonFinderException ex) {
+			// This must never happen when inserting a new object:
+			throw new CommonFatalException(ex);
+		}
+		catch (CommonStaleVersionException ex) {
+			// This must never happen when inserting a new object:
+			throw new CommonFatalException(ex);
+		}
+		catch (CommonRemoveException ex) {
+			// This must never happen when inserting a new object:
+			throw new CommonFatalException(ex);
+		}
+	}
+    
+    /**
 	 * modifies the given dependants (local use only).
 	 *
 	 * @param dependants
@@ -1245,6 +1270,26 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 */
     public void modifyDependants(String entityName, Integer id, Boolean removed,
 		DependantMasterDataMap dependants, String customUsage) throws CommonCreateException,
+		CommonFinderException, CommonRemoveException, CommonPermissionException,
+		CommonStaleVersionException {
+    	createOrModifyDependants(entityName, id, removed, dependants, true, true, customUsage);
+    }
+    
+    /**
+   	 * modifies the given dependants (local use only).
+   	 *
+   	 * @param dependants
+   	 * @precondition mpDependants != null
+   	 */
+     public void modifyDependants(String entityName, Integer id, Boolean removed,
+   		DependantMasterDataMap dependants, boolean read, String customUsage) throws CommonCreateException,
+   		CommonFinderException, CommonRemoveException, CommonPermissionException,
+   		CommonStaleVersionException {
+       	createOrModifyDependants(entityName, id, removed, dependants, read, true, customUsage);
+     }
+    
+     private void createOrModifyDependants(String entityName, Integer id, Boolean removed,
+		DependantMasterDataMap dependants, boolean read, boolean remove, String customUsage) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException, CommonPermissionException,
 		CommonStaleVersionException {
 		// todo: check and clean thrown exception types to necessary minimum
@@ -1257,10 +1302,14 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			LayoutFacadeLocal.class);
 		Map<EntityAndFieldName, String> mpEntityAndParentEntityName = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 			entityName, id, false, customUsage);
-		readAllDependants(entityName, id, dependants, removed, null,
-			mpEntityAndParentEntityName);
-
-		helper.removeDependants(dependants, customUsage);
+		
+		if (read) {
+			readAllDependants(entityName, id, dependants, removed, null,
+				mpEntityAndParentEntityName);
+		}
+		if (remove) {
+			helper.removeDependants(dependants, customUsage);
+		}
 
 		try {
 			helper.createOrModifyDependants(dependants, entityName,

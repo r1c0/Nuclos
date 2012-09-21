@@ -62,6 +62,7 @@ import org.nuclos.client.common.SubFormController;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerDelegate;
 import org.nuclos.client.genericobject.GenerationController;
@@ -127,6 +128,8 @@ import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.DalSupportForMD;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.CommonRunnable;
@@ -1385,6 +1388,22 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		final CollectableMasterDataWithDependants result = new CollectableMasterDataWithDependants(this.getCollectableEntity(), mdwdcvo);
 		assert getSearchStrategy().isCollectableComplete(result);
 		return result;
+	}
+	
+	@Override
+	protected CollectableMasterDataWithDependants findCollectableById(String sEntity, Object oId, Collection<EntityFieldMetaDataVO> fields) throws CommonBusinessException {
+		if (fields == null) {
+			return findCollectableById(sEntity, oId);
+		}
+		Collection<EntityObjectVO> eovos = EntityObjectDelegate.getInstance().getEntityObjectsMore(
+				MetaDataClientProvider.getInstance().getEntity(sEntity).getId(), 
+				Collections.singletonList(IdUtils.toLongId(oId)), 
+				fields, getCustomUsage());
+		if (eovos.isEmpty()) {
+			return null;
+		} else {
+			return new CollectableMasterDataWithDependants(this.getCollectableEntity(), DalSupportForMD.getMasterDataWithDependantsVO(eovos.iterator().next()));
+		}
 	}
 
 	@Override

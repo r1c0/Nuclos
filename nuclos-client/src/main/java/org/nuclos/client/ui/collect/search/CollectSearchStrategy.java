@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.search;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Observer;
@@ -30,6 +31,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCo
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
@@ -229,5 +231,10 @@ public class CollectSearchStrategy<Clct extends Collectable> implements ISearchS
 				return SearchConditionUtils.and(cond, cc.getMainFilter().getSearchCondition());
 			}
 		}
+	}
+	
+	@Override
+	public Collection<EntityFieldMetaDataVO> getFields() {
+		return null;
 	}
 }

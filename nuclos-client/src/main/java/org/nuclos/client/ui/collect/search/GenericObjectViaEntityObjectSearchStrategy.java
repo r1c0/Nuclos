@@ -300,6 +300,17 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 		LOG.debug("Interne Suchbedingung: " + clctexprInternal.getSearchCondition());
 
 		includeSubModules = false;
+
+		// TODO: OPTIMIZATION: only selected and/or required attributes should be loaded here!
+		final ProxyList<EntityObjectVO> proxylstlovwdvo = lodelegate.getEntityObjectProxyList(
+				IdUtils.toLongId(getGenericObjectController().getModuleId()),
+				clctexprInternal, getFields(), getCollectController().getCustomUsage());
+
+		return new MyProxyListAdapter(new CollectableEntityObjectProxyListAdapter(proxylstlovwdvo, meta));
+	}
+	
+	@Override
+	public Collection<EntityFieldMetaDataVO> getFields() {
 		final String baseEntity = meta.getName();
 		final Collection<EntityFieldMetaDataVO> fields = new ArrayList<EntityFieldMetaDataVO>();
 		for (CollectableEntityField f: getCollectController().getResultController().getFields().getSelectedFields()) {
@@ -323,13 +334,7 @@ public class GenericObjectViaEntityObjectSearchStrategy extends CollectSearchStr
 				includeSubModules = true;
 			}
 		}
-
-		// TODO: OPTIMIZATION: only selected and/or required attributes should be loaded here!
-		final ProxyList<EntityObjectVO> proxylstlovwdvo = lodelegate.getEntityObjectProxyList(
-				IdUtils.toLongId(getGenericObjectController().getModuleId()),
-				clctexprInternal, fields, getCollectController().getCustomUsage());
-
-		return new MyProxyListAdapter(new CollectableEntityObjectProxyListAdapter(proxylstlovwdvo, meta));
+		return fields;
 	}
 
 	@Override

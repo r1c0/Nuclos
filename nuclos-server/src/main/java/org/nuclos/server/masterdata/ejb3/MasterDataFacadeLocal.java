@@ -252,12 +252,31 @@ public interface MasterDataFacadeLocal {
 		Map<EntityAndFieldName, String> mpEntityAndParentEntityName);
 
 	/**
+	 * creates the given dependants (local use only).
+	 * @param dependants
+	 * @precondition mpDependants != null
+	 */
+	void createDependants(String entityName, Integer id,
+		Boolean removed, DependantMasterDataMap dependants, String customUsage)
+		throws CommonCreateException, CommonPermissionException;
+	
+	/**
 	 * modifies the given dependants (local use only).
 	 * @param dependants
 	 * @precondition mpDependants != null
 	 */
 	void modifyDependants(String entityName, Integer id,
 		Boolean removed, DependantMasterDataMap dependants, String customUsage)
+		throws CommonCreateException, CommonFinderException, CommonPermissionException,
+		CommonRemoveException, CommonStaleVersionException;
+	
+	/**
+	 * modifies the given dependants (local use only).
+	 * @param dependants
+	 * @precondition mpDependants != null
+	 */
+	void modifyDependants(String entityName, Integer id,
+		Boolean removed, DependantMasterDataMap dependants, boolean read, String customUsage)
 		throws CommonCreateException, CommonFinderException, CommonPermissionException,
 		CommonRemoveException, CommonStaleVersionException;
 

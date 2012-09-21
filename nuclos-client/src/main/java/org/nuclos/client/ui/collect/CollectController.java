@@ -2794,6 +2794,20 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		assert ss.isCollectableComplete(result);
 		return result;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws CommonBusinessException
+	 */
+	protected Clct readSelectedCollectableForResult() throws CommonBusinessException {
+		final Clct clct = this.getSelectedCollectable();
+		if (clct == null) {
+			throw new IllegalStateException("Kein Objekt ausgew\u00e4hlt.");
+		}
+		
+		return findCollectableById(clcte.getName(), clct.getId(), getSearchStrategy().getFields());
+	}
 
 	/**
 	 * (re)reads the <code>Collectable</code> that is selected in the result list from its "data source"
@@ -2861,6 +2875,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @postcondition isCollectableComplete(result)
 	 */
 	protected abstract Clct findCollectableById(String sEntity, Object oId) throws CommonBusinessException;
+	
+	protected abstract Clct findCollectableById(String sEntity, Object oId, Collection<EntityFieldMetaDataVO> fields) throws CommonBusinessException;
 
 	/**
 	 * finds the Collectable from the given id, fetching it from the underlying data store.

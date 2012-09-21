@@ -97,7 +97,10 @@ import org.nuclos.client.common.SubFormController;
 import org.nuclos.client.common.TableRowIndicator;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.dal.DalSupportForGO;
+import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.eventsupport.EventSupportDelegate;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.ExplorerDelegate;
@@ -231,6 +234,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
@@ -2550,6 +2554,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				if(interrupted)
 					return;
 				else {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						// ignore
+					}
 					iParentId = clct.getId();
 					collmdcvo = (clct.getId() == null)
 					? new ArrayList<EntityObjectVO>()
@@ -2829,6 +2838,24 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		assert getSearchStrategy().isCollectableComplete(result);
 		return result;
+	}
+	
+	@Override
+	protected CollectableGenericObjectWithDependants findCollectableById(String sEntity, Object oId, Collection<EntityFieldMetaDataVO> fields) throws CommonBusinessException {
+		if (fields == null) {
+			return findCollectableById(sEntity, oId);
+		}
+		Collection<EntityObjectVO> eovos = EntityObjectDelegate.getInstance().getEntityObjectsMore(
+				MetaDataClientProvider.getInstance().getEntity(sEntity).getId(), 
+				Collections.singletonList(IdUtils.toLongId(oId)), 
+				fields, getCustomUsage());
+		if (eovos.isEmpty()) {
+			return null;
+		} else {
+			return new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(
+					eovos.iterator().next(), 
+					(CollectableEOEntity) CollectableEOEntityClientProvider.getInstance().getCollectableEntity(sEntity)));
+		}
 	}
 
 	@Override

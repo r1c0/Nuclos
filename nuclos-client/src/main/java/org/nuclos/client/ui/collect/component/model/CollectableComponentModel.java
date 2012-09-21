@@ -30,6 +30,7 @@ import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosImage;
 
 /**

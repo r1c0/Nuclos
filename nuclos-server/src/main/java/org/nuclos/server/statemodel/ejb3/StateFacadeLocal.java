@@ -24,6 +24,8 @@ import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
+import org.nuclos.server.masterdata.valueobject.DependantWrapper;
 import org.nuclos.server.statemodel.NuclosNoAdequateStatemodelException;
 import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
 import org.nuclos.server.statemodel.valueobject.MandatoryColumnVO;
@@ -130,6 +132,17 @@ public interface StateFacadeLocal {
 		NuclosNoAdequateStatemodelException,
 		NuclosSubsequentStateNotLegalException, CommonFinderException;
 
+	/**
+	 * 
+	 * @param goVO
+	 * @throws NuclosBusinessException
+	 * @throws NuclosNoAdequateStatemodelException
+	 * @throws CommonCreateException
+	 * @throws CommonPermissionException
+	 */
+	void enterInitialState(GenericObjectVO goVO, DependantWrapper depWrapper, String customUsage) 
+			throws NuclosBusinessException, NuclosNoAdequateStatemodelException, CommonCreateException, CommonPermissionException;
+	
 	/**
 	 * returns a StateTransitionVO for the given transitionId
 	 */

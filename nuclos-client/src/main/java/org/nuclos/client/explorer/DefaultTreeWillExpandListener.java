@@ -48,7 +48,7 @@ public class DefaultTreeWillExpandListener implements TreeWillExpandListener {
 	
 					if (bSubNodesHaventBeenLoaded) {
 						//explorernode.unloadChildren();
-						explorernode.loadChildren(true);
+						explorernode.loadChildren(false);
 	
 						for (int i = 0; i < explorernode.getChildCount(); i++) {
 							final ExplorerNode<?> explorernodeChild = (ExplorerNode<?>) explorernode.getChildAt(i);

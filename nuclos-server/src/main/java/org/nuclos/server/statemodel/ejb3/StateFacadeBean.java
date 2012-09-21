@@ -66,6 +66,7 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
@@ -89,11 +90,11 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantWrapper;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.RoleTransitionVO;
-import org.nuclos.server.processmonitor.ejb3.InstanceFacadeLocal;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeLocal;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
@@ -974,6 +975,11 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		changeState(iModuleId, iGenericObjectId, iTargetStateId, true, customUsage);
 	}
+    
+    public void enterInitialState(GenericObjectVO goVO, DependantWrapper depWrapper, String customUsage) throws NuclosBusinessException, NuclosNoAdequateStatemodelException, CommonCreateException, CommonPermissionException {
+    	Integer iInitialStateId = getInitialState(goVO.getId()).getId();
+    	changeState(Integer.valueOf(goVO.getModuleId()), goVO, depWrapper, iInitialStateId, customUsage);
+    }
 
 	/**
 	 * method to change the status of a given leased object
@@ -1336,34 +1342,66 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iTargetStateId legal subsequent status id to set for given leased object
 	 */
 	private void changeState(Integer iModuleId, Integer iGenericObjectId, Integer iTargetStateId, String customUsage)
-		throws NuclosBusinessException, CommonFinderException, CommonCreateException, CommonPermissionException {
+			throws NuclosBusinessException, CommonFinderException, CommonCreateException, CommonPermissionException {
+		
+		GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+		RuleObjectContainerCVO loccvoBefore = goFacade.getRuleObjectContainerCVO(Event.CHANGE_STATE_BEFORE, iGenericObjectId, customUsage);
+		changeState(iModuleId, loccvoBefore, new DependantWrapper(), iTargetStateId, customUsage);
+	}
+	
+	private void changeState(Integer iModuleId, GenericObjectVO govo, DependantWrapper depWrapper, Integer iTargetStateId, String customUsage) 
+			throws NuclosBusinessException, CommonCreateException, CommonPermissionException {
+			
+		RuleObjectContainerCVO loccvoBefore = new RuleObjectContainerCVO(Event.CHANGE_STATE_BEFORE, govo, depWrapper.getDependants());
+		changeState(iModuleId, loccvoBefore, depWrapper, iTargetStateId, customUsage);
+	}
+	
+	private void changeState(Integer iModuleId, RuleObjectContainerCVO loccvoBefore, DependantWrapper depWrapper, Integer iTargetStateId, String customUsage)
+		throws NuclosBusinessException, CommonCreateException, CommonPermissionException {
 		// get source state id for later rule identification:
-		StateVO statevo = getCurrentState(iModuleId, iGenericObjectId);
-		Integer iSourceStateId = (statevo == null) ? null : statevo.getId();
+//		StateVO statevo = getCurrentState(iModuleId, iGenericObjectId);
+//		Integer iSourceStateId = (statevo == null) ? null : statevo.getId();
 
+		String entity = MetaDataServerProvider.getInstance().getEntity(iModuleId.longValue()).getEntity();
+		Integer iAttributeStateId = MetaDataServerProvider.getInstance().getEntityField(entity, NuclosEOField.STATE.getName()).getId().intValue();
+		Integer iAttributeStatenumberId = MetaDataServerProvider.getInstance().getEntityField(entity, NuclosEOField.STATENUMBER.getName()).getId().intValue();
+		GenericObjectVO govo = loccvoBefore.getGenericObject();
+		DynamicAttributeVO attrState = govo.getAttribute(iAttributeStateId);
+		DynamicAttributeVO attrStatenumber = govo.getAttribute(iAttributeStatenumberId);
+		Integer iSourceStateId = attrState == null? null: attrState.getValueId();
+		
 		StateVO stateVO = stateCache.getState(iTargetStateId);
 
 		// change the status of leased object now:
 		getMasterDataFacade().create(NuclosEntity.STATEHISTORY.getEntityName(),
-			MasterDataWrapper.wrapStateHistoryVO(new StateHistoryVO(iGenericObjectId,iTargetStateId,
+			MasterDataWrapper.wrapStateHistoryVO(new StateHistoryVO(govo.getId(),iTargetStateId,
 					stateCache.getState(iTargetStateId).getStatename())), null, null);
 
 		// copy status name to leased object attributes:
 		try {
-			final GenericObjectVO go = genericObjectFacade.get(iGenericObjectId);
+//			final GenericObjectVO go = genericObjectFacade.get(iGenericObjectId);
 			final GenericObjectMetaDataCache prov = GenericObjectMetaDataCache.getInstance();
 			
-			final DynamicAttributeVO state = go.getAttribute(NuclosEOField.STATE.getMetaData().getField(), prov);
-			state.setParsedValue(stateVO.getStatename(), prov);
-			state.setValueId(stateVO.getId());
+			if (attrState == null) {
+				attrState = new DynamicAttributeVO(iAttributeStateId, null, null);
+				govo.addAndSetAttribute(attrState);
+			}
+			if (attrStatenumber == null) {
+				attrStatenumber = new DynamicAttributeVO(iAttributeStatenumberId, null, null);
+				govo.addAndSetAttribute(attrStatenumber);
+			}
+//			final DynamicAttributeVO state = go.getAttribute(NuclosEOField.STATE.getMetaData().getField(), prov);
+			attrState.setParsedValue(stateVO.getStatename(), prov);
+			attrState.setValueId(stateVO.getId());
 			// goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATE.getMetaData().getField(), stateVO.getId(), stateVO.getStatename());
 			
-			final DynamicAttributeVO statenumber = go.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), prov);
-			state.setParsedValue(stateVO.getNumeral(), prov);
-			state.setValueId(stateVO.getId());
+//			final DynamicAttributeVO statenumber = go.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), prov);
+			attrStatenumber.setParsedValue(stateVO.getNumeral(), prov);
+			attrStatenumber.setValueId(stateVO.getId());
 			// goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getId(), stateVO.getNumeral());
 			
-			genericObjectFacade.modify(go, null, false, customUsage);
+			govo = genericObjectFacade.modify(govo, null, false);
+			loccvoBefore.setGenericObject(govo);
 		}
 		catch (CommonValidationException ex) {
 			throw new NuclosFatalException(ex);
@@ -1374,12 +1412,15 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		catch (CommonRemoveException ex) {
 			throw new NuclosFatalException(ex);
 		}
+		catch (CommonFinderException ex) {
+			throw new NuclosFatalException(ex);
+		}
 
 		// handle instance "state change"
-		ServerServiceLocator.getInstance().getFacade(InstanceFacadeLocal.class).notifyInstanceAboutStateChange(iGenericObjectId, iTargetStateId);
+//		ServerServiceLocator.getInstance().getFacade(InstanceFacadeLocal.class).notifyInstanceAboutStateChange(iGenericObjectId, iTargetStateId);
 
 		// fire rules attached to the executed state transition:
-		fireStateChangedEvent(iGenericObjectId, iSourceStateId, iTargetStateId, customUsage);
+		fireStateChangedEvent(loccvoBefore, depWrapper, iSourceStateId, iTargetStateId, customUsage);
 	}
 
 	/**
@@ -1447,7 +1488,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		return result;
 	}
 
-	private void fireStateChangedEvent(Integer iGenericObjectId, Integer iSourceStateId, Integer iTargetStateId, String customUsage)
+	private void fireStateChangedEvent(RuleObjectContainerCVO loccvoBefore, DependantWrapper depWrapper, Integer iSourceStateId, Integer iTargetStateId, String customUsage)
 			throws NuclosBusinessRuleException {
 
 		GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
@@ -1463,7 +1504,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			final Integer iSourceStateNum = sourceState==null? null: sourceState.getNumeral();
 			final String sSourceStateName = sourceState==null? null: sourceState.getStatename();
 
-			RuleObjectContainerCVO loccvoBefore = goFacade.getRuleObjectContainerCVO(Event.CHANGE_STATE_BEFORE, iGenericObjectId, customUsage);
 			loccvoBefore.setTargetStateId(iTargetStateId);
 			loccvoBefore.setTargetStateNum(iTargetStateNum);
 			loccvoBefore.setTargetStateName(sTargetStateName);
@@ -1473,6 +1513,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 			RuleObjectContainerCVO loccvoAfter = facade.fireRule(iSourceStateId, iTargetStateId, loccvoBefore, false, customUsage);
 			loccvoAfter = evtSupFacade.fireStateTransitionEventSupport(iSourceStateId, iTargetStateId, loccvoAfter, false);
+			depWrapper.setDependants(loccvoAfter.getDependants(true));
+			
 			
 			// check mandatory fields and subform columns
 			EntityObjectVO validation = DalSupportForGO.wrapGenericObjectVO(loccvoAfter.getGenericObject());
@@ -1483,7 +1525,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			// We deliberately allow changing the GenericObjectVO from the rule in "state change" events
 			// so the rule writer doesn't have to distinguish them from other events (like "save").
 			// Note that the modification of the leased object does not fire another save event here:
-			GenericObjectVO modifiedGoVO = goFacade.modify(loccvoAfter.getGenericObject(), loccvoAfter.getDependants(true), false, customUsage);
+			GenericObjectVO modifiedGoVO = goFacade.modify(loccvoAfter.getGenericObject(), depWrapper.getDependants(), false, false, false, customUsage);
 
 			RuleObjectContainerCVO loccvoAfterModified = new RuleObjectContainerCVO(Event.CHANGE_STATE_AFTER, modifiedGoVO, loccvoAfter.getDependants());
 			loccvoAfterModified.setTargetStateId(iTargetStateId);
@@ -1494,7 +1536,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			loccvoAfterModified.setSourceStateName(sSourceStateName);
 
 			loccvoAfterModified = facade.fireRule(iSourceStateId, iTargetStateId, loccvoAfterModified, true, null);
-			evtSupFacade.fireStateTransitionEventSupport(iSourceStateId, iTargetStateId, loccvoAfterModified, true);
+			depWrapper.setDependants(evtSupFacade.fireStateTransitionEventSupport(iSourceStateId, iTargetStateId, loccvoAfterModified, true).getDependants(true));
 
 		}
 		catch (Exception ex) {

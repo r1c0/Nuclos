@@ -571,7 +571,7 @@ public interface GenericObjectFacadeLocal {
 			CommonCreateException, CommonFinderException, CommonRemoveException;
 	
 	@RolesAllowed("Login")
-	GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission, String customUsage)
+	GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission, boolean bReadDependants, String customUsage)
 			throws CommonPermissionException, CommonStaleVersionException,
 			NuclosBusinessException, CommonValidationException,
 			CommonCreateException, CommonFinderException, CommonRemoveException;

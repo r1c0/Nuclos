@@ -62,6 +62,7 @@ import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.TruncatableCollectionDecorator;
@@ -90,6 +91,7 @@ import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dblayer.DbException;
+import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -112,6 +114,7 @@ import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantWrapper;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
@@ -764,15 +767,16 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 //			throw new NullArgumentException("govo.getParentId");
 //		}
 
-		DependantMasterDataMap mpDependants = gowdvo.getDependants();
+		DependantWrapper depWrapper = new DependantWrapper();
+		depWrapper.setDependants(gowdvo.getDependants());
 
 		final boolean useRuleEngineSave = this.getUsesRuleEngine(MetaDataServerProvider.getInstance().getEntity(
 				IdUtils.toLongId(iModuleId)).getEntity(), RuleEventUsageVO.SAVE_EVENT);
 		final boolean useEventSupports = this.getUsesEventSupports(iModuleId, InsertSupport.name);
 		if(useRuleEngineSave || useEventSupports){
 			/** @todo check if loccvoResult can safely be ignored */
-			final RuleObjectContainerCVO loccvoResult = fireSaveEvent(Event.CREATE_BEFORE, gowdvo, mpDependants, false, customUsage);
-			mpDependants = loccvoResult.getDependants();
+			final RuleObjectContainerCVO loccvoResult = fireSaveEvent(Event.CREATE_BEFORE, gowdvo, depWrapper.getDependants(), false, customUsage);
+			depWrapper.setDependants(loccvoResult.getDependants());
 		}
 
 		EntityObjectVO dalVO = DalSupportForGO.wrapGenericObjectVO(gowdvo);
@@ -787,7 +791,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		dalVO.getFields().put(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField(), sCanonicalValueSystemIdentifier);
 
 		try {
-			validationSupport.validate(dalVO, mpDependants);
+			validationSupport.validate(dalVO, depWrapper.getDependants());
 
 			NucletDalProvider.getInstance().getEntityObjectProcessor(dalVO.getEntity()).insertOrUpdate(dalVO);
 
@@ -816,17 +820,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final GenericObjectVO goVO = DalSupportForGO.getGenericObjectVO(dalVO);
 
 		// get default object group assigned to current user
-		Integer groupId = null;
-
-		for (final MasterDataVO mdvo : getMasterDataFacade().getMasterData(NuclosEntity.USER.getEntityName(), null, true)) {
-			if (user.equals(mdvo.getField("name"))) {
-				groupId = (Integer)mdvo.getField("groupId");
-			}
-		}
+		Long groupId = getUserGroupId(user);
 
 		if (groupId != null) {
 			try {
-				this.addToGroup(id, groupId, false);
+				this.addToGroup(id, groupId.intValue(), false);
 			}
 			catch (CommonFinderException e) {
 				throw new CommonFatalException(e);
@@ -842,14 +840,14 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 
 		// create dependant records from subforms:
-		if (mpDependants != null) {
+		if (depWrapper.getDependants() != null) {
 			String entityNameByModuleId = Modules.getInstance().getEntityNameByModuleId(gowdvo.getModuleId());
 
 			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 			final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 				entityNameByModuleId,id,false,customUsage);
 
-			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(iModuleId), id, mpDependants, collSubEntities, customUsage);
+			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(iModuleId), id, depWrapper.getDependants(), collSubEntities, customUsage);
 		}
 
 		// Write a possible origin object into the logbook:
@@ -864,7 +862,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		if (Modules.getInstance().getUsesStateModel(iModuleId)) {
 			// create first state entry of generic object:
 			try {
-				this.enterInitialState(goVO, customUsage);
+				ServiceLocator.getInstance().getFacade(StateFacadeLocal.class).enterInitialState(goVO, depWrapper, customUsage);
 
 
 
@@ -898,8 +896,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		
 		if(useRuleEngineSaveAfter || useFinalEventSupports){
 			try {
-				mpDependants = reloadDependants(result, mpDependants, true, customUsage);
-				fireSaveEvent(Event.CREATE_AFTER, result, mpDependants, true, customUsage);
+//				mpDependants = reloadDependants(result, mpDependants, true, customUsage);
+				depWrapper.setDependants(fireSaveEvent(Event.CREATE_AFTER, result, depWrapper.getDependants(), true, customUsage).getDependants(true));
 				result = get(id);
 			} catch (CommonFinderException ex) {
 				throw new CommonFatalException(ex);
@@ -909,6 +907,21 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		debug("Leaving create(GenericObjectWithDependantsVO)");
 
 		return result;
+	}
+	
+	private Long getUserGroupId(String sUserName) {
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQuery<Long> query = builder.createQuery(Long.class);
+		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
+		query.select(t.baseColumn("INTID_T_UD_GROUP", Long.class));
+		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
+		Long executeQuerySingleResult = null;
+		try{
+			executeQuerySingleResult = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		} catch (DbInvalidResultSizeException e){
+			throw new CommonFatalException("Could not find user "+sUserName);
+		}
+		return executeQuerySingleResult;
 	}
 
 	/**
@@ -972,7 +985,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throws CommonPermissionException, CommonStaleVersionException,
 			NuclosBusinessException, CommonValidationException,
 			CommonCreateException, CommonFinderException, CommonRemoveException{
-		return modify(govo, mpDependants, bFireSaveEvent, true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+		return modify(govo, mpDependants, bFireSaveEvent, true, true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 	}
 	
 	@RolesAllowed("Login")
@@ -980,7 +993,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throws CommonPermissionException, CommonStaleVersionException,
 			NuclosBusinessException, CommonValidationException,
 			CommonCreateException, CommonFinderException, CommonRemoveException{
-		return modify(govo, mpDependants, bFireSaveEvent, true, customUsage);
+		return modify(govo, mpDependants, bFireSaveEvent, true, true, customUsage);
 	}
 
 	/**
@@ -1001,11 +1014,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throws CommonPermissionException, CommonStaleVersionException,
 			NuclosBusinessException, CommonValidationException,
 			CommonCreateException, CommonFinderException, CommonRemoveException {
-		return modify(govo, mpDependants, bFireSaveEvent, bCheckPermission, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+		return modify(govo, mpDependants, bFireSaveEvent, bCheckPermission, true, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 	}
-	
+		
 	@RolesAllowed("Login")
-	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission, String customUsage)
+	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission, boolean bReadDependants, String customUsage)
 			throws CommonPermissionException, CommonStaleVersionException,
 			NuclosBusinessException, CommonValidationException,
 			CommonCreateException, CommonFinderException, CommonRemoveException {
@@ -1071,13 +1084,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			final Set<Integer> stExcluded = new HashSet<Integer>();
 			getMasterDataFacade().protocolDependantChanges(govo.getId(), mpDependants, stExcluded, false);
 
-			for (String sEntityName : mpDependants.getEntityNames()) {
-				for (EntityObjectVO mdVO : mpDependants.getData(sEntityName)) {
-					getMasterDataFacade().readAllDependants(sEntityName, IdUtils.unsafeToId(mdVO.getId()), mdVO.getDependants(), mdVO.isFlagRemoved(), sEntityName, collSubEntities);
+			if (bReadDependants) {
+				for (String sEntityName : mpDependants.getEntityNames()) {
+					for (EntityObjectVO mdVO : mpDependants.getData(sEntityName)) {
+						getMasterDataFacade().readAllDependants(sEntityName, IdUtils.unsafeToId(mdVO.getId()), mdVO.getDependants(), mdVO.isFlagRemoved(), sEntityName, collSubEntities);
+					}
 				}
 			}
 
-			getMasterDataFacade().modifyDependants(entityNameByModuleId,govo.getId(),govo.isRemoved(),mpDependants, customUsage);
+			getMasterDataFacade().modifyDependants(entityNameByModuleId,govo.getId(),govo.isRemoved(),mpDependants,bReadDependants,customUsage);
 
 			// .. and then all the newly created ones, excluding the already written (i.e. the modified).
 			getMasterDataFacade().protocolDependantChanges(govo.getId(), mpDependants, stExcluded, true);
@@ -1438,35 +1453,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 //				attrcvo.getName(), attrcvo.getResourceSIdForLabel()));
 //		}
 //	}
-
-	/**
-	 * causes the given generic object to enter its initial state.
-	 * @param go
-	 * @precondition Modules.getInstance().getUsesStateModel(go.getModuleId().intValue())
-	 * @throws NuclosBusinessRuleException
-	 * @throws NuclosNoAdequateStatemodelException
-	 */
-	private void enterInitialState(GenericObjectVO goVO, String customUsage) throws NuclosBusinessException,
-			NuclosNoAdequateStatemodelException, CommonFinderException {
-
-		if (!Modules.getInstance().getUsesStateModel(goVO.getModuleId())) {
-			throw new IllegalArgumentException("goVO");
-		}
-		try {
-			StateFacadeLocal statefacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
-			final Integer iInitialStateId = statefacade.getInitialState(goVO.getId()).getId();
-			statefacade.changeStateByRule(Integer.valueOf(goVO.getModuleId()), goVO.getId(), iInitialStateId, customUsage);
-		}
-		catch (NuclosSubsequentStateNotLegalException ex) {
-			throw new NuclosFatalException(ex);
-		}
-		catch (CommonCreateException ex) {
-			throw new NuclosFatalException(ex);
-		}
-		catch (CommonPermissionException ex) {
-			throw new NuclosFatalException(ex);
-		}
-	}
 
 	/**
 	 * method to get logbook entries for a generic object
