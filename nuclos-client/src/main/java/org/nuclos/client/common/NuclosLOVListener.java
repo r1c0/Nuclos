@@ -94,7 +94,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 	@Override
 	public void showDetails(final CollectableComponentEvent ev) {
 		final CollectableComponent clctcomp = ev.getCollectableComponent();
-		UIUtils.runCommandLater(clctcomp.getJComponent(), new CommonRunnable() {
+		UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final Main main = Main.getInstance();
