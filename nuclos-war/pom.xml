@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>nuclos</artifactId>
 		<groupId>org.nuclos</groupId>
-		<version>3.7-SNAPSHOT</version>
+		<version>3.8-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>nuclos-war</artifactId>
