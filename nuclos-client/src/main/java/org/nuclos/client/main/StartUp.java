@@ -146,7 +146,7 @@ public class StartUp  {
 	/**
 	 * To avoid classpath scanning we limit ourself to ONE extension (tp)
 	 */
-	private static final String EXTENSION_SPRING_BEANS = "classpath:META-INF/nuclos/nuclos-extension-client-beans.xml";
+	private static final String EXTENSION_SPRING_BEANS = "classpath*:META-INF/nuclos/nuclos-extension-client-beans.xml";
 	
 	//
 
@@ -276,8 +276,8 @@ public class StartUp  {
 					tnr.setReadyToSubscribe(true);
 					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 					
-					// final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
-					final Resource[] extensions = new Resource[] { clientContext.getResource(EXTENSION_SPRING_BEANS) };
+					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
+					// final Resource[] extensions = new Resource[] { clientContext.getResource(EXTENSION_SPRING_BEANS) };
 					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
 
 					final int size = extensions.length;
