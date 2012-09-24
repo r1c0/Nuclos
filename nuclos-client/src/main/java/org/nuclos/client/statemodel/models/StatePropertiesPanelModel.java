@@ -315,7 +315,8 @@ public class StatePropertiesPanelModel implements Serializable {
 			for(String sName : mp.values()) {
 				model.addElement(sName);
 			}
+			// always add empty entry @see NUCLOS-722
+			model.addElement("");
 		}
-		
 	}
 }
