@@ -857,6 +857,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
+				//@see NUCLOS-1139
+				final SizeKnownListener listener = getSubForm().getSizeKnownListener();
+				// Trigger the 'loading' display...
+				if (listener != null) {
+					listener.actionPerformed(new SizeKnownEvent(getSubForm(), null));
+				}
 				MasterDataSubFormController.super.clear();
 				clearChildSubFormController();
 			}
