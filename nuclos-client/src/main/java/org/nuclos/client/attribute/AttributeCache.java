@@ -127,9 +127,12 @@ public class AttributeCache extends AbstractLocalUserCache implements AttributeP
 		if (mpAttributesByIds.isEmpty()) {
 			fill();
 		}
-		final AttributeCVO result = mpAttributesByIds.get(iAttributeId);
+		AttributeCVO result = mpAttributesByIds.get(iAttributeId);
 		if (result == null) {
-			throw new NuclosAttributeNotFoundException(iAttributeId);
+			revalidate(); // try to revalidate once.
+			result = mpAttributesByIds.get(iAttributeId);
+			if (result == null)
+				throw new NuclosAttributeNotFoundException(iAttributeId);
 		}
 
 		assert result != null;
@@ -164,9 +167,13 @@ public class AttributeCache extends AbstractLocalUserCache implements AttributeP
 		if (sAttributeName == null) {
 			throw new NullArgumentException("sAttributeName");
 		}
-		final AttributeCVO result = getAttribute(MetaDataClientProvider.getInstance().getEntityField(sEntity, sAttributeName).getId().intValue());
+		AttributeCVO result = getAttribute(MetaDataClientProvider.getInstance().getEntityField(sEntity, sAttributeName).getId().intValue());
 		if (result == null) {
-			throw new NuclosAttributeNotFoundException(sAttributeName);
+			revalidate(); // try to revalidate once.
+			MetaDataClientProvider.getInstance().revalidate();
+			result = getAttribute(MetaDataClientProvider.getInstance().getEntityField(sEntity, sAttributeName).getId().intValue());
+			if (result == null) 
+				throw new NuclosAttributeNotFoundException(sAttributeName);
 		}
 		assert result != null;
 		return result;
