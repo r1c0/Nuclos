@@ -2746,6 +2746,88 @@ public class SubForm extends JPanel
 				result = getCellEditor(iRow, ((SubFormTableModel) getModel()).getColumn(clctefTarget));
 			}
 			
+			if (result instanceof CollectableComponentTableCellEditor) {
+				final CollectableComponentTableCellEditor cellEditor = (CollectableComponentTableCellEditor) result;
+				return new CollectableComponentTableCellEditor(cellEditor.getCollectableComponent(), cellEditor.isSearchable()) {
+					@Override
+					public boolean stopCellEditing() {
+						return cellEditor.stopCellEditing();
+					}
+					@Override
+					public boolean shouldSelectCell(EventObject anEvent) {
+						return cellEditor.shouldSelectCell(anEvent);
+					}
+					
+					@Override
+					public void removeCellEditorListener(CellEditorListener l) {
+						cellEditor.removeCellEditorListener(l);
+					}
+					@Override
+					public boolean isCellEditable(EventObject anEvent) {
+						return cellEditor.isCellEditable(anEvent);
+					}
+					@Override
+					public Object getCellEditorValue() {
+						return cellEditor.getCellEditorValue();
+					}
+					@Override
+					public void cancelCellEditing() {
+						cellEditor.cancelCellEditing();
+					}
+					@Override
+					public void addCellEditorListener(CellEditorListener l) {
+						cellEditor.addCellEditorListener(l);
+					}
+					@Override
+					public CollectableComponent getCollectableComponent() {
+						return cellEditor.getCollectableComponent();
+					}
+					@Override
+					public CellEditorListener[] getCellEditorListeners() {
+						return cellEditor.getCellEditorListeners();
+					}
+					@Override
+					public void collectableFieldChangedInModel(
+							CollectableComponentModelEvent ev) {
+						cellEditor.collectableFieldChangedInModel(ev);
+					}
+					@Override
+					public void addCollectableComponentModelListener(
+							CollectableComponentModelListener listener) {
+						cellEditor.addCollectableComponentModelListener(listener);
+					}
+					@Override
+					public int getLastEditingRow() {
+						return cellEditor.getLastEditingRow();
+					}
+					@Override
+					public boolean isSearchable() {
+						return cellEditor.isSearchable();
+					}
+					@Override
+					public void removeCollectableComponentModelListener(
+							CollectableComponentModelListener listener) {
+						cellEditor.removeCollectableComponentModelListener(listener);
+					}
+					@Override
+					public void searchConditionChangedInModel(
+							SearchComponentModelEvent ev) {
+						cellEditor.searchConditionChangedInModel(ev);
+					}
+					@Override
+					public void valueToBeChanged(DetailsComponentModelEvent ev) {
+						cellEditor.valueToBeChanged(ev);
+					}
+					@Override
+					public Component getTableCellEditorComponent(JTable table, Object value,
+							boolean isSelected, int row, int column) {
+						Component c = cellEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
+						if (c != null && c.getFont() != null && subform != null)
+							c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+						return c;
+					}
+				};
+			} 
 			final TableCellEditor cellEditor = result;
 			return new TableCellEditor() {
 				@Override
@@ -2809,6 +2891,88 @@ public class SubForm extends JPanel
 				result = super.getCellEditor(iRow, iColumn);
 			}
 			
+			if (result instanceof CollectableComponentTableCellEditor) {
+				final CollectableComponentTableCellEditor cellEditor = (CollectableComponentTableCellEditor) result;
+				return new CollectableComponentTableCellEditor(cellEditor.getCollectableComponent(), cellEditor.isSearchable()) {
+					@Override
+					public boolean stopCellEditing() {
+						return cellEditor.stopCellEditing();
+					}
+					@Override
+					public boolean shouldSelectCell(EventObject anEvent) {
+						return cellEditor.shouldSelectCell(anEvent);
+					}
+					
+					@Override
+					public void removeCellEditorListener(CellEditorListener l) {
+						cellEditor.removeCellEditorListener(l);
+					}
+					@Override
+					public boolean isCellEditable(EventObject anEvent) {
+						return cellEditor.isCellEditable(anEvent);
+					}
+					@Override
+					public Object getCellEditorValue() {
+						return cellEditor.getCellEditorValue();
+					}
+					@Override
+					public void cancelCellEditing() {
+						cellEditor.cancelCellEditing();
+					}
+					@Override
+					public void addCellEditorListener(CellEditorListener l) {
+						cellEditor.addCellEditorListener(l);
+					}
+					@Override
+					public CollectableComponent getCollectableComponent() {
+						return cellEditor.getCollectableComponent();
+					}
+					@Override
+					public CellEditorListener[] getCellEditorListeners() {
+						return cellEditor.getCellEditorListeners();
+					}
+					@Override
+					public void collectableFieldChangedInModel(
+							CollectableComponentModelEvent ev) {
+						cellEditor.collectableFieldChangedInModel(ev);
+					}
+					@Override
+					public void addCollectableComponentModelListener(
+							CollectableComponentModelListener listener) {
+						cellEditor.addCollectableComponentModelListener(listener);
+					}
+					@Override
+					public int getLastEditingRow() {
+						return cellEditor.getLastEditingRow();
+					}
+					@Override
+					public boolean isSearchable() {
+						return cellEditor.isSearchable();
+					}
+					@Override
+					public void removeCollectableComponentModelListener(
+							CollectableComponentModelListener listener) {
+						cellEditor.removeCollectableComponentModelListener(listener);
+					}
+					@Override
+					public void searchConditionChangedInModel(
+							SearchComponentModelEvent ev) {
+						cellEditor.searchConditionChangedInModel(ev);
+					}
+					@Override
+					public void valueToBeChanged(DetailsComponentModelEvent ev) {
+						cellEditor.valueToBeChanged(ev);
+					}
+					@Override
+					public Component getTableCellEditorComponent(JTable table, Object value,
+							boolean isSelected, int row, int column) {
+						Component c = cellEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
+						if (c != null && c.getFont() != null && subform != null)
+							c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+						return c;
+					}
+				};
+			} 
 			final TableCellEditor cellEditor = result;
 			return new TableCellEditor() {
 				@Override
