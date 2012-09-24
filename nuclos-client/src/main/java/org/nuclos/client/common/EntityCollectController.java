@@ -835,8 +835,11 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						if(iDetailsMode == CollectState.DETAILSMODE_EDIT || iDetailsMode == CollectState.DETAILSMODE_VIEW) {
 							if(getResultTable().getSelectedRow() >= 0) {
 								Clct clctCurrent = getSelectedCollectable();
+								boolean bWasDetailsChangedIgnored = isDetailsChangedIgnored();
+								setDetailsChangedIgnored(true);
 								EntityCollectController.this.readValuesFromEditPanel(clctCurrent, false);
 								getResultController().replaceCollectableInTableModel(clctCurrent);
+								setDetailsChangedIgnored(bWasDetailsChangedIgnored);
 							}
 						}
 					}
