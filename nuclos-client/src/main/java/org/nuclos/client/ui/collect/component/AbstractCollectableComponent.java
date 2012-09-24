@@ -1485,7 +1485,10 @@ public abstract class AbstractCollectableComponent
 			if (!blnEntityIsEditable)
 				bInsertEnabled = blnEntityIsEditable;
 		}
-		result.setEnabled(bInsertEnabled && getControlComponent().isEnabled());
+		if (this instanceof CollectableComboBox)
+			result.setEnabled(bInsertEnabled && ((CollectableComboBox)this).getLabeledComponent().isEnabled());
+		else
+			result.setEnabled(bInsertEnabled && getControlComponent().isEnabled());
 
 		result.addActionListener(new ActionListener() {
 			@Override
