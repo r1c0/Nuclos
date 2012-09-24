@@ -97,6 +97,7 @@ public class AttributeCache extends AbstractLocalUserCache implements AttributeP
 		/*if (!wasDeserialized())
 			fill();
 		*/
+		mpAttributesByIds.clear();
 	}
 	
 	@Override
