@@ -57542,17 +57542,17 @@
   {
     "resourceID": "job.type.healthcheck",
     "locale": "i-default",
-    "text": "Healthcheck"
+    "text": "Database job"
   },
   {
     "resourceID": "job.type.healthcheck",
     "locale": "en",
-    "text": "Healthcheck"
+    "text": "Database job"
   },
   {
     "resourceID": "job.type.healthcheck",
     "locale": "de",
-    "text": "Healthcheck"
+    "text": "Datenbankjob"
   },
   {
     "resourceID": "nuclos.entityfield.jobcontroller.cronexpression.label",
