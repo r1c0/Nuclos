@@ -21,19 +21,25 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.Method;
 
+import javax.swing.ComboBoxEditor;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.plaf.UIResource;
 
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.autocomplete.AutoCompleteComboBoxEditor;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.Icons;
@@ -44,69 +50,177 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 
 /**
- * A labeled combobox.
+ * A labeled combobox. <br>
  * <br>
- * <br>Created by Novabit Informationssysteme GmbH
- * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
- * @version	01.00.00
+ * Created by Novabit Informationssysteme GmbH <br>
+ * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ * 
+ * @author <a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
+ * @version 01.00.00
  */
 
-public class LabeledComboBox extends LabeledComponent implements StrictSizeComponent {
-	
+public class LabeledComboBox extends LabeledComponent implements
+		StrictSizeComponent {
+
 	private static final Logger LOG = Logger.getLogger(LabeledComboBox.class);
-	
-	public static final Dimension DEFAULT_PREFERRED_SIZE = (new JTextField()).getPreferredSize();
-	
+
+	public static final Dimension DEFAULT_PREFERRED_SIZE = (new JTextField())
+			.getPreferredSize();
+
 	private Dimension strictSize = null;
-	
+
 	private final TextFieldWithButton tfDisabled = new TextFieldWithButton(
 			Icons.getInstance().getIconTextFieldButtonCombobox(), support) {
-		
+
 		@Override
 		public boolean isButtonEnabled() {
 			return false;
 		}
-		
+
 		@Override
 		public void buttonClicked(MouseEvent me) {
 		}
-		
+
 		@Override
 		public String getToolTipText(MouseEvent ev) {
 			return cmbbx.getToolTipText(ev);
 		}
-		
+
 		@Override
 		public Color getBackground() {
-			final ColorProvider colorproviderBackground = support.getColorProvider();
-			return (colorproviderBackground != null) ? colorproviderBackground.getColor(NuclosThemeSettings.BACKGROUND_INACTIVEFIELD) : NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+			final ColorProvider colorproviderBackground = support
+					.getColorProvider();
+			return (colorproviderBackground != null) ? colorproviderBackground
+					.getColor(NuclosThemeSettings.BACKGROUND_INACTIVEFIELD)
+					: NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 		}
-		
+
 	};
-	
+
+	/**
+	 * inherit BasicCombBoxEditor (1.24)
+	 */
+	private static class MyComboBoxEditor implements ComboBoxEditor, UIResource {
+		protected JTextField editor;
+		private Object oldValue;
+
+		public MyComboBoxEditor() {
+			editor = new JTextField("", 9) {
+				/**
+				 * NUCLEUSINT-1000
+				 * Inserts the clipboard contents into the text.
+				 */
+				@Override
+				public void paste() {
+					if (this.isEditable()) {
+						Clipboard clipboard = getToolkit().getSystemClipboard();
+						try {
+							// The MacOS MRJ doesn't convert \r to \n,
+							// so do it here
+							String selection = ((String) clipboard.getContents(this).getTransferData(DataFlavor.stringFlavor)).replace('\r', '\n');
+							if (selection.endsWith("\n")) {
+								selection = selection.substring(0, selection.length()-1);
+							}
+							//NUCLEUSINT-1139
+							replaceSelection(selection.trim()); // trim selection. @see NUCLOS-1112 
+						}
+						catch (Exception e) {
+							getToolkit().beep();
+							LOG.warn("Clipboard does not contain a string: " + e, e);
+						}
+					}
+				}
+			};
+			editor.setName("ComboBox.textField");
+		}
+
+		public Component getEditorComponent() {
+			return editor;
+		}
+		public void setItem(Object anObject) {
+			String text;
+
+			if (anObject != null) {
+				text = anObject.toString();
+				oldValue = anObject;
+			} else {
+				text = "";
+			}
+			// workaround for 4530952
+			if (!text.equals(editor.getText())) {
+				editor.setText(text);
+			}
+		}
+		public Object getItem() {
+			Object newValue = editor.getText();
+
+			if (oldValue != null && !(oldValue instanceof String)) {
+				// The original value is not a string. Should return the value
+				// in it's
+				// original type.
+				if (newValue.equals(oldValue.toString())) {
+					return oldValue;
+				} else {
+					// Must take the value from the editor and get the value and
+					// cast it to the new type.
+					Class cls = oldValue.getClass();
+					try {
+						Method method = cls.getMethod("valueOf",
+								new Class[] { String.class });
+						newValue = method.invoke(oldValue,
+								new Object[] { editor.getText() });
+					} catch (Exception ex) {
+						// Fail silently and return the newValue (a String
+						// object)
+					}
+				}
+			}
+			return newValue;
+		}
+
+		public void selectAll() {
+			editor.selectAll();
+			editor.requestFocus();
+		}
+
+		public void addActionListener(ActionListener l) {
+			editor.addActionListener(l);
+		}
+
+		public void removeActionListener(ActionListener l) {
+			editor.removeActionListener(l);
+		}
+	}
+
 	private final JComboBox cmbbx = new JComboBox() {
 
 		/**
-		 * Note that this (a dynamic tooltip) doesn't really work for JComboBox. The editor and the button (or the CellRenderer and the button,
-		 * for a non-editable combobox) have their own tooltips, which are kept in sync with the JComboBox's tooltip.
-		 * This method is only called when the mouse is over the border of the combobox.
-		 * One workaround could be to use a custom editor, but the ComboBoxEditor is something that is look&feel dependent.
-		 * We could, however, implement this workaround for BasicUI and for the other UIs, leave it as it is.
+		 * Note that this (a dynamic tooltip) doesn't really work for JComboBox.
+		 * The editor and the button (or the CellRenderer and the button, for a
+		 * non-editable combobox) have their own tooltips, which are kept in
+		 * sync with the JComboBox's tooltip. This method is only called when
+		 * the mouse is over the border of the combobox. One workaround could be
+		 * to use a custom editor, but the ComboBoxEditor is something that is
+		 * look&feel dependent. We could, however, implement this workaround for
+		 * BasicUI and for the other UIs, leave it as it is.
+		 * 
 		 * @param ev
 		 */
 		@Override
 		public String getToolTipText(MouseEvent ev) {
-			final ToolTipTextProvider provider = support.getToolTipTextProvider();
-			return (provider != null) ? provider.getDynamicToolTipText() : super.getToolTipText(ev);
+			final ToolTipTextProvider provider = support
+					.getToolTipTextProvider();
+			return (provider != null) ? provider.getDynamicToolTipText()
+					: super.getToolTipText(ev);
 		}
 
 		@Override
 		public Color getBackground() {
-			final ColorProvider colorproviderBackground = support.getColorProvider();
+			final ColorProvider colorproviderBackground = support
+					.getColorProvider();
 			final Color colorDefault = super.getBackground();
-			return (colorproviderBackground != null) ? colorproviderBackground.getColor(colorDefault) : colorDefault;
+			return (colorproviderBackground != null) ? colorproviderBackground
+					.getColor(colorDefault) : colorDefault;
 		}
 
 		@Override
@@ -146,25 +260,37 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 				return tfDisabled.getLocationOnScreen();
 			}
 		}
-		
+
 		@Override
 		public void setEnabled(boolean b) {
 			// ignore !!!
 		}
+
+		public void setEditor(javax.swing.ComboBoxEditor anEditor) {
+			if (anEditor instanceof AutoCompleteComboBoxEditor)
+				super.setEditor(anEditor);
+			else 
+				super.setEditor(new MyComboBoxEditor());
+		};
 	};
-	private final JTextField cmbbxTextField = (JTextField) cmbbx.getEditor().getEditorComponent();
+	private final JTextField cmbbxTextField = (JTextField) cmbbx.getEditor()
+			.getEditorComponent();
 
 	public LabeledComboBox() {
 		super();
 
-		this.cmbbx.setMinimumSize(new Dimension(this.cmbbx.getMinimumSize().width, DEFAULT_PREFERRED_SIZE.height));
+		this.cmbbx.setMinimumSize(new Dimension(
+				this.cmbbx.getMinimumSize().width,
+				DEFAULT_PREFERRED_SIZE.height));
 		this.addControl(this.cmbbx);
 		this.getJLabel().setLabelFor(this.cmbbx);
-		
+
 		this.tfDisabled.setEditable(false);
 		this.tfDisabled.addFocusListener(new FocusListener() {
 			@Override
-			public void focusLost(FocusEvent e) {}
+			public void focusLost(FocusEvent e) {
+			}
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				tfDisabled.selectAll();
@@ -177,11 +303,11 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 			}
 		});
 	}
-	
-	public synchronized void setupJPopupMenuListener(JPopupMenuListener popupmenulistener) {
-		final Component comp = getJComboBox().getEditor() != null ?
-				getJComboBox().getEditor().getEditorComponent() :
-				getControlComponent();
+
+	public synchronized void setupJPopupMenuListener(
+			JPopupMenuListener popupmenulistener) {
+		final Component comp = getJComboBox().getEditor() != null ? getJComboBox()
+				.getEditor().getEditorComponent() : getControlComponent();
 
 		comp.addMouseListener(popupmenulistener);
 		tfDisabled.addMouseListener(popupmenulistener);
@@ -195,7 +321,7 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 	public JComponent getControlComponent() {
 		return this.cmbbx;
 	}
-	
+
 	private boolean blnControlsEnabled = true;
 
 	@Override
@@ -205,7 +331,7 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 			blnUpdate = true;
 		}
 		blnControlsEnabled = blnEnabled;
-		
+
 		if (blnUpdate) {
 			if (blnControlsEnabled) {
 				replaceControl(tfDisabled, cmbbx);
@@ -215,7 +341,7 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 			}
 		}
 	}
-	
+
 	private void transferToDisabled() {
 		final String text;
 		if (cmbbx.getSelectedItem() != null) {
@@ -234,29 +360,29 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 
 	@Override
 	public void setMinimumSize(Dimension minimumSize) {
-		if (strictSize==null)
+		if (strictSize == null)
 			super.setMinimumSize(minimumSize);
 	}
 
 	@Override
 	public void setSize(Dimension d) {
-		if (strictSize==null)
+		if (strictSize == null)
 			super.setSize(d);
 	}
 
 	@Override
 	public void setSize(int width, int height) {
-		if (strictSize==null)
+		if (strictSize == null)
 			super.setSize(width, height);
 	}
 
 	@Override
 	public void setPreferredSize(Dimension size) {
-		if (strictSize==null) {
+		if (strictSize == null) {
 			super.setPreferredSize(size);
 		}
 	}
-	
+
 	@Override
 	public void setStrictSize(Dimension size) {
 		strictSize = size;
@@ -270,7 +396,7 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 		tfDisabled.setSize(size);
 		tfDisabled.setPreferredSize(size);
 	}
-	
+
 	@Override
 	public Dimension getStrictSize() {
 		return strictSize;
@@ -294,4 +420,4 @@ public class LabeledComboBox extends LabeledComponent implements StrictSizeCompo
 		UIUtils.setCombinedName(this.cmbbx, sName, "cmbbx");
 	}
 
-}  // class LabeledComboBox
+} // class LabeledComboBox

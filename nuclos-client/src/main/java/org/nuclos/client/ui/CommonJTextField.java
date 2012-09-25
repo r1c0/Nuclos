@@ -276,7 +276,7 @@ public class CommonJTextField extends javax.swing.JTextField {
 					selection = selection.substring(0, selection.length()-1);
 				}
 				//NUCLEUSINT-1139
-				replaceSelection(selection);
+				replaceSelection(selection.trim()); // trim selection. @see NUCLOS-1112 
 			}
 			catch (Exception e) {
 				getToolkit().beep();

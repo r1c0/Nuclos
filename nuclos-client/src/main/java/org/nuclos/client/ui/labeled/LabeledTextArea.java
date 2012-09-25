@@ -18,6 +18,8 @@ package org.nuclos.client.ui.labeled;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JComponent;
@@ -26,8 +28,10 @@ import javax.swing.JTextArea;
 import javax.swing.ToolTipManager;
 import javax.swing.text.JTextComponent;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.CommonJScrollPane;
+import org.nuclos.client.ui.CommonJTextField;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.LangUtils;
@@ -45,6 +49,8 @@ import org.nuclos.common2.StringUtils;
 
 public class LabeledTextArea extends LabeledTextComponent {
 
+	private static final Logger LOG = Logger.getLogger(LabeledTextArea.class);
+
 	private JTextArea ta = new JTextArea() {
 
 		@Override
@@ -59,6 +65,31 @@ public class LabeledTextArea extends LabeledTextComponent {
 			final ColorProvider colorproviderBackground = support.getColorProvider();
 			final Color colorDefault = super.getBackground();
 			return (colorproviderBackground != null) ? colorproviderBackground.getColor(colorDefault) : colorDefault;
+		}
+
+		/**
+		 * NUCLEUSINT-1000
+		 * Inserts the clipboard contents into the text.
+		 */
+		@Override
+		public void paste() {
+			if (this.isEditable()) {
+				Clipboard clipboard = getToolkit().getSystemClipboard();
+				try {
+					// The MacOS MRJ doesn't convert \r to \n,
+					// so do it here
+					String selection = ((String) clipboard.getContents(this).getTransferData(DataFlavor.stringFlavor)).replace('\r', '\n');
+					if (selection.endsWith("\n")) {
+						selection = selection.substring(0, selection.length()-1);
+					}
+					//NUCLEUSINT-1139
+					replaceSelection(selection.trim()); // trim selection. @see NUCLOS-1112 
+				}
+				catch (Exception e) {
+					getToolkit().beep();
+					LOG.warn("Clipboard does not contain a string: " + e, e);
+				}
+			}
 		}
 	};
 

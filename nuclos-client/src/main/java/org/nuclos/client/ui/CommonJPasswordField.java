@@ -17,8 +17,12 @@
 package org.nuclos.client.ui;
 
 import java.awt.Dimension;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 
 import javax.swing.JPasswordField;
+
+import org.apache.log4j.Logger;
 
 /**
  * <code>JTextField</code> which may not be smaller than its preferred size, so all characters
@@ -32,6 +36,8 @@ import javax.swing.JPasswordField;
  */
 
 public class CommonJPasswordField extends JPasswordField {
+
+	private static final Logger LOG = Logger.getLogger(CommonJPasswordField.class);
 
 	/**
 	 * caches the column width so it needn't be recalculated every time.
@@ -81,6 +87,31 @@ public class CommonJPasswordField extends JPasswordField {
 			iColumnWidth = getFontMetrics(getFont()).charWidth(cColumnWidthChar);
 		}
 		return iColumnWidth;
+	}
+
+	/**
+	 * NUCLEUSINT-1000
+	 * Inserts the clipboard contents into the text.
+	 */
+	@Override
+	public void paste() {
+		if (this.isEditable()) {
+			Clipboard clipboard = getToolkit().getSystemClipboard();
+			try {
+				// The MacOS MRJ doesn't convert \r to \n,
+				// so do it here
+				String selection = ((String) clipboard.getContents(this).getTransferData(DataFlavor.stringFlavor)).replace('\r', '\n');
+				if (selection.endsWith("\n")) {
+					selection = selection.substring(0, selection.length()-1);
+				}
+				//NUCLEUSINT-1139
+				replaceSelection(selection.trim()); // trim selection. @see NUCLOS-1112 
+			}
+			catch (Exception e) {
+				getToolkit().beep();
+				LOG.warn("Clipboard does not contain a string: " + e, e);
+			}
+		}
 	}
 
 }  // class CommonJTextField
