@@ -2809,7 +2809,7 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.eventsupportgeneration.label",
-    "uniquefields": [
+    "logicaluniquefields": [
       [
         "generation",
         "eventsupporttype",
@@ -2899,7 +2899,7 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.rulegeneration.label",
-    "uniquefields": [
+    "logicaluniquefields": [
       [
         "eventsupportclass",
         "eventsupporttype",
@@ -3385,7 +3385,7 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.eventsupporttransition.label",
-    "uniquefields": [
+    "logicaluniquefields": [
       [
         "eventsupportclass",
         "eventsupporttype",
@@ -3475,7 +3475,7 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.eventsupporttransition.label",
-    "uniquefields": [
+    "logicaluniquefields": [
       [
         "eventsupportclass",
         "eventsupporttype",
