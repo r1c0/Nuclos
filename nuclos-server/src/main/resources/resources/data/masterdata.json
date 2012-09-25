@@ -2794,7 +2794,7 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.rulegeneration.label",
-    "uniquefields": [
+    "logicaluniquefields": [
       [
         "eventsupportclass",
         "state",
@@ -3280,7 +3280,7 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.eventsupporttransition.label",
-    "uniquefields": [
+    "logicaluniquefields": [
       [
         "eventsupportclass",
         "transition"
