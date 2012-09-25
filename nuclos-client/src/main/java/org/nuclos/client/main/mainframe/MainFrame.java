@@ -366,7 +366,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	public void setTitle() {
 		String template = "{0} {1}";
 		String application = ApplicationProperties.getInstance().getCurrentVersion().getAppName();
-		String version = ApplicationProperties.getInstance().getCurrentVersion().getVersionNumber();
+		String version = ApplicationProperties.getInstance().getCurrentVersion().getSimpleVersionNumber();
 		String instance = ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_INSTANCE_NAME);
 		if (!StringUtils.isNullOrEmpty(instance)) {
 			template = "{0} {1} ({2})";
