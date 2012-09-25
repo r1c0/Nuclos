@@ -1588,11 +1588,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				public void done(final List<MainFrameTab> notClosableTabs) {
 					if (forcedFromFrameClose) {
 						frameContent.removeValue(frame, tabbedPane);
+						tabbedPane.close();
 					} else {
 						final JSplitPane splitPane = (JSplitPane) tabbedPane.getComponentPanel().getParent();
 						Component otherComp = splitPane.getLeftComponent() == tabbedPane.getComponentPanel() ? splitPane.getRightComponent() : splitPane.getLeftComponent();
 						splitPane.removeAll();
 						frameContent.removeValue(frame, tabbedPane);
+						tabbedPane.close();
 
 						if (splitPane.getParent() instanceof JSplitPane){
 							JSplitPane splitPaneParent = (JSplitPane) splitPane.getParent();
