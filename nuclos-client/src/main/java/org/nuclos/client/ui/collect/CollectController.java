@@ -3828,7 +3828,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 								try {
 									// cmdSave cannot be used here, because it does not throw any non-fatal exceptions, which can be used to prevent closing of the window.
 									// To solve the problem otherwise, handleSaveExeption is called here, which could provide additional behaviour like focus faulty fields...
-									save();
+									switch (CollectController.this.statemodel.getDetailsMode()) {
+										case CollectState.DETAILSMODE_EDIT:
+										case CollectState.DETAILSMODE_NEW_CHANGED:
+										case CollectState.DETAILSMODE_MULTIEDIT:
+											save();
+											break;
+									}
 								}
 								catch (CommonPermissionException ex) {
 									bResult = false;
