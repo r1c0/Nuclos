@@ -357,9 +357,9 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		for(MasterDataVO vo : colMasterdata) {
 			ValueList valueList = new ValueList();
 			valueList.setId(vo.getIntId().longValue());
-			valueList.setLabel((String)vo.getField("value"));
+			valueList.setLabel(vo.getField("value")+"");
 			valueList.setDescription((String)vo.getField("description"));
-			valueList.setMnemonic((String)vo.getField("mnemonic"));
+			valueList.setMnemonic(vo.getField("mnemonic")+"");
 			valueList.setValidFrom((Date)vo.getField("validFrom"));
 			valueList.setValidUntil((Date)vo.getField("validUntil"));
 			valueList.setVersionId(vo.getVersion());
