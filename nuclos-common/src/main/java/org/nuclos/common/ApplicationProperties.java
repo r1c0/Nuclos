@@ -482,7 +482,7 @@ public class ApplicationProperties implements Serializable, InitializingBean {
 		 * @return application name and version, including version date.
 		 */
 		public String getLongName() {
-			return getAppName() + " V" + getVersionNumber() + " (" + getVersionDateString() + ")";
+			return getAppName() + " V" + getSimpleVersionNumber() + " (" + getVersionDateString() + ")";
 		}
 
 		@Override
