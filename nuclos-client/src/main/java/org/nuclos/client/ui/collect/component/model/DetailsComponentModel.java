@@ -19,8 +19,10 @@ package org.nuclos.client.ui.collect.component.model;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common2.LangUtils;
 
 /**
  * A <code>CollectableComponentModel</code> for editable (non-searchable) components.
@@ -68,7 +70,10 @@ public class DetailsComponentModel extends CollectableComponentModel {
 			@Override
 			public void run() {
 				try {
-					DetailsComponentModel.this.setField(clctfValue, true);
+					boolean notifyListener = 
+							!LangUtils.equals(NuclosEOField.CREATEDAT.getName(), getEntityField().getName()) &&
+							!LangUtils.equals(NuclosEOField.CHANGEDAT.getName(), getEntityField().getName());
+					DetailsComponentModel.this.setField(clctfValue, notifyListener);
 					if (!getField().equals(clctfValue, true))
 						LOG.warn("setField failed: field=" + getField() + " value is " + clctfValue);
 				}
