@@ -19,12 +19,17 @@ package org.nuclos.client.job;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -44,14 +49,21 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
+import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.SubFormController;
+import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
+import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MasterDataSubFormController;
+import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonMultiThreader;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectState;
@@ -64,10 +76,16 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableSorting;
 import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.job.IntervalUnit;
 import org.nuclos.common.job.JobType;
 import org.nuclos.common.job.JobUtils;
@@ -75,6 +93,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -97,6 +116,8 @@ public class JobControlCollectController extends MasterDataCollectController {
 	private static final Object JOB_RESULT_SUCCESSFUL = "INFO";
 	private static final Object JOB_RESULT_WITH_ERROR = "ERROR";
 	private static final Object JOB_RESULT_WITH_WARNINGS = "WARNING";
+	
+	private static final int JOBRUNMESSAGES_LIMIT_DEFAULT = 100;
 	
 	// former Spring injection
 	
@@ -338,6 +359,148 @@ public class JobControlCollectController extends MasterDataCollectController {
 			}
         });
 	}
+
+	@Override
+	public CollectableMasterDataWithDependants findCollectableById(String sEntity, Object oId) throws CommonBusinessException {
+		assert this.getCollectableEntity() != null;
+
+		final MasterDataWithDependantsVO mdwdcvo = this.mddelegate.getWithDependants(sEntity, oId, Collections.EMPTY_LIST);
+		final CollectableMasterDataWithDependants result = new CollectableMasterDataWithDependants(this.getCollectableEntity(), mdwdcvo);
+		assert getSearchStrategy().isCollectableComplete(result);
+		return result;
+	}	
+	
+	@Override
+	protected void unsafeFillDetailsPanel(final CollectableMasterDataWithDependants clct) throws NuclosBusinessException {
+		/** @todo use super.unsafeFillDetailsPanel */
+
+		for (String sFieldName : this.getDetailsPanel().getLayoutRoot().getOrderedFieldNames()) {
+			LOG.debug("sFieldName = " + sFieldName);
+
+			// iterate over the models rather than over the components:
+			final CollectableComponentModel clctcompmodel = this.getDetailsPanel().getLayoutRoot().getCollectableComponentModelFor(sFieldName);
+			clctcompmodel.setFieldInitial(clct.getField(sFieldName));
+		}
+
+		// fill subforms:
+		if (clct.getId() != null) {
+			UIUtils.invokeOnDispatchThread(new Runnable() {
+				@Override
+				public void run() {
+					JobControlCollectController.this.getSubFormsLoader().startLoading();
+				}
+			});
+		}
+		for (final DetailsSubFormController<CollectableEntityObject> subformctl : this.getSubFormControllersInDetails()) {
+			// by object generation
+			DependantMasterDataMap dependants = clct.getDependantMasterDataMap();
+			if (clct.getId() == null && dependants.getAllData().size() != 0) {
+				final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
+				for (String entity : dependants.getEntityNames())
+					if (entity.equals(mdsubformctl.getCollectableEntity().getName())) {
+						mdsubformctl.fillSubForm(null, dependants.getData(entity));
+						mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(JobControlCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
+					}
+			}
+			else if (clct.getId() == null) {
+				final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
+				mdsubformctl.clear();
+				mdsubformctl.fillSubForm(null, new ArrayList<EntityObjectVO>());
+				mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(JobControlCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
+			}
+			else {
+				if (((MasterDataSubFormController) subformctl).isChildSubForm())
+					continue;
+				
+				SubFormsInterruptableClientWorker sfClientWorker = new SubFormsInterruptableClientWorker() {
+					Collection<EntityObjectVO> collmdvo;
+					Integer iParentId;
+					MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
+
+					@Override
+					public void init() throws CommonBusinessException {
+						if (!interrupted) {
+							mdsubformctl.clear();
+							mdsubformctl.fillSubForm(null, new ArrayList<EntityObjectVO>());
+							mdsubformctl.getSubForm().setLockedLayer();
+						}
+					}
+				    @Override
+				    public void work() throws NuclosBusinessException {
+					   if (interrupted || isClosed()) {
+						   return;
+					   }
+					   iParentId = (Integer) clct.getId();
+					   String sEntityName = mdsubformctl.getCollectableEntity().getName();
+					   if (sEntityName.equals(NuclosEntity.JOBRUN.getEntityName())) {
+						   CollectableSearchExpression cse = new CollectableSearchExpression();
+						   cse.setSearchCondition(org.nuclos.common.SearchConditionUtils.newComparison(sEntityName, mdsubformctl.getForeignKeyFieldName(), ComparisonOperator.EQUAL, clct.getId()));
+						   cse.setSortingOrder(Collections.singletonList(new CollectableSorting(SystemFields.BASE_ALIAS, sEntityName, true, "startdate", false)));
+						   
+						   List<Object> lstIntIds = MasterDataDelegate.getInstance().getMasterDataIds(sEntityName, cse);
+						   int limit = ClientParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_JOBRUNMESSAGES_LIMIT, JOBRUNMESSAGES_LIMIT_DEFAULT);
+						   if (lstIntIds.size() > limit)
+							   lstIntIds = lstIntIds.subList(0, limit);
+						   collmdvo = MasterDataDelegate.getInstance().getMasterDataMore(sEntityName, new ArrayList<Object>(lstIntIds));
+					   } else {
+						   collmdvo = (clct.getId() == null) ?
+								   new ArrayList<EntityObjectVO>() :
+									   MasterDataDelegate.getInstance().getDependantMasterData(mdsubformctl.getCollectableEntity().getName(), mdsubformctl.getForeignKeyFieldName(), clct.getId(), mdsubformctl.getSubForm().getMapParams());
+					   }
+				    }
+					@Override
+					public void handleError(Exception ex) {
+						if (!interrupted) {
+							Errors.getInstance().showExceptionDialog(getResultsComponent(), ex);
+						}
+					}
+
+					@Override
+					public JComponent getResultsComponent() {
+						return mdsubformctl.getSubForm();
+					}
+
+					@Override
+					public void paint() throws CommonBusinessException {
+						// if this worker is interrupted - it is a worker for an
+						// "old" subform/main object.
+						// The data schould not be published to sub form!
+						// otherwise we will see a sub form data of another
+						// object!
+						if (!interrupted && !isClosed()) {
+							synchronized (JobControlCollectController.this) {
+								final boolean bWasDetailsChangedIgnored = JobControlCollectController.this.isDetailsChangedIgnored();
+								JobControlCollectController.this.setDetailsChangedIgnored(true);
+								try {
+									mdsubformctl.getSubForm().getJTable().setBackground(Color.WHITE);
+									mdsubformctl.fillSubForm(iParentId, collmdvo);
+									mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(JobControlCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
+
+									updateLoadedSubFormData(clct, collmdvo);
+								}
+								finally {
+									if (!bWasDetailsChangedIgnored) {
+										JobControlCollectController.this.setDetailsChangedIgnored(bWasDetailsChangedIgnored);
+									}
+								}
+
+								JobControlCollectController.this.getSubFormsLoader().setSubFormLoaded(mdsubformctl.getCollectableEntity().getName(), true);
+								mdsubformctl.getSubForm().forceUnlockFrame();
+							}
+						}
+						else {
+							return;
+						}
+					}
+				};
+
+				JobControlCollectController.this.getSubFormsLoader().addSubFormClientWorker(subformctl.getCollectableEntity().getName(), sfClientWorker);
+
+				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate(false);
+			}
+		}
+	}
+
 	
 	/*
 	final void setSchedulerControlFacadeRemote(SchedulerControlFacadeRemote schedulerControlFacadeRemote) {

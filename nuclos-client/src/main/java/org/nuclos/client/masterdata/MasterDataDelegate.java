@@ -17,6 +17,7 @@
 package org.nuclos.client.masterdata;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -388,6 +389,30 @@ public class MasterDataDelegate {
 			 throw new CommonFatalException(ex);
 		 }
 	 }
+	 
+	public List<Object> getMasterDataIds(String sEntityName, CollectableSearchExpression cse) {
+		try {
+			 List<Object> col = getMasterDataFacade().getMasterDataIds(sEntityName, cse);
+			 return col;
+		 }
+		 catch (RuntimeException ex) {
+			 throw new CommonFatalException(ex);
+		 }
+	}
+
+	public Collection<EntityObjectVO>  getMasterDataMore(
+			String sEntityName, final List<?> lstIntIds) {
+		try {
+			Collection<EntityObjectVO> col = CollectionUtils.transform(
+					getMasterDataFacade().getMasterDataMore(
+							 sEntityName, lstIntIds, Collections.EMPTY_LIST), 
+                    new MasterDataToEntityObjectTransformer(sEntityName));
+			 return col;
+		 }
+		 catch (RuntimeException ex) {
+			 throw new CommonFatalException(ex);
+		 }
+	}
 
 	 /**
 	  * @param sEntityName

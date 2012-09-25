@@ -130,6 +130,8 @@ public interface ParameterProvider {
 	public static final String KEY_NUCLOS_INSTANCE_NAME = "NUCLOS_INSTANCE_NAME";
 	public static final String KEY_LAYOUT_CUSTOM_KEY = "LAYOUT_CUSTOM_KEY";
 
+	public static final String KEY_JOBRUNMESSAGES_LIMIT = "JobRun Messages Limit";
+
 	/**
 	 * @param sParameterName
 	 * @return the value for the parameter with the given name, if any.
