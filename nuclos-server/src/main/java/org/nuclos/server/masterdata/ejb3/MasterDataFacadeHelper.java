@@ -760,6 +760,9 @@ public class MasterDataFacadeHelper {
 
 		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(sEntityName, mdvoToCreate);
+		eoVO.setVersion(null);
+		eoVO.setCreatedBy(null);
+		eoVO.setCreatedAt(null);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagNew();
 		

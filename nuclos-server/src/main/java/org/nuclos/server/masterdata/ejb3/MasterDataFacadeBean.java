@@ -1251,6 +1251,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
     public void createDependants(String entityName, Integer id, Boolean removed,
 		DependantMasterDataMap dependants, String customUsage) throws CommonCreateException, CommonPermissionException {
     	try {
+    		flagNew(dependants);
     		createOrModifyDependants(entityName, id, removed, dependants, false, false, customUsage);
     	}
 		catch (CommonFinderException ex) {
@@ -1266,6 +1267,20 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			throw new CommonFatalException(ex);
 		}
 	}
+    
+    private void flagNew(DependantMasterDataMap dependants) {
+    	if (dependants == null) {
+    		return;
+    	}
+    	for (EntityObjectVO eovo : dependants.getAllData()) {
+    		eovo.flagNew();
+    		eovo.setVersion(1);
+    		eovo.setId(null);
+    		eovo.setCreatedBy(null);
+    		eovo.setCreatedAt(null);
+    		flagNew(eovo.getDependants());
+    	}
+    }
     
     /**
 	 * modifies the given dependants (local use only).

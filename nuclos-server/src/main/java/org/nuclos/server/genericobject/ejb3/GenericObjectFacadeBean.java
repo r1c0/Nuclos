@@ -784,6 +784,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 
 		EntityObjectVO dalVO = DalSupportForGO.wrapGenericObjectVO(gowdvo);
+		dalVO.setVersion(null);
+		dalVO.setCreatedBy(null);
+		dalVO.setCreatedAt(null);
 		final String user = getCurrentUserName();
 		DalUtils.updateVersionInformation(dalVO, user);
 		dalVO.setId(DalUtils.getNextId());
