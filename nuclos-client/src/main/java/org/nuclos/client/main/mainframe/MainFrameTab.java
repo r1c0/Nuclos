@@ -1374,8 +1374,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public MainFrameTabbedPane getTabbedPane() {
 		Container parent = getParent();
-		if (parent instanceof MainFrameTabbedPane.MFTabbedPane) {
-			MainFrameTabbedPane tabbedPane = ((MainFrameTabbedPane.MFTabbedPane) parent).getMainFrameTabbedPane();
+		if (parent instanceof MFTabbedPane) {
+			MainFrameTabbedPane tabbedPane = ((MFTabbedPane) parent).getMainFrameTabbedPane();
 			return tabbedPane;
 		}
 		return null;
