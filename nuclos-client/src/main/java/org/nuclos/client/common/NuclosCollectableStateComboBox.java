@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import org.apache.http.util.LangUtils;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.genericobject.Modules;
@@ -291,8 +292,8 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 			for (int i = 0; i < getJComboBox().getModel().getSize(); i++) {
 				try {
 					CollectableValueField cvif = (CollectableValueField) getJComboBox().getModel().getSelectedItem();
-					if (getJComboBox().getModel().getElementAt(i) != null &&
-						sComparand.equals(cvif.getValue())) {
+					if (getJComboBox().getModel().getElementAt(i) != null && cvif != null
+						&& LangUtils.equals(sComparand, cvif.getValue())) {
 						// Es wurde ein Eintrag aus der Liste gew\u00e4hlt
 
 						if (compop.equals(ComparisonOperator.EQUAL) ||

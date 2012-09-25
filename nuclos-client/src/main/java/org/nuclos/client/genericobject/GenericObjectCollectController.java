@@ -67,6 +67,7 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.RowSorter.SortKey;
+import javax.swing.SwingWorker;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -310,14 +311,62 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private static final String TABSELECTED = "tabselected";
 
 	private CollectableComboBox clctSearchState;
+	
+	private Set<ReloadLayoutWorker> runningRefreshs = Collections.synchronizedSet(new HashSet<ReloadLayoutWorker>());
 
+	private final class ReloadLayoutWorker extends SwingWorker<Object, Object> {
+
+		private final Runnable runnable;
+		private ReloadLayoutWorker(Runnable runnable) {
+			this.runnable = runnable;
+		}
+		
+		@Override
+		protected Object doInBackground() throws Exception {
+			try {
+				Thread.sleep(500);
+			}
+			catch (Exception ex) {
+				// ignore.
+			}
+			return null;
+		}
+		@Override
+		protected void done() {
+			try {
+				if (!isCancelled()) {
+				UIUtils.runCommandLater(getTab(), runnable);
+				}
+			} finally {
+				runningRefreshs.remove(this);
+			}
+		}
+	}
+	private void releasePreviousRefreshs() {
+		synchronized(runningRefreshs) {
+			for (ReloadLayoutWorker refresh : new HashSet<ReloadLayoutWorker>(runningRefreshs)) {
+				if (refresh.isDone())
+					continue;
+				
+				if (!refresh.isCancelled()) {
+					if (!refresh.cancel(true)) {
+						LOG.debug("Failed to cancel refresh for layout");
+					}
+				}
+			}
+		}
+	};
+	
 	private final CollectableComponentModelListener ccmlistenerUsageCriteriaFieldsForDetails = new CollectableComponentModelAdapter() {
 		@Override
 		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 			if (ev.collectableFieldHasChanged() || ev.getNewValue().getValue() == null) {
 				final String sFieldName = ev.getCollectableComponentModel().getFieldName();
 				LOG.debug("UsageCriteria field " + sFieldName + " changed in Details panel.");
-				UIUtils.runCommandLater(getTab(), new Runnable() {
+
+				releasePreviousRefreshs();
+
+				ReloadLayoutWorker rvlr = new ReloadLayoutWorker(new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -357,38 +406,48 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								}
 							});
 						}
-						catch (/* CommonBusiness */ Exception ex) {
+						catch (Exception ex) {
 							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.15","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
 				});
+				runningRefreshs.add(rvlr);
+
+				rvlr.execute();			
 			}
 		}
 	};
 
 	private final CollectableComponentModelListener ccmlistenerUsageCriteriaFieldsForSearch = new CollectableComponentModelAdapter() {
 		@Override
-		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+		public void collectableFieldChangedInModel(final CollectableComponentModelEvent ev) {
 			if (ev.collectableFieldHasChanged()) {
 				final String sFieldName = ev.getCollectableComponentModel().getFieldName();
 				LOG.debug("UsageCriteria field " + sFieldName + " changed in Search panel. New value: " + ev.getNewValue());
-				UIUtils.runCommandLater(getTab(), new Runnable() {
+
+				releasePreviousRefreshs();
+
+				ReloadLayoutWorker rvlr = new ReloadLayoutWorker(new Runnable() {
 					@Override
 					public void run() {
 						try {
 							reloadLayoutForSearchTab();
-
+	
 							Utils.setComponentFocus(sFieldName, getSearchPanel().getEditView(), null, false);
 						}
-						catch (/* CommonBusiness */ Exception ex) {
+						catch (Exception ex) {
 							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.16","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
 				});
+				runningRefreshs.add(rvlr);
+
+				rvlr.execute();			
 			}
-		}
+		}	
+
 	};
 
 	private final CollectableComponentModelListener ccmlistenerSearchChanged = new CollectableComponentModelAdapter() {
@@ -4614,6 +4673,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert !getUsageCriteriaFieldListenersAdded(true);
 
 		try {
+			clearSearchCondition();
 			// 2. fill in fields, ignoring changes in the quintuple fields as the right layout is loaded already:
 			super.setSearchFieldsAccordingToSearchCondition(cond, bClearSearchFields && !bUsageCriteriaChanged);
 		}
