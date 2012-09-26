@@ -89,6 +89,7 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;

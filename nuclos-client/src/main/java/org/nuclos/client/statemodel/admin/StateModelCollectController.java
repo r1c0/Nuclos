@@ -88,6 +88,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.statemodel.valueobject.StateGraphVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;

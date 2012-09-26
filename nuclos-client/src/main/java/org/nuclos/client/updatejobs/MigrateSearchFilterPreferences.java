@@ -44,6 +44,7 @@ import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.searchfilter.ejb3.SearchFilterFacadeRemote;
 
@@ -248,7 +249,7 @@ public class MigrateSearchFilterPreferences {
 
 				mdVO_searchfilter.setField("clbsearchfilter", sXml);
 
-				DependantMasterDataMap dmdm = new DependantMasterDataMap();
+				DependantMasterDataMap dmdm = new DependantMasterDataMapImpl();
 
 				// write entity 'searchfilter_user'
 				MasterDataVO mdVO_searchfilter_user = new MasterDataVO(MetaDataCache.getInstance().getMetaData(NuclosEntity.SEARCHFILTERUSER), true);

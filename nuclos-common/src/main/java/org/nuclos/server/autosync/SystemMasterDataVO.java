@@ -32,7 +32,7 @@ public class SystemMasterDataVO extends MasterDataVO {
 	public static final String CHANGED_USER = NUCLOS;
 	public static final int VERSION = 1;	
 	
-	SystemMasterDataVO(Object id, Map<String, Object> fields) {
-		super(id, CREATED_DATE, CREATED_USER, CHANGED_DATE, CHANGED_USER, VERSION, fields, true);
+	SystemMasterDataVO(String entity, Object id, Map<String, Object> fields) {
+		super(entity, id, CREATED_DATE, CREATED_USER, CHANGED_DATE, CHANGED_USER, VERSION, fields, true);
 	}
 }

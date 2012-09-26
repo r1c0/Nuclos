@@ -121,7 +121,8 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 		mpFields.put("data", vo.getData());
 		mpFields.put("nucletId", vo.getNucletId()==null?null:vo.getNucletId().intValue());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	private static CustomComponentVO getCustomComponentVO(MasterDataVO mdVO) {

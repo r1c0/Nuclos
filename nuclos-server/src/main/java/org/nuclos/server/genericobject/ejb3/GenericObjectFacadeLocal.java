@@ -41,10 +41,12 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectRelationVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 
 // @Local
 public interface GenericObjectFacadeLocal {

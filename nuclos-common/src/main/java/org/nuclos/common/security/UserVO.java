@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -197,7 +198,8 @@ public class UserVO extends NuclosValueObject {
 		fields.put(FIELD_EXPIRATIONDATE, expirationDate);
 		fields.put(FIELD_REQUIREPASSWORDCHANGE, requirePasswordChange);
 
-		return new MasterDataVO(getId(), getCreatedAt(), getCreatedBy(), getChangedAt(), getChangedBy(), getVersion(), fields);
+		return new MasterDataVO(NuclosEntity.USER.getEntityName(), getId(), 
+				getCreatedAt(), getCreatedBy(), getChangedAt(), getChangedBy(), getVersion(), fields);
 	}
 
 	@Override

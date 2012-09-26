@@ -36,6 +36,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.resource.valueobject.ResourceFile;

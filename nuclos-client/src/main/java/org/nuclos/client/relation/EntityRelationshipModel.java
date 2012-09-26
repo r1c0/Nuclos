@@ -124,7 +124,8 @@ public class EntityRelationshipModel extends AbstractCollectableBean<EntityRelat
 		mpFields.put("name", this.getValue("name"));
 		mpFields.put("description", this.getValue("description"));
 		
-		MasterDataVO mdvo = new MasterDataVO(this.getId(), this.getBean().getCreatedAt(), this.getBean().getCreatedBy(),
+		MasterDataVO mdvo = new MasterDataVO(getCollectableEntity().getName(), getId(), 
+				getBean().getCreatedAt(), getBean().getCreatedBy(),
 			this.getBean().getChangedAt(), this.getBean().getChangedBy(), this.getVersion(), mpFields);
 		
 		return mdvo;

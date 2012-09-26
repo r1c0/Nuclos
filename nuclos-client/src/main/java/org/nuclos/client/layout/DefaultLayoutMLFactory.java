@@ -38,6 +38,7 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -119,7 +120,7 @@ public class DefaultLayoutMLFactory extends AbstractLayoutMLFactory {
 		CollectableMasterDataEntity masterDataLayoutUsage = new CollectableMasterDataEntity(metaLayoutUsage);
 		CollectableMasterData masterDataLayoumlUsage = new CollectableMasterData(masterDataEntity, new MasterDataVO(masterDataLayoutUsage.getMasterDataMetaCVO(), false));
 		MasterDataVO mdLayoutUsage = masterDataLayoumlUsage.getMasterDataCVO();
-		DependantMasterDataMap dependMapLayoutUsage = new DependantMasterDataMap();
+		DependantMasterDataMap dependMapLayoutUsage = new DependantMasterDataMapImpl();
 
 		mdLayoutUsage.setField("entity", entity);
 

@@ -54,7 +54,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.processmonitor.valueobject.ProcessTransitionVO;
 import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
@@ -523,7 +523,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 			DynamicAttributeVO dynProzess = new DynamicAttributeVO(AttributeCache.getInstance().getAttribute(goVO.getModuleId(), NuclosEOField.PROCESS.getMetaData().getField()).getId(), (Integer) stateModelUsage.getField("processId"), stateModelUsage.getField("process"));
 			goVO.setAttribute(dynProzess);
 		}
-		goVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(goVO, new DependantMasterDataMap()), null);
+		goVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(goVO, new DependantMasterDataMapImpl()), null);
 
 //		Integer iGOProcessId = (Integer)stateModelUsage.getField("processId");
 //		if (iGOProcessId != null){

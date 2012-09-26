@@ -277,7 +277,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 			CollectableMasterDataWithDependants clctMasterData = (CollectableMasterDataWithDependants) clct;
 			HashMap<String, Object> fields = new HashMap<String, Object>(clctMasterData.getMasterDataCVO().getFields());
 			return CollectableMasterDataWithDependants.newInstance(clctMasterData.getCollectableEntity(),
-					new MasterDataVO(null, null, null, null, null, null, fields));
+					new MasterDataVO(entity.getEntity(), null, null, null, null, null, null, fields));
 		}
 		
 		@Override

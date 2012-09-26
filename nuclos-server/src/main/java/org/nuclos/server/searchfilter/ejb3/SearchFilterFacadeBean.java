@@ -56,6 +56,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.searchfilter.valueobject.SearchFilterUserVO;
@@ -182,7 +183,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 
 		MasterDataVO mdVO_searchfilteruser = SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser());
 
-		DependantMasterDataMap dmdp = new DependantMasterDataMap();
+		DependantMasterDataMap dmdp = new DependantMasterDataMapImpl();
 		final String entity = NuclosEntity.SEARCHFILTERUSER.getEntityName();
 		dmdp.addData(entity, DalSupportForMD.getEntityObjectVO(entity, mdVO_searchfilteruser));
 

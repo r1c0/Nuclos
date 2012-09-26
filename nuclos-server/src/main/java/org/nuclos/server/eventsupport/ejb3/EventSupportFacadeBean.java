@@ -84,6 +84,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;

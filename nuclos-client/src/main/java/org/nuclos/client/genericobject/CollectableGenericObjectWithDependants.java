@@ -34,6 +34,7 @@ import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 
 /**
  * Makes a <code>GenericObjectWithDependantsVO</code> <code>Collectable</code>.
@@ -55,7 +56,7 @@ public class CollectableGenericObjectWithDependants extends CollectableGenericOb
 	 * @deprecated Does not honour dependant objects, use {@link #newCollectableGenericObjectWithDependants}.
 	 */
 	public static CollectableGenericObjectWithDependants newCollectableGenericObject(GenericObjectVO govo) {
-		return new CollectableGenericObjectWithDependants(new GenericObjectWithDependantsVO(govo, new DependantMasterDataMap()));
+		return new CollectableGenericObjectWithDependants(new GenericObjectWithDependantsVO(govo, new DependantMasterDataMapImpl()));
 	}
 
 	/**
@@ -73,7 +74,7 @@ public class CollectableGenericObjectWithDependants extends CollectableGenericOb
 			dep = gowd.getDependants();
 		}
 		else {
-			dep = new DependantMasterDataMap();
+			dep = new DependantMasterDataMapImpl();
 		}
 		final CollectableGenericObjectWithDependants result = new CollectableGenericObjectWithDependants(
 				new GenericObjectWithDependantsVO(govo, dep));

@@ -35,7 +35,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.ejb3.MetaDataFacadeRemote;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -163,7 +163,7 @@ public class MetaDataDelegate implements CommonMetaDataServerProvider {
 	 * checks that all dependants (if any) have a <code>null</code> id.
 	 * @param mpDependants may be <code>null</code>.
 	 */
-	public static void checkDependantsAreNew(DependantMasterDataMap mpDependants) {
+	public static void checkDependantsAreNew(DependantMasterDataMapImpl mpDependants) {
 		if (mpDependants != null && !mpDependants.areAllDependantsNew()) {
 			throw new IllegalArgumentException("mpDependants");
 		}

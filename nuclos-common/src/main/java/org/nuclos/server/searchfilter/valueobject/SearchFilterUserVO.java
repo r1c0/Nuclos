@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -107,18 +108,18 @@ public class SearchFilterUserVO extends NuclosValueObject {
 	
 	public static SearchFilterUserVO transformToSearchFilterUser(MasterDataVO mdVO_searchFilteruser) {
 		SearchFilterUserVO searchFilterUser = new SearchFilterUserVO(
-				mdVO_searchFilteruser.getIntId(),
-		(Integer)mdVO_searchFilteruser.getField("searchfilterId"),
-		(Integer)mdVO_searchFilteruser.getField("userId"),
-		(Boolean)mdVO_searchFilteruser.getField("editable"),
-		(Boolean)mdVO_searchFilteruser.getField("compulsoryFilter"),
-		(Date)mdVO_searchFilteruser.getField("validFrom"),
-		(Date)mdVO_searchFilteruser.getField("validUntil"),
-		mdVO_searchFilteruser.getCreatedAt(),
-		mdVO_searchFilteruser.getCreatedBy(),
-		mdVO_searchFilteruser.getChangedAt(),
-		mdVO_searchFilteruser.getChangedBy(),
-		mdVO_searchFilteruser.getVersion());
+			mdVO_searchFilteruser.getIntId(),
+			(Integer)mdVO_searchFilteruser.getField("searchfilterId"),
+			(Integer)mdVO_searchFilteruser.getField("userId"),
+			(Boolean)mdVO_searchFilteruser.getField("editable"),
+			(Boolean)mdVO_searchFilteruser.getField("compulsoryFilter"),
+			(Date)mdVO_searchFilteruser.getField("validFrom"),
+			(Date)mdVO_searchFilteruser.getField("validUntil"),
+			mdVO_searchFilteruser.getCreatedAt(),
+			mdVO_searchFilteruser.getCreatedBy(),
+			mdVO_searchFilteruser.getChangedAt(),
+			mdVO_searchFilteruser.getChangedBy(),
+			mdVO_searchFilteruser.getVersion());
 		
 		return searchFilterUser;
 	}
@@ -133,6 +134,7 @@ public class SearchFilterUserVO extends NuclosValueObject {
 		mpField.put("validUntil", searchFilterUser.getValidUntil());
 		
 		MasterDataVO mdVO = new MasterDataVO(
+				NuclosEntity.SEARCHFILTERUSER.getEntityName(),
 				searchFilterUser.getId(),
 				searchFilterUser.getCreatedAt(),
 				searchFilterUser.getCreatedBy(),

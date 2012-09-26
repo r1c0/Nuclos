@@ -55,6 +55,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectRelationVO;
 import org.nuclos.server.genericobject.valueobject.LogbookVO;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
@@ -102,7 +103,8 @@ public class MasterDataWrapper {
 		mpFields.put("processId", vo.getProcessId());
 		mpFields.put("stateId", vo.getStatusId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.RULEUSAGE.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static RuleEventUsageVO getREUsageVO(MasterDataVO mdVO) {
@@ -133,7 +135,8 @@ public class MasterDataWrapper {
 		mpFields.put("active", vo.isActive());
 		mpFields.put("debug", vo.isDebug());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.RULE.getEntityName(),
+				vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static MasterDataVO wrapCodeVO(CodeVO vo) {
@@ -145,7 +148,8 @@ public class MasterDataWrapper {
 		mpFields.put("debug", vo.isDebug());
 		mpFields.put("nucletId", vo.getNucletId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.CODE.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static ProcessVO getProcessVO(MasterDataVO mdVO) {
@@ -369,7 +373,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("createRelation", gaVO.isCreateRelationBetweenObjects());
 		mpFields.put("createParameterRelation", gaVO.isCreateRelationToParameterObject());
 
-		return new MasterDataVO(gaVO.getId(), null, null, null, null, null, mpFields);
+		return new MasterDataVO(NuclosEntity.ACTION.getEntityName(), gaVO.getId(), null, null, null, null, null, mpFields);
 	}
 
 	public static GeneratorUsageVO getGeneratorUsageVO(MasterDataVO mdVO) {
@@ -401,7 +405,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("runafterwards" , vo.isRunAfterwards());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.RULEGENERATION.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static RuleEngineTransitionVO getRuleEngineTransitionVO(MasterDataVO mdVO) {
@@ -428,7 +433,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("runafterwards", vo.isRunAfterwards());
 	
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.RULEGENERATION.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static MasterDataVO wrapEventSupportTransitionVO(EventSupportTransitionVO vo) {
@@ -440,7 +446,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("runafterwards", vo.isRunAfterwards());
 		
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.EVENTSUPPORTTRANSITION.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 	
 	public static MasterDataVO wrapEventSupportJobVO(EventSupportJobVO vo) {
@@ -452,7 +459,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("description", vo.getDescription());
 		
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.EVENTSUPPORTJOB.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 	
 	public static MasterDataVO wrapEventSupportGenerationVO(EventSupportGenerationVO vo) {
@@ -464,7 +472,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("runafterwards", vo.isRunAfterwards());
 		
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.EVENTSUPPORTGENERATION.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 	
 	public static MasterDataVO wrapEventSupportEventVO(EventSupportEventVO vo) {
@@ -477,7 +486,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("eventsupportclass", vo.getEventSupportClass());
 		mpFields.put("eventsupporttype", vo.getEventSupportClassType());
 		
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO(NuclosEntity.EVENTSUPPORTENTITY.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 	
 	public static StateTransitionVO getStateTransitionVOWithoutDependants(MasterDataVO mdVO) {
@@ -536,7 +547,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("default", vo.isDefault());
 		mpFields.put("description", vo.getDescription());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.STATETRANSITION.getEntityName(), 
+				vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static JobVO getJobVO(EntityObjectVO eoVO) {
@@ -575,7 +587,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("transitionId", vo.getTransitionId());
 		mpFields.put("roleId", vo.getRoleId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.ROLETRANSITION.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static StateModelVO getStateModelVO(MasterDataVO mdVO) {
@@ -661,7 +674,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("layout", layoutData);
 		mpFields.put("nucletId", vo.getNucletId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO("<StateModelVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static StateHistoryVO getStateHistoryVO(MasterDataVO mdVO) {
@@ -685,7 +699,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("stateId", vo.getStateId());
 		mpFields.put("state", vo.getStateName());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.STATEHISTORY.getEntityName(), vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static StateVO getStateVO(MasterDataVO mdVO) {
@@ -716,7 +730,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("buttonRes", vo.getButtonLabel());
 		mpFields.put("buttonIconId", vo.getButtonIcon()==null?null:vo.getButtonIcon().getId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.STATE.getEntityName(), vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static MandatoryFieldVO getMandatoryFieldVO(MasterDataVO mdVO) {
@@ -733,7 +747,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("entityfieldId", vo.getFieldId());
 		mpFields.put("stateId", vo.getStateId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO("<MandatoryFieldVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static MandatoryColumnVO getMandatoryColumnVO(MasterDataVO mdVO) {
@@ -752,7 +768,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("column", vo.getColumn());
 		mpFields.put("stateId", vo.getStateId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO("<MandatoryColumnVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static AttributegroupPermissionVO getAttributegroupPermissionVO(MasterDataVO mdVO) {
@@ -779,7 +797,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("state", vo.getState());
 		mpFields.put("readwrite", vo.isWritable());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO("<AttributegroupPermissionVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static EntityFieldPermissionVO getEntityFieldPermissionVO(MasterDataVO mdVO) {
@@ -802,7 +822,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("read", vo.isReadable());
 		mpFields.put("readwrite", vo.isWriteable());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO("<EntityFieldPermissionVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static SubformPermissionVO getSubformPermissionVO(MasterDataVO mdVO) {
@@ -828,7 +850,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("state", vo.getState());
 		mpFields.put("readwrite", vo.isWriteable());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO("<SubformPermissionVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static SubformColumnPermissionVO getSubformColumnPermissionVO(MasterDataVO mdVO) {
@@ -847,7 +871,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("column", vo.getColumn());
 		mpFields.put("readwrite", vo.isWriteable());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		//
+		return new MasterDataVO("<SubformColumnPermissionVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static DatasourceVO getDatasourceVO(MasterDataVO mdVO, String currentUserName) {
@@ -882,7 +908,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 			mpFields.put("entity", ((RecordGrantVO) vo).getEntity());
 		else if(vo instanceof DynamicEntityVO)
 			mpFields.put("entity", ((DynamicEntityVO) vo).getEntity());
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.DATASOURCE.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static ValuelistProviderVO getValuelistProviderVO(MasterDataVO mdVO) {
@@ -944,7 +971,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("source", vo.getSource());
 		mpFields.put("nucletId" , vo.getNucletId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.VALUELISTPROVIDER.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static DynamicEntityVO getDynamicEntityVO(MasterDataVO mdVO) {
@@ -968,7 +996,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("source", vo.getSource());
 		mpFields.put("nucletId", vo.getNucletId());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO(NuclosEntity.VALUELISTPROVIDER.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static TaskVO getTaskVO(MasterDataWithDependantsVO mdVO, Map<Long, String> mapObjectIdentifier) {
@@ -1015,15 +1045,16 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		if (vo.getCompleted() != null)
 			mpFields.put("completed", new java.sql.Date(vo.getCompleted().getTime()));
 
-		DependantMasterDataMap dependants = new DependantMasterDataMap();
+		DependantMasterDataMap dependants = new DependantMasterDataMapImpl();
 		final String entity = NuclosEntity.TODOOBJECT.getEntityName();
 		for (TaskObjectVO toVO : vo.getRelatedObjects())
 			dependants.addData(entity,
 					DalSupportForMD.getEntityObjectVO(entity, wrapTaskObjectVO(toVO)));
 
-		MasterDataVO mdVO = new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		MasterDataVO mdVO = new MasterDataVO(NuclosEntity.TODOLIST.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 
-		return new MasterDataWithDependantsVO(mdVO,dependants);
+		return new MasterDataWithDependantsVO(mdVO, dependants);
 	}
 
 	public static TaskObjectVO getTaskObjectVO(MasterDataVO mdVO, String sIdentifier) {
@@ -1048,7 +1079,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("tasklistId", vo.getTaskId().intValue());
 		mpFields.put("entity", vo.getEntityName());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO("<TaskObjectVO>", vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static TimelimitTaskVO getTimelimitTaskVO(MasterDataVO mdVO, String sIdentifier, String sStatus, String sProcess) {
@@ -1077,7 +1110,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("expired", vo.getExpired());
 		mpFields.put("completed", vo.getCompleted());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.TIMELIMITTASK.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static ReportOutputVO getReportOutputVO(MasterDataVO mdVO) {
@@ -1114,7 +1148,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("description", vo.getDescription());
 		mpFields.put("locale", vo.getLocale());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.REPORTOUTPUT.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static SubreportVO getSubreportVO(MasterDataVO mdVO) {
@@ -1139,7 +1174,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("sourcefileContent", vo.getSourcefileContent());
 		mpFields.put("reportCLS", vo.getReportCLS());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.SUBREPORT.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static ReportVO getReportVO(MasterDataVO mdVO, String currentUserName) {
@@ -1181,7 +1217,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("validUntil", vo.getValidUntil());
 		mpFields.put("description", vo.getDescription());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.GENERICOBJECTRELATION.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	public static GenericObjectRelationVO getGenericObjectRelationVO(MasterDataVO mdVO) {
@@ -1225,7 +1262,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("labelplural", vo.getLabelPlural());
 		mpFields.put("acceleratormodifier", vo.getAcceleratorModifier());
 		mpFields.put("accelerator", vo.getAccelerator());
-		return new MasterDataVO(vo.getId(), vo.getCreatedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		// ??
+		return new MasterDataVO("<MasterDataMetaVO>", vo.getId(), 
+				vo.getCreatedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 
 	private static NuclosValueObject getBaseVO(MasterDataVO mdVO) {
@@ -1261,7 +1300,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("generationId", ptVO.getGenerationId());
 		mpFields.put("caseId", ptVO.getProcessMonitorId());
 
-		return new MasterDataVO(ptVO.getId(), ptVO.getChangedAt(), ptVO.getCreatedBy(), ptVO.getChangedAt(), ptVO.getChangedBy(), ptVO.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.PROCESSTRANSITION.getEntityName(), ptVO.getId(), 
+				ptVO.getChangedAt(), ptVO.getCreatedBy(), ptVO.getChangedAt(), ptVO.getChangedBy(), ptVO.getVersion(), mpFields);
 	}
 
 	public static SubProcessVO getSubProcessVO(MasterDataVO mdVO, StateModelVO stateModelVO) {
@@ -1297,7 +1337,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("runtimeFormat", spVO.getRuntimeFormat());
 		mpFields.put("caseId", spVO.getProcessMonitorId());
 
-		return new MasterDataVO(spVO.getId(), spVO.getChangedAt(), spVO.getCreatedBy(), spVO.getChangedAt(), spVO.getChangedBy(), spVO.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), spVO.getId(), 
+				spVO.getChangedAt(), spVO.getCreatedBy(), spVO.getChangedAt(), spVO.getChangedBy(), spVO.getVersion(), mpFields);
 	}
 
 	public static ProcessMonitorVO getProcessMonitorVO(MasterDataVO mdVO) {
@@ -1356,7 +1398,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("description", pmVO.getDescription());
 		mpFields.put("layout", layoutData);
 
-		return new MasterDataVO(pmVO.getId(), pmVO.getChangedAt(), pmVO.getCreatedBy(), pmVO.getChangedAt(), pmVO.getChangedBy(), pmVO.getVersion(), mpFields);
+		// ???
+		return new MasterDataVO(NuclosEntity.PROCESSSTATEMODEL.getEntityName(), pmVO.getId(), 
+				pmVO.getChangedAt(), pmVO.getCreatedBy(), pmVO.getChangedAt(), pmVO.getChangedBy(), pmVO.getVersion(), mpFields);
 	}
 
 	public static LogbookVO getLogbookVO(MasterDataVO mdVO) {
@@ -1397,6 +1441,7 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		mpFields.put("newexternalvalue", vo.getNewValueExternalId());
 		mpFields.put("newvalue", vo.getNewValue());
 
-		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
+		return new MasterDataVO(NuclosEntity.GENERICOBJECTLOGBOOK.getEntityName(), vo.getId(), 
+				vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
 }

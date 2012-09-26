@@ -59,7 +59,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.SubFormEntryTreeNode;
@@ -193,7 +193,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 									mdVO.flagRemove();
 								}
 							}
-							MasterDataDelegate.getInstance().update(sEntity, mdvo, new DependantMasterDataMap(sSubFormEntity, dependants), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+							MasterDataDelegate.getInstance().update(sEntity, mdvo, new DependantMasterDataMapImpl(sSubFormEntity, dependants), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 						}
 					}
 					

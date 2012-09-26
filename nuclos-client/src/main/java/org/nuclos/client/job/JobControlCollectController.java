@@ -96,6 +96,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.report.ejb3.SchedulerControlFacadeRemote;

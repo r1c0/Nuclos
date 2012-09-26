@@ -53,7 +53,7 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeLocal;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 //Note2self: @EndpointConfig(configName="Standard WSSecurity Endpoint")

@@ -87,6 +87,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
@@ -97,6 +98,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleEngineGenerationVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.ruleengine.valueobject.RuleWithUsagesVO;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
@@ -231,7 +233,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		// We can now execute the rules in their order:
 		info("BEGIN    executing business rules for transition id " + transitionId + "...");
-		final RuleObjectContainerCVO result = this.executeBusinessRules(rules, ruleContainer, false, customUsage);
+		final RuleObjectContainerCVO result = executeBusinessRules(rules, ruleContainer, false, customUsage);
 		info("FINISHED executing business rules for transition id " + transitionId + "...");
 		return result;
 	}

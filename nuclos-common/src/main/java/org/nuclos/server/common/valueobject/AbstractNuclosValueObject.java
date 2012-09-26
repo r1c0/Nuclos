@@ -32,7 +32,7 @@ import java.util.Date;
  * @version 01.00.00
  * @param Id the type of this object's id.
  */
-public abstract class AbstractNuclosValueObject<Id> implements Serializable, Cloneable, HasId<Id> {
+public abstract class AbstractNuclosValueObject<Id> implements Serializable, Cloneable, INuclosValueObject<Id> {
 
 	private static final long serialVersionUID = 1012920874365879641L;
 	private Date dateCreatedAt;
@@ -82,7 +82,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * @return a clone of this object.
 	 */
 	@Override
-	protected AbstractNuclosValueObject<Id> clone() {
+	protected INuclosValueObject<Id> clone() {
 		final AbstractNuclosValueObject<Id> result;
 		try {
 			result = (AbstractNuclosValueObject<Id>) super.clone();
@@ -102,11 +102,13 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	/**
 	 * @return this object's id (aka primary key).
 	 */
+	@Override
 	public abstract Id getId();
 
 	/**
 	 * mark underlying database record as to be removed from database
 	 */
+	@Override
 	public void remove() {
 		this.bRemoved = true;
 	}
@@ -115,6 +117,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * is underlying database record to be removed from database?
 	 * @return boolean value
 	 */
+	@Override
 	public boolean isRemoved() {
 		return this.bRemoved;
 	}
@@ -123,6 +126,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * get creation date (datcreated) of underlying database record
 	 * @return created date of underlying database record
 	 */
+	@Override
 	public Date getCreatedAt() {
 		return this.dateCreatedAt;
 	}
@@ -131,6 +135,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * get creator (strcreated) of underlying database record
 	 * @return creator of underlying database record
 	 */
+	@Override
 	public String getCreatedBy() {
 		return this.sCreatedBy;
 	}
@@ -139,6 +144,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * get last changed date (datchanged) of underlying database record
 	 * @return last changed date of underlying database record
 	 */
+	@Override
 	public Date getChangedAt() {
 		return this.dateChangedAt;
 	}
@@ -147,6 +153,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * get last changer (strchanged) of underlying database record
 	 * @return last changer of underlying database record
 	 */
+	@Override
 	public String getChangedBy() {
 		return this.sChangedBy;
 	}
@@ -155,6 +162,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * get version (intversion) of underlying database record
 	 * @return version of underlying database record
 	 */
+	@Override
 	public int getVersion() {
 		return this.iVersion;
 	}
@@ -163,6 +171,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 * @since Nuclos 3.5
 	 * @author Thomas Pasch
 	 */
+	@Override
 	public void setVersion(int version) {
 		this.iVersion = version;
 	}

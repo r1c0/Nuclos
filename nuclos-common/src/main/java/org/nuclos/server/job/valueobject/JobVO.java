@@ -20,8 +20,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -58,7 +60,7 @@ public class JobVO extends NuclosValueObject {
 	private Integer nucletId;
 
 	// map for dependant child subform data
-	private DependantMasterDataMap mpDependants = new DependantMasterDataMap();
+	private DependantMasterDataMap mpDependants = new DependantMasterDataMapImpl();
 
 	public JobVO(MasterDataVO mdVO) {
 		this(mdVO, null);
@@ -402,7 +404,8 @@ public class JobVO extends NuclosValueObject {
 		fields.put("result", getResult());
 		fields.put("resultdetails", getResultDetails());
 		fields.put("nucletId", getNucletId());
-		return new MasterDataVO(getId(), getCreatedAt(), getCreatedBy(), getChangedAt(), getChangedBy(), getVersion(), fields);
+		return new MasterDataVO(NuclosEntity.JOBCONTROLLER.getEntityName(), getId(), 
+				getCreatedAt(), getCreatedBy(), getChangedAt(), getChangedBy(), getVersion(), fields);
 	}
 
 	public DependantMasterDataMap getDependants() {

@@ -667,7 +667,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 		try {
 			return executor.executeQuery(selectStatement, new ResultSetRunner<Collection<MasterDataVO>>() {
 				@Override
-				public java.util.Collection<MasterDataVO> perform(ResultSet result) throws SQLException {
+				public Collection<MasterDataVO> perform(ResultSet result) throws SQLException {
 	            Collection<MasterDataVO> values = new ArrayList<MasterDataVO>();
 
 	            MasterDataVO mdvo = null;
@@ -687,7 +687,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	               	 mpFields.put(columnames.get(columnNumber), value);
 	               }
 
-	               mdvo = new MasterDataVO(null, null, null, null, null, null, mpFields);
+	               mdvo = new MasterDataVO("<executeSelectOnJCADatasource>", null, null, null, null, null, null, mpFields);
 	               values.add(mdvo);
 	            }
 

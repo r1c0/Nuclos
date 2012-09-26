@@ -37,6 +37,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.resource.valueobject.ResourceVO;
@@ -113,7 +114,8 @@ public class ResourceCollectController extends MasterDataCollectController{
 
 		final MasterDataVO mdvoInserted = delegate.create(this.getEntityName(), clctNew.getMasterDataCVO(), mpmdvoDependants);
 
-		final CollectableMasterDataWithDependants cmdwd = new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
+		final CollectableMasterDataWithDependants cmdwd = new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), 
+				new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -139,7 +141,8 @@ public class ResourceCollectController extends MasterDataCollectController{
 
 		final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId);
 
-		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
+		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), 
+				new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
 	}
 
 	@Override

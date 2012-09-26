@@ -262,6 +262,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.genericobject.valueobject.LogbookVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.navigation.treenode.EntitySearchResultTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.resource.valueobject.ResourceVO;

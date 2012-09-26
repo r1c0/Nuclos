@@ -64,6 +64,7 @@ import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

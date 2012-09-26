@@ -22,6 +22,7 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.ejb3.MasterDataModuleFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class MasterDataModuleDelegate {

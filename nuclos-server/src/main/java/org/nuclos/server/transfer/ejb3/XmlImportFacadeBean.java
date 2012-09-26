@@ -104,6 +104,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -593,7 +594,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				// if data was "imported" remove all dependant data, because the dependant data were exported as well
 				if (bImportData) {
 					for(Map<EntityAndFieldName, String> mpSubFormsWithForeignKeys : mpGoSubFormsWithForeignKeys.get(govo.getModuleId())) {
-						readDependants(mpSubFormsWithForeignKeys, null, existingGO.getId(), new DependantMasterDataMap());
+						readDependants(mpSubFormsWithForeignKeys, null, existingGO.getId(), new DependantMasterDataMapImpl());
 					}
 				}
 
@@ -640,7 +641,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			else {
 				// create new GO
 				if (bImportData) {
-					GenericObjectVO newGoVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(govo, new DependantMasterDataMap()), null);
+					GenericObjectVO newGoVO = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(govo, new DependantMasterDataMapImpl()), null);
 
 					// create old/new Id matching
 					idMap.put(new Pair<String, String>(element.attributeValue("name"),element.attribute("id").getValue()), String.valueOf(newGoVO.getId()));
@@ -680,10 +681,11 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			throws CommonCreateException, CommonPermissionException, NuclosBusinessException, CommonFinderException {
 		info("Import MasterData Entity: " + element.attributeValue("name")+" Export-Id: "+element.attribute("id").getValue());
 
-		Boolean bImportData = new Boolean(element.attributeValue("import"));
+		final Boolean bImportData = new Boolean(element.attributeValue("import"));
+		final String sEntityName = element.attribute("name").getValue();
 
 		// fetch metadata
-		MasterDataMetaVO mdm = getMasterDataFacade().getMetaData(element.attribute("name").getValue());
+		MasterDataMetaVO mdm = getMasterDataFacade().getMetaData(sEntityName);
 		List<MasterDataMetaFieldVO> metafields = mdm.getFields();
 
 		// Map for MD values
@@ -828,7 +830,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 			String sNow = DateUtils.toString(DateUtils.now()) + " 00:00:00";
 
-			prepVO = new MasterDataVO(null,
+			prepVO = new MasterDataVO(sEntityName, null,
 					dateFormat.parse((sCreatedAt == null) ? sNow : sCreatedAt),
 					(sCreatedBy == null) ? "INITIAL" : sCreatedBy,
 					dateFormat.parse((sChangedAt == null) ? sNow : sChangedAt),
@@ -851,14 +853,13 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			// entity exists
 			try {
 				// set old id and old version
-				prepVO = new MasterDataVO(existingEntity.getId(),
+				prepVO = new MasterDataVO(sEntityName, existingEntity.getId(),
 						prepVO.getCreatedAt(), prepVO.getCreatedBy(),
 						prepVO.getChangedAt(), prepVO.getChangedBy(),
 						existingEntity.getVersion(), prepVO.getFields());
 
 				// read all dependant data
 				DependantMasterDataMap dmdm = null;
-				String sEntityName = element.attribute("name").getValue();
 
 				if (!mpMdSubFormsWithForeignKeys.containsKey(sEntityName)) {
 					LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
@@ -867,7 +868,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 				// if data was "imported" remove all dependant data, because the dependant data were exported as well
 				if (bImportData) {
-					readDependants(mpMdSubFormsWithForeignKeys.get(sEntityName), null, existingEntity.getIntId(), new DependantMasterDataMap());
+					readDependants(mpMdSubFormsWithForeignKeys.get(sEntityName), null, existingEntity.getIntId(), new DependantMasterDataMapImpl());
 				}
 
 				// call modify Method
@@ -1027,7 +1028,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @param entityId
 	 * @param dmdm
 	 */
-	private DependantMasterDataMap readDependants(final Map<EntityAndFieldName, String> subformtree, String sEntityName, Object entityId, DependantMasterDataMap dmdm) {
+	private DependantMasterDataMap readDependants(final Map<EntityAndFieldName, String> subformtree, String sEntityName, Object entityId, DependantMasterDataMapImpl dmdm) {
 		LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 
 		List<EntityAndFieldName> entitylist = new ArrayList<EntityAndFieldName>();
@@ -1048,7 +1049,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 			for (MasterDataVO mdvo : mdList) {
 				DependantMasterDataMap dmdmOfChildren = readDependants(subformtree, entity, mdvo.getIntId(), 
-						new DependantMasterDataMap());
+						new DependantMasterDataMapImpl());
 				mdvo.setDependants(dmdmOfChildren);
 
 				// check subforms in other layouts
@@ -1067,7 +1068,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 						if (mpMdSubFormsWithForeignKeys.get(entity) != null) {
 							readDependants(mpMdSubFormsWithForeignKeys.get(entityId), null, mdvo.getIntId(), 
-									new DependantMasterDataMap());
+									new DependantMasterDataMapImpl());
 						}
 						//todo check this
 						if (!MasterDataMetaCache.getInstance().getMetaData(entity).getUniqueFieldNames().isEmpty()) {

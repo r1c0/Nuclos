@@ -31,7 +31,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
@@ -53,7 +53,7 @@ public class CollectableMasterDataWithDependants extends CollectableMasterData i
 	 * @precondition govo != null
 	 */
 	public static CollectableMasterDataWithDependants newInstance(CollectableEntity clcte, MasterDataVO mdvo) {
-		return new CollectableMasterDataWithDependants(clcte, new MasterDataWithDependantsVO(mdvo, new DependantMasterDataMap()));
+		return new CollectableMasterDataWithDependants(clcte, new MasterDataWithDependantsVO(mdvo, new DependantMasterDataMapImpl()));
 	}
 
 	public CollectableMasterDataWithDependants(CollectableEntity clcte, MasterDataWithDependantsVO mdwdcvo) {

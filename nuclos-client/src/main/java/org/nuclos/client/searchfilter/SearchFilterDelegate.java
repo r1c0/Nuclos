@@ -38,6 +38,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.searchfilter.ejb3.SearchFilterFacadeRemote;
 import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;

@@ -110,6 +110,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.MasterDataProxyList;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -120,7 +121,8 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeLocal;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.validation.ValidationSupport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -510,7 +512,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 								entity, eafn.getFieldName(), oId);
 							if(!collmdvo.isEmpty()) {
 								if(dmdm == null) {
-									dmdm = new DependantMasterDataMap();
+									dmdm = new DependantMasterDataMapImpl();
 								}
 								dmdm.addAllData(entity, CollectionUtils.transform(collmdvo, 
 										new MasterDataToEntityObjectTransformer(entity)));
@@ -1084,9 +1086,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		RuleObjectContainerCVO ruleContainer = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).fireRule(
 			sEntityName,
 			after ? RuleEventUsageVO.SAVE_AFTER_EVENT : RuleEventUsageVO.SAVE_EVENT,
-			new RuleObjectContainerCVO(event, mdvo, mpDependants != null
+			new RuleObjectContainerCVOImpl(event, mdvo, mpDependants != null
 				? mpDependants
-				: new DependantMasterDataMap()), customUsage);
+				: new DependantMasterDataMapImpl()), customUsage);
 
 		return ruleContainer;
 	}
@@ -1106,9 +1108,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).fireRule(
 			sEntityName,
 			after ? RuleEventUsageVO.DELETE_AFTER_EVENT : RuleEventUsageVO.DELETE_EVENT,
-			new RuleObjectContainerCVO(after ? Event.DELETE_AFTER : Event.DELETE_BEFORE, mdvo, mpDependants != null
+			new RuleObjectContainerCVOImpl(after ? Event.DELETE_AFTER : Event.DELETE_BEFORE, mdvo, mpDependants != null
 				? mpDependants
-				: new DependantMasterDataMap()), customUsage);
+				: new DependantMasterDataMapImpl()), customUsage);
 	}
 
 	/**
@@ -1157,7 +1159,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		throws CommonBusinessException {
 		final RuleObjectContainerCVO loccvo = ServerServiceLocator.getInstance().getFacade(
 			RuleEngineFacadeLocal.class).executeBusinessRules(lstRuleVO,
-			new RuleObjectContainerCVO(Event.USER, mdvo, mdvo.getDependants()), false, customUsage);
+			new RuleObjectContainerCVOImpl(Event.USER, mdvo, mdvo.getDependants()), false, customUsage);
 		if(bSaveAfterRuleExecution) {
 			this.modify(sEntityName, loccvo.getMasterData(),
 				loccvo.getDependants(true), customUsage);
@@ -1592,7 +1594,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		final MasterDataWithDependantsVO mdvo = this.getWithDependants(
 			sEntityName, iObjectId, customUsage);
 
-		return new RuleObjectContainerCVO(event, mdvo, mdvo.getDependants());
+		return new RuleObjectContainerCVOImpl(event, mdvo, mdvo.getDependants());
 	}
 
 	/**
@@ -1665,7 +1667,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 	public DependantMasterDataMap getDependants(Object oId,
 		List<EntityAndFieldName> lsteafn) {
-		final DependantMasterDataMap result = new DependantMasterDataMap();
+		final DependantMasterDataMapImpl result = new DependantMasterDataMapImpl();
 		for(EntityAndFieldName eafn : lsteafn) {
 			final String entity = eafn.getEntityName();
 			Collection<EntityObjectVO> col = CollectionUtils.transform(this.getDependantMasterData(

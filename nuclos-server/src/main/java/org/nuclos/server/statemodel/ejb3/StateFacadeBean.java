@@ -90,6 +90,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.DependantWrapper;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -99,7 +100,8 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeLocal;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 import org.nuclos.server.statemodel.NuclosNoAdequateStatemodelException;
 import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
 import org.nuclos.server.statemodel.valueobject.AttributegroupPermissionVO;
@@ -1022,7 +1024,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		if (vo.getStateTarget().intValue() < 0)											//newly inserted state referenced?
 			vo.setStateTarget(states.get(vo.getStateTarget()));						//map newly inserted state temp id to real state id
 
-		final DependantMasterDataMap dependants = new DependantMasterDataMap();
+		final DependantMasterDataMap dependants = new DependantMasterDataMapImpl();
 		final String entity = NuclosEntity.RULETRANSITION.getEntityName();
 
 		int order = 1;
@@ -1042,7 +1044,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	}
 
 	private DependantMasterDataMap createStateTransitionDependants(StateTransitionVO vo) {
-		DependantMasterDataMap dependants = new DependantMasterDataMap();
+		DependantMasterDataMapImpl dependants = new DependantMasterDataMapImpl();
 
 		// --- create RuleEngineTransitions ---
 		Collection<RuleEngineTransitionVO> dbRules;
@@ -1352,7 +1354,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	private void changeState(Integer iModuleId, GenericObjectVO govo, DependantWrapper depWrapper, Integer iTargetStateId, String customUsage) 
 			throws NuclosBusinessException, CommonCreateException, CommonPermissionException {
 			
-		RuleObjectContainerCVO loccvoBefore = new RuleObjectContainerCVO(Event.CHANGE_STATE_BEFORE, govo, depWrapper.getDependants());
+		RuleObjectContainerCVO loccvoBefore = new RuleObjectContainerCVOImpl(Event.CHANGE_STATE_BEFORE, govo, depWrapper.getDependants());
 		changeState(iModuleId, loccvoBefore, depWrapper, iTargetStateId, customUsage);
 	}
 	
@@ -1527,7 +1529,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			// Note that the modification of the leased object does not fire another save event here:
 			GenericObjectVO modifiedGoVO = goFacade.modify(loccvoAfter.getGenericObject(), depWrapper.getDependants(), false, false, false, customUsage);
 
-			RuleObjectContainerCVO loccvoAfterModified = new RuleObjectContainerCVO(Event.CHANGE_STATE_AFTER, modifiedGoVO, loccvoAfter.getDependants());
+			RuleObjectContainerCVO loccvoAfterModified = new RuleObjectContainerCVOImpl(Event.CHANGE_STATE_AFTER, modifiedGoVO, loccvoAfter.getDependants());
 			loccvoAfterModified.setTargetStateId(iTargetStateId);
 			loccvoAfterModified.setTargetStateNum(iTargetStateNum);
 			loccvoAfterModified.setTargetStateName(sTargetStateName);

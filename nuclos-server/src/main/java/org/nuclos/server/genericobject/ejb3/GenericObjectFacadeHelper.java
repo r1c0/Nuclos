@@ -76,6 +76,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -371,7 +372,7 @@ public class GenericObjectFacadeHelper {
 				appendRecordGrants(clctexpr, eMeta.getEntity()), clctexpr.getSortingOrder()!=null)) {
 			
 			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(
-					DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
+					DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMapImpl());
 			try {
 				_fillDependants(go, go.getUsageCriteria(attributeCache, customUsage), stRequiredSubEntityNames, null, username, customUsage);
 			}

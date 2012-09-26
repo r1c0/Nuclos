@@ -25,6 +25,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 
 /**
@@ -84,7 +85,7 @@ public class Utils {
 	 */
 	@Deprecated
 	public static DependantMasterDataMap clearIds(DependantMasterDataMap mpDependants) {
-		final DependantMasterDataMap result = new DependantMasterDataMap();
+		final DependantMasterDataMap result = new DependantMasterDataMapImpl();
 		for (String sEntityName : mpDependants.getEntityNames()) {
 			for (EntityObjectVO mdVO : mpDependants.getData(sEntityName)) {
 				mdVO.setDependants(clearIds(mdVO.getDependants()));

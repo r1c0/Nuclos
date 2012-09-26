@@ -500,7 +500,8 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 									mp.put("sourceModuleId", new Integer(MetaDataClientProvider.getInstance().getEntity(sSourceModule).getId().intValue()));
 									mp.put("targetModule", sTargetModule);
 									mp.put("targetModuleId", new Integer(MetaDataClientProvider.getInstance().getEntity(sTargetModule).getId().intValue()));
-									MasterDataVO vo = new MasterDataVO(null, null, null, null, null, null, mp);
+									MasterDataVO vo = new MasterDataVO(NuclosEntity.GENERATION.getEntityName(), null, 
+											null, null, null, null, null, mp);
 									gcc.runWithNewCollectableWithSomeFields(vo);
 								}
 							}
@@ -799,7 +800,8 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 						mp.put("sourceModuleId", new Integer(MetaDataClientProvider.getInstance().getEntity(sSourceModule).getId().intValue()));
 						mp.put("targetModule", sTargetModule);
 						mp.put("targetModuleId", new Integer(MetaDataClientProvider.getInstance().getEntity(sTargetModule).getId().intValue()));
-						MasterDataVO vo = new MasterDataVO(null, null, null, null, null, null, mp);
+						MasterDataVO vo = new MasterDataVO(NuclosEntity.GENERATION.getEntityName(), null, 
+								null, null, null, null, null, mp);
 						gcc.runWithNewCollectableWithSomeFields(vo);
 					}
 				}

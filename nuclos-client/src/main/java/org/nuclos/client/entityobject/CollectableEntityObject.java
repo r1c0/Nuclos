@@ -29,6 +29,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 
 public class CollectableEntityObject extends CollectableMasterData implements Removable {
 

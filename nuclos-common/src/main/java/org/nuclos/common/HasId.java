@@ -16,13 +16,15 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
+import java.io.Serializable;
+
 /**
  * Generic getId() interface for use with persistent DB objects with primary key.
  * 
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
-public interface HasId<T> {
+public interface HasId<T> extends Serializable {
 	
 	T getId();
 

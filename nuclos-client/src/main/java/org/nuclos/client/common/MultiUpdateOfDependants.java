@@ -50,6 +50,7 @@ import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 
 /**
  * Provides support for multi-update of dependant masterdata. <br>
@@ -94,7 +95,7 @@ public class MultiUpdateOfDependants implements TableCellRendererProvider {
 	 * @todo we should return a DependantMasterDataMap here
 	 */
 	public DependantCollectableMasterDataMap getDependantCollectableMapForUpdate(Collection<? extends DetailsSubFormController<CollectableEntityObject>> collsubformctl, CollectableWithDependants clctwd) {
-		final DependantMasterDataMap mpDependants = new DependantMasterDataMap();
+		final DependantMasterDataMap mpDependants = new DependantMasterDataMapImpl();
 
 		// iterate all enabled subforms:
 		for (DetailsSubFormController<CollectableEntityObject> subformctl : collsubformctl) {

@@ -48,6 +48,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
@@ -234,7 +235,7 @@ public class XMLEntities {
 		while (reader.nextTag() == XMLStreamReader.START_ELEMENT) {
 			String name = reader.getLocalName();
 			if (name.equals("dependants")) {
-				dependantMap = new DependantMasterDataMap();
+				dependantMap = new DependantMasterDataMapImpl();
 				while (reader.nextTag() == XMLStreamReader.START_ELEMENT) {
 					String dependantName = reader.getLocalName();
 					List<MasterDataVO> list = readList(reader, t, handler);
@@ -257,7 +258,7 @@ public class XMLEntities {
 			}
 		}
 		Object id = fields.get("id");
-		MasterDataVO mdvo = new SystemMasterDataVO(id, fields);
+		MasterDataVO mdvo = new SystemMasterDataVO(entity, id, fields);
 		if (dependantMap != null) {
 			mdvo = new MasterDataWithDependantsVO(mdvo, dependantMap);
 		}

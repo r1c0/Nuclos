@@ -54,6 +54,7 @@ import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
@@ -485,7 +486,7 @@ public class MasterDataDelegate {
 	 }
 
 	 public DependantMasterDataMap getDependants(Object oId, List<EntityAndFieldName> lsteafn) {
-		 final DependantMasterDataMap result = new DependantMasterDataMap();
+		 final DependantMasterDataMap result = new DependantMasterDataMapImpl();
 		 for (EntityAndFieldName eafn : lsteafn) {
 			 result.addAllData(eafn.getEntityName(), this.getDependantMasterData(eafn.getEntityName(), eafn.getFieldName(), oId, eafn.getMapParams()));
 		 }

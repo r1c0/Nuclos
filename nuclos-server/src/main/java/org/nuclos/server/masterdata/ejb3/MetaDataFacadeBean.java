@@ -121,6 +121,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -1310,7 +1311,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 		Connection connect = null;
 		try {
-			DependantMasterDataMap dependMap = new DependantMasterDataMap();
+			DependantMasterDataMap dependMap = new DependantMasterDataMapImpl();
 			List<String> lstFields = new ArrayList<String>();
 			connect = DriverManager.getConnection(url, user, password);
 			DatabaseMetaData dbmeta = connect.getMetaData();

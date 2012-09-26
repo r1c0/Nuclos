@@ -1,4 +1,4 @@
-//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//Copyright (C) 2012  Novabit Informationssysteme GmbH
 //
 //This file is part of Nuclos.
 //
@@ -16,201 +16,59 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.ruleengine.valueobject;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
-import org.apache.commons.lang.NullArgumentException;
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.EntityObjectToMasterDataTransformer;
-import org.nuclos.common.collection.MasterDataToEntityObjectTransformer;
-import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapForRule;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 
 /**
- * Contains a rule object (generic object or master data) along with its dependants.
- * <br>
- * <br>Created by Novabit Informationssysteme GmbH
- * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
- * @author	<a href="mailto:Corina.Mandoki@novabit.de">Corina Mandoki</a>
- * @version 01.00.00
+ * Interface to {@link org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl}.
+ * 
+ * @author Thomas Pasch
+ * @since Nuclos 3.8
  */
-public final class RuleObjectContainerCVO implements Serializable {
-
-	private GenericObjectVO govo;
-	private MasterDataVO mdvo;
-
-	private final DependantMasterDataMapForRule mpDependants;
-
-	public static enum Event {
-		CREATE_BEFORE("create_before"),
-		CREATE_AFTER("create_after"),
-		MODIFY_BEFORE("modify_before"),
-		MODIFY_AFTER("modify_after"),
-		DELETE_BEFORE("delete_before"),
-		DELETE_AFTER("delete_after"),
-		CHANGE_STATE_BEFORE("change_state_before"),
-		CHANGE_STATE_AFTER("change_state_after"),
-		GENERATION_BEFORE("generation_before"),
-		GENERATION_AFTER("generation_after"),
-		USER("user"),
-		INTERFACE("interface"),
-		UNDEFINED("undefined");
-
-		private String name;
-
-		private Event(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public boolean isFollowUp() {
-			return name.endsWith("_after");
-		}
-	}
-
-	private Integer iTargetStateId;
-	private Integer iTargetStateNum;
-	private String sTargetStateName;
-
-	private Integer iSourceStateId;
-	private Integer iSourceStateNum;
-	private String sSourceStateName;
-
-	private final Event event;
-
-	/**
-	 * @param govo
-	 * @param mpDependants
-	 * @param event
-	 * @precondition govo != null
-	 * @precondition mpDependants != null
-	 * @precondition event != null
-	 */
-	public RuleObjectContainerCVO(Event event, GenericObjectVO govo, DependantMasterDataMap mpDependants) {
-		if (govo == null) {
-			throw new NullArgumentException("govo");
-		}
-		if (mpDependants == null) {
-			throw new NullArgumentException("mpDependants");
-		}
-		if (event == null) {
-			throw new NullArgumentException("event");
-		}
-		this.govo = govo;
-		this.mpDependants = convert(mpDependants);
-		this.event = event;
-	}
-
-	/**
-	 * @param mdvo
-	 * @param mpDependants
-	 * @param event
-	 * @precondition mdvo != null
-	 * @precondition mpDependants != null
-	 * @precondition event != null
-	 */
-	public RuleObjectContainerCVO(Event event, MasterDataVO mdvo, DependantMasterDataMap mpDependants) {
-		if (mdvo == null) {
-			throw new NullPointerException("mdvo");
-		}
-		if (mpDependants == null) {
-			throw new NullArgumentException("mpDependants");
-		}
-		if (event == null) {
-			throw new NullArgumentException("event");
-		}
-		this.mdvo = mdvo;
-		this.mpDependants = convert(mpDependants);
-		this.event = event;
-	}
+public interface RuleObjectContainerCVO {
 
 	/**
 	 * @return the contained generic object
 	 * @postcondition result != null
 	 */
-	public GenericObjectVO getGenericObject() {
-		return govo;
-	}
+	GenericObjectVO getGenericObject();
 
 	/**
 	 * @return the contained master data
 	 * @postcondition result != null
 	 */
-	public MasterDataVO getMasterData() {
-		return mdvo;
-	}
+	MasterDataVO getMasterData();
 
 	/** @todo try to avoid this method. */
-	public void setGenericObject(GenericObjectVO govo) {
-		this.govo = govo;
-	}
-
-	/** @todo try to avoid this method. */
-	public void setMasterData(MasterDataVO mdvo) {
-		this.mdvo = mdvo;
-	}
+	void setGenericObject(GenericObjectVO govo);
 
 	/**
 	 * @return the contained map of dependant masterdata records.
 	 * @postcondition result != null
 	 */
-	public DependantMasterDataMap getDependants() {
-		/** @todo make unmodifiable */
-		return convert(getDependantsWithoutDeletedVOs(this.mpDependants));
-	}
+	DependantMasterDataMap getDependants();
 
-	public DependantMasterDataMap getDependants(boolean withDeleted) {
-		if(!withDeleted) {
-			return getDependants();
-		}
-		return convert(mpDependants);
-	}
+	DependantMasterDataMap getDependants(boolean withDeleted);
 
-	public void addDependant(String sDependantEntity, MasterDataVO entry) {
-		mpDependants.addValue(sDependantEntity, entry);
-	}
+	void addDependant(String sDependantEntity, MasterDataVO entry);
 
 	/**
 	 * @param sEntityName
 	 * @return Collection<MasterDataVO> the leased object's dependants of the given entity. This Collection is not modifiable.
 	 * @postcondition result != null
 	 */
-	public Collection<MasterDataVO> getDependants(String sEntityName) {
-		Collection<MasterDataVO> result;
-		if (this.getGenericObject() != null) {
-			result = this.getDependants(sEntityName, ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
-		}
-		else {
-			result = CollectionUtils.transform(this.getMasterData().getDependants().getData(sEntityName),
-					new EntityObjectToMasterDataTransformer());
-
-		}
-		return getDependantsWithoutDeletedVOs(result);
-	}
+	Collection<MasterDataVO> getDependants(String sEntityName);
 
 	/**
 	 *
 	 * @param sEntityName
 	 * @return
 	 */
-	public Collection<MasterDataVO> getDependantsWithDeleted(String sEntityName) {
-		if (this.mpDependants != null) {
-			return Collections.unmodifiableCollection(this.mpDependants.getValues(sEntityName));
-		}
-		else {
-			return null;
-		}
-	}
+	Collection<MasterDataVO> getDependantsWithDeleted(String sEntityName);
 
 	/**
 	 * set the leased objects dependants of the given entity.
@@ -218,10 +76,7 @@ public final class RuleObjectContainerCVO implements Serializable {
 	 * @param collmdvo
 	 * @postcondition result != null
 	 */
-	public void setDependants(String sEntityName, Collection<MasterDataVO> collmdvo) {
-
-		this.mpDependants.setValues(sEntityName, collmdvo);
-	}
+	void setDependants(String sEntityName, Collection<MasterDataVO> collmdvo);
 
 	/**
 	 * @param sEntityName
@@ -231,175 +86,71 @@ public final class RuleObjectContainerCVO implements Serializable {
 	 * @todo sForeignKeyFieldName must not be ignored!
 	 * @postcondition result != null
 	 */
-	public Collection<MasterDataVO> getDependants(String sEntityName, String sForeignKeyFieldName) {
-		return Collections.unmodifiableCollection(getDependantsWithoutDeletedVOs(this.mpDependants.getValues(sEntityName)));
-	}
-
-	private DependantMasterDataMapForRule getDependantsWithoutDeletedVOs(DependantMasterDataMapForRule mpDependants) {
-		DependantMasterDataMapForRule result = new DependantMasterDataMapForRule();
-
-		for (String entity : mpDependants.getEntityNames()) {
-			for (MasterDataVO mdvo : mpDependants.getValues(entity)) {
-				if (!mdvo.isRemoved()) {
-					result.addValue(entity, mdvo);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	private Collection<MasterDataVO> getDependantsWithoutDeletedVOs(Collection<MasterDataVO> colldependants) {
-		Collection<MasterDataVO> result = new ArrayList<MasterDataVO>();
-
-		for (MasterDataVO mdvo : colldependants) {
-			if (!mdvo.isRemoved()) {
-				result.add(mdvo);
-			}
-		}
-
-		return result;
-	}
+	Collection<MasterDataVO> getDependants(String sEntityName, String sForeignKeyFieldName);
 
 	/**
 	 * @return the iTargetStateId
 	 */
-	public Integer getTargetStateId() {
-		return iTargetStateId;
-	}
+	Integer getTargetStateId();
 
 	/**
 	 * @return the iTargetStateNum
 	 */
-	public Integer getTargetStateNum() {
-		return iTargetStateNum;
-	}
+	Integer getTargetStateNum();
 
 	/**
 	 * @return the iTargetStateName
 	 */
-	public String getTargetStateName() {
-		return sTargetStateName;
-	}
+	String getTargetStateName();
 
 	/**
 	 * @return the iSourceStateId
 	 */
-	public Integer getSourceStateId() {
-		return iSourceStateId;
-	}
+	Integer getSourceStateId();
 
 	/**
 	 * @return the iSourceStateNum
 	 */
-	public Integer getSourceStateNum() {
-		return iSourceStateNum;
-	}
+	Integer getSourceStateNum();
 
 	/**
 	 * @return the iSourceStateName
 	 */
-	public String getSourceStateName() {
-		return sSourceStateName;
-	}
+	String getSourceStateName();
 
 	/**
 	 * @param iTargetStateId the iTargetStateId to set
 	 */
-	public void setTargetStateId(Integer iTargetStateId) {
-		this.iTargetStateId = iTargetStateId;
-	}
+	void setTargetStateId(Integer iTargetStateId);
 
 	/**
 	 * @param iTargetStateNum the iTargetStateNum to set
 	 */
-	public void setTargetStateNum(Integer iTargetStateNum) {
-		this.iTargetStateNum = iTargetStateNum;
-	}
+	void setTargetStateNum(Integer iTargetStateNum);
 
 	/**
 	 * @param sTargetStateName the sTargetStateName to set
 	 */
-	public void setTargetStateName(String sTargetStateName) {
-		this.sTargetStateName = sTargetStateName;
-	}
+	void setTargetStateName(String sTargetStateName);
 
 	/**
 	 * @param iSourceStateId the iSourceStateId to set
 	 */
-	public void setSourceStateId(Integer iSourceStateId) {
-		this.iSourceStateId = iSourceStateId;
-	}
+	void setSourceStateId(Integer iSourceStateId);
 
 	/**
 	 * @param iSourceStateNum the iSourceStateNum to set
 	 */
-	public void setSourceStateNum(Integer iSourceStateNum) {
-		this.iSourceStateNum = iSourceStateNum;
-	}
+	void setSourceStateNum(Integer iSourceStateNum);
 
 	/**
 	 * @param sSourceStateName the sSourceStateName to set
 	 */
-	public void setSourceStateName(String sSourceStateName) {
-		this.sSourceStateName = sSourceStateName;
-	}
+	void setSourceStateName(String sSourceStateName);
 
 	/**
 	 * @return the event
 	 */
-	public Event getEvent() {
-		return event;
-	}
+	Event getEvent();
 
-	private static DependantMasterDataMap convert(DependantMasterDataMapForRule dep) {
-		DependantMasterDataMap map = new DependantMasterDataMap();
-		for(String key : dep.getEntityNames()) {
-			map.setData(key, CollectionUtils.transform(dep.getValues(key), 
-					new MasterDataToEntityObjectTransformer(key)));
-		}
-		return map;
-	}
-
-	private static DependantMasterDataMapForRule convert(DependantMasterDataMap dep) {
-		DependantMasterDataMapForRule map = new DependantMasterDataMapForRule();
-		for(String key : dep.getEntityNames()) {
-			map.setValues(key, CollectionUtils.transform(dep.getData(key), 
-					new EntityObjectToMasterDataTransformer()));
-		}
-		return map;
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder result = new StringBuilder();
-		result.append("RuleObjectContainerVO[");
-		if (mdvo != null) {
-			result.append("mdVO=").append(mdvo.toDescription());
-		}
-		if (govo != null) {
-			result.append("goVO=").append(govo.toDescription());
-		}
-		if (event != null) {
-			result.append(",event=").append(event);
-		}
-		if (iSourceStateId != null) {
-			result.append(",srcSId=").append(iSourceStateId);
-		}
-		if (iSourceStateNum != null) {
-			result.append(",srcSNum=").append(iSourceStateNum);
-		}
-		if (iTargetStateId != null) {
-			result.append(",targetSId=").append(iTargetStateId);
-		}
-		if (iTargetStateNum != null) {
-			result.append(",targetStateNum").append(iTargetStateNum);
-		}
-		if (mpDependants != null) {
-			result.append(",deps=").append(mpDependants);
-		}
-		result.append("]");
-		return result.toString();
-	}
-	
-}	// class RuleObjectContainerCVO
+}

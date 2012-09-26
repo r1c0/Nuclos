@@ -76,6 +76,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
@@ -377,7 +378,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 			throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, 
 			CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		
-		Object oId = masterDataFacade.modify(NuclosEntity.LOCALE.getEntityName(), mdvo, new DependantMasterDataMap(), null);
+		Object oId = masterDataFacade.modify(NuclosEntity.LOCALE.getEntityName(), mdvo, new DependantMasterDataMapImpl(), null);
 		this.modifyDependants(mpDependants.getData(NuclosEntity.LOCALERESOURCE.getEntityName()), getLocaleInfoForId((Integer)mdvo.getField(R_PARENT + "Id")));
 
 		return oId;

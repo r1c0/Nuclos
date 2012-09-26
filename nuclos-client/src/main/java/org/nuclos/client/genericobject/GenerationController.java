@@ -93,6 +93,7 @@ import org.nuclos.server.genericobject.GeneratorFailedException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 

@@ -50,6 +50,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.NuclosUpdateException;
 import org.nuclos.server.common.ejb3.LocaleFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.i18n.LocaleContextHolder;

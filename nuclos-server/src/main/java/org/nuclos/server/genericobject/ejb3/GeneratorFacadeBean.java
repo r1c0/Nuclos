@@ -93,6 +93,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
@@ -100,7 +101,8 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeLocal;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineGenerationVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -341,7 +343,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 
 		// add dependants
-		final DependantMasterDataMap dependants = new DependantMasterDataMap();
+		final DependantMasterDataMap dependants = new DependantMasterDataMapImpl();
 		final Collection<MasterDataVO> subentities = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONSUBENTITY.getEntityName(), "generation", generatoractionvo.getId());
 
 		// copy dependants (grouping == false)
@@ -392,7 +394,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				}
 			}
 
-			RuleObjectContainerCVO container = new RuleObjectContainerCVO(Event.GENERATION_BEFORE, result, dependants);
+			RuleObjectContainerCVO container = new RuleObjectContainerCVOImpl(Event.GENERATION_BEFORE, result, dependants);
 
 			// Create the new object
 			try {
@@ -411,7 +413,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				}
 
 				// execute rules (after)
-				container = new RuleObjectContainerCVO(Event.GENERATION_AFTER, created, dependants);
+				container = new RuleObjectContainerCVOImpl(Event.GENERATION_AFTER, created, dependants);
 				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, new ArrayList<String>(), true, customUsage);
 				executeGenerationEventSupports(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, true);
 				
@@ -431,7 +433,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		else {
 			final MasterDataVO md = DalSupportForMD.wrapEntityObjectVO(target);
 
-			RuleObjectContainerCVO container = new RuleObjectContainerCVO(Event.GENERATION_BEFORE, md, dependants);
+			RuleObjectContainerCVO container = new RuleObjectContainerCVOImpl(Event.GENERATION_BEFORE, md, dependants);
 
 			// Create the new object
 			final String entity = targetMeta.getEntity();
@@ -443,7 +445,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				MasterDataVO created = getMasterDataFacade().create(entity, container.getMasterData(), container.getDependants(), customUsage);
 
 				// execute rules (after)
-				container = new RuleObjectContainerCVO(Event.GENERATION_AFTER, created, container.getDependants());
+				container = new RuleObjectContainerCVOImpl(Event.GENERATION_AFTER, created, container.getDependants());
 				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, new ArrayList<String>(), true, customUsage);
 
 				return new GenerationResult(CollectionUtils.transform(sourceObjects, 
@@ -737,7 +739,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 
 		String mainSourceEntity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(gavo.getSourceModuleId())).getEntity();
-		String foreignField = DependantMasterDataMap.getForeignKeyField(MasterDataMetaCache.getInstance().getMetaData(sourceEntity.getEntity()), mainSourceEntity, false);
+		String foreignField = DependantMasterDataMapImpl.getForeignKeyField(MasterDataMetaCache.getInstance().getMetaData(sourceEntity.getEntity()), mainSourceEntity, false);
 		String dbColumn = MetaDataServerProvider.getInstance().getEntityField(sourceEntity.getEntity(), foreignField).getDbColumn();
 		dbColumn = dbColumn.replaceFirst("^STRVALUE", "INTID");
 
@@ -939,7 +941,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			}
 
 			// todo: avoid using modify here as it triggers another rule!
-			getGenericObjectFacade().modify(govoTarget.getModuleId(), new GenericObjectWithDependantsVO(govoTarget, new DependantMasterDataMap()), customUsage);
+			getGenericObjectFacade().modify(govoTarget.getModuleId(), new GenericObjectWithDependantsVO(govoTarget, new DependantMasterDataMapImpl()), customUsage);
 		} catch (CommonBusinessException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -1210,10 +1212,10 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		if (entityVO.isStateModel()) {
 			GenericObjectVO govo = getGenericObjectFacade().get(intId.intValue());
 			DependantMasterDataMap dependants = getGenericObjectFacade().reloadDependants(govo, null, true, customUsage);
-			return new RuleObjectContainerCVO(event, govo, dependants);
+			return new RuleObjectContainerCVOImpl(event, govo, dependants);
 		} else {
 			MasterDataWithDependantsVO mdvo = getMasterDataFacade().getWithDependants(entity, intId.intValue(), customUsage);
-			return new RuleObjectContainerCVO(event, mdvo, mdvo.getDependants());
+			return new RuleObjectContainerCVOImpl(event, mdvo, mdvo.getDependants());
 		}
 	}
 

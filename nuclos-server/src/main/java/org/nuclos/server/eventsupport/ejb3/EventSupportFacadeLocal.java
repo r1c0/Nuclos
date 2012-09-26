@@ -12,6 +12,7 @@ import org.nuclos.server.eventsupport.valueobject.EventSupportSourceVO;
 import org.nuclos.server.eventsupport.valueobject.EventSupportTransitionVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 public interface EventSupportFacadeLocal {

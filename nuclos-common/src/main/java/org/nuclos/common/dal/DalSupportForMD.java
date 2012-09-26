@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -51,6 +52,7 @@ public class DalSupportForMD {
 	}
 
 	public static EntityObjectVO getEntityObjectVO(String entity, MasterDataVO md) {
+		/*
 		final EntityObjectVO eo = new EntityObjectVO();
 		eo.setEntity(entity);
 		
@@ -85,9 +87,13 @@ public class DalSupportForMD {
 		}
 
 		return eo;
+		 */
+		assert entity.equals(md.getEntityName());
+		return md.getEntityObject();
 	}
 
 	public static MasterDataVO wrapEntityObjectVO(EntityObjectVO eo) {
+		/*
 		Map<String, Object> mpFields = new HashMap<String,Object>();
 
 		for (Entry<String, Object> field : eo.getFields().entrySet()) {
@@ -101,12 +107,15 @@ public class DalSupportForMD {
 		mpFields.put(NuclosEOField.CREATEDBY.getMetaData().getField(), eo.getCreatedBy());
 		mpFields.put(NuclosEOField.CHANGEDAT.getMetaData().getField(), eo.getChangedAt());
 		mpFields.put(NuclosEOField.CHANGEDBY.getMetaData().getField(), eo.getChangedBy());
-		MasterDataVO vo = new MasterDataVO(IdUtils.unsafeToId(eo.getId()), eo.getCreatedAt(), eo.getCreatedBy(), eo.getChangedAt(), eo.getChangedBy(), eo.getVersion(), mpFields);
+		MasterDataVO vo = new MasterDataVO(eo.getEntity(), IdUtils.unsafeToId(eo.getId()), 
+				eo.getCreatedAt(), eo.getCreatedBy(), eo.getChangedAt(), eo.getChangedBy(), eo.getVersion(), mpFields);
 		vo.setChanged(eo.isFlagNew() || eo.isFlagUpdated());
 		vo.setDependants(eo.getDependants());
 		if(eo.isFlagRemoved())
 			vo.remove();
 		return vo;
+		 */
+		return new MasterDataVO(eo, false);
 	}
 
 	public static MasterDataWithDependantsVO getMasterDataWithDependantsVO(EntityObjectVO eo) {
@@ -149,7 +158,7 @@ public class DalSupportForMD {
 		mpFields.put("documentPath", eMeta.getDocumentPath());
 		mpFields.put("reportFilename", eMeta.getReportFilename());
 
-		MasterDataVO md = new MasterDataVO(
+		MasterDataVO md = new MasterDataVO(eMeta.getEntity(),
 			/*Object oId,*/ IdUtils.unsafeToId(eMeta.getId()),
 			/*Date dateCreatedAt,*/ eMeta.getCreatedAt(),
 			/*String sCreatedBy,*/ eMeta.getCreatedBy(),

@@ -30,6 +30,7 @@ import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.springframework.beans.factory.annotation.Autowired;

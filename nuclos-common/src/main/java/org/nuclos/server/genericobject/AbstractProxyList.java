@@ -176,7 +176,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 			for (Iterator<E> iter = this.fetchNextChunk(lstIndexesToRead).iterator(); iter.hasNext();) {
 				eRow = iter.next();
 				lstIndexesToRead.remove(eRow.getId()); // Remember it could be read
-				mpObjects.put(eRow.getId(), eRow);
+				mpObjects.put((T) eRow.getId(), eRow);
 			}
 			//
 			iLastIndexRead = iIndexEnd - 1 - lstIndexesToRead.size();
@@ -198,7 +198,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	@Override
 	public boolean add(E element) {
 		assert element != null;
-		T intId = element.getId();
+		T intId = (T) element.getId();
 		lstIds.add(intId);
 		mpObjects.put(intId, element);
 
@@ -208,7 +208,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	@Override
 	public void add(int index, E element) {
 		assert element != null;
-		T intId = element.getId();
+		T intId = (T) element.getId();
 		lstIds.add(index, intId);
 		mpObjects.put(intId, element);
 	}
@@ -303,7 +303,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 		Object oOldId = lstIds.get(index);
 		E oldValue = mpObjects.remove(oOldId);
 
-		T intId = element.getId();
+		T intId = (T) element.getId();
 		lstIds.set(index, intId);
 		mpObjects.put(intId, element);
 

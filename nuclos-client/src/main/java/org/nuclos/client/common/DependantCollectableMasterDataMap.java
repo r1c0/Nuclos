@@ -31,6 +31,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 
 /**
  * <code>MultiMap<String sEntityName, Collectable></code>. A map containing the dependent <code>Collectable</code>s by entity.
@@ -87,7 +88,7 @@ public class DependantCollectableMasterDataMap {
 	 * @param mpDependants
 	 * @return DependantCollectableMap
 	 */
-	public static DependantCollectableMasterDataMap newDependantCollectableMap(DependantMasterDataMap mpDependants) {
+	public static DependantCollectableMasterDataMap newDependantCollectableMap(DependantMasterDataMapImpl mpDependants) {
 		return new DependantCollectableMasterDataMap(mpDependants);
 	}
 
@@ -132,7 +133,7 @@ public class DependantCollectableMasterDataMap {
 	 * @return DependantMasterDataMap
 	 */
 	public DependantMasterDataMap toDependantMasterDataMap() {
-		final DependantMasterDataMap result = new DependantMasterDataMap();
+		final DependantMasterDataMap result = new DependantMasterDataMapImpl();
 		for (String sEntityName : this.getEntityNames()) {
 			for (CollectableMasterData clctmd : this.getValues(sEntityName)) {
 				clctmd.setDependantMasterDataMap(clctmd.getDependantCollectableMasterDataMap().toDependantMasterDataMap());

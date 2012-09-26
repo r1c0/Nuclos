@@ -20,6 +20,7 @@ import org.nuclos.common.security.UserFacadeRemote;
 import org.nuclos.common.security.UserVO;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 
 public class UserDelegate {
 

@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -269,6 +270,7 @@ public class SearchFilterVO extends NuclosValueObject {
 		mpField.put("FastSelectNuclosIcon", searchFilter.getFastSelectNuclosIcon());
 
 		MasterDataVO mdVO = new MasterDataVO(
+				NuclosEntity.SEARCHFILTER.getEntityName(),
 				searchFilter.getId(),
 				searchFilter.getCreatedAt(),
 				searchFilter.getCreatedBy(),

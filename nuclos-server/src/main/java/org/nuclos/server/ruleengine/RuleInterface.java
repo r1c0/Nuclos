@@ -126,6 +126,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
@@ -141,7 +142,8 @@ import org.nuclos.server.report.print.PDFPrintJob;
 import org.nuclos.server.report.print.XLSPrintJob;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.security.NuclosLocalServerSession;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
@@ -170,22 +172,22 @@ public class RuleInterface extends CustomCodeInterface {
 	/**
 	 * the current object for event save and state changes - target object in rule generation
 	 */
-	private RuleObjectContainerCVO roccvo;
+	private final RuleObjectContainerCVO roccvo;
 
 	/**
 	 * the source objects for rule generation, null in any other case
 	 */
-	private Collection<RuleObjectContainerCVO> roccvoSource;
+	private final Collection<RuleObjectContainerCVO> roccvoSource;
 
 	/**
 	 * the parameter object (object generation), or null
 	 */
-	private RuleObjectContainerCVO roccvoParameter;
+	private final RuleObjectContainerCVO roccvoParameter;
 
 	/**
 	 * In this list additional actions can be marked down, which are to be executed later on (mainly in the object generation)
 	 */
-	private List<String> lstActions;
+	private final List<String> lstActions;
 
 	/**
 	 * a list of failure messages from all failed checks
@@ -195,18 +197,18 @@ public class RuleInterface extends CustomCodeInterface {
 	/**
 	 * the rule accessing this interface - used by logging (RuleAttributeChange)
 	 */
-	private RuleVO rulevo;
+	private final RuleVO rulevo;
 
 	private Object userObject;
 
 	// Dynamical properties for multiple information, e.g. from object generation
-	private PropertiesMap mpProperties = new PropertiesMap();
+	private final PropertiesMap mpProperties = new PropertiesMap();
 
 	private Integer iSessionId;
 	
 	private NuclosUserDetailsContextHolder userCtx;
 	
-	private String customUsage;
+	private final String customUsage;
 
 	/**
 	 * Create a <code>RuleInterface</code> with the <code>RuleObjectContainerCVO</code> for which the rule is fired
@@ -346,7 +348,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @throws NuclosFatalRuleException if there is no current object.
 	 */
 	public RuleObjectContainerCVO getRuleObjectContainerCVO() {
-		if (this.roccvo == null) {
+		if (!hasRuleObjectContainer()) {
 			throw new NuclosFatalRuleException("rule.interface.error.1");
 				//"Der Zugriff auf ein aktuelles Objekt ist in dieser Regel nicht m\u00f6glich - es gibt kein aktuelles Objekt.");
 		}
@@ -397,7 +399,15 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @return the current object, if any.
 	 */
 	public RuleObjectContainerCVO getRuleObjectContainerCVOIfAny() {
-		return this.roccvo;
+		return roccvo;
+	}
+
+	/**
+	 * may be called by the BeanShellRunner only. Must be public but is not part of the "official" rule interface.
+	 * @return the current object, if any.
+	 */
+	public boolean hasRuleObjectContainer() {
+		return roccvo != null;
 	}
 
 	/**
@@ -492,7 +502,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 */
 	@Override
 	public GenericObjectVO getGenericObject() {
-		if (this.roccvo != null) {
+		if (hasRuleObjectContainer()) {
 			return this.getRuleObjectContainerCVO().getGenericObject();
 		}
 		return null;
@@ -503,7 +513,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 */
 	@Override
 	public MasterDataVO getMasterData() {
-		if (this.roccvo != null) {
+		if (hasRuleObjectContainer()) {
 			return this.getRuleObjectContainerCVO().getMasterData();
 		}
 		return null;
@@ -545,7 +555,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @return Collection<MasterDataVO>
 	 */
 	public Collection<MasterDataVO> getDependants(String sEntityName) {
-		if (getRuleObjectContainerCVOIfAny() != null) {
+		if (hasRuleObjectContainer()) {
 			DependantMasterDataMap map = getRuleObjectContainerCVO().getDependants();
 			if (!map.getEntityNames().contains(sEntityName)) {
 				List<MasterDataVO> result = new ArrayList<MasterDataVO>();
@@ -888,7 +898,7 @@ public class RuleInterface extends CustomCodeInterface {
 			throw new NullArgumentException("sFieldName");
 		}
 		if (iObjectId.equals(getObjectId())
-				&& (getRuleObjectContainerCVOIfAny() == null
+				&& (!hasRuleObjectContainer()
 					|| getRuleObjectContainerCVOIfAny().getEvent() == null
 					|| !getRuleObjectContainerCVOIfAny().getEvent().isFollowUp() )) {
 			setField(sEntityName, sFieldName, iValueId, oValue);
@@ -1466,7 +1476,7 @@ public class RuleInterface extends CustomCodeInterface {
 		 * analyzing the state history when changing the state within a rule that is executed within a manuel state change
 		 */
 		//this.sleep(1000);
-		if (this.getRuleObjectContainerCVOIfAny() == null) {
+		if (!hasRuleObjectContainer()) {
 			this.getRuleInterface().changeState(iGenericObjectId, iNumeral, customUsage);
 		}
 		else {
@@ -2288,7 +2298,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param mapFields
 	 */
 	public void addSubformEntry(String sEntity, Map<String, Object> mapFields) {
-	    MasterDataVO entry = new MasterDataVO(null, null, null, null, null, null, mapFields);
+	    MasterDataVO entry = new MasterDataVO(sEntity, null, null, null, null, null, null, mapFields);
 	    getRuleObjectContainerCVO().addDependant(sEntity, entry);
 	}
 
@@ -2877,7 +2887,7 @@ public class RuleInterface extends CustomCodeInterface {
 		fields.put("mode", fileimport.getMode().getValue());
 		fields.put("atomic", fileimport.getAtomic());
 		fields.put("description", fileimport.getDescription());
-		MasterDataVO importfile = new MasterDataVO(null, null, null, null, null, null, fields);
+		MasterDataVO importfile = new MasterDataVO(NuclosEntity.IMPORTFILE.getEntityName(), null, null, null, null, null, null, fields);
 
 		List<EntityObjectVO> usages = new ArrayList<EntityObjectVO>();
 		for (NuclosFileImportStructureUsage usage : fileimport.getStructures()) {
@@ -2894,10 +2904,11 @@ public class RuleInterface extends CustomCodeInterface {
 			}
 		}
 
-		DependantMasterDataMap dependants = new DependantMasterDataMap(NuclosEntity.IMPORTUSAGE.getEntityName(), usages);
+		DependantMasterDataMap dependants = new DependantMasterDataMapImpl(NuclosEntity.IMPORTUSAGE.getEntityName(), usages);
 		MasterDataVO importfilevo;
         try {
-	        importfilevo = ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).createFileImport(new MasterDataWithDependantsVO(importfile, dependants));
+	        importfilevo = ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).createFileImport(
+	        		new MasterDataWithDependantsVO(importfile, dependants));
         }
         catch(CommonBusinessException e) {
         	throw new NuclosBusinessRuleException(e);

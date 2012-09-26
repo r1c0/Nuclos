@@ -21,6 +21,7 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 
 
 /**
@@ -39,7 +40,7 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> implements I
 	private String entity;
 
 	// map for dependant child subform data
-	private DependantMasterDataMap mpDependants = new DependantMasterDataMap();
+	private DependantMasterDataMap mpDependants = new DependantMasterDataMapImpl();
 
 	public EntityObjectVO() {
 	}

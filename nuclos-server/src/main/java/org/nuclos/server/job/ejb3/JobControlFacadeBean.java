@@ -299,7 +299,8 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		mpFields.put("startdate", DateUtils.getActualDateAndTime());
 		mpFields.put("parentId", iParentId);
 
-		MasterDataVO mdvo = create(NuclosEntity.JOBRUN.getEntityName(), new MasterDataVO(null, new Date(), getCurrentUserName(), new Date(),
+		MasterDataVO mdvo = create(NuclosEntity.JOBRUN.getEntityName(), 
+				new MasterDataVO(NuclosEntity.JOBRUN.getEntityName(), null, new Date(), getCurrentUserName(), new Date(),
 				getCurrentUserName(), 1, mpFields), null, null);
 
 		return mdvo;
@@ -315,7 +316,10 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	private Object modifyJobRun(MasterDataVO mdvo) throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
+	private Object modifyJobRun(MasterDataVO mdvo) 
+			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, 
+			CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
+		
 		return modify(NuclosEntity.JOBRUN.getEntityName(), mdvo, null, null);
 	}
 
@@ -394,7 +398,8 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 			mpFields.put("message", sMessage);
 			mpFields.put("rule", sRuleName);
 
-			MasterDataVO mdvo = new MasterDataVO(null, new Date(), getCurrentUserName(), new Date(),
+			MasterDataVO mdvo = new MasterDataVO(NuclosEntity.JOBRUNMESSAGES.getEntityName(), 
+					null, new Date(), getCurrentUserName(), new Date(),
 					getCurrentUserName(), 1, mpFields);
 			create(NuclosEntity.JOBRUNMESSAGES.getEntityName(), mdvo, null, null);
 		}

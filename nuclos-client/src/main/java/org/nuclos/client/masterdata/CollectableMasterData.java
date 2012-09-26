@@ -31,6 +31,8 @@ import org.nuclos.common.collection.Removable;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
+import org.nuclos.server.masterdata.valueobject.IMasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -46,9 +48,9 @@ public class CollectableMasterData extends AbstractCollectable implements Remova
 
 	private static final Logger LOG = Logger.getLogger(CollectableMasterData.class);
 
-	public static final String FIELDNAME_NAME = MasterDataVO.FIELDNAME_NAME;
-	public static final String FIELDNAME_MNEMONIC = MasterDataVO.FIELDNAME_MNEMONIC;
-	public static final String FIELDNAME_DESCRIPTION = MasterDataVO.FIELDNAME_DESCRIPTION;
+	public static final String FIELDNAME_NAME = IMasterDataVO.FIELDNAME_NAME;
+	public static final String FIELDNAME_MNEMONIC = IMasterDataVO.FIELDNAME_MNEMONIC;
+	public static final String FIELDNAME_DESCRIPTION = IMasterDataVO.FIELDNAME_DESCRIPTION;
 
 	private final MasterDataVO mdvo;
 	private final CollectableEntity clcte;
@@ -56,7 +58,7 @@ public class CollectableMasterData extends AbstractCollectable implements Remova
 
 	// map for dependant child subform data
 	private DependantCollectableMasterDataMap depclctmd = new DependantCollectableMasterDataMap();
-	private DependantMasterDataMap depmd = new DependantMasterDataMap();
+	private DependantMasterDataMap depmd = new DependantMasterDataMapImpl();
 
 	public CollectableMasterData(CollectableEntity clcte, MasterDataVO mdvo) {
 		this.mdvo = mdvo;

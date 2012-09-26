@@ -49,6 +49,7 @@ import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 import org.nuclos.server.security.NuclosLdapBindAuthenticator;
@@ -179,7 +180,8 @@ public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFaca
 							@Override
 							public Object mapFromContext(Object ctx) {
 								DirContextOperations dirctx = (DirContextOperations) ctx;
-								final MasterDataVO result = new MasterDataVO(null, null, "INITIAL", null, "INITIAL", new Integer(1), null);
+								final MasterDataVO result = new MasterDataVO(NuclosEntity.USER.getEntityName(), null, 
+										null, "INITIAL", null, "INITIAL", new Integer(1), null);
 								HashMap<String, Object> wrapperFields = new HashMap<String, Object>();
 								wrapperFields.put("superuser", false);
 								Iterator<String> keysIt = attributeMapping.keySet().iterator();

@@ -114,6 +114,7 @@ import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.DependantWrapper;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -123,7 +124,8 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeLocal;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl;
+import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVOImpl.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.NuclosNoAdequateStatemodelException;
 import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
@@ -265,7 +267,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public GenericObjectWithDependantsVO getWithDependants(Integer iGenericObjectId, Set<String> stRequiredSubEntityNames, String customUsage)
 			throws CommonPermissionException, CommonFinderException {
 
-		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(this.get(iGenericObjectId), new DependantMasterDataMap());
+		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(this.get(iGenericObjectId), new DependantMasterDataMapImpl());
 
 		final Set<String> stSubEntityNames;
 		if (stRequiredSubEntityNames == null) {
@@ -309,7 +311,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			Modules.getInstance().getEntityNameByModuleId(govo.getModuleId()),govo.getId(),false,customUsage);
 
 		if (mpDependants == null) {
-			mpDependants = new DependantMasterDataMap();
+			mpDependants = new DependantMasterDataMapImpl();
 		}
 
 		for (EntityAndFieldName eafn : collSubEntities.keySet()) {
@@ -356,7 +358,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final GenericObjectVO govo = this.get(iGenericObjectId);
 
-		return new RuleObjectContainerCVO(event, govo, reloadDependants(govo, null, true, customUsage));
+		return new RuleObjectContainerCVOImpl(event, govo, reloadDependants(govo, null, true, customUsage));
 	}
 
 	/**
@@ -598,7 +600,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final List<GenericObjectWithDependantsVO> lstResult = new ArrayList<GenericObjectWithDependantsVO>(Math.min(iMaxRowCount + 1, 1000));
 
 		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpression(appendRecordGrants(clctexpr, eMeta), iMaxRowCount + 1, true)) {
-			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
+			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMapImpl());
 			try {
 				if (!stRequiredSubEntityNames.isEmpty())
 					_fillDependants(go, go.getUsageCriteria(getAttributeCache(), customUsage), stRequiredSubEntityNames, customUsage);
@@ -678,7 +680,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		List<GenericObjectWithDependantsVO> result = new ArrayList<GenericObjectWithDependantsVO>(eos.size());
 
 		for (EntityObjectVO eo : eos) {
-			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
+			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMapImpl());
 			try {
 				_fillDependants(go, go.getUsageCriteria(getAttributeCache(), customUsage), stRequiredSubEntityNames, customUsage);
 			}
@@ -727,7 +729,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 		final GenericObjectVO govoCreated = this.create(gowdvo, customUsage);
 
-		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(govoCreated, new DependantMasterDataMap());
+		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(govoCreated, new DependantMasterDataMapImpl());
 		_fillDependants(result, result.getUsageCriteria(getAttributeCache(), customUsage), stRequiredSubEntityNames, customUsage);
 
 		return result;
@@ -966,7 +968,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final GenericObjectVO govoUpdated = this.modify(lowdcvo, lowdcvo.getDependants(), true, customUsage);
 
 		final GenericObjectMetaDataCache lometadataprovider = GenericObjectMetaDataCache.getInstance();
-		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(govoUpdated, new DependantMasterDataMap());
+		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(govoUpdated, new DependantMasterDataMapImpl());
 		final UsageCriteria usage = govoUpdated.getUsageCriteria(getAttributeCache(), customUsage);
 		final Set<String> collSubEntityNames = lometadataprovider.getSubFormEntityNamesByLayoutId(
 				lometadataprovider.getBestMatchingLayoutId(usage, false));
@@ -1143,7 +1145,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		String sEntity = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
 		
 		RuleObjectContainerCVO retVal = facade.fireRule(sEntity, after ? RuleEventUsageVO.SAVE_AFTER_EVENT : RuleEventUsageVO.SAVE_EVENT, 
-				new RuleObjectContainerCVO(event, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()), null);
+				new RuleObjectContainerCVOImpl(event, govo, mpDependants != null ? mpDependants : new DependantMasterDataMapImpl()), null);
 		
 		String sSupportType = null;
 		if (event.equals(Event.CREATE_AFTER)) sSupportType = InsertFinalSupport.name;
@@ -1171,7 +1173,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throw new IllegalArgumentException("govo.getModuleId()");
 		}
 		String sEntityName = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
-		RuleObjectContainerCVO ruleObjectContainerCVO = new RuleObjectContainerCVO(after?Event.DELETE_AFTER:Event.DELETE_BEFORE, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap());
+		RuleObjectContainerCVO ruleObjectContainerCVO = new RuleObjectContainerCVOImpl(after?Event.DELETE_AFTER:Event.DELETE_BEFORE, govo, mpDependants != null ? mpDependants : new DependantMasterDataMapImpl());
 		
 		RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 		facade.fireRule(sEntityName, after ? RuleEventUsageVO.DELETE_AFTER_EVENT : RuleEventUsageVO.DELETE_EVENT,ruleObjectContainerCVO, null);
@@ -1905,7 +1907,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	@RolesAllowed("Login")
 	public void attachDocumentToObject(MasterDataVO mdvoDocument) {
 		try {
-			DependantMasterDataMap map = new DependantMasterDataMap();
+			DependantMasterDataMap map = new DependantMasterDataMapImpl();
 			final String entity = (String) mdvoDocument.getField("entity");
 			map.addData(entity, DalSupportForMD.getEntityObjectVO(entity, mdvoDocument));
 			int genericObjectId = ((Integer)mdvoDocument.getField("genericObject")).intValue();
@@ -1935,7 +1937,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		RuleEngineFacadeLocal ruleFacade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 		EventSupportFacadeLocal eventSupportFacade = ServerServiceLocator.getInstance().getFacade(EventSupportFacadeLocal.class);
 		
-		RuleObjectContainerCVO loccvo = ruleFacade.executeBusinessRules(lstRuleVO, new RuleObjectContainerCVO(Event.USER, govo, govo.getDependants()), false, null);
+		RuleObjectContainerCVO loccvo = ruleFacade.executeBusinessRules(lstRuleVO, new RuleObjectContainerCVOImpl(Event.USER, govo, govo.getDependants()), false, null);
 		loccvo = eventSupportFacade.fireCustomEventSupport(govo.getModuleId(), lstRuleVO, loccvo, false);
 
 		if (bSaveAfterRuleExecution) {

@@ -21,19 +21,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.ObjectUtils;
 import org.nuclos.common.TranslationVO;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.interval.DateIntervalUtils;
-import org.nuclos.server.common.valueobject.AbstractNuclosValueObject;
+import org.nuclos.server.common.valueobject.INuclosValueObject;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 /**
@@ -46,49 +47,27 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  * @author	<a href="mailto:sekip.topcu@novabit.de">M. Sekip Top\u00e7u</a>
  * @version 00.01.000
  */
-public class MasterDataVO extends AbstractNuclosValueObject<Object> {
+public class MasterDataVO implements IMasterDataVO, INuclosValueObject<Object> {
 
 	private static final long serialVersionUID = 16392087823428951L;
-	/**
-	 * name of the field, if any, that contains the name.
-	 */
-	public static final String FIELDNAME_NAME = "name";
-	/**
-	 * name of the field, if any, that contains the mnemonic.
-	 */
-	public static final String FIELDNAME_MNEMONIC = "mnemonic";
-	/**
-	 * name of the field, if any, that contains the description.
-	 */
-	public static final String FIELDNAME_DESCRIPTION = "description";
-
-	private Object oId;
-
-	/** @todo kick out created by/at, changed by/at fields? for better performance */
-
-	/**
-	 * Map<String, Object>
-	 */
-	private Map<String, Object> mpFields;
-
-	/**
-	 * Has this object been changed since its creation?
-	 */
-	private boolean bChanged;
-
-	// map for dependant child subform data
-	private DependantMasterDataMap mpDependants = new DependantMasterDataMap();
-
+	
+	private EntityObjectVO wrapped;
+	
 	/**
 	 * If this object represents a system record, i.e. a record which cannot
 	 * manipulated by the user.
 	 */
 	private boolean systemRecord;
-
+	
 	/**
 	 * If this object contains fields for resource-ids, a list of translations can be supplied.
 	 */
 	private List<TranslationVO> resources;
+	
+	public MasterDataVO(EntityObjectVO wrapped, boolean systemRecord) {
+		this.wrapped = wrapped;
+		this.systemRecord = systemRecord;
+	}
 	
 	/**
 	 * constructor to be called by server and client
@@ -102,33 +81,65 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @precondition sEntity != null
 	 * @postcondition this.getId() == oId
 	 */
-	public MasterDataVO(Object oId, Date dateCreatedAt, String sCreatedBy,
+	public MasterDataVO(String entity, Object oId, Date dateCreatedAt, String sCreatedBy,
 			Date dateChangedAt, String sChangedBy, Integer iVersion, Map<String, Object> mpFields) {
-		this(oId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion, mpFields, false);
+		this(entity, oId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion, mpFields, false);
 	}
 
-	public MasterDataVO(Object oId, Date dateCreatedAt, String sCreatedBy,
+	public MasterDataVO(String entity, Object oId, Date dateCreatedAt, String sCreatedBy,
 		Date dateChangedAt, String sChangedBy, Integer iVersion, Map<String, Object> mpFields, boolean systemRecord) {
-		super(dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion);
-		this.oId = oId;
-		this.mpFields = CollectionUtils.emptyMapIfNull(mpFields);
+		// super(dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion);
+		wrapped = new EntityObjectVO();
+		wrapped.setEntity(entity);
+		final int size = mpFields == null ? 0 : mpFields.size(); 
+		wrapped.initFields(size, size);
+		wrapped.setId(IdUtils.toLongId(oId));
+		if (dateChangedAt != null) {
+			wrapped.setChangedAt(new InternalTimestamp(dateChangedAt.getTime()));
+		}
+		wrapped.setChangedBy(sChangedBy);
+		if (dateCreatedAt != null) {
+			wrapped.setCreatedAt(new InternalTimestamp(dateCreatedAt.getTime()));
+		}
+		wrapped.setCreatedBy(sCreatedBy);
+		wrapped.setVersion(iVersion);
 		this.systemRecord = systemRecord;
-		assert this.getId() == oId;
+
+		final Map<String,Object> fields = wrapped.getFields();
+		final Map<String,Long> idFields = wrapped.getFieldIds();
+		if (mpFields != null) {
+			for (String f: mpFields.keySet()) {
+				final Object value = mpFields.get(f);
+				if (f.endsWith("Id")) {
+					idFields.put(fieldId(f), IdUtils.toLongId(value));
+				}
+				else {
+					fields.put(f, value);
+				}
+			}
+		}
+		
+		assert IdUtils.equals(getId(), oId);
+	}
+	
+	private static String fieldId(String fieldIdName) {
+		assert fieldIdName.endsWith("Id");
+		return fieldIdName.substring(0, fieldIdName.length() - 2);
 	}
 
 	/**
 	 * "copy constructor"
 	 * @param mdvo
 	 */
-	protected MasterDataVO(MasterDataVO mdvo) {
-		this(mdvo.getId(), mdvo.getCreatedAt(), mdvo.getCreatedBy(), mdvo.getChangedAt(), mdvo.getChangedBy(), mdvo.getVersion(), new HashMap<String, Object>(mdvo.getFields()), mdvo.isSystemRecord());
+	protected MasterDataVO(String entity, MasterDataVO mdvo) {
+		this(entity, mdvo.getId(), mdvo.getCreatedAt(), mdvo.getCreatedBy(), mdvo.getChangedAt(), mdvo.getChangedBy(), mdvo.getVersion(), new HashMap<String, Object>(mdvo.getFields()), mdvo.isSystemRecord());
 	}
 
 	/**
 	 * @postcondition this.getId() == null
 	 */
-	private MasterDataVO(Map<String, Object> mpFields) {
-		this(null, null, null, null, null, null, mpFields);
+	private MasterDataVO(String entity, Map<String, Object> mpFields) {
+		this(entity, null, null, null, null, null, null, mpFields);
 		assert this.getId() == null;
 	}
 
@@ -142,8 +153,11 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @postcondition this.getId() == null
 	 */
 	public MasterDataVO(MasterDataMetaVO mdmetavo, boolean bSetBooleansToFalse) {
-		this((Map<String, Object>) null);
+		this(mdmetavo.getEntityName(), (Map<String, Object>) null);
 
+		final Map<String,Object> fields = wrapped.getFields();
+		final Map<String,Long> idFields = wrapped.getFieldIds();
+		
 		// create fields:
 		for (String sFieldName : mdmetavo.getFieldNames()) {
 			final MasterDataMetaFieldVO mdmetafieldvo = mdmetavo.getField(sFieldName);
@@ -152,11 +166,11 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 			// FALSE for Boolean, null otherwise
 			final Object oValue = (bSetBooleansToFalse && (mdmetafieldvo.getJavaClass() == Boolean.class)) ? Boolean.FALSE : null;
 
-			this.mpFields.put(sFieldName, oValue);
+			fields.put(sFieldName, oValue);
 
 			// for id fields, add an id entry as well:
 			if (mdmetafieldvo.getForeignEntity() != null) {
-				this.mpFields.put(sFieldName + "Id", null);
+				idFields.put(sFieldName + "Id", null);
 			}
 		}
 		assert this.getId() == null;
@@ -172,21 +186,24 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 */
 	@Override
 	public MasterDataVO clone() {
-		final MasterDataVO result = (MasterDataVO) super.clone();
-
 		/** @todo this only works if the contained Objects are immutable! We don't ensure this currently. */
+		/*
+		final MasterDataVOImpl result = (MasterDataVOImpl) super.clone();
 		result.mpFields = new HashMap<String, Object>(this.mpFields);
+		 */
+		final MasterDataVO result = new MasterDataVO(wrapped.copy(), systemRecord);
+		result.setResources(getResources());
+		result.setDependants(new DependantMasterDataMapImpl());
 
 		assert result.isChanged() == this.isChanged();
 		assert result.isRemoved() == this.isRemoved();
-		assert result.mpFields != this.mpFields;
-//		assert result.getFields().equals(this.getFields());  // This is checked in a JUnit Test (expensive).
 		assert result.getId() == this.getId();
 		return result;
 	}
 
+	@Override
 	public void setChanged(boolean changed) {
-		this.bChanged = changed;
+		wrapped.flagUpdate();
 	}
 
 
@@ -204,8 +221,6 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 		else {
 			return false;
 		}
-
-
 	}
 
 	/**
@@ -215,16 +230,11 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @postcondition result.getId() == null
 	 * @see #clone()
 	 */
+	@Override
 	public MasterDataVO copy() {
 		/** @todo this only works if the contained Objects are immutable! We don't ensure this currently. */
-		final MasterDataVO result = new MasterDataVO(new HashMap<String, Object>(this.mpFields));
-		result.setDependants(this.getDependants());
-
-		assert !result.isChanged();
-		assert result.mpFields != this.mpFields;
-//		assert result.getFields().equals(this.getFields());  // This is checked in a JUnit Test (expensive).
-		assert result.getId() == null;
-		return result;
+		final EntityObjectVO copy = wrapped.copy();
+		return new MasterDataVO(copy, systemRecord);
 	}
 
 	/**
@@ -234,13 +244,13 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @postcondition result.getId() == null
 	 * @see #clone()
 	 */
+	@Override
 	public MasterDataVO copy(boolean blnWithDependants) {
-		MasterDataVO result = this.copy();
-		if(!blnWithDependants) {
-			result.setDependants(new DependantMasterDataMap());
+		final MasterDataVO copy = copy();
+		if (!blnWithDependants) {
+			copy.setDependants(new DependantMasterDataMapImpl());
 		}
-
-		return result;
+		return copy;
 	}
 
 
@@ -250,15 +260,16 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 */
 	@Override
 	public Object getId() {
-		return this.oId;
+		return IdUtils.unsafeToId(wrapped.getId());
 	}
 
 	/**
 	 * @return this object's primary key, which must be an Integer, otherwise a ClassCastException is thrown. Use getId()
 	 * if you're not sure about the primary key's type.
 	 */
+	@Override
 	public Integer getIntId() {
-		return (Integer) this.getId();
+		return IdUtils.unsafeToId(wrapped.getId());
 	}
 
 	/**
@@ -266,13 +277,15 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * This is only allowed to keep the mpDependants up to date for newly created masterdata records, which is necessary for the logbook!
 	 * @param iId
 	 */
+	@Override
 	public void setId(Object iId) {
-		this.oId = iId;
+		wrapped.setId(IdUtils.toLongId(iId));
 	}
 
 	/**
 	 * Returns true if this record is a system record.
 	 */
+	@Override
 	public boolean isSystemRecord() {
 		return systemRecord;
 	}
@@ -281,8 +294,16 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @param sFieldName field name
 	 * @return the value of the field with the given name.
 	 */
+	@Override
 	public Object getField(String sFieldName) {
-		return this.mpFields.get(sFieldName);
+		Object result;
+		if (sFieldName.endsWith("Id")) {
+			result = IdUtils.unsafeToId(wrapped.getFieldId(fieldId(sFieldName)));
+		}
+		else {
+			result = wrapped.getField(sFieldName);
+		}
+		return result;
 	}
 
 	/**
@@ -295,8 +316,9 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @throws ClassCastException if the value of the field doesn't have the given class.
 	 * @see #getField(String)
 	 */
+	@Override
 	public <T> T getField(String sFieldName, Class<T> cls) {
-		return cls.cast(this.getField(sFieldName));
+		return cls.cast(getField(sFieldName));
 	}
 
 	/**
@@ -306,9 +328,15 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @postcondition this.isChanged()
 	 * @todo setChanged() only if the given value is different from the old value.
 	 */
+	@Override
 	public void setField(String sFieldName, Object oValue) {
-		this.mpFields.put(sFieldName, oValue);
-		this.bChanged = true;
+		if (sFieldName.endsWith("Id")) {
+			wrapped.getFieldIds().put(fieldId(sFieldName), IdUtils.toLongId(oValue));
+		}
+		else {
+			wrapped.getFields().put(sFieldName, oValue);
+		}
+		wrapped.flagUpdate();
 	}
 
 	/**
@@ -316,8 +344,15 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @return map of all fields for master data record
 	 * @postcondition result != null
 	 */
+	@Override
 	public Map<String, Object> getFields() {
-		return Collections.unmodifiableMap(this.mpFields);
+		// return Collections.unmodifiableMap(this.mpFields);
+		final Map<String,Object> result = new HashMap<String, Object>(wrapped.getFields());
+		for (String id: wrapped.getFieldIds().keySet()) {
+			final String idWithId = id + "Id";
+			result.put(idWithId, IdUtils.unsafeToId(wrapped.getFieldIds().get(id)));
+		}
+		return Collections.unmodifiableMap(result);
 	}
 
 	/**
@@ -326,6 +361,7 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @precondition mpFields != null
 	 * @postcondition this.isChanged()
 	 */
+	@Override
 	public void setFields(Map<String, Object> mpFields) {
 		if (mpFields == null) {
 			throw new NullArgumentException("mpFields");
@@ -342,10 +378,10 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 *
 	 * set all fields to null
 	 */
+	@Override
 	public void clearAllFields() {
-		for (String field : this.mpFields.keySet()) {
-			this.mpFields.put(field, null);
-		}
+		wrapped.getFields().clear();
+		wrapped.getFieldIds().clear();
 	}
 
 	/**
@@ -354,8 +390,24 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @return Are all fields except for the foreign key field empty?
 	 * @todo What is "the" foreign key field? There can be more than one per entity!
 	 */
+	@Override
 	public boolean isEmpty(String sForeignKey) {
+		/*
 		for (String sFieldName : this.mpFields.keySet()) {
+			final Object oValue = getField(sFieldName);
+			if (!sFieldName.equals(sForeignKey) && (oValue != null)) {
+				return false;
+			}
+		}
+		return true;
+		*/
+		for (String sFieldName : wrapped.getFields().keySet()) {
+			final Object oValue = getField(sFieldName);
+			if (!sFieldName.equals(sForeignKey) && (oValue != null)) {
+				return false;
+			}
+		}
+		for (String sFieldName : wrapped.getFieldIds().keySet()) {
 			final Object oValue = getField(sFieldName);
 			if (!sFieldName.equals(sForeignKey) && (oValue != null)) {
 				return false;
@@ -367,8 +419,9 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	/**
 	 * @return Has this object been changed since its creation?
 	 */
+	@Override
 	public boolean isChanged() {
-		return this.bChanged;
+		return wrapped.isFlagUpdated();
 	}
 
 	/**
@@ -377,6 +430,7 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @precondition mdmetavo != null
 	 * @deprecated Validation is performed by org.nuclos.server.validation.ValidationSupport.
 	 */
+	@Override
 	public void validate(MasterDataMetaVO mdmetavo) throws CommonValidationException {
 		this.validateValidityInterval();
 	}
@@ -392,23 +446,12 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 		}
 	}
 
+	/**
+	 * @deprecated use {@link #toDescription()}
+	 */
+	@Override
 	public String getDebugInfo() {
-		final StringBuffer sb = new StringBuffer();
-		sb.append("MasterDataVO {");
-		sb.append("Id: " + this.getId() + " - ");
-		sb.append("Fields: ");
-		for (Iterator<String> iter = this.mpFields.keySet().iterator(); iter.hasNext();) {
-			final String sFieldName = iter.next();
-			sb.append("{" + sFieldName + ": " + this.mpFields.get(sFieldName) + "}");
-			if (iter.hasNext()) {
-				sb.append(", ");
-			}
-		}
-		if (this.isRemoved()) {
-			sb.append(" - REMOVED");
-		}
-		sb.append("}");
-		return sb.toString();
+		return toDescription();
 	}
 
 	/**
@@ -416,22 +459,24 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 */
 	@Override
 	public String toString() {
-		final Object oName = mpFields.get("name");
+		final Object oName = wrapped.getFields().get("name");
 		return (oName != null) ? oName.toString() : LangUtils.toString(this.getId());
 	}
 	
+	@Override
 	public String toDescription() {
 		final StringBuilder result = new StringBuilder();
-		result.append("MdVO[id=").append(oId);
-		if (bChanged) {
-			result.append(",changed=").append(bChanged);
+		result.append("MdVO[id=").append(wrapped.getId());
+		if (wrapped.isFlagUpdated()) {
+			result.append(",changed=").append(wrapped.isFlagUpdated());
 		}
 		if (systemRecord) {
 			result.append(",sr=").append(systemRecord);
 		}
-		result.append(",fields=").append(mpFields);
-		if (mpDependants != null && !mpDependants.isEmpty()) {
-			result.append(",deps=").append(mpDependants);
+		result.append(",fields=").append(wrapped.getFields());
+		final DependantMasterDataMap deps = wrapped.getDependants();
+		if (deps != null && !deps.isEmpty()) {
+			result.append(",deps=").append(deps);
 		}
 		result.append("]");
 		return result.toString();
@@ -441,6 +486,7 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * @return the common fields of this object. Note that this may only be called for entities which have an Integer id.
 	 * @see #getIntId()
 	 */
+	@Override
 	public NuclosValueObject getNuclosValueObject() {
 		return new NuclosValueObject(this.getIntId(), this.getCreatedAt(), this.getCreatedBy(),
 				this.getChangedAt(), this.getChangedBy(), this.getVersion());
@@ -506,23 +552,127 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 		}
 	}	// inner class LabelComparator
 
+	@Override
 	public void setDependants(DependantMasterDataMap mpDependants) {
-		this.mpDependants = mpDependants;
+		wrapped.setDependants(mpDependants);
 	}
 
+	@Override
 	public DependantMasterDataMap getDependants() {
-		return mpDependants;
+		return wrapped.getDependants();
 	}
 	
+	/**
+	 * @deprecated Use {@link #getDependants()}
+	 */
 	protected final DependantMasterDataMap getMdDependants() {
-		return mpDependants;
+		return wrapped.getDependants();
 	}
 
+	@Override
 	public List<TranslationVO> getResources() {
 		return resources;
 	}
 
+	@Override
 	public void setResources(List<TranslationVO> resources) {
 		this.resources = resources;
 	}
+
+	/**
+	 * Return the underlying EntityObjectVO.
+	 * @since Nuclos 3.8
+	 * @author Thomas Pasch
+	 */
+	@Override
+	public EntityObjectVO getEntityObject() {
+		return wrapped;
+	}
+
+	/**
+	 * Return the entity name. This is a convenience method.
+	 * @since Nuclos 3.8
+	 * @author Thomas Pasch
+	 */
+	@Override
+	public String getEntityName() {
+		return wrapped.getEntity();
+	}
+	
+	// override methods from AbstractNuclosValueObject
+	
+	/**
+	 * mark underlying database record as to be removed from database
+	 */
+	@Override
+	public void remove() {
+		wrapped.flagRemove();
+	}
+
+	/**
+	 * is underlying database record to be removed from database?
+	 * @return boolean value
+	 */
+	@Override
+	public boolean isRemoved() {
+		return wrapped.isFlagRemoved();
+	}
+
+	/**
+	 * get creation date (datcreated) of underlying database record
+	 * @return created date of underlying database record
+	 */
+	@Override
+	public Date getCreatedAt() {
+		return wrapped.getChangedAt();
+	}
+
+	/**
+	 * get creator (strcreated) of underlying database record
+	 * @return creator of underlying database record
+	 */
+	@Override
+	public String getCreatedBy() {
+		return wrapped.getCreatedBy();
+	}
+
+	/**
+	 * get last changed date (datchanged) of underlying database record
+	 * @return last changed date of underlying database record
+	 */
+	@Override
+	public Date getChangedAt() {
+		return wrapped.getCreatedAt();
+	}
+
+	/**
+	 * get last changer (strchanged) of underlying database record
+	 * @return last changer of underlying database record
+	 */
+	@Override
+	public String getChangedBy() {
+		return wrapped.getCreatedBy();
+	}
+
+	/**
+	 * get version (intversion) of underlying database record
+	 * @return version of underlying database record
+	 */
+	@Override
+	public int getVersion() {
+		return wrapped.getVersion();
+	}
+	
+	/**
+	 * @since Nuclos 3.5
+	 * @author Thomas Pasch
+	 */
+	@Override
+	public void setVersion(int version) {
+		wrapped.setVersion(version);
+	}
+	
+	// end of override methods from AbstractNuclosValueObject
+
 }	// class MasterDataVO
+

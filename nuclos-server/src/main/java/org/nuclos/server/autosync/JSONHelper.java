@@ -32,6 +32,7 @@ import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -70,7 +71,7 @@ public class JSONHelper {
 				if (NuclosEntity.MASTERDATA.checkEntityName(entity) && name.equals("logicaluniquefields"))
 					continue;
 				if (dependantMap == null)
-					dependantMap = new DependantMasterDataMap();
+					dependantMap = new DependantMasterDataMapImpl();
 				for (Object dependant : (List<?>) value) {
 					MasterDataVO dependantVO = makeMasterDataVO(dependant, name, metaData);
 					if (dependantVO != null) {
@@ -82,7 +83,7 @@ public class JSONHelper {
 			}
 		}
 		Integer id = coerce(jsonProperties.get("id"), Integer.class, null);
-		MasterDataVO mdvo = new SystemMasterDataVO(id, fields);
+		MasterDataVO mdvo = new SystemMasterDataVO(entity, id, fields);
 		if (dependantMap != null)
 			mdvo = new MasterDataWithDependantsVO(mdvo, dependantMap);
 		return mdvo;

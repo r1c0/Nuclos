@@ -116,6 +116,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -267,7 +268,7 @@ public class MasterDataFacadeHelper {
 		}
 
 		if (mdVO == null) {
-			throw new CommonFinderException();
+			throw new CommonFinderException("Can't find " + mdmetavo.getEntityName() + " with id " + oId);
 		}
 
 		return mdVO;

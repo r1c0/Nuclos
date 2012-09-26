@@ -39,7 +39,7 @@ import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
@@ -105,7 +105,7 @@ public class LocaleCollectController extends MasterDataCollectController {
 			throw new IllegalArgumentException("clctNew");
 		}
 
-		final MasterDataVO mdvoInserted = this.mddelegate.create(this.getEntityName(), clctNew.getMasterDataCVO(), new DependantMasterDataMap(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+		final MasterDataVO mdvoInserted = this.mddelegate.create(this.getEntityName(), clctNew.getMasterDataCVO(), new DependantMasterDataMapImpl(), ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 
 		return new CollectableMasterDataWithDependants(clctNew.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, this.readDependants(mdvoInserted.getId())));
 	}

@@ -47,7 +47,7 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 
@@ -467,7 +467,7 @@ public class NuclosImport extends AbstractImport {
 	public EntityObjectVO insertObject(String entityname, EntityObjectVO vo) throws Exception {
 		if (MetaDataServerProvider.getInstance().getEntity(entityname).isStateModel()) {
 			GenericObjectVO go = DalSupportForGO.getGenericObjectVO(vo);
-			go = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(go, new DependantMasterDataMap()), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+			go = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(go, new DependantMasterDataMapImpl()), ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
 			return DalSupportForGO.wrapGenericObjectVO(go);
 		}
 		else {

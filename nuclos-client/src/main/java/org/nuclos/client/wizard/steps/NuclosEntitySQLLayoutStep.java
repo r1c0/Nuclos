@@ -111,7 +111,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.layoutml.LayoutMLParser;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
@@ -814,7 +814,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					 vo.setField("moduleId", iEntityId);
 		
 					 final String entity = NuclosEntity.ROLEMODULE.getEntityName();
-					 DependantMasterDataMap mp = new DependantMasterDataMap(entity,
+					 DependantMasterDataMapImpl mp = new DependantMasterDataMapImpl(entity,
 						 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
 		
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp, null);
@@ -838,7 +838,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 						 vo.setField("masterdatapermission", permission);
 		
 					 final String entity = NuclosEntity.ROLEMASTERDATA.getEntityName();
-					 DependantMasterDataMap mp = new DependantMasterDataMap(
+					 DependantMasterDataMapImpl mp = new DependantMasterDataMapImpl(
 							 entity, 
 							 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp, null);
@@ -1485,12 +1485,15 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
             	mpFields.put("validUntil", valueList.getValidUntil());
 
             	try {
+            		final String entity = getModel().getEntityName();
             		if(valueList.getId() != null) {
-            			MasterDataVO vo = new MasterDataVO(valueList.getId().intValue(), new Date(), "nuclos", new Date(), "nuclos", valueList.getVersionId(), mpFields);
+            			MasterDataVO vo = new MasterDataVO(entity, valueList.getId().intValue(), 
+            					new Date(), "nuclos", new Date(), "nuclos", valueList.getVersionId(), mpFields);
             			MasterDataDelegate.getInstance().update(attr.getValueListName(), vo, null, null);
             		}
             		else {
-            			MasterDataVO vo = new MasterDataVO(null, new Date(), "nuclos", new Date(), "nuclos", 1, mpFields);
+            			MasterDataVO vo = new MasterDataVO(entity, null, 
+            					new Date(), "nuclos", new Date(), "nuclos", 1, mpFields);
             			MasterDataDelegate.getInstance().create(attr.getValueListName(), vo, null, null);
             		}
                 }

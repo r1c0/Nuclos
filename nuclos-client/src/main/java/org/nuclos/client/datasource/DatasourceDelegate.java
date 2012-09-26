@@ -34,6 +34,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;

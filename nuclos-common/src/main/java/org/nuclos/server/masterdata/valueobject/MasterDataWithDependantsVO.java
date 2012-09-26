@@ -30,7 +30,7 @@ import org.nuclos.common.collect.collectable.Collectable;
  * @deprecated As MasterDataVO already contains its dependants, I see no reason
  * 		to stick to this class. (tp)
  */
-public class MasterDataWithDependantsVO extends MasterDataVO {
+public class MasterDataWithDependantsVO extends MasterDataVO implements IMasterDataWithDependantsVO {
 
 	/**
 	 * the dependants of this object.
@@ -43,7 +43,7 @@ public class MasterDataWithDependantsVO extends MasterDataVO {
 	 * @postcondition this.isComplete() <--> (mpDependants != null)
 	 */
 	public MasterDataWithDependantsVO(MasterDataVO mdvo, DependantMasterDataMap mpDependants) {
-		super(mdvo);
+		super(mdvo.getEntityName(), mdvo);
 		this.mpDependants2 = mpDependants;
 
 		assert this.isComplete() == (mpDependants != null);
@@ -53,6 +53,7 @@ public class MasterDataWithDependantsVO extends MasterDataVO {
 	 * @return Has this value object been loaded completely?
 	 * @see Collectable#isComplete()
 	 */
+	@Override
 	public boolean isComplete() {
 		return this.mpDependants2 != null;
 	}
@@ -63,7 +64,7 @@ public class MasterDataWithDependantsVO extends MasterDataVO {
 	 */
 	@Override
 	public DependantMasterDataMap getDependants() {
-		return this.isComplete() ? this.mpDependants2 : new DependantMasterDataMap();
+		return this.isComplete() ? this.mpDependants2 : new DependantMasterDataMapImpl();
 	}
 
 	@Override
@@ -71,6 +72,7 @@ public class MasterDataWithDependantsVO extends MasterDataVO {
 		this.mpDependants2 = mpDependants;
 	}
 	
+	@Override
 	public String toDescription() {
 		final StringBuilder result = new StringBuilder();
 		result.append("MdwdVO[id=").append(getId());

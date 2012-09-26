@@ -33,6 +33,7 @@ import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.attribute.valueobject.AttributeCVO.DataType;
+import org.nuclos.server.masterdata.valueobject.IMasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -90,7 +91,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	@Override
 	public String getReferencedEntityFieldName() {
-		final String sFieldNameDefault = attrcvo.isShowMnemonic() ? MasterDataVO.FIELDNAME_MNEMONIC : MasterDataVO.FIELDNAME_NAME;
+		final String sFieldNameDefault = attrcvo.isShowMnemonic() ? IMasterDataVO.FIELDNAME_MNEMONIC : IMasterDataVO.FIELDNAME_NAME;
 		if (attrcvo.getExternalEntity() != null)
 			return LangUtils.defaultIfNull(attrcvo.getExternalEntityFieldName(), sFieldNameDefault);
 		return LangUtils.defaultIfNull(entityFieldMeta.getLookupEntityField(), sFieldNameDefault);

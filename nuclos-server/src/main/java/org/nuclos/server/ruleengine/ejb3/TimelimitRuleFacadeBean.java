@@ -475,8 +475,8 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		mpFields.put("source", rulevo.getSource());
 		mpFields.put("active", rulevo.isActive());
 
-		MasterDataVO mdvo = new MasterDataVO(null, new Date(), getCurrentUserName(), new Date(),
-				getCurrentUserName(), 1, mpFields);
+		MasterDataVO mdvo = new MasterDataVO(NuclosEntity.TIMELIMITRULE.getEntityName(), null, 
+				new Date(), getCurrentUserName(), new Date(), getCurrentUserName(), 1, mpFields);
 
 		return mdvo;
 	}

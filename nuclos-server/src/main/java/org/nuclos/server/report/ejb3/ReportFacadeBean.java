@@ -100,6 +100,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.report.Export;

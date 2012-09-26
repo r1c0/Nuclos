@@ -26,6 +26,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 
 /**
  * Makes a <code>List&lt;EntityObjectVO&gt;</code> look like a <code>List&lt;CollectableEntityObject&gt;</code>.

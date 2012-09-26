@@ -38,6 +38,7 @@ import org.nuclos.common.fileimport.ImportMode;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 

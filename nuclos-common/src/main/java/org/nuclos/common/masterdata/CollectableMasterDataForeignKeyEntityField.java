@@ -27,6 +27,7 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.masterdata.valueobject.IMasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -79,7 +80,7 @@ public class CollectableMasterDataForeignKeyEntityField extends AbstractCollecta
 
 	@Override
 	public String getReferencedEntityFieldName() {
-		final String sFieldNameDefault = MasterDataVO.FIELDNAME_NAME;
+		final String sFieldNameDefault = IMasterDataVO.FIELDNAME_NAME;
 		return LangUtils.defaultIfNull(this.mdmetafield.getForeignEntityField(), sFieldNameDefault);
 	}
 
