@@ -84,11 +84,13 @@
 	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
 		depends-on="broker">
 		<property name="connectionFactory">
-			<amq:connectionFactory brokerURL="vm://nuclosBroker?broker.create=false">
-			</amq:connectionFactory>
+		    <ref bean="jmsConnectionFactory"/>
 		</property>
 	</bean>
 
+	<amq:connectionFactory id="jmsConnectionFactory" beanName="jmsConnectionFactory" brokerURL="vm://nuclosBroker?broker.create=false">
+	</amq:connectionFactory>
+	
 	<!-- JMS Producer Configuration -->
     <bean id="jmsProducerConnectionFactory"
           class="org.springframework.jms.connection.DelegatingConnectionFactory"

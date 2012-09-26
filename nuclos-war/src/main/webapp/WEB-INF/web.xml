@@ -6,12 +6,82 @@
 
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath*:META-INF/nuclos/*-beans.xml</param-value>
+		<!-- 
+			prepend the following to <param-value>:
+			classpath:net/bull/javamelody/monitoring-spring.xml
+			- or -
+			classpath:net/bull/javamelody/monitoring-spring-aspectj.xml
+			- or -
+			classpath:net/bull/javamelody/monitoring-spring-datasource.xml
+			
+			Attention: Does not work at present! (tp)
+		-->
+		<param-value>
+		    classpath*:META-INF/nuclos/*-beans.xml
+		</param-value>
 	</context-param>
+	
+	
+	<!-- 
+		https://code.google.com/p/javamelody/wiki/UserGuide
+		JavaMelody monitoring - uncomment to enable (tp)
+	-->
+	<!-- filter>
+		<filter-name>monitoring</filter-name>
+		<filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+		<async-supported>true</async-supported>
+		<init-param>
+			<description>regex of allowed ip address</description>
+		    <param-name>allowed-addr-pattern</param-name>
+			<param-value>127\.0\.0\.1</param-value>
+		</init-param>
+		<init-param>
+			<description>javamelody logging</description>
+		    <param-name>log</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>monitoring</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<listener>
+		<listener-class>net.bull.javamelody.SessionListener</listener-class>
+	</listener -->
+        
+	<!-- 
+		PerfFilter for performance logging/profiling.
+		Do not use in production! (tp)
+	-->
+	<!-- filter>
+	    <filter-name>perfFilterRemoting</filter-name>
+	    <filter-class>org.nuclos.server.web.PerfFilter</filter-class>
+	    <init-param>
+	        <param-name>loggingPrefix</param-name>
+	        <param-value>remoting:</param-value>
+	    </init-param>
+	</filter>
+	<filter>
+	    <filter-name>perfFilterJms</filter-name>
+	    <filter-class>org.nuclos.server.web.PerfFilter</filter-class>
+	    <init-param>
+	        <param-name>loggingPrefix</param-name>
+	        <param-value>activemq:</param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>perfFilterRemoting</filter-name>
+	    <url-pattern>/remoting/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>perfFilterJms</filter-name>
+	    <url-pattern>/jmsbroker</url-pattern>
+	</filter-mapping -->
+
 
 	<filter>
-	  <filter-name>springSecurityFilterChain</filter-name>
-	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 	</filter>
 
 	<filter-mapping>
@@ -40,7 +110,7 @@
 
 	<servlet>
 	    <servlet-name>jmsbroker</servlet-name>
-		    <servlet-class>org.nuclos.server.web.NuclosJMSBrokerTunnelServlet</servlet-class>
+		    <servlet-class>org.nuclos.server.web.activemq.NuclosJMSBrokerTunnelServlet</servlet-class>
 	    <load-on-startup>2</load-on-startup>
 	</servlet>
 

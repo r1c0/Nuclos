@@ -32,6 +32,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.apache.activemq.broker.TransportConnector;
+import org.apache.activemq.thread.Scheduler;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.ClearThreadLocalMap;
 import org.apache.log4j.Logger;
@@ -83,6 +84,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		this.log = Logger.getLogger(this.getClass());
 		
 		final Timer timer = (Timer) SpringApplicationContextHolder.getBean("timer");
+		// final Timer timer = (Timer) getContextLoader().getCurrentWebApplicationContext().getBean("timer");
 		final TimerTask task = new TimerTask() {
 			private int i = 0;
 			
@@ -120,8 +122,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		// Get some beans before we destroy the context
 		final XBeanBrokerService activeMQBroker = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
 		final org.quartz.Scheduler quartz = (org.quartz.Scheduler) SpringApplicationContextHolder.getBean("nuclosScheduler");
-		// only with activemq 5.5.0
-		// final Scheduler activeMQScheduler = activeMQBroker.getScheduler();
+		final Scheduler activeMQScheduler = activeMQBroker.getScheduler();
 		final SimpleMessageListenerContainer listenerContainer = (SimpleMessageListenerContainer) 
 				SpringApplicationContextHolder.getBean("listener.masterdataCache");
 
@@ -138,19 +139,15 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		} catch (Exception ex) {
 			log.warn(ex);
 		}
-		// only with activemq 5.5.0
-		/*
 		try {
 			if (checkClass(cl, activeMQScheduler)) {
-				// only with activemq 5.5.0
-				// activeMQScheduler.stop();
+				activeMQScheduler.stop();
 				activeMQScheduler.shutdown();
 				log.info("Shutdown MQ scheduler: done");
 			}
 		} catch (Exception ex) {
 			log.warn(ex);
 		}
-		 */
 		try {
 			if (checkClass(cl, activeMQBroker)) {
 				List<TransportConnector> tcs = activeMQBroker.getTransportConnectors();

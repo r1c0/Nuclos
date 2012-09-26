@@ -78,6 +78,14 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<!-- 
+			https://code.google.com/p/javamelody/wiki/UserGuide
+			JavaMelody monitoring - uncomment to enable (tp)
+		-->
+		<!-- dependency>
+			<groupId>net.bull.javamelody</groupId>
+			<artifactId>javamelody-core</artifactId>
+		</dependency -->
 	</dependencies>
 	
 	<properties>

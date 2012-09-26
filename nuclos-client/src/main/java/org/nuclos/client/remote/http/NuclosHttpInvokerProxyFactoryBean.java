@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client;
+package org.nuclos.client.remote.http;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -22,10 +22,15 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.remote.NuclosHttpInvokerAttributeContext;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 
+/**
+ * An extension to Spring HttpInvokerProxyFactoryBean used for remote calls from 
+ * nuclos client to server.
+ */
 public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBean {
 
 	private static final Logger LOG = Logger.getLogger(NuclosHttpInvokerProxyFactoryBean.class);
@@ -52,6 +57,14 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 		this.ctx = ctx;
 	}
 
+	/**
+	 * This overridden executeRequest could be used for performance tracking of remote calls.
+	 * It should commented out in production environments.
+	 * 
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.8
+	 */
+	/*
 	@Override
 	protected RemoteInvocationResult executeRequest(RemoteInvocation invocation) throws Exception {
 		invocation.addAttribute("user.timezone", Main.getInitialTimeZone());
@@ -85,5 +98,6 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 		
 		return result;
 	}
+	 */
 
 }

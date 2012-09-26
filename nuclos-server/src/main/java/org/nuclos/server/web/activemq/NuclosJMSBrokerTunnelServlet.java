@@ -14,10 +14,12 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.server.web;
+package org.nuclos.server.web.activemq;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 
@@ -30,16 +32,24 @@ import org.apache.activemq.transport.Transport;
 import org.apache.activemq.transport.TransportAcceptListener;
 import org.apache.activemq.transport.http.HttpSpringEmbeddedTunnelServlet;
 import org.apache.activemq.transport.http.HttpTransportFactory;
-import org.apache.activemq.transport.http.HttpTransportServer;
 import org.apache.activemq.transport.http.HttpTunnelServlet;
 import org.apache.activemq.util.ServiceSupport;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.activemq.NuclosHttpTransportFactory;
 
 /**
+ * NuclosJMSBrokerTunnelServlet is a servlet for making the server JMS server broker (ActiveMQ)
+ * accessible over http(s). This is needed for nuclos client to communicate with the server
+ * via JMS (i.e. asynchronous communication).
+ * <p>
+ * This version prevents any dependencies to jetty.
+ * </p><p>
  * TODO: There must be a extremely more convenient way to do this... (tp)
+ * </p>
+ * @author Thomas Pasch
  */
 public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServlet {
 	
@@ -60,6 +70,8 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 	 * </ul>
 	 * </p>
 	 */
+	
+	private NuclosHttpTransportServer transportConnector;
 	
 	public NuclosJMSBrokerTunnelServlet() {
 	}
@@ -86,8 +98,9 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 
                 // Add the servlet connector
                 String url = getConnectorURL();
-                HttpTransportFactory factory = new HttpTransportFactory();
-                transportConnector = (HttpTransportServer) factory.doBind(new URI(url));
+                // HttpTransportFactory factory = new HttpTransportFactory();
+                // transportConnector = (HttpTransportServer) factory.doBind(new URI(url));
+                transportConnector = new NuclosHttpTransportServer(new URI(url), new HttpTransportFactory());
                 broker.addConnector(transportConnector);
 
                 String brokerURL = getServletContext().getInitParameter("org.apache.activemq.brokerURL");
@@ -145,10 +158,8 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
             getServletContext().setAttribute("transportChannelListener", listener);
         }
         getServletContext().setAttribute("acceptListener", listener);
-		// only with activemq 5.5.0
-        // final HttpTransportFactory htf = new HttpTransportFactory();
-        // getServletContext().setAttribute("transportFactory", htf);
-        
+        final HttpTransportFactory htf = new NuclosHttpTransportFactory();
+        getServletContext().setAttribute("transportFactory", htf);
 		// -------------------------------------------------------------------------
         
 		// -------------------------------------------------------------------------
@@ -183,11 +194,12 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
         // set stuff from org.apache.activemq.transport.http.HttpTunnelServlet 
         // using reflection (to access private fields)
         setField("listener", (TransportAcceptListener)getServletContext().getAttribute("acceptListener"));
-        
-		// only with activemq 5.5.0
-        // setField("transportFactory", (HttpTransportFactory)getServletContext().getAttribute("transportFactory"));
-        // setField("transportOptions", (HashMap)getServletContext().getAttribute("transportOptions"));
-        
+        setField("transportFactory", (HttpTransportFactory)getServletContext().getAttribute("transportFactory"));
+        Map to = (HashMap)getServletContext().getAttribute("transportOptions");
+        if (to == null) {
+        	to = new HashMap();
+        }
+        setField("transportOptions", to);
         // setField("wireFormat", (TextWireFormat)getServletContext().getAttribute("wireFormat"));
         setField("wireFormat", createWireFormat());
 	}

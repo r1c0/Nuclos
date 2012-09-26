@@ -14,27 +14,25 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client;
+package org.nuclos.client.remote.http;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.httpinvoker.HttpComponentsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
+import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -42,42 +40,18 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends HttpComponentsHt
 
 	private static final Logger LOG = Logger.getLogger(SecuredBasicAuthHttpInvokerRequestExecutor.class);
 
-	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
-
-	private static final int DEFAULT_MAX_CONNECTIONS_PER_ROUTE = 5;
-
-	private static final int DEFAULT_READ_TIMEOUT_MILLISECONDS = (60 * 1000);
-	
 	//
 
 	private HttpRequestRetryHandler retryHandler;
 	
+	// Spring injection
+	
 	private ApplicationProperties applicationProperties;
 	
-	static {
-		LOG.info("Register CustomSecureProtocolSocketFactoryOld for HTTPS (java rt and apache commons httpclient)");
-		// ActiveMQ still uses Apache Commons HttpClient
-		Protocol.registerProtocol("https", new Protocol("https", new CustomSecureProtocolSocketFactoryOld(), 443));		
-	}
-
-	public SecuredBasicAuthHttpInvokerRequestExecutor() {
-		super(getMyHttpClient());
-		setReadTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS);
-	}
+	// end of Spring injection
 	
-	private final static HttpClient getMyHttpClient() {
-		LOG.info("Register CustomSecureProtocolSocketFactory for HTTPS (modern apache http component)");
-		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-		// schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
-		schemeRegistry.register(new Scheme("https", 443, new CustomSecureProtocolSocketFactory()));
-
-		ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
-		connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
-		connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
-
-		final HttpClient result = new DefaultHttpClient(connectionManager);
-		return result;
+	public SecuredBasicAuthHttpInvokerRequestExecutor(HttpClient httpClient) {
+		super(httpClient);
 	}
 	
 	// @Autowired
@@ -117,4 +91,40 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends HttpComponentsHt
 			((DefaultHttpClient) getHttpClient()).setHttpRequestRetryHandler(retryHandler);
 		}
 	}
+	
+	/**
+	 * This overridden doExecuteRequest could be used for performance tracking of remote calls.
+	 * It should commented out in production environments.
+	 * 
+	 * @author Thomas Pasch
+	 * @since Nuclos 3.8
+	 */
+	/*
+	@Override
+	protected RemoteInvocationResult doExecuteRequest(
+			HttpInvokerClientConfiguration config, ByteArrayOutputStream baos)
+			throws IOException, ClassNotFoundException {
+
+		long start = System.currentTimeMillis();
+		
+		HttpPost postMethod = createHttpPost(config);
+		setRequestBody(config, postMethod, baos);
+		HttpResponse response = executeHttpPost(config, getHttpClient(), postMethod);
+		
+		long reqLength = postMethod.getEntity().getContentLength();
+		long exec = System.currentTimeMillis();
+		
+		validateResponse(config, response);
+		InputStream responseBody = getResponseBody(config, response);
+		RemoteInvocationResult result = readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
+		
+		long respLength = response.getEntity().getContentLength();
+		long stop = System.currentTimeMillis();
+		
+		LOG.info("request: " + reqLength + " response: " + respLength + " time: " + (stop - start) 
+				+ " (" + (exec - start) + " + " + (stop - exec) + ")");
+		return result;
+	}
+	 */
+
 }

@@ -14,36 +14,28 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client;
+package org.nuclos.common.tls;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
-
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.HttpClientError;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.log4j.Logger;
 
 /**
- * This is in use for ActiveMQ (that uses Apache Commons HttpClient under the hood) only.
+ * An custom SSL/TLS socket factory (for apache httpcomponents) that accepts self-signed certificates
+ * and does not check the associated hostname.
+ * 
+ * @author Thomas Pasch
  */
-public class CustomSecureProtocolSocketFactoryOld implements SecureProtocolSocketFactory {
+public class CustomSecureProtocolSocketFactory extends SSLSocketFactory {
 
 	private static final Logger log = Logger.getLogger(CustomSecureProtocolSocketFactory.class);
 
 	private SSLContext sslcontext = null;
 
-	public CustomSecureProtocolSocketFactoryOld() {
-		super();
+	public CustomSecureProtocolSocketFactory() {
+		super(createCustomSSLContext(), ALLOW_ALL_HOSTNAME_VERIFIER);
 	}
 
 	private static SSLContext createCustomSSLContext() {
@@ -53,7 +45,7 @@ public class CustomSecureProtocolSocketFactoryOld implements SecureProtocolSocke
 			return context;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			throw new HttpClientError(e.toString());
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -64,14 +56,17 @@ public class CustomSecureProtocolSocketFactoryOld implements SecureProtocolSocke
 		return this.sslcontext;
 	}
 
+	/*
 	@Override
 	public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort) throws IOException, UnknownHostException {
 		return getSSLContext().getSocketFactory().createSocket(host, port, clientHost, clientPort);
 	}
+	 */
 
+	/*
 	@Override
 	public Socket createSocket(final String host, final int port, final InetAddress localAddress, final int localPort, final HttpConnectionParams params)
-			throws IOException, UnknownHostException, ConnectTimeoutException {
+			throws IOException, UnknownHostException {
 		if (params == null) {
 			throw new IllegalArgumentException("Parameters may not be null");
 		}
@@ -88,12 +83,16 @@ public class CustomSecureProtocolSocketFactoryOld implements SecureProtocolSocke
 			return socket;
 		}
 	}
+	 */
 
+	/*
 	@Override
 	public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
 		return getSSLContext().getSocketFactory().createSocket(host, port);
 	}
+	 */
 
+	/*
 	@Override
 	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
 		return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
@@ -108,5 +107,6 @@ public class CustomSecureProtocolSocketFactoryOld implements SecureProtocolSocke
 	public int hashCode() {
 		return CustomSecureProtocolSocketFactory.class.hashCode();
 	}
+	 */
 
 }

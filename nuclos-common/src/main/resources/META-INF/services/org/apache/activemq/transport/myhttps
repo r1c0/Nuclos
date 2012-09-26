@@ -1,0 +1,1 @@
+class=org.nuclos.common.activemq.NuclosHttpsTransportFactory

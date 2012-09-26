@@ -46,7 +46,6 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
-import org.apache.xbean.spring.context.ResourceXmlApplicationContext;
 import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.StartIcons;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
@@ -313,9 +312,11 @@ public class StartUp  {
 							if (r instanceof ClassPathResource) {
 								ctx = new ClassPathXmlApplicationContext(new String[] { ((ClassPathResource)r).getPath() }, false, clientContext);
 							} 
+							/*
 							else if (r instanceof UrlResource) {
 								ctx = new ResourceXmlApplicationContext(r, Collections.EMPTY_LIST, clientContext, Collections.EMPTY_LIST, false);
 							}
+							 */
 							else {
 								ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
 							}

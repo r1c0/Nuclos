@@ -104,9 +104,9 @@
 	</bean>
 	
 	<!-- other -->
-	<bean id="nuclosHttpInvokerAttributeContext" class="org.nuclos.client.NuclosHttpInvokerAttributeContext">
+	<bean id="nuclosHttpInvokerAttributeContext" class="org.nuclos.client.remote.NuclosHttpInvokerAttributeContext">
 	</bean>
-	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver">
+	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver" depends-on="httpClient">
 		<property name="connectionFactory" ref="jmsFactory"/>
 		<property name="shutdownActions" ref="shutdownActions"/>
 	</bean>
@@ -135,6 +135,8 @@
 		<constructor-arg><value>NuclosClientTimer</value></constructor-arg>
 		<constructor-arg><value>true</value></constructor-arg>
 	</bean>
+	
+	<bean id="httpClient" class="org.nuclos.common.http.NuclosHttpClientFactory"/>
 
 	<!--
 		SecuredBasicAuthHttpInvokerRequestExecutor sets HttpClient-settings to accept self-signed certificated (https).
@@ -142,22 +144,32 @@
 		SecuredBasicAuthHttpInvokerRequestExecutor adds authentication information (Basic) to the request header.
 		TODO: add session support here
 	-->
-	<bean id="authHttpInvokerRequestExecutor" class="org.nuclos.client.SecuredBasicAuthHttpInvokerRequestExecutor">
+	<bean id="authHttpInvokerRequestExecutor" class="org.nuclos.client.remote.http.SecuredBasicAuthHttpInvokerRequestExecutor">
+	    <constructor-arg ref="httpClient"/>
 		<property name="applicationProperties" ref="applicationProperties"/>
+		<property name="readTimeout" value="60000"/>
 	</bean>
 
 	<!--
 		CommonsHttpInvokerRequestExecutor uses Commons HttpClient to execute remote calls (see bean authHttpInvokerRequestExecutor),
 		but does not include any authentication data. This bean is needed to receive proper exceptions from the remote authentication manager.
 	-->
-	<bean id="httpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor" />
+	<bean id="httpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.HttpComponentsHttpInvokerRequestExecutor">
+	    <constructor-arg ref="httpClient"/>
+		<property name="readTimeout" value="60000"/>
+	</bean>
 
 	<!-- JMS start -->
 
 	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
 		<property name="connectionFactory">
     		<bean class="org.apache.activemq.ActiveMQConnectionFactory">
-        		<property name="brokerURL" value="${url.jms}"/>
+				<!-- 
+					'my${url.jms}' is NOT a typo 
+					- it refers to org.nuclos.common.activemq.NuclosHttpTransportFactory 
+					(tp)
+				-->
+        		<property name="brokerURL" value="my${url.jms}"/>
         	</bean>
         </property>
     </bean>
@@ -242,7 +254,7 @@
 
 	<!-- remote services -->
 	
-	<bean id="httpInvokerProxyFactoryBean" class="org.nuclos.client.NuclosHttpInvokerProxyFactoryBean"
+	<bean id="httpInvokerProxyFactoryBean" class="org.nuclos.client.remote.http.NuclosHttpInvokerProxyFactoryBean"
 		abstract="true">
 		<!-- property name="serviceUrl" value="${url.remoting}/DummyForAbstract"/ -->
 		<property name="httpInvokerRequestExecutor" ref="authHttpInvokerRequestExecutor" />

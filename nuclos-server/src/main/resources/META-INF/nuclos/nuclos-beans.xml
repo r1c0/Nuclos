@@ -138,6 +138,9 @@
 
 	<bean id="startup" class="org.nuclos.common.startup.Startup"/>
 
+	<!-- At present hardly used but needed for (nuclos-specific) ActiveMQ configuration -->
+	<bean id="httpClient" class="org.nuclos.common.http.NuclosHttpClientFactory"/>
+
 	<!-- Single JMS sending queue -->
 	<bean id="jmsSendOnce" class="org.nuclos.common.JMSOnceSyncDelayed">
 		<constructor-arg>
@@ -332,6 +335,8 @@
 		</property>
 		<property name="applicationContextSchedulerContextKey"><value>applicationContext</value></property>
 		<property name="waitForJobsToCompleteOnShutdown"><value>true</value></property>
+		<!-- needed for javamelody -->
+		<property name="exposeSchedulerInRepository" value="true" />
 	</bean>
 
   <!-- security -->
