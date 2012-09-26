@@ -24,11 +24,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +102,6 @@ import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
@@ -115,7 +112,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 /**
  * This class loads a LayoutML XML with the SAX Parser and creates the
@@ -134,6 +130,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 	private static final String SYSTEMID = "http://www.novabit.de/technologies/layoutml/layoutml.dtd";
 	private static final String RESOURCE_PATH = "org/nuclos/common2/layoutml/layoutml.dtd";
+	
 	//NUCLEUSINT-1137
 	private boolean subformEntityMissing = false;
 
@@ -154,13 +151,9 @@ public class LayoutMLLoader implements LayoutMLConstants {
 	 * @see WYSIWYGLayoutControllingPanel#setLayoutML(String)
 	 */
 	public synchronized void setLayoutML(WYSIWYGLayoutEditorPanel editorPanel, String layoutML) throws CommonBusinessException, SAXException {
-		final XMLReader parser = XMLUtils.newSAXParser();
 		String warning = null;
-
-		LayoutMLContentHandler mlContentHandler = new LayoutMLContentHandler(editorPanel, warning);
-		parser.setContentHandler(mlContentHandler);
-
-		parser.setEntityResolver(new EntityResolver() {
+		final LayoutMLContentHandler mlContentHandler = new LayoutMLContentHandler(editorPanel, warning);
+		final EntityResolver resolver = new EntityResolver() {
 			@Override
 			public InputSource resolveEntity(String publicId, String systemId) throws IOException {
 				InputSource result = null;
@@ -177,16 +170,12 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 				return result;
 			}
-		});
+		};
 
 		try {
-			Date startDate = new Date();
-			parser.parse(new InputSource(new StringReader(layoutML)));
-			Date endDate = new Date();
-		} catch (IOException e) {
-			log.error(e);
-			throw new CommonFatalException(e);
-		} catch (SAXException e) {
+			XMLUtils.parse(layoutML, mlContentHandler, null, resolver, false);
+		} 
+		catch (SAXException e) {
 			log.error(e);
 			//NUCLEUSINT-398
 			throw new SAXException(e);

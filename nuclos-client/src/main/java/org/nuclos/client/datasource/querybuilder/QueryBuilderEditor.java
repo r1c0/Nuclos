@@ -17,11 +17,8 @@
 package org.nuclos.client.datasource.querybuilder;
 
 import java.awt.BorderLayout;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -49,29 +46,16 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.ext.LexicalHandler;
-
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.XMLUtils;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.datasource.admin.DatasourceEditPanel;
 import org.nuclos.client.datasource.admin.DatasourceEntityOptions;
 import org.nuclos.client.datasource.querybuilder.controller.QueryBuilderController;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry;
+import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry.ConditionEntry;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnSelectionPanel;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnSelectionTable;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnSelectionTableModel;
 import org.nuclos.client.datasource.querybuilder.gui.ParameterModel;
 import org.nuclos.client.datasource.querybuilder.gui.TableSelectionPanel;
-import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry.ConditionEntry;
 import org.nuclos.client.datasource.querybuilder.shapes.RelationConnectionPoint;
 import org.nuclos.client.datasource.querybuilder.shapes.RelationConnector;
 import org.nuclos.client.datasource.querybuilder.shapes.TableShape;
@@ -83,7 +67,16 @@ import org.nuclos.client.gef.layout.Extents2D;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.XMLUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * @todo enter class description.
@@ -308,29 +301,9 @@ public class QueryBuilderEditor extends JPanel {
 
 			ctl.newDocument(null);
 
-			final XMLReader parser = XMLUtils.newSAXParser();
 			final XMLContentHandler xmlContentHandler = new XMLContentHandler();
-			parser.setProperty("http://xml.org/sax/properties/lexical-handler", xmlContentHandler);
-			parser.setContentHandler(xmlContentHandler);
-			parser.setEntityResolver(new EntityResolver() {
-				@Override
-                public InputSource resolveEntity(String publicId, String systemId) throws IOException {
-					InputSource result = null;
-					if (systemId.equals(QueryBuilderConstants.SYSTEMID)) {
-						final URL url = this.getClass().getClassLoader().getResource(QueryBuilderConstants.RESOURCE_PATH);
-						if (url == null) {
-							throw new NuclosFatalException("DTD f\u00fcr SystemID " + QueryBuilderConstants.SYSTEMID + "kann nicht gefunden werden");
-						}
-						result = new InputSource(new BufferedInputStream(url.openStream()));
-					}
-					return result;
-				}
-			});
+			XMLUtils.parse(reportXML, xmlContentHandler, xmlContentHandler, QueryBuilderConstants.RESOLVER, false);
 			parent.setIsModelUsed(true);
-			parser.parse(new InputSource(new StringReader(reportXML)));
-		}
-		catch (IOException e) {
-			throw new NuclosFatalException(e);
 		}
 		catch (SAXException e) {
 			throw new NuclosFatalException(e);

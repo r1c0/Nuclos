@@ -16,10 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,10 +65,8 @@ import org.springframework.stereotype.Component;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
 
 /**
@@ -215,71 +209,94 @@ public class SchemaCache implements SchemaCacheMBean {
       }
    }
    
-   protected static final String SYSTEMID = "http://www.novabit.de/technologies/querybuilder/querybuildermodel.dtd";
-   protected static final String RESOURCE_PATH = "org/nuclos/common/querybuilder/querybuildermodel.dtd";
-	class XMLContentHandler implements ContentHandler, LexicalHandler {
-		@Override
-        public void characters(char[] ac, int start, int length) {
+	protected static final String SYSTEMID = "http://www.novabit.de/technologies/querybuilder/querybuildermodel.dtd";
+	protected static final String RESOURCE_PATH = "org/nuclos/common/querybuilder/querybuildermodel.dtd";
+	protected static final EntityResolver RESOLVER = XMLUtils.newClasspathEntityResolver(SYSTEMID, RESOURCE_PATH, false);
+
+	private class XMLContentHandler implements ContentHandler, LexicalHandler {
+		
+		private XMLContentHandler() {
 		}
+		
 		@Override
-        public void endDocument() {
+		public void characters(char[] ac, int start, int length) {
 		}
+
 		@Override
-        public void endElement(String namespaceURI, String localName, String qName) {
+		public void endDocument() {
 		}
+
 		@Override
-        public void endPrefixMapping(String prefix) {
+		public void endElement(String namespaceURI, String localName, String qName) {
 		}
+
 		@Override
-        public void ignorableWhitespace(char[] ac, int start, int length) {
+		public void endPrefixMapping(String prefix) {
 		}
+
 		@Override
-        public void processingInstruction(String target, String data) {
+		public void ignorableWhitespace(char[] ac, int start, int length) {
 		}
+
 		@Override
-        public void skippedEntity(String name) {
+		public void processingInstruction(String target, String data) {
 		}
+
 		@Override
-        public void startDocument() {
+		public void skippedEntity(String name) {
 		}
+
 		@Override
-        public void startPrefixMapping(String prefix, String uri) {
+		public void startDocument() {
 		}
+
 		@Override
-        public void setDocumentLocator(Locator loc) {
+		public void startPrefixMapping(String prefix, String uri) {
 		}
+
 		@Override
-        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+		public void setDocumentLocator(Locator loc) {
+		}
+
+		@Override
+		public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
 			// only process tables
 			if (qName.equals("table")) {
 				final String sEntity = atts.getValue("entity");
 				final Table tableSchema = currentSchema.getTable(sEntity);
 				if (tableSchema != null) {
-					final Table table = (Table)tableSchema.clone();
+					final Table table = (Table) tableSchema.clone();
 					fillTableColumnsAndConstraints(table);
 				}
 			}
 		}
+
 		@Override
-        public void endCDATA() throws SAXException {
+		public void endCDATA() throws SAXException {
 		}
+
 		@Override
-        public void endDTD() throws SAXException {
+		public void endDTD() throws SAXException {
 		}
+
 		@Override
-        public void startCDATA() throws SAXException {
+		public void startCDATA() throws SAXException {
 		}
+
 		@Override
-        public void comment(char[] ch, int start, int length) throws SAXException {
+		public void comment(char[] ch, int start, int length) throws SAXException {
 		}
+
 		@Override
-        public void endEntity(String name) throws SAXException {
+		public void endEntity(String name) throws SAXException {
 		}
+
 		@Override
-        public void startEntity(String name) throws SAXException {
+		public void startEntity(String name) throws SAXException {
 		}
+
 		@Override
-        public void startDTD(String name, String publicId, String systemId) throws SAXException {
+		public void startDTD(String name, String publicId, String systemId) throws SAXException {
 		}
 	}
 
@@ -301,35 +318,13 @@ public class SchemaCache implements SchemaCacheMBean {
    private Map<String, Table> buildTableColumnsMap() {
 		try {
 			for (DatasourceVO dsvo : datasourceCache.getAll()) {
-				final XMLReader parser = XMLUtils.newSAXParser();
 				final XMLContentHandler xmlContentHandler = new XMLContentHandler();
-				parser.setProperty("http://xml.org/sax/properties/lexical-handler", xmlContentHandler);
-				parser.setContentHandler(xmlContentHandler);
-				parser.setEntityResolver(new EntityResolver() {
-					@Override
-	                public InputSource resolveEntity(String publicId, String systemId) throws IOException {
-						InputSource result = null;
-						if (systemId.equals(SYSTEMID)) {
-							final URL url = this.getClass().getClassLoader().getResource(RESOURCE_PATH);
-							if (url == null) {
-								throw new NuclosFatalException("DTD f\u00fcr SystemID " + SYSTEMID + "kann nicht gefunden werden");
-							}
-							result = new InputSource(new BufferedInputStream(url.openStream()));
-						}
-						return result;
-					}
-				});
-				parser.parse(new InputSource(new StringReader(dsvo.getSource())));
-				
+				XMLUtils.parse(dsvo.getSource(), xmlContentHandler, xmlContentHandler, RESOLVER, false);
 			}
-		}
-		catch (IOException e) {
-			throw new NuclosFatalException(e);
 		}
 		catch (SAXException e) {
 			throw new NuclosFatalException(e);
 		}
-
 	   return mpTableColumns;
    }
 

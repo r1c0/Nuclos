@@ -19,7 +19,9 @@ package org.nuclos.client.datasource.querybuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuclos.common2.XMLUtils;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
+import org.xml.sax.EntityResolver;
 
 
 /**
@@ -35,6 +37,7 @@ public class QueryBuilderConstants {
 	
 	protected static final String SYSTEMID = "http://www.novabit.de/technologies/querybuilder/querybuildermodel.dtd";
 	protected static final String RESOURCE_PATH = "org/nuclos/common/querybuilder/querybuildermodel.dtd";
+	protected static final EntityResolver RESOLVER = XMLUtils.newClasspathEntityResolver(SYSTEMID, RESOURCE_PATH, true);
 
 	protected static final String COMPARISON_OPERATORS[] = {"=", "<", "<=", ">", ">=", "<>", "!=", "between", "like"};
 	protected static final String LOGICAL_OPERATORS[] = {"and", "or", "not"};

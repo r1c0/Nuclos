@@ -19,27 +19,19 @@
  */
 package org.nuclos.common.querybuilder;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterValuelistproviderVO;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
 
 /**
@@ -54,6 +46,7 @@ import org.xml.sax.ext.LexicalHandler;
 public class DatasourceXMLParser {
 	private static final String SYSTEMID = "http://www.novabit.de/technologies/querybuilder/querybuildermodel.dtd";
 	private static final String RESOURCE_PATH = "org/nuclos/common/querybuilder/querybuildermodel.dtd";
+	private static final EntityResolver RESOLVER = XMLUtils.newClasspathEntityResolver(SYSTEMID, RESOURCE_PATH, true);
 
 	private static final String TAG_ENTITYOPTIONS = "entityoptions";
 	private static final String TAG_TABLE = "table";
@@ -100,35 +93,10 @@ public class DatasourceXMLParser {
 	public static DatasourceXMLParser.Result parse(String sDatasourceXML) throws NuclosDatasourceException {
 		final DatasourceXMLParser.Result result = new Result();
 
-		final XMLReader parser = XMLUtils.newSAXParser();
 		final DatasourceXMLParser.XMLContentHandler xmlContentHandler = new XMLContentHandler(result);
+		result.bIsModelUsed = true;
 		try {
-			parser.setProperty("http://xml.org/sax/properties/lexical-handler", xmlContentHandler);
-			parser.setContentHandler(xmlContentHandler);
-
-			parser.setEntityResolver(new EntityResolver() {
-				@Override
-				public InputSource resolveEntity(String publicId, String systemId) throws IOException {
-					InputSource result = null;
-					if (systemId.equals(SYSTEMID)) {
-						final URL url = Thread.currentThread().getContextClassLoader().getResource(RESOURCE_PATH);
-						if (url == null) {
-							throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("querytable.missing.dtd.error", SYSTEMID));
-								//"DTD f\u00fcr " + SYSTEMID + " kann nicht gefunden werden.");
-						}
-						result = new InputSource(new BufferedInputStream(url.openStream()));
-					}
-					return result;
-				}
-			});
-
-			result.bIsModelUsed = true;
-
-			parser.parse(new InputSource(new StringReader(sDatasourceXML)));
-
-		}
-		catch (IOException e) {
-			throw new NuclosFatalException(e);
+			XMLUtils.parse(sDatasourceXML, xmlContentHandler, xmlContentHandler, RESOLVER, false);
 		}
 		catch (SAXException e) {
 			throw new NuclosDatasourceException("datasourcexmlparser.invalid.datasource", e);//"Die Datenquelle ist fehlerhaft."
@@ -136,7 +104,7 @@ public class DatasourceXMLParser {
 		return result;
 	}
 
-	static class XMLContentHandler implements ContentHandler, LexicalHandler {
+	private static class XMLContentHandler implements ContentHandler, LexicalHandler {
 		DatasourceXMLParser.XMLColumn currentColumn;
 		int iPosition = 0;
 		boolean isCDATA = false;
