@@ -283,7 +283,6 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	}
 
 	private static Component getPlaceHolder(Component component, String name) {
-		System.err.println(component.getName());
 		if (name.equals(component.getName())) {
 			return component;
 		}

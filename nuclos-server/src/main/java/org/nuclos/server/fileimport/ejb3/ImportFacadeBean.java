@@ -30,6 +30,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.fileimport.ImportMode;
 import org.nuclos.common.fileimport.ImportResult;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -205,7 +206,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 
 		List<ImportStructure> structures = new ArrayList<ImportStructure>();
 		for (EntityObjectVO importusage : order) {
-			structures.add(new ImportStructure(importusage.getField("importId", Integer.class)));
+			structures.add(new ImportStructure(IdUtils.unsafeToId(importusage.getFieldId("import"))));
 		}
 
 		ImportMode mode = org.nuclos.common2.KeyEnum.Utils.findEnum(ImportMode.class, (String) importfilevo.getField("mode"));
