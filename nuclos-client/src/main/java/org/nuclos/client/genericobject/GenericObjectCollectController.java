@@ -2356,11 +2356,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// iterate over the models rather than over the components:
 				final CollectableComponentModel clctcompmodel = layoutrootDetails.getCollectableComponentModelFor(sFieldName);
 				final CollectableField clctfShown = clct.getField(sFieldName);
-				if (clctcompmodel.getEntityField().isReferencing()) { //@see NUCLOS-1065
-					clctcompmodel.setFieldInitial(clctfShown, !clctfShown.isNull()); 
-				} else {
-					clctcompmodel.setFieldInitial(clctfShown, true);
-				}
+				clctcompmodel.setFieldInitial(clctfShown, true); 
 
 				markFieldInHistoricalView(lowdCurrent, sFieldName, clctfShown);
 			}

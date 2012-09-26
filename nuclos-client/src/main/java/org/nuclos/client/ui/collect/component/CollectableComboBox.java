@@ -371,10 +371,11 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 					setComboBoxModel(get(), false);
 					getJComboBox().setCursor(null);
-					if (getField() == null || getField().isNull()) {
+					// use getModel().getField() here. getField() trys to makeConsistant.
+					if (getModel().getField() == null || getModel().getField().isNull()) {
 						if (!isSearchComponent() && getValueListProvider() instanceof DefaultValueProvider) {
 							final CollectableField cf = ((DefaultValueProvider) getValueListProvider()).getDefaultValue();
-							if (cf != null && getField() != null && getField().isNull()) {
+							if (cf != null && getModel().getField() != null && getModel().getField().isNull()) {
 								getModel().setFieldInitial(cf, false);
 							}
 						}
