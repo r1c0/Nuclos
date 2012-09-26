@@ -206,7 +206,9 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 
 		List<ImportStructure> structures = new ArrayList<ImportStructure>();
 		for (EntityObjectVO importusage : order) {
-			structures.add(new ImportStructure(IdUtils.unsafeToId(importusage.getFieldId("import"))));
+			final Integer iu = IdUtils.unsafeToId(importusage.getFieldId("import"));
+			assert iu != null;
+			structures.add(new ImportStructure(iu));
 		}
 
 		ImportMode mode = org.nuclos.common2.KeyEnum.Utils.findEnum(ImportMode.class, (String) importfilevo.getField("mode"));

@@ -500,7 +500,8 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	private Map<Long, String> getObjectIdentifier(MasterDataWithDependantsVO mdwdVO) {
 		Map<Long, String> result = new HashMap<Long, String>();
 		for (EntityObjectVO md : mdwdVO.getDependants().getData(NuclosEntity.TODOOBJECT.getEntityName())) {
-			final Long iObjectId = IdUtils.toLongId(md.getField("entityId", Integer.class));
+			final Long iObjectId = md.getFieldId("entity");
+			assert iObjectId != null;
 			String entity = md.getField("entity", String.class);
 			if (entity == null) {
 				// backwards compatibility

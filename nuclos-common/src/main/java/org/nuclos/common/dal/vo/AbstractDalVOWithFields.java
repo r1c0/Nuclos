@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common2.IdUtils;
 
 public abstract class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersion implements IDalWithFieldsVO<T> {
 
@@ -62,7 +63,7 @@ public abstract class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersio
 
 	@Override
 	public Long getFieldId(String sFieldName) {
-		return this.getFieldIds().get(sFieldName);
+		return getFieldIds().get(sFieldName);
 	}
 
 	@Override
@@ -79,7 +80,17 @@ public abstract class AbstractDalVOWithFields<T> extends AbstractDalVOWithVersio
 
 	@Override
 	public <S> S getField(String fieldName) {
-		return (S) getFields().get(fieldName);
+		final S result = (S) getFields().get(fieldName);
+		if (result == null && fieldName.endsWith("Id")) {
+			final String idField = fieldName.substring(0, fieldName.length() - 2);
+			final Long hack = getFieldId(idField);
+			if (hack != null) {
+				LOG.error("Trying to read getField(" + fieldName + ") instead of getFieldId(" + idField 
+						+ ") : This is a sever error and will not work in future versions of Nuclos");
+				return (S) IdUtils.unsafeToId(hack);
+			}
+		}
+		return result;
 	}
 
 }

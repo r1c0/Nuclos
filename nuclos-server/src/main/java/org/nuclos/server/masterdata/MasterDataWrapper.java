@@ -240,8 +240,8 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		Integer eseEntity = Integer.parseInt(mdVO.getFieldId("entity").toString());
 		
 		// Fields that can be null
-		Integer eseState = mdVO.getField("stateId") != null ? Integer.parseInt(mdVO.getField("stateId").toString()) : null;
-		Integer eseProcess = mdVO.getField("processId") != null ? Integer.parseInt(mdVO.getField("processId").toString()) : null;
+		Integer eseState = mdVO.getFieldId("state") != null ? IdUtils.unsafeToId(mdVO.getFieldId("state")) : null;
+		Integer eseProcess = mdVO.getFieldId("process") != null ? IdUtils.unsafeToId(mdVO.getFieldId("process")) : null;
 		String  eseEntityName = mdVO.getField("entity") != null ? mdVO.getField("entity").toString() : null;
 		String  eseProcessName = mdVO.getField("process") != null ? mdVO.getField("process").toString() : null;
 		String  eseStateName = mdVO.getField("state") != null ? mdVO.getField("state").toString() : null;
@@ -515,7 +515,9 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 		Collection<EntityObjectVO> mdRules = mdVO.getDependants().getData(NuclosEntity.RULETRANSITION.getEntityName());
 		List<Pair<Integer, Boolean>> rules = new ArrayList<Pair<Integer, Boolean>>();
 		for (EntityObjectVO md : mdRules) {
-			rules.add(new Pair<Integer, Boolean>(md.getField("ruleId", Integer.class), md.getField("runafterwards", Boolean.class)));
+			final Integer rule = IdUtils.unsafeToId(md.getFieldId("rule"));
+			assert rule != null;
+			rules.add(new Pair<Integer, Boolean>(rule, md.getField("runafterwards", Boolean.class)));
 		}
 
 		// Get all added eventsupports
@@ -1006,7 +1008,10 @@ public static EventSupportTransitionVO getEventSupportTransitionVO(EntityObjectV
 
 		Collection<TaskObjectVO> taskObjects = new ArrayList<TaskObjectVO>();
 		for (EntityObjectVO md : mdTaskObjects) {
-			taskObjects.add(getTaskObjectVO(DalSupportForMD.wrapEntityObjectVO(md), mapObjectIdentifier != null ? mapObjectIdentifier.get(IdUtils.toLongId(md.getField("entityId"))) : null));
+			final Long entity = md.getFieldId("entity");
+			assert entity != null;
+			taskObjects.add(getTaskObjectVO(DalSupportForMD.wrapEntityObjectVO(md), 
+					mapObjectIdentifier != null ? mapObjectIdentifier.get(entity) : null));
 		}
 
 		TaskVO vo = new TaskVO(

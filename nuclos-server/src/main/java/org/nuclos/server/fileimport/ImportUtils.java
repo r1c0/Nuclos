@@ -182,11 +182,12 @@ public class ImportUtils {
 
 		List<ImportStructure> importDefinitions = new ArrayList<ImportStructure>();
 		for (EntityObjectVO usage : fileimport.getDependants().getData(NuclosEntity.IMPORTUSAGE.getEntityName())) {
-			if (usage.isFlagRemoved() || usage.getField("importId", Integer.class) == null) {
+			if (usage.isFlagRemoved() || usage.getFieldId("import") == null) {
 				continue;
 			}
 
-			Integer importstructureId = (Integer) usage.getField("importId", Integer.class);
+			Integer importstructureId = IdUtils.unsafeToId(usage.getFieldId("import"));
+			assert importstructureId != null;
 
 			MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			MasterDataWithDependantsVO importstructure = null;
