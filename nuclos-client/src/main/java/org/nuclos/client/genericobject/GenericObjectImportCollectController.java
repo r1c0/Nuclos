@@ -131,6 +131,22 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	 */
 	public GenericObjectImportCollectController(MainFrameTab tabIfAny) {
 		super(NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny, null);
+
+		progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		progressBar.setSize(200, 100);
+
+		Component placeHolder = getPlaceHolder(getDetailsPanel(), "lblPlaceholder1");
+		// You only can replace the place holder once. (tp)
+		if (placeHolder != null) {
+			Container container = placeHolder.getParent();
+			TableLayout layoutManager = (TableLayout)container.getLayout();
+			TableLayoutConstraints constraints = layoutManager.getConstraints(placeHolder);
+
+			container.remove(placeHolder);
+			container.add(progressBar, constraints);
+		}
+
 	}
 	
 	@Override
@@ -139,20 +155,6 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		getCollectStateModel().addCollectStateListener(new CollectStateAdapter(){
 			@Override
 			public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {
-				progressBar = new JProgressBar();
-				progressBar.setStringPainted(true);
-
-				Component placeHolder = getPlaceHolder(getDetailsPanel(), "lblPlaceholder1");
-				// You only can replace the place holder once. (tp)
-				if (placeHolder != null) {
-					Container container = placeHolder.getParent();
-					TableLayout layoutManager = (TableLayout)container.getLayout();
-					TableLayoutConstraints constraints = layoutManager.getConstraints(placeHolder);
-
-					container.remove(placeHolder);
-					container.add(progressBar, constraints);
-				}
-				
 				
 	            Integer importfileId = (Integer) getSelectedCollectableId();
 
@@ -281,6 +283,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	}
 
 	private static Component getPlaceHolder(Component component, String name) {
+		System.err.println(component.getName());
 		if (name.equals(component.getName())) {
 			return component;
 		}
@@ -396,13 +399,13 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		    if (message instanceof ObjectMessage) {
 		    	ObjectMessage objectMessage = (ObjectMessage) message;
 		    	if (objectMessage.getObject() instanceof ProgressNotification) {
-		    		ProgressNotification notification = (ProgressNotification) objectMessage.getObject();
+		    		final ProgressNotification notification = (ProgressNotification) objectMessage.getObject();
 
 		    		if (notification.getState() == ProgressNotification.RUNNING) {
 		    			LOG.info("onMessage " + this + " progressing...");
 
-		    			this.btnStart.setEnabled(false);
-		    			this.btnStop.setEnabled(true);
+						GenericObjectImportCollectController.this.btnStart.setEnabled(false);
+						GenericObjectImportCollectController.this.btnStop.setEnabled(true);
 
 		    			GenericObjectImportCollectController.this.progressBar.setString(getSpringLocaleDelegate().getMessageFromResource(
 		    					notification.getMessage()));
