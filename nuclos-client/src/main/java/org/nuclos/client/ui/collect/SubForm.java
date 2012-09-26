@@ -100,7 +100,6 @@ import org.nuclos.client.common.NuclosCollectableTextArea;
 import org.nuclos.client.common.SearchConditionSubFormController.SearchConditionTableModel;
 import org.nuclos.client.common.SubFormController.FocusListSelectionListener;
 import org.nuclos.client.common.Utils;
-import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueFont;
 import org.nuclos.client.scripting.ScriptEvaluator;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
@@ -1091,7 +1090,15 @@ public class SubForm extends JPanel
 	public int getMinRowHeight() {
 		if (font == null)
 			return MIN_ROWHEIGHT;
-		return Math.max((int)(getFontMetrics(font).getHeight() + subformtbl.getRowMargin() + 7), MIN_ROWHEIGHT);
+		int result = 7;
+		result += getFontMetrics(font).getHeight();
+		if (subformtbl != null) {
+			result += subformtbl.getRowMargin();
+		}
+		else {
+			LOG.info("getMinRowHeight: subformtbl is null"); 
+		}
+		return Math.max(result, MIN_ROWHEIGHT);
 	}
 
 	/**

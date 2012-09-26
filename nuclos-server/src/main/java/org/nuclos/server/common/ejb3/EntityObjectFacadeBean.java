@@ -234,10 +234,13 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		}
 		// final String username = getCurrentUserName();
 		final DependantMasterDataMap dmdm = base.getDependants();
+		final boolean log = LOG.isDebugEnabled();
 		for (String s: stRequiredSubEntityNames) {
 			final String refField = findRefField(base, s, customUsage);
 			if (refField == null) {
-				LOG.warn("Can't find ref field from " + s + " to " + base.getEntity());
+				if (log) {
+					LOG.debug("Can't find ref field from " + s + " to " + base.getEntity());
+				}
 				continue;
 			}
 			final Collection<EntityObjectVO> col = getDependentEntityObjects(s, refField, base.getId());
@@ -258,12 +261,15 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
 		// final String username = getCurrentUserName();
 		final DependantMasterDataMap dmdm = base.getDependants();
+		final boolean log = LOG.isDebugEnabled();
 		for (EntityFieldMetaDataVO p : pivots) {
 			final EntityMetaDataVO mdEntity = mdProv.getEntity(p.getEntityId());
 			final String subform = mdEntity.getEntity();
 			final String refField = findRefField(base, subform, customUsage);
 			if (refField == null) {
-				LOG.warn("Can't find ref field from " + p + " to " + base.getEntity());
+				if (log) {
+					LOG.warn("Can't find ref field from " + p + " to " + base.getEntity());
+				}
 				continue;
 			}
 			final Collection<EntityObjectVO> col = getDependentPivotEntityObjects(p, refField, base.getId());

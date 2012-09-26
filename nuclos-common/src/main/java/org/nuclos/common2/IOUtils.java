@@ -149,22 +149,18 @@ public class IOUtils {
 	 */
 	public static byte[] readFromBinaryFile(File file) throws IOException {
 		final FileInputStream fis = new FileInputStream(file);
+		final long lFileSize = file.length();
+		if (lFileSize > 100000L) {
+			throw new CommonFatalException(StringUtils.getParameterizedExceptionMessage("ioutils.file.error", file.getAbsolutePath()));
+		}
+		return readFromBinaryStream(fis);
+	}
+	
+	public static byte[] readFromBinaryStream(InputStream fis) throws IOException {
 		try {
 			final BufferedInputStream bis = new BufferedInputStream(fis);
 			try {
-				final long lFileSize = file.length();
-				if (lFileSize > Integer.MAX_VALUE) {
-					throw new CommonFatalException(StringUtils.getParameterizedExceptionMessage("ioutils.file.error", file.getAbsolutePath()));
-						//"Die Datei " + file.getAbsolutePath() + " ist zu gro\u00df. getContentsOfBinaryFile() kann Dateien > 2GB nicht lesen.");
-				}
-				final int iFileSize = (int) lFileSize;
-				final byte[] result = new byte[iFileSize];
-				final int iBytesRead = bis.read(result);
-				if (iBytesRead != iFileSize) {
-					throw new CommonFatalException(StringUtils.getParameterizedExceptionMessage("ioutils.read.file.error", file.getAbsolutePath()));
-						//"Die Datei " + file.getAbsolutePath() + " konnte nicht vollst\u00e4ndig gelesen werden.");
-				}
-				return result;
+				return org.apache.commons.io.IOUtils.toByteArray(bis);
 			}
 			finally {
 				bis.close();
