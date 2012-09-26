@@ -2842,7 +2842,7 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
+        "unique": false,
         "labelres": "nuclos.entityfield.eventsupportevent.supportclass.label",
         "descriptionres": "nuclos.entityfield.eventsupportevent.supportclass.description"
       },
@@ -2965,7 +2965,7 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
+        "unique": false,
         "labelres": "nuclos.entityfield.eventsupportevent.supportclass.label",
         "descriptionres": "nuclos.entityfield.eventsupportevent.supportclass.description"
       },
@@ -2979,7 +2979,7 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
+        "unique": false,
         "labelres": "nuclos.entityfield.eventsupportevent.supportclasstype.label",
         "descriptionres": "nuclos.entityfield.eventsupportevent.supportclasstype.description"
       },
@@ -3418,7 +3418,7 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
+        "unique": false,
         "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
         "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
       },
@@ -3432,7 +3432,7 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
+        "unique": false,
         "labelres": "nuclos.entityfield.eventsupportevent.supportclasstype.label",
         "descriptionres": "nuclos.entityfield.eventsupportevent.supportclasstype.description"
       },
@@ -3508,7 +3508,7 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
+        "unique": false,
         "labelres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.label",
         "descriptionres": "nuclos.entityfield.eventsupporttransition.eventsupportclass.description"
       },
