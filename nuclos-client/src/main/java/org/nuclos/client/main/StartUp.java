@@ -23,6 +23,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -405,11 +406,15 @@ public class StartUp  {
 		if (!StringUtils.isNullOrEmpty(sLog4jUrl)) {
 			try {
 				LogLog.debug("Try to configure loggging from " + sLog4jUrl + ".");
-				Log4jConfigurer.initLogging(sLog4jUrl);
-				log = Logger.getLogger(StartUp.class);
-				log.info("Logging configured from " + sLog4jUrl);
-				LogLog.setInternalDebugging(false);
-				return;
+				if (new File(sLog4jUrl).exists()) {
+					Log4jConfigurer.initLogging(sLog4jUrl);
+					log = Logger.getLogger(StartUp.class);
+					log.info("Logging configured from " + sLog4jUrl);
+					LogLog.setInternalDebugging(false);
+					return;
+				} else {
+					System.out.println("Failed to configure logging from " + sLog4jUrl + ": file not existing.");
+				}
 			}
 			catch(Throwable e) {
 		        // Ok! (tp)
