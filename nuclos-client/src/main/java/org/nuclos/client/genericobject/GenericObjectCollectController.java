@@ -5711,6 +5711,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			iCurrentLayoutId = null;
 			if (!bInitialSearchLayout) {
 				setupEditPanelForSearchTab(getInitialLayoutMLDefinitionForSearchPanel());
+				setProcessSearchCondition();
 				bInitialSearchLayout = true; // do not load layout for search anymore.
 			}
 			setInitialComponentFocusInSearchTab();
