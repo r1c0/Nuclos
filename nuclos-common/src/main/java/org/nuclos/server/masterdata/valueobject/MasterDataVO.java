@@ -80,6 +80,9 @@ public class MasterDataVO implements IMasterDataVO, INuclosValueObject<Object> {
 	 * @param mpFields May be <code>null</code>.
 	 * @precondition sEntity != null
 	 * @postcondition this.getId() == oId
+	 * 
+	 * @deprecated As we want to migrate away from MasterDataVO to EntityObjectVO, it is *much* saver
+	 * 		to use {@link #MasterDataVO(String, Object, Date, String, Date, String, Integer, Map)}
 	 */
 	public MasterDataVO(Object oId, Date dateCreatedAt, String sCreatedBy,
 				Date dateChangedAt, String sChangedBy, Integer iVersion, Map<String, Object> mpFields) {
