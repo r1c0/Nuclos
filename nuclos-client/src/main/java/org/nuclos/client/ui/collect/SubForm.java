@@ -1412,13 +1412,8 @@ public class SubForm extends JPanel
 							// @todo: The first condition (INSERT) is clear, but what for the second (complete UPDATE)?
 							(ev.getType() == TableModelEvent.UPDATE && ev.getColumn() == TableModelEvent.ALL_COLUMNS && ev.getLastRow() == Integer.MAX_VALUE);
 					if (bRowsInserted) {
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								resetDefaultColumnWidths();
-								LOG.debug("Custom column widths should be used here.");	// Setting them manually.");
-							}
-						});
+						resetDefaultColumnWidths();
+						LOG.debug("Custom column widths should be used here.");	// Setting them manually.");
 					}
 				}
 				// TableModelEvents caused by sorting don't change the subform state:
