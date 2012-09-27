@@ -33,6 +33,7 @@ import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
@@ -58,6 +59,7 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.RecordGrantUtils;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -274,6 +276,9 @@ public class GenericObjectFacadeHelper {
 		return result;
 	}
 
+	public void createDependants(String entityname, int iGenericObjectId, DependantMasterDataMap mpDependants, Map<EntityAndFieldName, String> collSubEntities) throws CommonCreateException {
+		this.createDependants(entityname, iGenericObjectId, mpDependants, collSubEntities, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
 	public void createDependants(String entityname, int iGenericObjectId, DependantMasterDataMap mpDependants, Map<EntityAndFieldName, String> collSubEntities, String customUsage) throws CommonCreateException {
 		if (!mpDependants.areAllDependantsNew()) {
 			throw new IllegalArgumentException("Dependants must be new (must have empty ids).");
