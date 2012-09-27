@@ -78,6 +78,10 @@ public class NuclosIcons {
 		ImageIcon resourceIcon = getResource("NCL_MAINFRAME_TITLE");
 		if (resourceIcon != null)
 			return resourceIcon;
+		return getDefaultFrameIcon();
+	}
+	
+	public ImageIcon getDefaultFrameIcon() {
 		return StartIcons.getInstance().getDefaultFrameIcon();
 	}
 	

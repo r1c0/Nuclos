@@ -81,6 +81,11 @@ public class MasterDataVO implements IMasterDataVO, INuclosValueObject<Object> {
 	 * @precondition sEntity != null
 	 * @postcondition this.getId() == oId
 	 */
+	public MasterDataVO(Object oId, Date dateCreatedAt, String sCreatedBy,
+				Date dateChangedAt, String sChangedBy, Integer iVersion, Map<String, Object> mpFields) {
+			this(null, oId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion, mpFields, false);
+	}
+
 	public MasterDataVO(String entity, Object oId, Date dateCreatedAt, String sCreatedBy,
 			Date dateChangedAt, String sChangedBy, Integer iVersion, Map<String, Object> mpFields) {
 		this(entity, oId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion, mpFields, false);

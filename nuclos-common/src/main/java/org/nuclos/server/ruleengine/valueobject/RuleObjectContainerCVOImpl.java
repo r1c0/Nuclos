@@ -249,7 +249,11 @@ public final class RuleObjectContainerCVOImpl implements Serializable, RuleObjec
 	}
 
 	private DependantMasterDataMap getDependantsWithoutDeletedVOs() {
-		return new DependantMasterDataMapNonDeletedView((DependantMasterDataMapImpl) realMap);
+		if (realMap instanceof DependantMasterDataMapImpl)
+			return new DependantMasterDataMapNonDeletedView((DependantMasterDataMapImpl) realMap);
+		else if (realMap instanceof DependantMasterDataMapNonDeletedView)
+			return realMap;
+		throw new IllegalStateException(realMap.getClass().getName());
 	}
 
 	/*
