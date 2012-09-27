@@ -87,6 +87,10 @@ public interface GenericObjectFacadeLocal {
 	 * @postcondition result.isComplete()
 	 */
 	@RolesAllowed("Login")
+	GenericObjectWithDependantsVO getWithDependants(Integer iGenericObjectId, Set<String> stRequiredSubEntityNames)
+			throws CommonPermissionException, CommonFinderException;
+	
+	@RolesAllowed("Login")
 	GenericObjectWithDependantsVO getWithDependants(
 		Integer iGenericObjectId, Set<String> stRequiredSubEntityNames, String customUsage)
 		throws CommonPermissionException, CommonFinderException;

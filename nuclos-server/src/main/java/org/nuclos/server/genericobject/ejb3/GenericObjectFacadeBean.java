@@ -264,6 +264,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @postcondition result.isComplete()
 	 */
 	@RolesAllowed("Login")
+	public GenericObjectWithDependantsVO getWithDependants(Integer iGenericObjectId, Set<String> stRequiredSubEntityNames)
+			throws CommonPermissionException, CommonFinderException {
+		return this.getWithDependants(iGenericObjectId, stRequiredSubEntityNames, ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_LAYOUT_CUSTOM_KEY));
+	}
+	@RolesAllowed("Login")
 	public GenericObjectWithDependantsVO getWithDependants(Integer iGenericObjectId, Set<String> stRequiredSubEntityNames, String customUsage)
 			throws CommonPermissionException, CommonFinderException {
 
