@@ -16,12 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.remote.http;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -32,7 +29,6 @@ import org.nuclos.common2.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.httpinvoker.HttpComponentsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
-import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -61,8 +57,9 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends HttpComponentsHt
 	
 	// @PostConstruct
 	public final void afterPropertiesSet() {
+		// timeout disable for dev
 		// timeout 30 minutes (requested for entity transfer)
-		super.setReadTimeout(applicationProperties.isFunctionBlockDev() ? 0 : 1000 * 60 * 30);
+		setReadTimeout(applicationProperties.isFunctionBlockDev() ? 0 : 1000 * 60 * 30);
 	}
 
 	@Override

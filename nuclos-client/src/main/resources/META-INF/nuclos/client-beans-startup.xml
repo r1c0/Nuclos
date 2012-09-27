@@ -147,7 +147,9 @@
 	<bean id="authHttpInvokerRequestExecutor" class="org.nuclos.client.remote.http.SecuredBasicAuthHttpInvokerRequestExecutor">
 	    <constructor-arg ref="httpClient"/>
 		<property name="applicationProperties" ref="applicationProperties"/>
-		<property name="readTimeout" value="60000"/>
+		<!-- 0 is disable -->
+		<!-- set in org.nuclos.client.remote.http.SecuredBasicAuthHttpInvokerRequestExecutor -->
+		<!-- property name="readTimeout" value="1800000"/ -->
 	</bean>
 
 	<!--
@@ -156,7 +158,9 @@
 	-->
 	<bean id="httpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.HttpComponentsHttpInvokerRequestExecutor">
 	    <constructor-arg ref="httpClient"/>
-		<property name="readTimeout" value="60000"/>
+		<!-- 0 is disable -->
+		<!-- set in org.nuclos.client.remote.http.SecuredBasicAuthHttpInvokerRequestExecutor -->
+		<!-- property name="readTimeout" value="1800000"/ -->
 	</bean>
 
 	<!-- JMS start -->

@@ -37,6 +37,8 @@ import org.nuclos.common.http.NuclosHttpClientFactory;
  * @author Thomas Pasch
  */
 public class NuclosHttpsTransportFactory extends HttpsTransportFactory {
+	
+	private NuclosHttpClientFactory factory;
 
 	private HttpClient httpClient;
 	
@@ -45,7 +47,12 @@ public class NuclosHttpsTransportFactory extends HttpsTransportFactory {
 	
 	final HttpClient getHttpClient() {
 		if (httpClient == null) {
-			httpClient = NuclosHttpClientFactory.getInstance().getObject();
+			// Use a separate HttpClient here because ActiveMQ will
+			// always set connection timeout to 30000 (30 seconds). (tp)
+			
+			// httpClient = NuclosHttpClientFactory.getInstance().getObject();
+			factory = new NuclosHttpClientFactory();
+			httpClient = factory.getObject();
 		}
 		return httpClient;
 	}
@@ -65,6 +72,15 @@ public class NuclosHttpsTransportFactory extends HttpsTransportFactory {
         result.setReceiveHttpClient(httpClient);
         result.setSendHttpClient(httpClient);
         return result;
-    }	
+    }
+	
+	@Override
+	public void finalize() {
+		if (factory != null) {
+			factory.close();
+		}
+		factory = null;
+		httpClient = null;
+	}
 	
 }
