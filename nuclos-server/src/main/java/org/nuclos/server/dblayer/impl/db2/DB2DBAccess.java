@@ -636,5 +636,11 @@ public class DB2DBAccess extends StandardSqlDBAccess {
 		protected DbGenericType getDbGenericType(int sqlType, String typeName) {
 			return DB2DBAccess.getDbGenericType(sqlType, typeName);
 		}
-	}
+	} 
+	
+	@Override
+	protected String getColumnSpecNullable(DbColumn column) {
+    	return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
+    }
+
 }
