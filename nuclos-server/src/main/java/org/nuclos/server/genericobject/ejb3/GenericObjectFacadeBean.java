@@ -1266,7 +1266,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			DalCallResult dalResult;
 			if (bDeletePhysically) {
 				//@see  	NUCLOS-708. clear dependants map first.
-				for (String sDependantEntityName : gowdvo.getDependants().getEntityNames()) {
+				for (String sDependantEntityName : new ArrayList<String>(gowdvo.getDependants().getEntityNames())) {
 					gowdvo.getDependants().setData(sDependantEntityName, new ArrayList<EntityObjectVO>(0));
 				}
 				_fillDependants(gowdvo, usage, new HashSet<String>(), customUsage);
