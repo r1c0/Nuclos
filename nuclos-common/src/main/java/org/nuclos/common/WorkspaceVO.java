@@ -56,12 +56,12 @@ public class WorkspaceVO extends AbstractDalVOWithVersion {
 	}
 
 	public String getClbworkspace() {
-		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return xstream.toXML(workspaceDescription);
 	}
 
 	public void setClbworkspace(String clbworkspace) {
-		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		this.workspaceDescription = (WorkspaceDescription) xstream.fromXML(clbworkspace);
 	}
 

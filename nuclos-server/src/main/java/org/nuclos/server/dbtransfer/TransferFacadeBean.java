@@ -961,12 +961,12 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	}
 
 	private static String toXML(Object o) {
-		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return xstream.toXML(o);
 	}
 
 	private static Object fromXML(String xml) {
-		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return xstream.fromXML(xml);
 	}
 

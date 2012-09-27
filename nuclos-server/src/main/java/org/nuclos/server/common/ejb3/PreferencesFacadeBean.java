@@ -951,7 +951,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			final String sKey = tuple.get(0, String.class);
 			final String sSettings = tuple.get(1, String.class);
 			try {
-				final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+				final XStream xstream = XStreamSupport.getInstance().getXStream();
 				Settings userSettings = (Settings) xstream.fromXML(sSettings);
 				result.put(sKey, userSettings);
 			} catch (Exception ex) {
@@ -975,7 +975,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 
 		try {
 			try {
-				final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+				final XStream xstream = XStreamSupport.getInstance().getXStream();
 				Settings userSettings = (Settings) xstream.fromXML(dataBaseHelper.getDbAccess().executeQuerySingleResult(query));
 				return userSettings;
 			} catch (DbInvalidResultSizeException ex) {
@@ -1017,7 +1017,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			throw new NuclosFatalException(e);
 		}
 		
-		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		String sSettings = xstream.toXML(userSettings);
 		
 		final Map<String, Object> values = new HashMap<String, Object>();

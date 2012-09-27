@@ -52,6 +52,13 @@ public class XStreamSupport {
 		return result;
 	}
 	
+	/**
+	 * This performs <em>very</em> badly!
+	 * <p>
+	 * This method is <em>never</em> needed if you (de)serialize to/from a String.
+	 * </p>
+	 * @deprecated Read http://stackoverflow.com/questions/1001899/xstream-fromxml-exception for alternatives.
+	 */
 	public XStream getXStreamUtf8() {
 		// ???
 		final XStream result = new XStream(new DomDriver("UTF-8")) {

@@ -201,7 +201,7 @@ public abstract class DataSourceExecutor implements DbExecutor {
         } else if (value == null) {
             stmt.setNull(index, getPreferredSqlTypeFor(javaType));
         } else if (value instanceof NuclosScript) {
-        	final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+        	final XStream xstream = XStreamSupport.getInstance().getXStream();
             stmt.setString(index, xstream.toXML(value));
         }else {
             throw new SQLException("Java type " + javaType + " cannot be mapped to DB type");
