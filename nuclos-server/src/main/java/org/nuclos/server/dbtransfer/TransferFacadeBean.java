@@ -961,13 +961,25 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	}
 
 	private static String toXML(Object o) {
-		final XStream xstream = XStreamSupport.getInstance().getXStream();
-		return xstream.toXML(o);
+		final XStreamSupport xs = XStreamSupport.getInstance();
+		final XStream xstream = xs.getXStream();
+		try {
+			return xstream.toXML(o);
+		}
+		finally {
+			xs.returnXStream(xstream);
+		}
 	}
 
 	private static Object fromXML(String xml) {
-		final XStream xstream = XStreamSupport.getInstance().getXStream();
-		return xstream.fromXML(xml);
+		final XStreamSupport xs = XStreamSupport.getInstance();
+		final XStream xstream = xs.getXStream();
+		try {
+			return xstream.fromXML(xml);
+		}
+		finally {
+			xs.returnXStream(xstream);
+		}
 	}
 
 	private MetaDataRoot buildMetaDataRoot(String nucletUID, TransferOption.Map exportOptions) {

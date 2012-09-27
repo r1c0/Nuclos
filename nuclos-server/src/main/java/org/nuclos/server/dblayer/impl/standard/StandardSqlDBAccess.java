@@ -520,8 +520,14 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         		value = null;
         	}
         	else {
-        		final XStream xstream = XStreamSupport.getInstance().getXStream();
-        		value = xstream.fromXML(rs.getString(index));
+        		final XStreamSupport xs = XStreamSupport.getInstance();
+        		final XStream xstream = xs.getXStream();
+        		try {
+        			value = xstream.fromXML(rs.getString(index));
+        		}
+        		finally {
+        			xs.returnXStream(xstream);
+        		}
         	}
         } else {
             throw new IllegalArgumentException("Class " + javaType + " not supported by readField");
@@ -550,8 +556,14 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         } 	else if(javaType == byte[].class) {
             value = stmt.getBytes(index);
         } 	else if (javaType == NuclosScript.class) {
-    		final XStream xstream = XStreamSupport.getInstance().getXStream();
-            value = xstream.fromXML(stmt.getString(index));
+    		final XStreamSupport xs = XStreamSupport.getInstance();
+    		final XStream xstream = xs.getXStream();
+    		try {
+    			value = xstream.fromXML(stmt.getString(index));
+    		}
+    		finally {
+    			xs.returnXStream(xstream);
+    		}
         }   else {
             throw new IllegalArgumentException("Class " + javaType + " not supported by readField");
         }

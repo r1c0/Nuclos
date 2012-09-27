@@ -33,17 +33,29 @@ public abstract class AbstractXStreamTabStoreAndRestoreController<T> implements 
 	@Override
 	public void restoreFromPreferences(String preferencesXML, MainFrameTab tab) throws Exception {
 		if (preferencesXML != null) {
-			final XStream xstream = XStreamSupport.getInstance().getXStream();
-			final T state = (T) xstream.fromXML(preferencesXML);
-			restoreFromState(state, tab);
+			final XStreamSupport xs = XStreamSupport.getInstance();
+			final XStream xstream = xs.getXStream();
+			try {
+				final T state = (T) xstream.fromXML(preferencesXML);
+				restoreFromState(state, tab);
+			}
+			finally {
+				xs.returnXStream(xstream);
+			}
 		}
 	}
 
 	@Override
 	public String getPreferencesXML() {
 		final T state = getState();
-		final XStream xstream = XStreamSupport.getInstance().getXStream();
-		return xstream.toXML(state);
+		final XStreamSupport xs = XStreamSupport.getInstance();
+		final XStream xstream = xs.getXStream();
+		try {
+			return xstream.toXML(state);
+		}
+		finally {
+			xs.returnXStream(xstream);
+		}
 	}
 	
 	protected abstract void restoreFromState(T state, MainFrameTab tab) throws Exception;

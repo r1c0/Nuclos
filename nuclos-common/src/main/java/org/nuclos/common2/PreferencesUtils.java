@@ -150,15 +150,27 @@ public class PreferencesUtils {
 			String s = prefs.get(key, null);
 			if(s == null)
 				return null;
-			final XStream xstream = XStreamSupport.getInstance().getXStream();
-			return xstream.fromXML(s);
+			final XStreamSupport xs = XStreamSupport.getInstance();
+			final XStream xstream = xs.getXStream();
+			try {
+				return xstream.fromXML(s);
+			}
+			finally {
+				xs.returnXStream(xstream);
+			}
 		}
 
 		@Override
 		public void put(Preferences prefs, Object t) throws PreferencesException {
-			final XStream xstream = XStreamSupport.getInstance().getXStream();
-			String s = xstream.toXML(t);
-			prefs.put(key, s);
+			final XStreamSupport xs = XStreamSupport.getInstance();
+			final XStream xstream = xs.getXStream();
+			try {
+				String s = xstream.toXML(t);
+				prefs.put(key, s);
+			}
+			finally {
+				xs.returnXStream(xstream);
+			}
 		}
 	}
 

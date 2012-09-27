@@ -951,9 +951,15 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			final String sKey = tuple.get(0, String.class);
 			final String sSettings = tuple.get(1, String.class);
 			try {
-				final XStream xstream = XStreamSupport.getInstance().getXStream();
-				Settings userSettings = (Settings) xstream.fromXML(sSettings);
-				result.put(sKey, userSettings);
+				final XStreamSupport xs = XStreamSupport.getInstance();
+				final XStream xstream = xs.getXStream();
+				try {
+					Settings userSettings = (Settings) xstream.fromXML(sSettings);
+					result.put(sKey, userSettings);
+				}
+				finally {
+					xs.returnXStream(xstream);
+				}
 			} catch (Exception ex) {
 				LOG.error(String.format("UserSettings (Key=%s) not restored! Error=%s", sKey, ex.getMessage()), ex);
 			}
@@ -975,9 +981,15 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 
 		try {
 			try {
-				final XStream xstream = XStreamSupport.getInstance().getXStream();
-				Settings userSettings = (Settings) xstream.fromXML(dataBaseHelper.getDbAccess().executeQuerySingleResult(query));
-				return userSettings;
+				final XStreamSupport xs = XStreamSupport.getInstance();
+				final XStream xstream = xs.getXStream();
+				try {
+					Settings userSettings = (Settings) xstream.fromXML(dataBaseHelper.getDbAccess().executeQuerySingleResult(query));
+					return userSettings;
+				}
+				finally {
+					xs.returnXStream(xstream);
+				}
 			} catch (DbInvalidResultSizeException ex) {
 				return new SettingsImpl();
 			} 
@@ -1017,8 +1029,15 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			throw new NuclosFatalException(e);
 		}
 		
-		final XStream xstream = XStreamSupport.getInstance().getXStream();
-		String sSettings = xstream.toXML(userSettings);
+		final XStreamSupport xs = XStreamSupport.getInstance();
+		final XStream xstream = xs.getXStream();
+		final String sSettings;
+		try {
+			sSettings = xstream.toXML(userSettings);
+		}
+		finally {
+			xs.returnXStream(xstream);
+		}
 		
 		final Map<String, Object> values = new HashMap<String, Object>();
 		values.put("INTID_T_MD_USER", nuclosUserId);

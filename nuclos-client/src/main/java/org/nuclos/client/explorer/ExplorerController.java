@@ -192,13 +192,25 @@ public class ExplorerController extends Controller<MainFrameTabbedPane> {
 	}
 
 	private static String toXML(RestorePreferences rp) {
-		final XStream xstream = XStreamSupport.getInstance().getXStream();
-		return xstream.toXML(rp);
+		final XStreamSupport xs = XStreamSupport.getInstance();
+		final XStream xstream = xs.getXStream();
+		try {
+			return xstream.toXML(rp);
+		}
+		finally {
+			xs.returnXStream(xstream);
+		}
 	}
 
 	private static RestorePreferences fromXML(String xml) {
-		final XStream xstream = XStreamSupport.getInstance().getXStream();
-		return (RestorePreferences) xstream.fromXML(xml);
+		final XStreamSupport xs = XStreamSupport.getInstance();
+		final XStream xstream = xs.getXStream();
+		try {
+			return (RestorePreferences) xstream.fromXML(xml);
+		}
+		finally {
+			xs.returnXStream(xstream);
+		}
 	}
 
 	/**

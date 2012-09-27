@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
@@ -23,6 +25,8 @@ public class XStreamSupport {
 	
 	private Map<Class<?>, Class<?>> defaultImplementation;
 	
+	private GenericObjectPool<XStream> pool;
+	
 	public XStreamSupport() {
 		init();
 		INSTANCE = this;
@@ -37,19 +41,44 @@ public class XStreamSupport {
 		map.put(RuleObjectContainerCVO.class, RuleObjectContainerCVOImpl.class);
 		
 		defaultImplementation = Collections.unmodifiableMap(map);
+		
+		// pool
+		pool = new GenericObjectPool<XStream>(new PoolableXStreamFactory());
+		pool.setTestOnBorrow(false);
+		pool.setTestOnReturn(false);
+		pool.setTestWhileIdle(false);
+		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_FAIL);
+		pool.setMaxActive(10);
+		pool.setMaxIdle(10);
+		pool.setMinIdle(0);
+		pool.setSoftMinEvictableIdleTimeMillis(-1);
+		pool.setMinEvictableIdleTimeMillis(-1);
 	}
 	
 	public static XStreamSupport getInstance() {
 		return INSTANCE;
 	}
 	
+	/**
+	 * Attention: You <em>must</em> return the XStream instance by calling
+	 * {@link #returnXStream(XStream)}.
+	 */
 	public XStream getXStream() {
-		final XStream result = new XStream(new StaxDriver()) {
-		    protected MapperWrapper wrapMapper(MapperWrapper next) {
-		        return new NuclosMapper(defaultImplementation, next);
-		    }			
-		};
-		return result;
+		try {
+			return pool.borrowObject();
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+	
+	public void returnXStream(XStream xstream) {
+		try {
+			pool.returnObject(xstream);
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
 	}
 	
 	/**
@@ -63,7 +92,7 @@ public class XStreamSupport {
 		// ???
 		final XStream result = new XStream(new DomDriver("UTF-8")) {
 		    protected MapperWrapper wrapMapper(MapperWrapper next) {
-		        return new NuclosMapper(defaultImplementation, next);
+		        return new NuclosMapper(next);
 		    }			
 		};
 		return result;
@@ -73,18 +102,20 @@ public class XStreamSupport {
 		final DependantMasterDataMap test = new DependantMasterDataMapImpl();
 		final XStreamSupport dut = new XStreamSupport();
 		final XStream xstream = dut.getXStream();
-		// xstream.toXML(test, new FileWriter("/home/tpasch2/test.xml"));
-		final Object o = xstream.fromXML(new FileReader("/home/tpasch2/test2.xml"));
-		System.out.println("Read: " + o + " of type " + o.getClass());
+		try {
+			// xstream.toXML(test, new FileWriter("/home/tpasch2/test.xml"));
+			final Object o = xstream.fromXML(new FileReader("/home/tpasch2/test2.xml"));
+			System.out.println("Read: " + o + " of type " + o.getClass());
+		}
+		finally {
+			dut.returnXStream(xstream);
+		}
 	}
 	
-	private static class NuclosMapper extends MapperWrapper {
+	private class NuclosMapper extends MapperWrapper {
 		
-		private final Map<Class<?>, Class<?>> defaultImplementation;
-
-		public NuclosMapper(Map<Class<?>, Class<?>> defaultImplementation, Mapper wrapped) {
+		public NuclosMapper(Mapper wrapped) {
 			super(wrapped);
-			this.defaultImplementation = defaultImplementation;
 		}
 
 		@Override
@@ -96,6 +127,43 @@ public class XStreamSupport {
 			return result;
 	    }
 
+	}
+	
+	private class PoolableXStreamFactory implements PoolableObjectFactory<XStream> {
+		
+		private PoolableXStreamFactory() {
+		}
+
+		@Override
+		public XStream makeObject() throws Exception {
+			final XStream result = new XStream(new StaxDriver()) {
+			    protected MapperWrapper wrapMapper(MapperWrapper next) {
+			        return new NuclosMapper(next);
+			    }
+			};
+			return result;
+		}
+
+		@Override
+		public void destroyObject(XStream obj) throws Exception {
+			// do nothing
+		}
+
+		@Override
+		public boolean validateObject(XStream obj) {
+			return true;
+		}
+
+		@Override
+		public void activateObject(XStream obj) throws Exception {
+			// do nothing
+		}
+
+		@Override
+		public void passivateObject(XStream obj) throws Exception {
+			// do nothing
+		}
+		
 	}
 
 }

@@ -493,8 +493,14 @@ public class NucletGenerator implements TransferConstants {
 	}
 	
 	private static String toXML(Object o) {
-		final XStream xstream = XStreamSupport.getInstance().getXStream();
-		return xstream.toXML(o);
+		final XStreamSupport xs = XStreamSupport.getInstance();
+		final XStream xstream = xs.getXStream();
+		try {
+			return xstream.toXML(o);
+		}
+		finally {
+			xs.returnXStream(xstream);
+		}
 	}
 	
 	protected String getResourceText(String resourceId) {
