@@ -56,6 +56,7 @@ import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.XStreamSupport;
 import org.nuclos.server.common.ejb3.LocaleFacadeRemote;
 import org.nuclos.server.dbtransfer.TransferFacadeRemote;
 
@@ -492,7 +493,7 @@ public class NucletGenerator implements TransferConstants {
 	}
 	
 	private static String toXML(Object o) {
-		XStream xstream = new XStream(new DomDriver("UTF-8"));
+		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
 		return xstream.toXML(o);
 	}
 	

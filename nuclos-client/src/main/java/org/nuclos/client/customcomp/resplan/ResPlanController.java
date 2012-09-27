@@ -80,6 +80,7 @@ import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.XStreamSupport;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
@@ -405,12 +406,12 @@ public class ResPlanController extends CustomComponentController {
 	}
 
 	private static String toXML(RestorePreferences rp) {
-		XStream xstream = new XStream(new DomDriver());
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return xstream.toXML(rp);
 	}
 
 	private static RestorePreferences fromXML(String xml) {
-		XStream xstream = new XStream(new DomDriver());
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return (RestorePreferences) xstream.fromXML(xml);
 	}
 

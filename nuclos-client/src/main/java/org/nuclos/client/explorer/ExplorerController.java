@@ -56,6 +56,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.XStreamSupport;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
@@ -191,12 +192,12 @@ public class ExplorerController extends Controller<MainFrameTabbedPane> {
 	}
 
 	private static String toXML(RestorePreferences rp) {
-		XStream xstream = new XStream(new DomDriver());
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return xstream.toXML(rp);
 	}
 
 	private static RestorePreferences fromXML(String xml) {
-		XStream xstream = new XStream(new DomDriver());
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return (RestorePreferences) xstream.fromXML(xml);
 	}
 

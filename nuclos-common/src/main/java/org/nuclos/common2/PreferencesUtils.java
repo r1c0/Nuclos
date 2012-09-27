@@ -150,13 +150,13 @@ public class PreferencesUtils {
 			String s = prefs.get(key, null);
 			if(s == null)
 				return null;
-			XStream xstream = new XStream(new DomDriver());
+			final XStream xstream = XStreamSupport.getInstance().getXStream();
 			return xstream.fromXML(s);
 		}
 
 		@Override
 		public void put(Preferences prefs, Object t) throws PreferencesException {
-			XStream xstream = new XStream(new DomDriver());
+			final XStream xstream = XStreamSupport.getInstance().getXStream();
 			String s = xstream.toXML(t);
 			prefs.put(key, s);
 		}

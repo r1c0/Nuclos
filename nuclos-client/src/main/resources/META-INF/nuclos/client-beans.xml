@@ -730,6 +730,7 @@
 	<bean id="springLocaleDelegate" class="org.nuclos.common2.SpringLocaleDelegate">
 		<property name="lookupService" ref="localeDelegate"/>
 	</bean>
+	<bean id="xStreamSupport" class="org.nuclos.common2.XStreamSupport"/>
 	
 	<!-- End of Avoid scanning for nuclos-common -->
 

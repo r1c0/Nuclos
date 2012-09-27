@@ -76,6 +76,7 @@ import org.nuclos.common.dbtransfer.ZipOutput;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.XStreamSupport;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.common.LocalCachesUtil;
@@ -960,12 +961,12 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	}
 
 	private static String toXML(Object o) {
-		XStream xstream = new XStream(new DomDriver("UTF-8"));
+		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
 		return xstream.toXML(o);
 	}
 
 	private static Object fromXML(String xml) {
-		XStream xstream = new XStream(new DomDriver("UTF-8"));
+		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
 		return xstream.fromXML(xml);
 	}
 

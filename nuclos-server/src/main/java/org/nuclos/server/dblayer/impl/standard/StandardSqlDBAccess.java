@@ -60,6 +60,7 @@ import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.XStreamSupport;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbIdent;
@@ -519,7 +520,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         		value = null;
         	}
         	else {
-        		value = new XStream(new DomDriver("UTF-8")).fromXML(rs.getString(index));
+        		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+        		value = xstream.fromXML(rs.getString(index));
         	}
         } else {
             throw new IllegalArgumentException("Class " + javaType + " not supported by readField");
@@ -548,7 +550,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         } 	else if(javaType == byte[].class) {
             value = stmt.getBytes(index);
         } 	else if (javaType == NuclosScript.class) {
-            value = new XStream(new DomDriver("UTF-8")).fromXML(stmt.getString(index));
+    		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+            value = xstream.fromXML(stmt.getString(index));
         }   else {
             throw new IllegalArgumentException("Class " + javaType + " not supported by readField");
         }

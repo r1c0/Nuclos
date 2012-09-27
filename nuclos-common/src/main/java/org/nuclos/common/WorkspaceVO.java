@@ -19,6 +19,7 @@ package org.nuclos.common;
 
 import org.nuclos.common.dal.vo.AbstractDalVOWithVersion;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.XStreamSupport;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -55,11 +56,13 @@ public class WorkspaceVO extends AbstractDalVOWithVersion {
 	}
 
 	public String getClbworkspace() {
-		return (new XStream(new DomDriver("UTF-8"))).toXML(workspaceDescription);
+		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+		return xstream.toXML(workspaceDescription);
 	}
 
 	public void setClbworkspace(String clbworkspace) {
-		this.workspaceDescription = (WorkspaceDescription) (new XStream(new DomDriver("UTF-8"))).fromXML(clbworkspace);
+		final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+		this.workspaceDescription = (WorkspaceDescription) xstream.fromXML(clbworkspace);
 	}
 
 	public String getName() {

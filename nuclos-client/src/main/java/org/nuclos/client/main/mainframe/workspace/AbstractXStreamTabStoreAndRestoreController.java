@@ -17,6 +17,7 @@
 package org.nuclos.client.main.mainframe.workspace;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.common2.XStreamSupport;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -26,14 +27,13 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  */
 public abstract class AbstractXStreamTabStoreAndRestoreController<T> implements ITabStoreController, ITabRestoreController {
 	
-	private final XStream xstream = new XStream(new StaxDriver());
-	
 	protected AbstractXStreamTabStoreAndRestoreController() {
 	}
 
 	@Override
 	public void restoreFromPreferences(String preferencesXML, MainFrameTab tab) throws Exception {
 		if (preferencesXML != null) {
+			final XStream xstream = XStreamSupport.getInstance().getXStream();
 			final T state = (T) xstream.fromXML(preferencesXML);
 			restoreFromState(state, tab);
 		}
@@ -42,6 +42,7 @@ public abstract class AbstractXStreamTabStoreAndRestoreController<T> implements 
 	@Override
 	public String getPreferencesXML() {
 		final T state = getState();
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return xstream.toXML(state);
 	}
 	

@@ -114,7 +114,8 @@
 	<bean class="org.nuclos.common2.SpringLocaleDelegate">
 		<property name="lookupService" ref="lookupService"/>
 	</bean>
-    
+	<bean id="xStreamSupport" class="org.nuclos.common2.XStreamSupport"/>
+	
     <bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
 
     <!-- bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/ -->
@@ -406,7 +407,7 @@
   </bean -->
 
   <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider"
-  	init-method="buildEOProcessors">
+  	init-method="buildEOProcessors" depends-on="xStreamSupport">
   	<property name="entityMetaDataProcessor"><ref bean="jsonEntityMetaDataProcessor"/></property>
   	<property name="entityFieldMetaDataProcessor"><ref bean="jsonEntityFieldMetaDataProcessor"/></property>
   	<property name="dynamicMetaDataProcessor"><ref bean="dynamicMetaDataProcessor"/></property>

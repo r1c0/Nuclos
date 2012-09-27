@@ -46,6 +46,7 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.XStreamSupport;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
@@ -268,12 +269,12 @@ public abstract class CustomComponentController extends TopController {
 	}
 
 	private static String toXML(RestorePreferences rp) {
-		XStream xstream = new XStream(new DomDriver());
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return xstream.toXML(rp);
 	}
 
 	private static RestorePreferences fromXML(String xml) {
-		XStream xstream = new XStream(new DomDriver());
+		final XStream xstream = XStreamSupport.getInstance().getXStream();
 		return (RestorePreferences) xstream.fromXML(xml);
 	}
 

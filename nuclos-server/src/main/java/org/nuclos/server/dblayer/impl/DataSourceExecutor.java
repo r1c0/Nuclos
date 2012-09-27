@@ -34,6 +34,7 @@ import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
+import org.nuclos.common2.XStreamSupport;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.expression.DbCurrentDate;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
@@ -200,7 +201,8 @@ public abstract class DataSourceExecutor implements DbExecutor {
         } else if (value == null) {
             stmt.setNull(index, getPreferredSqlTypeFor(javaType));
         } else if (value instanceof NuclosScript) {
-            stmt.setString(index, new XStream(new DomDriver("UTF-8")).toXML(value));
+        	final XStream xstream = XStreamSupport.getInstance().getXStreamUtf8();
+            stmt.setString(index, xstream.toXML(value));
         }else {
             throw new SQLException("Java type " + javaType + " cannot be mapped to DB type");
         }
