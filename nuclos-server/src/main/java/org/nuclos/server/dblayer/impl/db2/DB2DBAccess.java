@@ -642,8 +642,10 @@ public class DB2DBAccess extends StandardSqlDBAccess {
 	protected String getColumnSpec(DbColumn column, boolean withNullable) {
         if (withNullable) {
         	// DB2 iSeries does not allow Keyword NULL
-            //return String.format("%s %s %s", column.getColumnName(), getDataType(column.getColumnType()), column.getNullable());
-        	return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
+        	if (DbNullable.of(true).equals(column.getNullable()))
+                return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
+        	else
+        		return String.format("%s %s %s", column.getColumnName(), getDataType(column.getColumnType()), column.getNullable());
         } else {
             return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
         }
@@ -653,8 +655,10 @@ public class DB2DBAccess extends StandardSqlDBAccess {
 	@Override
 	protected String getColumnSpecNullable(DbColumn column) {
     	// DB2 iSeries does not allow Keyword NULL
-        //return String.format("%s %s %s", column.getColumnName(), getDataType(column.getColumnType()), column.getNullable());
-    	return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
+    	if (DbNullable.of(true).equals(column.getNullable()))
+            return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
+    	else
+    		return String.format("%s %s %s", column.getColumnName(), getDataType(column.getColumnType()), column.getNullable());
     }
 
 }
