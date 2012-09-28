@@ -550,7 +550,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				LOG.info("created dynamic entity <SQL>" + sqlToExecute + "</SQL>");
 			}
 			catch (Exception e) {
-				LOG.error("could not create dynamic entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
+				throw new NuclosFatalException("could not create dynamic entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
 			}
 		}
 		if (revalidateMasterDataMetaCache)
@@ -650,7 +650,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				LOG.info("created dynamic entity <SQL>" + sqlToExecute + "</SQL>");
 			}
 			catch (Exception e) {
-				LOG.error("could not create chart entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
+				throw new NuclosFatalException("could not create chart entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
 			}
 		}
 		if (revalidateMasterDataMetaCache)
@@ -1000,7 +1000,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				sValue = "abc";
 			}
 			else if ("java.util.Date".equals(paramvo.getDatatype())) {
-				sValue = "01.01.2000";
+				sValue = "2000-01-01";
 			}
 			else {
 				sValue = "123434";
