@@ -636,10 +636,24 @@ public class DB2DBAccess extends StandardSqlDBAccess {
 		protected DbGenericType getDbGenericType(int sqlType, String typeName) {
 			return DB2DBAccess.getDbGenericType(sqlType, typeName);
 		}
-	} 
+	}    
+	
+	@Override
+	protected String getColumnSpec(DbColumn column, boolean withNullable) {
+        if (withNullable) {
+        	// DB2 iSeries does not allow Keyword NULL
+            //return String.format("%s %s %s", column.getColumnName(), getDataType(column.getColumnType()), column.getNullable());
+        	return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
+        } else {
+            return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
+        }
+    }
+
 	
 	@Override
 	protected String getColumnSpecNullable(DbColumn column) {
+    	// DB2 iSeries does not allow Keyword NULL
+        //return String.format("%s %s %s", column.getColumnName(), getDataType(column.getColumnType()), column.getNullable());
     	return String.format("%s %s", column.getColumnName(), getDataType(column.getColumnType()));
     }
 
