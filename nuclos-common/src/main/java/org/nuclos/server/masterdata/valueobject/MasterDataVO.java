@@ -668,7 +668,7 @@ public class MasterDataVO implements IMasterDataVO, INuclosValueObject<Object> {
 	 */
 	@Override
 	public int getVersion() {
-		return wrapped.getVersion();
+		return wrapped.getVersion() == null ? -1 : wrapped.getVersion();
 	}
 	
 	/**
