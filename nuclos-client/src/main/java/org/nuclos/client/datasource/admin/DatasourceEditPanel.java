@@ -326,11 +326,11 @@ public class DatasourceEditPanel extends JPanel {
 						public void run() {
 							try {
 								if (btnGenerateSql.isSelected()) {
-									unedit();
+									setIsModelUsed(true);
 									setSql(controller.generateSql());
 								}
 								else {
-									edit();
+									setIsModelUsed(false);
 								}
 								controller.detailsChanged(sqlEditor);
 							}

@@ -303,7 +303,7 @@ public class QueryBuilderEditor extends JPanel {
 
 			final XMLContentHandler xmlContentHandler = new XMLContentHandler();
 			XMLUtils.parse(reportXML, xmlContentHandler, xmlContentHandler, QueryBuilderConstants.RESOLVER, false);
-			parent.setIsModelUsed(true);
+			//parent.setIsModelUsed(true); never. this is stored in the xml
 		}
 		catch (SAXException e) {
 			throw new NuclosFatalException(e);
