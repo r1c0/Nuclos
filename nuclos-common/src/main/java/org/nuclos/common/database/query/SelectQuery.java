@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common2.ServiceLocator;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.Column;
 import org.nuclos.common.database.query.definition.Join;
@@ -39,6 +37,8 @@ import org.nuclos.common.database.query.statement.Operand;
 import org.nuclos.common.database.query.statement.OrCondition;
 import org.nuclos.common.database.query.statement.Predicate;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
+import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 
 /**
@@ -143,8 +143,7 @@ public class SelectQuery {
 		lstSelect.add(column);
 	}
 
-	public String getSelectStatement(boolean isDynamicEntity) throws NuclosDatasourceException {
-		final StringBuffer sb = new StringBuffer("SELECT \n");
+	public String getSelectStatement(boolean isDynamicEntity, boolean bAppendTop) throws NuclosDatasourceException {
 		if (lstSelect.isEmpty()) {
 			return "";
 		}
@@ -153,6 +152,12 @@ public class SelectQuery {
 			mpGroupBy.put(groupBy.getColumn(), translateGroupBy(groupBy.getGroupType()));
 		}
 
+		final StringBuffer sb;
+		if (!mpGroupBy.isEmpty() && bAppendTop) { //@see NUCLOS-1165
+			sb = new StringBuffer("SELECT TOP 100 PERCENT\n");
+		} else
+			sb = new StringBuffer("SELECT \n");
+		
 		appendSelectClause(sb, isDynamicEntity);
 		appendFromClause(sb);
 		appendWhereClause(sb);

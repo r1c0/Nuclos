@@ -41,6 +41,8 @@ import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLTable;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.database.SpringDataBaseHelper;
+import org.nuclos.server.dblayer.DbType;
 import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.WhereConditionParser;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -260,7 +262,8 @@ public class DatasourceServerUtils {
 					query.addToOrderByClause(column, xmlcolumn.getSort().equals(DatasourceVO.OrderBy.ASCENDING.getLabel()));
 				}
 			}
-			result = query.getSelectStatement(parseresult.isEntityOptionDynamic());
+			result = query.getSelectStatement(parseresult.isEntityOptionDynamic(),
+						SpringDataBaseHelper.getInstance().getDbAccess().getDbType().equals(DbType.MSSQL));
 		}
 		else {
 			result = parseresult.getQueryStringFromXml();
