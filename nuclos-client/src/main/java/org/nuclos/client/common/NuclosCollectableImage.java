@@ -109,7 +109,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			public void componentResized(ComponentEvent e) {
 				try {
 					// this is needed because labeled component can have size 0 on init.
-					updateView(getField());
+					updateView(getModel().getField());
 				} catch (Exception e2) {
 					// ignore.
 				}
