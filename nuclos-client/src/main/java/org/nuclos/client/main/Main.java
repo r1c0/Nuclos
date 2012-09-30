@@ -78,7 +78,7 @@ public class Main {
 	 * calls <code>System.exit(iResult)</code>.
 	 * todo this is public only to be used in JFCUnit!
 	 */
-	static void exit(ExitResult exitresult) {
+	static void exit(ExitResult exitresult) {	
 		try {
 			System.runFinalization();
 		}

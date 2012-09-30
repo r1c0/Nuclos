@@ -21,6 +21,7 @@ package org.nuclos.client.main;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -1935,6 +1936,7 @@ public class MainController {
 		allControllersMayBeClosed(new ResultListener<Boolean>() {
 			@Override
 			public void done(Boolean result) {
+				getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				if (Boolean.TRUE.equals(result)) {
 					try {
 
