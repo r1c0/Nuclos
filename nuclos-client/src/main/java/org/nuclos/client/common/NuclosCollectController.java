@@ -385,7 +385,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		if (getResultPanel() != null && getResultTable() != null) {
 			final JButton btnEdit = getResultPanel().btnEdit;
 			KeyBindingProvider.bindActionToComponent(KeyBindingProvider.EDIT_1, btnEdit.getAction(), getResultTable());
-			KeyBindingProvider.bindActionToComponent(KeyBindingProvider.EDIT_2, btnEdit.getAction(), getResultTable());
+			if (getResultTable().getActionMap().get(KeyBindingProvider.EDIT_2.getKey()) == null)
+					KeyBindingProvider.bindActionToComponent(KeyBindingProvider.EDIT_2, btnEdit.getAction(), getResultTable());
 		}
 	}
 
