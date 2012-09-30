@@ -21,18 +21,24 @@ import info.clearthought.layout.TableLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
+import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
@@ -45,6 +51,7 @@ import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
@@ -144,10 +151,32 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/menu");
 
+		Collection<EntityObjectVO> data = model.getEntityMenus();
 		subFormController = new MasterDataSubFormController(clcte, tab, provider, ENTITYNAME_MENU, subform, prefs, 
 				getEntityPreferences(), null);
-		Collection<EntityObjectVO> data = model.getEntityMenus();
 
+		final Map<Object, Integer> mpWidths = new HashMap<Object, Integer>(20);
+
+		List<CollectableEntityField> lstAllFields = new ArrayList<CollectableEntityField>();
+		for (String sFieldName : clcte.getFieldNames()) {
+			if (!sFieldName.equals("createdBy")
+					&& !sFieldName.equals("createdAt")
+					&& !sFieldName.equals("changedBy")
+					&& !sFieldName.equals("changedAt"))
+			lstAllFields.add(clcte.getEntityField(sFieldName));
+			if (sFieldName.startsWith("menupath_"))
+				mpWidths.put(sFieldName, new Integer(140));
+		}
+		
+		// remember the widths of the currently visible columns
+		TableColumnModel externalColumnModel = ((FixedColumnRowHeader)subform.getSubformRowHeader()).getExternalTable().getColumnModel();
+		for (Enumeration<TableColumn> columnEnum = externalColumnModel.getColumns(); columnEnum.hasMoreElements();) {
+			TableColumn varColumn = columnEnum.nextElement();
+			mpWidths.put(varColumn.getIdentifier(), new Integer(varColumn.getWidth()));
+		}
+
+		((FixedColumnRowHeader)subform.getSubformRowHeader()).changeSelectedColumns(
+				lstAllFields, Collections.EMPTY_SET, null, mpWidths, null, null);
 		if (data != null) {
 			try {
 				subFormController.clear();
