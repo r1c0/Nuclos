@@ -3090,11 +3090,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			final String sFieldName = clctcomp.getFieldName();
 			final CollectableField clctf;
 			try {
-				clctf = clctcomp.getField();
-			}
-			catch (CollectableFieldFormatException ex) {
-				final CollectableEntityField clctef = this.getCollectableEntity().getEntityField(sFieldName);
-				throw new CollectableValidationException(clctef, ex);
+				clctf = clctcomp.getModel().getField();
 			}
 			catch (Exception ex) {
 				final String sMessage = "Fehler beim Lesen des Felds " + sFieldName + ".";
