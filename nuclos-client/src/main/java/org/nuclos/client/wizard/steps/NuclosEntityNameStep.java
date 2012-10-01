@@ -54,6 +54,7 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.DataTyp;
@@ -314,24 +315,36 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 									sTitle, JOptionPane.YES_NO_OPTION);
 							bDropLayout = (dropLayout == JOptionPane.YES_OPTION);
 						}
-
-						MetaDataDelegate.getInstance().removeEntity(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity(), bDropLayout);
-						NuclosWizardUtils.flushCaches();
-						NuclosConsole.getInstance().invalidateAllCaches();
-						NuclosEntityNameStep.this.model.cancelWizard();
+						
+						final boolean bDropLayoutfinal = bDropLayout;
+						UIUtils.runCommandLater(getParent(), new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									MetaDataDelegate.getInstance().removeEntity(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity(), bDropLayoutfinal);
+									NuclosWizardUtils.flushCaches();
+									NuclosConsole.getInstance().invalidateAllCaches();
+									NuclosEntityNameStep.this.model.cancelWizard();
+								}
+								catch (Exception ex) {
+									Errors.getInstance().showExceptionDialog(NuclosEntityNameStep.this, ex);
+									return;
+								}
+								finally {
+									MasterDataDelegate.getInstance().invalidateLayoutCache();
+								}
+							}
+						});
 						break;
 					case JOptionPane.NO_OPTION:
 					default:
 						return;
 					}
-
 				}
 				catch (Exception ex) {
 					Errors.getInstance().showExceptionDialog(NuclosEntityNameStep.this, ex);
 					return;
-				}
-				finally {
-					MasterDataDelegate.getInstance().invalidateLayoutCache();
 				}
 			}
 		});

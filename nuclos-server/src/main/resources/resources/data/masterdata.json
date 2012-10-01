@@ -10806,6 +10806,7 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
+        "ondeletecascade": true,
         "labelres": "nuclos.entityfield.entitymenu.entity.label",
         "descriptionres": "nuclos.entityfield.entitymenu.entity.description"
       },
