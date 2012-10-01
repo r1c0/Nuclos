@@ -616,11 +616,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			
 			TableColumn varColumn = columnEnum.nextElement();
 			boolean remove = true;
-			for (CollectableEntityField clctef : lstSelection) {
+			// @todo is this needed? @see NUCLOS-1169
+			/*for (CollectableEntityField clctef : lstSelection) {
 				if (LangUtils.equals(clctef.getLabel(), varColumn.getIdentifier())) {
 					remove = false;
 				}
-			}
+			}*/
 			if (remove) {
 				columnsToRemove.add(varColumn);
 			}
@@ -635,14 +636,15 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			try {
 				boolean doInsert = true;
 				CollectableEntityField curField = fieldIter.next();
-	
-				for (Enumeration<TableColumn> columnEnum = externalColumnModel.getColumns(); doInsert && columnEnum.hasMoreElements();) {
+
+				// @todo is this needed? @see NUCLOS-1169
+				/*for (Enumeration<TableColumn> columnEnum = externalColumnModel.getColumns(); doInsert && columnEnum.hasMoreElements();) {
 	
 					TableColumn varColumn = columnEnum.nextElement();
 					if (curField.getLabel().equals(varColumn.getIdentifier())) {
 						doInsert = false;
 					}
-				}
+				}*/
 	
 				if (doInsert) {
 					int index = ((SubFormTableModel) getExternalTable().getModel()).findColumnByFieldName(curField.getName());
