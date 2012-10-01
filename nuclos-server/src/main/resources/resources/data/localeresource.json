@@ -33631,6 +33631,21 @@
     "text": "Das Unterformular für die Entität \"{0}\" enthält mehr als ein Fremdschlüsselfeld, das die übergeordnete Entität \"{1}\" referenziert:\\n\\t{2}\\n\\t{3}\\nBitte geben Sie das Feld im Layout explizit an."
   },
   {
+    "resourceID": "SubForm.8",
+    "locale": "i-default",
+    "text": "Print Result"
+  },
+  {
+    "resourceID": "SubForm.8",
+    "locale": "en",
+    "text": "Print Result"
+  },
+  {
+    "resourceID": "SubForm.8",
+    "locale": "de",
+    "text": "Ergebnisliste drucken"
+  },
+  {
     "resourceID": "SubForm.7",
     "locale": "i-default",
     "text": "Create new entry"
