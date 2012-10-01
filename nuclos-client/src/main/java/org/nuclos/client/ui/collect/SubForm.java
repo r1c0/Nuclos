@@ -285,6 +285,23 @@ public class SubForm extends JPanel
 				res.setActionCommand(name());
 				return res;
 			}
+        },
+		PRINTREPORT {
+	        @Override
+	        public AbstractButton createButton() {
+	        	JButton res = new JButton(Icons.getInstance().getIconPrintReport16());
+	        	res.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
+	        			"SubForm.8","Daten exportieren"));
+	        	res.setActionCommand(name());
+		        return res;
+	        }
+			@Override
+			public JMenuItem createMenuItem() {
+				JMenuItem res = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
+						"SubForm.8","Daten exportieren"), Icons.getInstance().getIconPrintReport16());
+				res.setActionCommand(name());
+				return res;
+			}
         };
 
 		public abstract AbstractButton createButton();

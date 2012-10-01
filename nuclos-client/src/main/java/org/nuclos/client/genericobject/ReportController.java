@@ -532,7 +532,7 @@ public class ReportController extends Controller<JComponent> {
 			final ReportFormatController formatctl = new ReportFormatController(getParent());
 			if (formatctl.run(getSpringLocaleDelegate().getMessage("ReportController.14","Tabelle exportieren"))) {
 				UIUtils.showWaitCursorForFrame(getParent(), true);
-				final ResultVO resultvo = convertJTableToResultVO(table);
+				final ResultVO resultvo = getResultVOForTable(table);
 				ReportRunner.createExportJob(getParent(), resultvo, formatctl.getFormat(), null, sDatasourceName).start();
 			}
 		}
@@ -540,11 +540,10 @@ public class ReportController extends Controller<JComponent> {
 			UIUtils.showWaitCursorForFrame(getParent(), false);
 		}
 	}
-
-	private ResultVO convertJTableToResultVO(JTable tbl) {
+	
+	private static ResultVO getResultVOForTable (JTable tbl) {
 		final ResultVO result = new ResultVO();
-
-		// fill the columns:
+			// fill the columns:
 		final TableColumnModel columnmodel = tbl.getTableHeader().getColumnModel();
 		for (int iColumn = 0; iColumn < columnmodel.getColumnCount(); iColumn++) {
 			final ResultColumnVO resultcolumnvo = new ResultColumnVO();
@@ -574,8 +573,8 @@ public class ReportController extends Controller<JComponent> {
 			}
 			result.addRow(aoData);
 		}
-
 		return result;
 	}
+
 
 }	// class ReportController

@@ -20,6 +20,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JTable;
+import javax.swing.table.TableColumnModel;
+
+import org.nuclos.common.collect.collectable.CollectableField;
+
 /**
  * Value object representing a query result. To construct a ResultVO, first add the columns, then the rows.
  * <br>

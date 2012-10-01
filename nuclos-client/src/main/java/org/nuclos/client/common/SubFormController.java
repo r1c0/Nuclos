@@ -49,9 +49,11 @@ import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.genericobject.ReportController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
+import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.SizeKnownEvent;
@@ -73,6 +75,7 @@ import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
 import org.nuclos.client.ui.table.TableCellRendererProvider;
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFieldNotInModelException;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -265,10 +268,12 @@ public abstract class SubFormController extends MainFrameTabController
 			ToolbarFunction cmd = SubForm.ToolbarFunction.fromCommandString(actionCommand);
 			if(cmd != null) {
 				switch(cmd) {
-				case NEW:
-					cmdInsert(); break;
-				case REMOVE:
-					cmdRemove(); break;
+					case NEW:
+						cmdInsert(); break;
+					case REMOVE:
+						cmdRemove(); break;
+					case PRINTREPORT:
+						cmdPrint(); break;
 				}
 			}
 		}
@@ -667,6 +672,19 @@ public abstract class SubFormController extends MainFrameTabController
 		});
 	}
 
+	public void cmdPrint() {
+		UIUtils.runCommandForTabbedPane(this.getMainFrameTabbedPane(), new Runnable() {
+			@Override
+			public void run() {
+				try {
+					new ReportController(getTab()).export(getJTable(), null);
+				} catch (NuclosBusinessException nbe) {
+					nbe.printStackTrace();
+				}
+			}
+		});
+	}
+	
 	protected void removeSelectedRows() {
 		final JTable tbl = this.getJTable();
 		int[] viewIndices = tbl.getSelectedRows();
