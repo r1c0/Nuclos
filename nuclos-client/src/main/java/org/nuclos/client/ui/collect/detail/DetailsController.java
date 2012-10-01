@@ -20,7 +20,9 @@ import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.Action;
 import javax.swing.SwingUtilities;
@@ -59,6 +61,7 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.valuelistprovider.DefaultValueProvider;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -76,6 +79,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * Controller for the Details panel.
  */
 public class DetailsController<Clct extends Collectable> extends CommonController<Clct> {
+	
+	ScriptObserver so = new ScriptObserver();
 
 	private static final Logger LOG = Logger.getLogger(DetailsController.class);
 
@@ -367,9 +372,12 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(getCollectController().getEntityName(), c.getEntityField().getName());
 			if (fieldmeta.getCalculationScript() != null) {
 				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
-					CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
-					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), ctx, m.getField().getValue());
-					setCollectableComponentValue(c, o);
+					if(!this.so.containsScript(fieldmeta.getCalculationScript())) {					
+						so.putScript(fieldmeta.getCalculationScript());
+						CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
+						Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), ctx, m.getField().getValue());
+						setCollectableComponentValue(c, o);
+					}
 				}
 			}
 
@@ -398,9 +406,12 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			if (fieldmeta.getCalculationScript() != null) {
 				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
 					if (sf.getCollectableTableModel().getRowCount() > row) {
-						Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
-								new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getCollectableTableModel().getRow(row)), null);
-						setSubFormValue(sf, row, i, cef, o);
+						if(!this.so.containsScript(fieldmeta.getCalculationScript())) {					
+							so.putScript(fieldmeta.getCalculationScript());
+							Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
+									new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getCollectableTableModel().getRow(row)), null);
+							setSubFormValue(sf, row, i, cef, o);
+						}
 					}
 				}
 			}
@@ -605,4 +616,30 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 		}
 		return result;
 	}
+	
+	class ScriptObserver {
+		
+		Set<NuclosScript> setScript;
+		
+		public ScriptObserver() {
+			setScript = new HashSet<NuclosScript>();
+		}
+		
+		public void putScript(NuclosScript script) {
+			setScript.add(script);
+		}
+		
+		public boolean containsScript(NuclosScript script) {
+			boolean contains = false;
+			
+			if(setScript.contains(script)) {
+				setScript.clear();
+				contains = true;
+			}
+			
+			return contains;
+		}
+		
+	}
+	
 }	// class DetailsController
