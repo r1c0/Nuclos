@@ -2321,8 +2321,6 @@ public class SubForm extends JPanel
 				else
 					newRowOnNext = false;
 			}
-			else
-				newRowOnNext = false;
 		}
 		public void changeSelection(final int rwIndex, final int clIndex, boolean toggle, boolean extend, final boolean fixed) {
 			boolean bChange = true;
@@ -2557,10 +2555,15 @@ public class SubForm extends JPanel
 												editor.requestFocusInWindow();
 											changeSelection(col[0], col[1], false, false);
 										}
+										else if (col[0] >= getRowCount()){
+											changeSelection(0, col[1], false, false);
+										}
 									}
 								});
 							}
 							newRowOnNext = false;
+						} else {
+							changeSelection(rowIndex, columnIndex + 1, toggle, extend);
 						}
 					}
 				}

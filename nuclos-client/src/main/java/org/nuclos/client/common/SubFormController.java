@@ -637,7 +637,9 @@ public abstract class SubFormController extends MainFrameTabController
 	 * Command: insert a new row.
 	 */
 	public void cmdInsert() {
-		if (getSubForm().getToolbarButton("NEW").isEnabled()) {
+		if (isEnabled() && getSubForm().getToolbar().isVisible()
+				&& getSubForm().getToolbarButton("NEW").isVisible()
+				&& getSubForm().getToolbarButton("NEW").isEnabled()) {
 			// TODO: check if this really must be encapsuled with runCommand
 			try {
 				if (stopEditing()) {
@@ -761,13 +763,15 @@ public abstract class SubFormController extends MainFrameTabController
 							} catch (IllegalArgumentException e) {
 								bUseHeaderTable = true;
 							}
-							if (!blnHasFixedRows || !bUseHeaderTable) 
-								tbl.changeSelection(iRow, cIndex, false, false);
-							else {
-								if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
-									rowHeader.getHeaderTable().changeSelection(iRow, cIndex, false, false);
-								else
-									((HeaderTable)rowHeader.getHeaderTable()).changeSelection(iRow, cIndex, false, false, true);
+							if (iRow < tbl.getRowCount()) {
+								if (!blnHasFixedRows || !bUseHeaderTable) 
+										tbl.changeSelection(iRow, cIndex, false, false);
+								else {
+									if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
+										rowHeader.getHeaderTable().changeSelection(iRow, cIndex, false, false);
+									else
+										((HeaderTable)rowHeader.getHeaderTable()).changeSelection(iRow, cIndex, false, false, true);
+								}
 							}
 						}
 					});
