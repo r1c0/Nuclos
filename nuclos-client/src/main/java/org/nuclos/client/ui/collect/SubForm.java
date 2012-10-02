@@ -380,6 +380,11 @@ public class SubForm extends JPanel
 	private HashMap<String, JMenuItem>		  toolbarMenuItems;
 
 	/**
+	 * @see #isDetailsChangedIgnored()
+	 */
+	private boolean bDetailsChangedIgnored;
+
+	/**
 	 * Can't be final because it must be set to null in close() to avoid memeory leaks. (tp)
 	 */
 	private JToolBar toolbar;
@@ -1028,13 +1033,35 @@ public class SubForm extends JPanel
 	}
 
 	/**
+	 * sets the detailsChangedIgnored property.
+	 * @param bDetailsChangedIgnored
+	 * @postcondition isDetailsChangedIgnored() == bDetailsChangedIgnored
+	 * @see #isDetailsChangedIgnored()
+	 * TODO move to DetailsController
+	 */
+	public final void setDetailsChangedIgnored(boolean bDetailsChangedIgnored) {
+		this.bDetailsChangedIgnored = bDetailsChangedIgnored;
+	}
+
+	/**
+	 * @return Is detailsChanged() ignored? If so, detailsChanged() won't be called when the values of
+	 *         <code>CollectableComponent</code>s change.
+	 * TODO move to DetailsController
+	 */
+	public final boolean isDetailsChangedIgnored() {
+		return this.bDetailsChangedIgnored;
+	}
+
+	/**
 	 * fires a <code>ChangeEvent</code> whenever the model of this <code>SubForm</code> changes.
 	 */
 	public synchronized void fireStateChanged() {
 		if(layer == null || (layer != null && !((LockableUI) layer.getUI()).isLocked())){
 			final ChangeEvent ev = new ChangeEvent(this);
-			for (ChangeListener changelistener : lstchangelistener) {
-				changelistener.stateChanged(ev);
+			if (!isDetailsChangedIgnored()) {
+				for (ChangeListener changelistener : lstchangelistener) {
+					changelistener.stateChanged(ev);
+				}
 			}
 		}
 	}
@@ -2840,9 +2867,12 @@ public class SubForm extends JPanel
 					@Override
 					public Component getTableCellEditorComponent(JTable table, Object value,
 							boolean isSelected, int row, int column) {
+						boolean bWasDetailsChangeIgnored = subform.isDetailsChangedIgnored();
+						subform.setDetailsChangedIgnored(true);
 						Component c = cellEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
 						if (c != null && c.getFont() != null && subform != null)
 							c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+						subform.setDetailsChangedIgnored(bWasDetailsChangeIgnored);
 						return c;
 					}
 				};
@@ -2880,10 +2910,13 @@ public class SubForm extends JPanel
 				}
 				@Override
 				public Component getTableCellEditorComponent(JTable table, Object value,
-						boolean isSelected, int row, int column) {
+						boolean isSelected, int row, int column) {	
+					boolean bWasDetailsChangeIgnored = subform.isDetailsChangedIgnored();
+					subform.setDetailsChangedIgnored(true);
 					Component c = cellEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
 					if (c != null && c.getFont() != null && subform != null)
 						c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+					subform.setDetailsChangedIgnored(bWasDetailsChangeIgnored);
 					return c;
 				}
 			};
@@ -2985,9 +3018,12 @@ public class SubForm extends JPanel
 					@Override
 					public Component getTableCellEditorComponent(JTable table, Object value,
 							boolean isSelected, int row, int column) {
+						boolean bWasDetailsChangeIgnored = subform.isDetailsChangedIgnored();
+						subform.setDetailsChangedIgnored(true);
 						Component c = cellEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
 						if (c != null && c.getFont() != null && subform != null)
 							c.setFont(c.getFont().deriveFont(subform.getFont().getSize2D()));
+						subform.setDetailsChangedIgnored(bWasDetailsChangeIgnored);
 						return c;
 					}
 				};
