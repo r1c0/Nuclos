@@ -2617,11 +2617,26 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						// ignore
 					}
 					iParentId = clct.getId();
-					collmdcvo = (clct.getId() == null)
+					if (iParentId == null)
+						collmdcvo = new ArrayList<EntityObjectVO>();
+					else {
+						boolean bLoad = false;
+						if (clct instanceof CollectableGenericObjectWithDependants)  {
+							if (((CollectableGenericObjectWithDependants)clct).getGenericObjectWithDependantsCVO().getDependants().hasData(mdsubformctl.getCollectableEntity().getName())) {
+								collmdcvo = ((CollectableGenericObjectWithDependants)clct).getGenericObjectWithDependantsCVO().getDependants().getData(mdsubformctl.getCollectableEntity().getName());
+								bLoad = false;
+							}
+						}
+						if (bLoad || collmdcvo == null)
+							collmdcvo = MasterDataDelegate.getInstance().getDependantMasterData(
+									mdsubformctl.getCollectableEntity().getName(),
+									mdsubformctl.getForeignKeyFieldName(), clct.getId(), mdsubformctl.getSubForm().getMapParams());
+					}
+					/*collmdcvo = (clct.getId() == null)
 					? new ArrayList<EntityObjectVO>()
 						: MasterDataDelegate.getInstance().getDependantMasterData(
 							mdsubformctl.getCollectableEntity().getName(),
-							mdsubformctl.getForeignKeyFieldName(), clct.getId(), mdsubformctl.getSubForm().getMapParams());
+							mdsubformctl.getForeignKeyFieldName(), clct.getId(), mdsubformctl.getSubForm().getMapParams());*/
 				}
 			}
 

@@ -61,6 +61,11 @@ public class DependantMasterDataMapNonDeletedView implements DependantMasterData
 	}
 
 	@Override
+	public boolean hasData(String sDependantEntityName) {
+		return wrapped.hasData(sDependantEntityName);
+	}
+
+	@Override
 	public List<EntityObjectVO> getData(String sDependantEntityName) {
 		return filterEo(wrapped.getData(sDependantEntityName));
 	}

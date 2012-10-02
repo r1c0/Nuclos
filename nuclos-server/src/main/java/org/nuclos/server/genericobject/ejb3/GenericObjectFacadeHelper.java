@@ -341,8 +341,9 @@ public class GenericObjectFacadeHelper {
 				}
 				final Collection<EntityObjectVO> collmdvo = masterDataFacadeHelper.getDependantMasterData(
 						sSubEntityName, sForeignKeyField, lowdcvo.getId(), username);
-				if (CollectionUtils.isNonEmpty(collmdvo)) {
-					lowdcvo.getDependants().addAllData(sSubEntityName, collmdvo);
+				//if (CollectionUtils.isNonEmpty(collmdvo))
+				{
+					lowdcvo.getDependants().addAllData(sSubEntityName, CollectionUtils.emptyIfNull(collmdvo));
 
 //					this is not necessary here, because the callers of this method don't work on child subform data
 //					// now read all dependant data of the child subforms

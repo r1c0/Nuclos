@@ -31,7 +31,14 @@ import org.nuclos.common2.EntityAndFieldName;
  * @since Nuclos 3.8
  */
 public interface DependantMasterDataMap {
-
+	
+	/**
+	 * @param sDependantEntityName
+	 * @return the dependants belonging to the given entity, if any.
+	 * @postcondition result != null
+	 */
+	boolean hasData(String sDependantEntityName);
+	
 	/**
 	 * @param sDependantEntityName
 	 * @return the dependants belonging to the given entity, if any.

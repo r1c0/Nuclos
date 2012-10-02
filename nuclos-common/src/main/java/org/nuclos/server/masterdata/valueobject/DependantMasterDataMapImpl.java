@@ -89,6 +89,15 @@ public final class DependantMasterDataMapImpl implements Serializable, Dependant
 	 * @return the dependants belonging to the given entity, if any.
 	 * @postcondition result != null
 	 */
+	public boolean hasData(String sDependantEntityName) {
+		return this.mmp.containsKey(sDependantEntityName);
+	}
+	
+	/**
+	 * @param sDependantEntityName
+	 * @return the dependants belonging to the given entity, if any.
+	 * @postcondition result != null
+	 */
 	@Override
 	public List<EntityObjectVO> getData(String sDependantEntityName) {
 		return this.mmp.getValues(sDependantEntityName);
