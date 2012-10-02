@@ -38,7 +38,8 @@ public class SessionUtils {
 	}
 	
 	public String getCurrentUserName() {
-		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null) {
+		if (SecurityContextHolder.getContext().getAuthentication() != null
+				&& SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null) {
 			return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 		}
 		return null;

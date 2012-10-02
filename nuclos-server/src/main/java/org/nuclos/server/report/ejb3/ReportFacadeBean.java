@@ -148,6 +148,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 	
 	public ReportFacadeBean() {
 	}
+	
 
 	@Autowired
 	@Qualifier("nuclos")
@@ -196,6 +197,22 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 		// NuclosSystemParameters.getString(NuclosSystemParameters.JASPER_REPORTS_COMPILE_TMP));
 		// System.setProperty("jasper.reports.compiler.class",
 		// NuclosSystemParameters.getString(NuclosSystemParameters.JASPER_REPORTS_COMPILER_CLASS));
+		
+		// just to cache classes etc- @todo definetly a hack to load classes to improve performance generating a report for the first time after server restarts-
+		Collection<MasterDataVO> repoCollection = getMasterDataFacade().getMasterData(NuclosEntity.REPORTOUTPUT.getEntityName(), null, true);
+		for (int i = 0; i < ReportOutputVO.Format.values().length; i++) {
+			ReportOutputVO.Format format = ReportOutputVO.Format.values()[i];
+			for (MasterDataVO mdVO : repoCollection) {
+				try {
+					if (mdVO.getField("format").equals(format.name())) {
+						testReport(mdVO.getIntId());
+						break;
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		}
 	}
 
 	/**

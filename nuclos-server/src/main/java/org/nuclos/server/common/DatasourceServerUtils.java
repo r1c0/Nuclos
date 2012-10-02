@@ -62,12 +62,19 @@ public class DatasourceServerUtils {
 	
 	private SessionUtils utils;
 	
+	private SchemaCache schemaCache;
+	
 	public DatasourceServerUtils() {
 	}
 	
 	@Autowired
 	void setSessionUtils(SessionUtils utils) {
 		this.utils = utils;
+	}
+	
+	@Autowired
+	void setSchemaCache(SchemaCache schemaCache) {
+		this.schemaCache = schemaCache;
 	}
 	
 	public void invalidateCache() {
@@ -205,7 +212,7 @@ public class DatasourceServerUtils {
 		if(parseresult.isModelUsed()) {
 			// final Schema schema =
 			// SchemaCache.getSchema(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA));
-			final Schema schema = SchemaCache.getInstance().getCurrentSchema();
+			final Schema schema = schemaCache.getCurrentSchema();
 
 			// create from clause
 			final Map<String, Table> fromTables = new HashMap<String, Table>();
@@ -300,7 +307,7 @@ public class DatasourceServerUtils {
 		if(table != null) {
 			final Table resultTable = (Table) table.clone();
 			resultTable.setAlias(xmltable.getId());
-			SchemaCache.getInstance().getColumns(resultTable);
+			schemaCache.getColumns(resultTable);
 			return resultTable;
 		}
 		return new Table(schema, "");

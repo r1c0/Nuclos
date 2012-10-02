@@ -19,6 +19,7 @@ package org.nuclos.server.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +44,8 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.mbean.DatasourceCacheMBean;
+import org.nuclos.server.mbean.MBeanAgent;
 import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
@@ -63,7 +66,7 @@ import org.springframework.stereotype.Component;
  * TODO: Re-check if all methods must be synchronized! (tp)
  */
 @Component
-public class DatasourceCache {
+public class DatasourceCache implements DatasourceCacheMBean {
 
 	private static final Logger LOG = Logger.getLogger(DatasourceCache.class);
 
@@ -111,6 +114,8 @@ public class DatasourceCache {
 
 	DatasourceCache() {
 		INSTANCE = this;
+		// register this cache as MBean
+		MBeanAgent.registerCache(INSTANCE, DatasourceCacheMBean.class);
 	}
 
 	public static DatasourceCache getInstance() {
@@ -120,7 +125,23 @@ public class DatasourceCache {
 	@PostConstruct
 	public final void init() {
 		initializeCache();
+		MBeanAgent.invokeCacheMethodAsMBean(INSTANCE.getClass(), "initDatasourcesCachedSQL", null, null);
 	}
+
+    @Override
+    public void initDatasourcesCachedSQL() {
+	   // invoke this method only via MBean Server. As we do this, running a new Thread is allowed here.
+	   final Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				buildDatasourcesCachedSQL();
+			}
+		});
+	   t.setDaemon(true);
+	   t.setPriority(Thread.MIN_PRIORITY);
+	   
+	   t.start();
+    }
 
 	@Autowired
 	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
@@ -148,22 +169,22 @@ public class DatasourceCache {
 		NucletDalProvider.getInstance();
 		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DATASOURCE).getAll()) {
-			mpDatasourcesById.put(eoVO.getId().intValue(),
+			mpDatasourcesById.put(eoVO.getId().intValue(), 
 					MasterDataWrapper.getDatasourceVO(DalSupportForMD.wrapEntityObjectVO(eoVO), "INITIAL"));
 		}
 		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.VALUELISTPROVIDER).getAll()) {
-			mpValuelistProviderById.put(eoVO.getId().intValue(),
+			mpValuelistProviderById.put(eoVO.getId().intValue(), 
 					MasterDataWrapper.getValuelistProviderVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DYNAMICENTITY).getAll()) {
-			mpDynamicEntitiesById.put(eoVO.getId().intValue(),
+			mpDynamicEntitiesById.put(eoVO.getId().intValue(), 
 					MasterDataWrapper.getDynamicEntityVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.RECORDGRANT).getAll()) {
-			mpRecordGrantById.put(eoVO.getId().intValue(),
+			mpRecordGrantById.put(eoVO.getId().intValue(), 
 					MasterDataWrapper.getRecordGrantVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		if (mapDynamicEntities.isEmpty()) {
@@ -173,17 +194,37 @@ public class DatasourceCache {
 		}
 		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DYNAMICTASKLIST).getAll()) {
-			mpDynamicTasklistById.put(eoVO.getId().intValue(),
+			mpDynamicTasklistById.put(eoVO.getId().intValue(), 
 					MasterDataWrapper.getDynamicTasklistVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.CHART).getAll()) {
-			mpChartById.put(eoVO.getId().intValue(),
+			mpChartById.put(eoVO.getId().intValue(), 
 					MasterDataWrapper.getChartVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		LOG.info("Finished initializing DatasourceCache.");
 	}
 
+
+	private void buildDatasourcesCachedSQL() {
+		final Map[] cacheMaps = new Map[] {
+				mpDatasourcesById, mpValuelistProviderById, mpDynamicEntitiesById,
+				mapDynamicEntities, mpDynamicTasklistById, mpChartById
+		};
+		
+		for (int i = 0; i < cacheMaps.length; i++) {
+			for (Iterator iterator = cacheMaps[i].values().iterator(); iterator.hasNext();) {
+				DatasourceVO datasourceVO = (DatasourceVO) iterator.next();
+				try {
+					datasourceServerUtils.createSQL(datasourceVO.getSource());
+				} catch (Exception e) {
+					e.printStackTrace();
+					// ignore. just try to cache.
+				}
+			}
+		}
+	}
+	
 	/**
 	 * initialize the map of datasources by creator
 	 * @param sCreator
@@ -230,7 +271,10 @@ public class DatasourceCache {
 		mpChartById.clear();
 
 		datasourceServerUtils.invalidateCache();
+		
 		initializeCache();
+
+		MBeanAgent.invokeCacheMethodAsMBean(INSTANCE.getClass(), "initDatasourcesCachedSQL", null, null);
 	}
 	
 
