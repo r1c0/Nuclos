@@ -150,7 +150,7 @@ public class OnDiskCodeGenerator implements CodeGenerator {
 			return false;
 		}
 		firstOtherSrc = other.getSourceFiles().iterator().next();		
-		return src.getName().equals(firstOtherSrc.getName());
+		return src.getFQName().equals(firstOtherSrc.getFQName());
 	}
 	
 	@Override
