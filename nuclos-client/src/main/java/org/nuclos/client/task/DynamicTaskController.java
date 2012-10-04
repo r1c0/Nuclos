@@ -47,6 +47,7 @@ import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.genericobject.ReportController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
@@ -55,6 +56,7 @@ import org.nuclos.client.ui.event.TableColumnModelAdapter;
 import org.nuclos.client.ui.table.NuclosTableRowSorter;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.WorkspaceDescription.TasklistPreferences;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common2.CommonRunnable;
@@ -96,20 +98,21 @@ public class DynamicTaskController extends RefreshableTaskController {
 	DynamicTaskController() {
 		super();
 		views= new HashMap<Integer, DynamicTaskView>();
+		
+		setPreferencesFacadeRemote(SpringApplicationContextHolder.getBean(PreferencesFacadeRemote.class));
+		setWorkspaceUtils(SpringApplicationContextHolder.getBean(WorkspaceUtils.class));
+		setMainFrame(SpringApplicationContextHolder.getBean(MainFrameSpringComponent.class).getMainFrame());
 	}
 	
-	@Autowired
 	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
 		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 	
-	@Autowired
 	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
 		this.workspaceUtils = workspaceUtils;
 	}
 	
-	@Autowired
-	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final void setMainFrame(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 	}
 

@@ -438,8 +438,9 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			if (addOrReplaceDynamicTaskViewFor(tasklist, tab)) {
 				MainFrame.addTab(tab);
 				MainFrame.setSelectedTab(tab);
+				return getTaskViewFor(tasklist);
 			}
-			return getTaskViewFor(tasklist);
+			return null;
 		}
 		catch(CommonBusinessException e) {
 			LOG.error("addOrReplaceDynamicTaskViewFor failed: " + e, e);
@@ -472,9 +473,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			tab.setTabStoreController(new TaskTabStoreController(RestorePreferences.DYNAMIC, newView));
 
 			dynamictasklistTabs.put(newView, tab);
-
-			MainFrame.addTab(tab);
-			MainFrame.setSelectedTab(tab);
+			
 			return true;
 		}
 		else {
