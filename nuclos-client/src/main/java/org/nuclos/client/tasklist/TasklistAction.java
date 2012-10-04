@@ -40,7 +40,7 @@ public class TasklistAction extends AbstractAction {
 	public TasklistAction(TasklistDefinition def) {
 		this.def = def;
 		putValue(Action.NAME, SpringLocaleDelegate.getInstance().getTextFallback(
-				def.getLabelResourceId(), def.getLabelResourceId()) + "...");
+				def.getLabelResourceId(), def.getName()) + "...");
 		putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.06-magnify.png")));
 		putValue(Action.ACTION_COMMAND_KEY, def.getName());
 	}
