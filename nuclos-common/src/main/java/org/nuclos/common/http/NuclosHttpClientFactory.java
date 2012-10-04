@@ -17,7 +17,6 @@
 package org.nuclos.common.http;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -50,6 +49,12 @@ public class NuclosHttpClientFactory implements FactoryBean<HttpClient>, Disposa
 
 	private static final int DEFAULT_MAX_CONNECTIONS_PER_ROUTE = 10;
 	
+	// 30min
+	public static final int SO_TIMEOUT_MILLIS = 30 * 60 * 1000;
+	
+	// 2min
+	public static final int CONNECTION_TIMEOUT_MILLIS = 2 * 60 * 1000;
+	
 	private static NuclosHttpClientFactory INSTANCE;
 
 	private HttpClient httpClient;
@@ -74,8 +79,10 @@ public class NuclosHttpClientFactory implements FactoryBean<HttpClient>, Disposa
 		final HttpParams params = httpClient.getParams();
 		
 		// see http://hc.apache.org/httpcomponents-client-ga/tutorial/html/connmgmt.html
-		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, 120000);
-		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 120000);
+		params.setIntParameter(HttpConnectionParams.SO_TIMEOUT, SO_TIMEOUT_MILLIS);
+		params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT_MILLIS);
+		
+		((DefaultHttpClient) httpClient).setParams(new ControlledHttpParams(params));
 	}
 	
 	@Deprecated
@@ -107,6 +114,107 @@ public class NuclosHttpClientFactory implements FactoryBean<HttpClient>, Disposa
 	@Override
 	public void close() {
 		connectionManager.shutdown();
+	}
+	
+	private static class ControlledHttpParams implements HttpParams {
+		
+		private final HttpParams wrapped;
+		
+		private ControlledHttpParams(HttpParams wrapped) {
+			this.wrapped = wrapped;
+		}
+		
+		private <T> T checkParameter(final String name, T value) {
+			if (name.equals(HttpConnectionParams.SO_TIMEOUT) || name.equals(HttpConnectionParams.CONNECTION_TIMEOUT)) {
+				final T newValue = value;
+				value = (T) wrapped.getParameter(name);
+				if (!value.equals(newValue)) {
+					LOG.info("No change of parameter " + name + " allowed: sticking to " + value 
+							+ ", discarding " + newValue);
+				}
+			}
+			return value;
+		}
+
+		@Override
+		public Object getParameter(String name) {
+			return wrapped.getParameter(name);
+		}
+
+		@Override
+		public HttpParams setParameter(String name, Object value) {
+			wrapped.setParameter(name, checkParameter(name, value));
+			return this;
+		}
+
+		@Override
+		@Deprecated
+		public HttpParams copy() {
+			return new ControlledHttpParams(wrapped);
+		}
+
+		@Override
+		public boolean removeParameter(String name) {
+			final Object value = wrapped.getParameter(name);
+			LOG.warn("No remove of parameter " + name + " allowed: sticking to " + value);
+			// wrapped.removeParameter(name);
+			return false;
+		}
+
+		@Override
+		public long getLongParameter(String name, long defaultValue) {
+			return wrapped.getLongParameter(name, defaultValue);
+		}
+
+		@Override
+		public HttpParams setLongParameter(String name, long value) {
+			wrapped.setLongParameter(name, checkParameter(name, value));
+			return this;
+		}
+
+		@Override
+		public int getIntParameter(String name, int defaultValue) {
+			return wrapped.getIntParameter(name, defaultValue);
+		}
+
+		@Override
+		public HttpParams setIntParameter(String name, int value) {
+			wrapped.setIntParameter(name, checkParameter(name, value));
+			return this;
+		}
+
+		@Override
+		public double getDoubleParameter(String name, double defaultValue) {
+			return wrapped.getDoubleParameter(name, defaultValue);
+		}
+
+		@Override
+		public HttpParams setDoubleParameter(String name, double value) {
+			wrapped.setDoubleParameter(name, checkParameter(name, value));
+			return this;
+		}
+
+		@Override
+		public boolean getBooleanParameter(String name, boolean defaultValue) {
+			return wrapped.getBooleanParameter(name, defaultValue);
+		}
+
+		@Override
+		public HttpParams setBooleanParameter(String name, boolean value) {
+			wrapped.setBooleanParameter(name, checkParameter(name, value));
+			return this;
+		}
+
+		@Override
+		public boolean isParameterTrue(String name) {
+			return wrapped.isParameterTrue(name);
+		}
+
+		@Override
+		public boolean isParameterFalse(String name) {
+			return wrapped.isParameterFalse(name);
+		}
+		
 	}
 
 }
