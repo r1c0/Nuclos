@@ -67177,47 +67177,47 @@
   {
     "resourceID": "nuclos.entityfield.tasklist.labelres.label",
     "locale": "i-default",
-    "text": "Resource id for label"
+    "text": "Label"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.labelres.label",
     "locale": "en",
-    "text": "Resource id for label"
+    "text": "Label"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.labelres.label",
     "locale": "de",
-    "text": "Ressourcen-Id für die Beschriftung"
+    "text": "Beschriftung"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.descriptionres.label",
     "locale": "i-default",
-    "text": "Resource id for description"
+    "text": "Description"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.descriptionres.label",
     "locale": "en",
-    "text": "Resource id for description"
+    "text": "Description"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.descriptionres.label",
     "locale": "de",
-    "text": "Ressourcen-Id für die Beschreibung"
+    "text": "Beschreibung"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.menupathres.label",
     "locale": "i-default",
-    "text": "Resource id for menupath"
+    "text": "Menupath"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.menupathres.label",
     "locale": "en",
-    "text": "Resource id for menupath"
+    "text": "Menupath"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.menupathres.label",
     "locale": "de",
-    "text": "Ressourcen-Id für den Menüpfad"
+    "text": "Menüpfad"
   },
   {
     "resourceID": "nuclos.entityfield.tasklist.datasource.label",
