@@ -133,6 +133,10 @@ public interface MasterDataFacadeRemote {
 		String sEntityName, final List<?> lstIntIds,
 		final List<EntityAndFieldName> lstRequiredSubEntities);
 
+	@RolesAllowed("Login")
+	List<MasterDataWithDependantsVO> getMasterDataChunk(
+		String sEntityName, final CollectableSearchExpression clctexpr, Integer istart, Integer iend);
+
 	/**
 	 * convinience function to get all reports or forms used in AllReportsCollectableFieldsProvider.
 	 * @param sEntityName name of the entity to get master data records for ("report" or "form")

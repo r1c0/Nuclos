@@ -17,6 +17,7 @@
 package org.nuclos.server.masterdata;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -66,7 +67,16 @@ public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWit
 	}
 
 	@Override
+	protected Collection<MasterDataWithDependantsVO> fetchChunk(int istart, int iend) throws RemoteException {
+		return this.getMasterDataFacade().getMasterDataChunk(this.sEntityName, this.clctexpr, istart, iend);
+	}
+	
+	@Override
 	protected void fillListOfIds() {
+		if (isNewLL()) {
+			setListOfIds(new ArrayList<Object>());
+			return;
+		}
 		List<Object> lstIds = getMasterDataFacade().getMasterDataIds(sEntityName, clctexpr);
 		setListOfIds(lstIds);
 	}

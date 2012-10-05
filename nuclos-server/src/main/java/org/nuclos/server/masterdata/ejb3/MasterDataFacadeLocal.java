@@ -352,6 +352,10 @@ public interface MasterDataFacadeLocal {
 		String sEntityName, final List<?> lstIntIds,
 		final List<EntityAndFieldName> lstRequiredSubEntities);
 
+	@RolesAllowed("Login")
+	List<MasterDataWithDependantsVO> getMasterDataChunk(
+		String sEntityName, final CollectableSearchExpression clctexpr, Integer istart, Integer iend);
+
 	/**
 	 * @param user - the user for which to get subordinated users
 	 * @return List<MasterDataVO> list of masterdata valueobjects

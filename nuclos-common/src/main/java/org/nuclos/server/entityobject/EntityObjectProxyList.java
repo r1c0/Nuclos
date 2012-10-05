@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.entityobject;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
 
@@ -99,6 +100,13 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 		mapDescription(result, mpObjects, 5);
 		result.append("]");
 		return result.toString();
+	}
+
+	@Override
+	protected Collection<EntityObjectVO> fetchChunk(int istart, int iend)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

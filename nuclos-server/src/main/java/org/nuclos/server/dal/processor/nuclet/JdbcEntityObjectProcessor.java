@@ -26,6 +26,7 @@ import org.nuclos.server.dal.specification.IDalReadSpecification;
 import org.nuclos.server.dal.specification.IDalSearchExpressionSpecification;
 import org.nuclos.server.dal.specification.IDalVersionSpecification;
 import org.nuclos.server.dal.specification.IDalWriteSpecification;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 
 public interface JdbcEntityObjectProcessor extends 
 	IDalReadSpecification<EntityObjectVO>,
@@ -47,4 +48,6 @@ public interface JdbcEntityObjectProcessor extends
 	
 	EntityMetaDataVO getMeta();	
 	
+	List<EntityObjectVO> getChunkBySearchExpression(CollectableSearchExpression clctexpr, int istart, int iend);
+
 }

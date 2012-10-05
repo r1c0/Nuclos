@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.genericobject;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -129,6 +130,13 @@ public class GenericObjectProxyList extends AbstractProxyList<Integer, GenericOb
 		mapDescription(result, mpObjects, 5);
 		result.append("]");
 		return result.toString();
+	}
+
+	@Override
+	protected Collection<GenericObjectWithDependantsVO> fetchChunk(int istart,
+			int iend) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }	// class GenericObjectProxyList

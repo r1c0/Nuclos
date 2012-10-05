@@ -528,6 +528,18 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				}
 			});
 	}
+    
+	@RolesAllowed("Login")
+	public List<MasterDataWithDependantsVO> getMasterDataChunk(String sEntityName, final CollectableSearchExpression clctexpr, 
+			Integer istart, Integer iend) {
+		List<MasterDataVO> lmdvo = helper.getMasterDataChunk(sEntityName, clctexpr, istart, iend);
+		List<MasterDataWithDependantsVO> mdwd = new ArrayList<MasterDataWithDependantsVO>();
+		for (MasterDataVO mdvo : lmdvo) {
+			MasterDataWithDependantsVO m = new MasterDataWithDependantsVO(mdvo, null);
+			mdwd.add(m);
+		}
+		return mdwd;
+	}
 
 	/**
 	 * convinience function to get all reports or forms used in

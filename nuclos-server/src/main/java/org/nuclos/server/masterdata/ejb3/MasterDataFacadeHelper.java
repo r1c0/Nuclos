@@ -120,6 +120,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMapImpl;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.resource.ResourceCache;
@@ -1164,6 +1165,15 @@ public class MasterDataFacadeHelper {
 		return new TruncatableCollectionDecorator<MasterDataVO>(result, truncated, recordCount);
 	}
 
+	public List<MasterDataVO> getMasterDataChunk(String sEntityName, final CollectableSearchExpression clctexpr, final int istart, final int iend) {
+		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(sEntityName);
+		List<EntityObjectVO> eoResult = eoProcessor.getChunkBySearchExpression(clctexpr, istart, iend);
+		List<MasterDataVO> result = CollectionUtils.transform(eoResult, new Transformer<EntityObjectVO, MasterDataVO>() {
+			@Override
+			public MasterDataVO transform(EntityObjectVO eo) { return DalSupportForMD.wrapEntityObjectVO(eo); }
+		});
+		return result;	
+	}
 
 	/**
 	 * create or replace a file attachement in the file system

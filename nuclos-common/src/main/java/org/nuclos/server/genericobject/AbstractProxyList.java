@@ -20,6 +20,8 @@ import org.nuclos.common.HasId;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.common.valueobject.AbstractNuclosValueObject;
+import org.nuclos.server.masterdata.MasterDataProxyList;
+import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -97,10 +99,16 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 * @throws RemoteException
 	 */
 	protected abstract Collection<E> fetchNextChunk(List<T> lstIntIds) throws RemoteException;
+	protected abstract Collection<E> fetchChunk(int istart, int iend) throws RemoteException;
 
 	@Override
 	public int size() {
 		return this.lstIds.size();
+	}
+
+	private static boolean newLazyLoad = false;
+	protected boolean isNewLL() {
+		return newLazyLoad && this instanceof MasterDataProxyList;
 	}
 
 	/**
@@ -109,19 +117,15 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 */
 	@Override
 	public E get(int iIndex) {
+		if (isNewLL()) {
+			this.fetchDataIfNecessary(iIndex, null);
+			return mpObjects.get(iIndex);
+		}
 		if (iIndex >= this.size()) {
 			throw new IndexOutOfBoundsException(Integer.toString(iIndex));
 		}
-		this.fetchDataIfNecessary(iIndex);
-		return mpObjects.get(lstIds.get(iIndex));
-	}
-
-	/**
-	 * fetches the data, if necessary, for all entries at least up to (including) the given index.
-	 * @param iIndex
-	 */
-	public void fetchDataIfNecessary(int iIndex) {
 		this.fetchDataIfNecessary(iIndex, null);
+		return mpObjects.get(lstIds.get(iIndex));
 	}
 
 	/**
@@ -131,6 +135,10 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 */
 	@Override
 	public void fetchDataIfNecessary(int iIndex, ChangeListener changelistener) {
+		if (isNewLL()) {
+			this.fetchData(iIndex, changelistener);
+			return;
+		}
 		if (iIndex >= size()) {
 			throw new IndexOutOfBoundsException(Integer.toString(iIndex));
 		}
@@ -144,9 +152,55 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 			}
 		}
 	}
+	
+	private void fetchDataChunk(int istart, int iend) throws RemoteException {
+		System.out.println("FDC: " + istart + "/" + iend);
+		Collection<E> mdwv = this.fetchChunk(istart, iend);
+		int icount = 0;
+		for (Iterator<E> iter = mdwv.iterator(); iter.hasNext();) {
+			E eRow = iter.next();
+			T tIndex = (T)Integer.valueOf(icount + istart);
+			mpObjects.put(tIndex, eRow);
+			icount++;
+			System.out.println("PUT:" + icount + " OBJ:" + eRow);
+			if (icount + istart > iLastIndexRead) iLastIndexRead = icount + istart;
+		}
+	}
+
+	private void fetchDataChunk(int iIndex, ChangeListener changelistener) {
+		try {
+			int iIndexStart = Math.max(0, iIndex - PAGESIZE);
+			int iIndexEnd = Math.min(size(), iIndex + PAGESIZE);
+			
+			System.out.println("FDC1: " + iIndexStart + "/" + iIndexStart);
+			
+			int blockstart = -1;
+			for (int i = iIndexStart; i <= iIndexEnd; i++) {
+				if (mpObjects.get(i) == null) {
+					if (blockstart == -1) blockstart = i;
+					continue;
+				}
+				if (blockstart == -1) continue;
+				fetchDataChunk(blockstart, i);
+				blockstart = -1;
+			}
+			if (blockstart != -1) fetchDataChunk(blockstart, iIndexEnd);
+			
+			if (changelistener != null) {
+				changelistener.stateChanged(new ChangeEvent(this));
+			}
+		}
+		catch (RemoteException ex) {
+			throw new NuclosFatalException(ex);
+		}
+	}
+	
 
 	@Override
 	public boolean hasObjectBeenReadForIndex(int index) {
+		if (isNewLL()) {
+			return mpObjects.get(index) != null;
+		}
 		return (index >= lstIds.size()) || (index == -1) ? false : mpObjects.get(lstIds.get(index)) != null;
 	}
 
@@ -157,6 +211,10 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 * @precondition iIndex > this.getLastIndexRead()
 	 */
 	private void fetchData(int iIndex, ChangeListener changelistener) {
+		if (isNewLL()) {
+			fetchDataChunk(iIndex, changelistener);
+			return;
+		}
 		try {
 			// read next page:
 			E eRow = null;

@@ -316,9 +316,8 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 			if (query.getOffset() == null) {
 				super.postprocessSelect(ps, query);
 			} else {
-				ps = ps.append(", ROW_NUMBER() OVER (");
+				ps = ps.append(", ROWNUM AS RN ");
 				super.prepareOrderBy(ps, query);
-				ps = ps.append(") AS RN ");
 			}
 		}
 
