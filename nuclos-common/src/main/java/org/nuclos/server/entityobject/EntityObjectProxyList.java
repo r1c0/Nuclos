@@ -108,5 +108,11 @@ public class EntityObjectProxyList extends AbstractProxyList<Long, EntityObjectV
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	protected Integer countMasterDataRows() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

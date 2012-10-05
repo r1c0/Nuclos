@@ -136,6 +136,9 @@ public interface MasterDataFacadeRemote {
 	@RolesAllowed("Login")
 	List<MasterDataWithDependantsVO> getMasterDataChunk(
 		String sEntityName, final CollectableSearchExpression clctexpr, Integer istart, Integer iend);
+	
+    @RolesAllowed("Login")
+	Integer countMasterDataRows(String sEntity, final CollectableSearchExpression clctexpr);
 
 	/**
 	 * convinience function to get all reports or forms used in AllReportsCollectableFieldsProvider.

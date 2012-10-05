@@ -93,6 +93,7 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator;
+import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dblayer.DbTuple;
@@ -540,7 +541,12 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		}
 		return mdwd;
 	}
-
+	
+    @RolesAllowed("Login")
+	public Integer countMasterDataRows(String sEntity, final CollectableSearchExpression clctexpr) {
+    	return helper.countMasterDataRows(sEntity, clctexpr);
+	}
+    
 	/**
 	 * convinience function to get all reports or forms used in
 	 * AllReportsCollectableFieldsProvider.

@@ -73,10 +73,19 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 		mpObjects = new HashMap<T, E>();
 	}
 
+	private static boolean newLazyLoad = true;
+	protected boolean isNewLL() {
+		return newLazyLoad && this instanceof MasterDataProxyList;
+	}
+
 	/**
 	 * reads the first chunk if necessary. Must be called as the last statement of the ctor in subclasses.
 	 */
 	protected void initialize() {
+		if (isNewLL()) {
+			this.get(0);
+			return;
+		}
 		fillListOfIds();
 
 		if (this.size() > 0) {
@@ -100,15 +109,20 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 */
 	protected abstract Collection<E> fetchNextChunk(List<T> lstIntIds) throws RemoteException;
 	protected abstract Collection<E> fetchChunk(int istart, int iend) throws RemoteException;
+	protected abstract Integer countMasterDataRows() throws RemoteException;
 
+	private int mdsize = -1;
 	@Override
 	public int size() {
+		if (isNewLL()) {
+			if (mdsize == -1) try {
+				mdsize = countMasterDataRows();
+			} catch (RemoteException nfe) {
+				nfe.printStackTrace();
+			}
+			return mdsize;
+		}
 		return this.lstIds.size();
-	}
-
-	private static boolean newLazyLoad = false;
-	protected boolean isNewLL() {
-		return newLazyLoad && this instanceof MasterDataProxyList;
 	}
 
 	/**
@@ -136,7 +150,9 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	@Override
 	public void fetchDataIfNecessary(int iIndex, ChangeListener changelistener) {
 		if (isNewLL()) {
-			this.fetchData(iIndex, changelistener);
+			synchronized (this) {
+				this.fetchDataChunk(iIndex, changelistener);
+			}
 			return;
 		}
 		if (iIndex >= size()) {
@@ -153,44 +169,49 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 		}
 	}
 	
-	private void fetchDataChunk(int istart, int iend) throws RemoteException {
-		System.out.println("FDC: " + istart + "/" + iend);
+	private boolean fetchChunk(int istart, int iend, boolean append) throws RemoteException {
+		System.out.println("FDC2: " + istart + "+" + (iend - istart + 1) + " APPEND:" + append);
 		Collection<E> mdwv = this.fetchChunk(istart, iend);
 		int icount = 0;
 		for (Iterator<E> iter = mdwv.iterator(); iter.hasNext();) {
+			int index = istart + (icount++);
 			E eRow = iter.next();
-			T tIndex = (T)Integer.valueOf(icount + istart);
+			T tIndex = (T)Integer.valueOf(index);
 			mpObjects.put(tIndex, eRow);
-			icount++;
-			System.out.println("PUT:" + icount + " OBJ:" + eRow);
-			if (icount + istart > iLastIndexRead) iLastIndexRead = icount + istart;
+			if (index > iLastIndexRead) iLastIndexRead = index;
 		}
+		return icount > 0;
 	}
 
 	private void fetchDataChunk(int iIndex, ChangeListener changelistener) {
 		try {
+			boolean bchunk = false;
 			int iIndexStart = Math.max(0, iIndex - PAGESIZE);
+			int iIndexHot = Math.max(0, iIndex - PAGESIZE/2);
 			int iIndexEnd = Math.min(size(), iIndex + PAGESIZE);
 			
-			System.out.println("FDC1: " + iIndexStart + "/" + iIndexStart);
-			
-			int blockstart = -1;
+			int chunkstart = -1;
 			for (int i = iIndexStart; i <= iIndexEnd; i++) {
 				if (mpObjects.get(i) == null) {
-					if (blockstart == -1) blockstart = i;
+					if (chunkstart == -1) chunkstart = i;
 					continue;
 				}
-				if (blockstart == -1) continue;
-				fetchDataChunk(blockstart, i);
-				blockstart = -1;
+				if (chunkstart == -1) continue;
+				if (chunkstart >= iIndexHot || i - chunkstart >= PAGESIZE/4) {
+					bchunk = fetchChunk(chunkstart, i, false);
+				}
+				chunkstart = -1;					
 			}
-			if (blockstart != -1) fetchDataChunk(blockstart, iIndexEnd);
+			if (chunkstart != -1) {
+				if (iIndexEnd - chunkstart >= PAGESIZE/4) {
+					bchunk = fetchChunk(chunkstart, iIndexEnd, true);
+				}
+			}
 			
-			if (changelistener != null) {
+			if (bchunk && changelistener != null) {
 				changelistener.stateChanged(new ChangeEvent(this));
 			}
-		}
-		catch (RemoteException ex) {
+		} catch (RemoteException ex) {
 			throw new NuclosFatalException(ex);
 		}
 	}
@@ -211,10 +232,6 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 * @precondition iIndex > this.getLastIndexRead()
 	 */
 	private void fetchData(int iIndex, ChangeListener changelistener) {
-		if (isNewLL()) {
-			fetchDataChunk(iIndex, changelistener);
-			return;
-		}
 		try {
 			// read next page:
 			E eRow = null;
@@ -255,6 +272,8 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public boolean add(E element) {
+		if (isNewLL()) throw new UnsupportedOperationException();
+
 		assert element != null;
 		T intId = (T) element.getId();
 		lstIds.add(intId);
@@ -265,6 +284,8 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public void add(int index, E element) {
+		if (isNewLL()) throw new UnsupportedOperationException();
+
 		assert element != null;
 		T intId = (T) element.getId();
 		lstIds.add(index, intId);
@@ -286,6 +307,8 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public boolean contains(Object o) {
+		if (isNewLL()) throw new UnsupportedOperationException();
+
 		if(o instanceof AbstractNuclosValueObject<?>) {
 			return lstIds.contains(((AbstractNuclosValueObject<T>)o).getId());
 		}
@@ -326,6 +349,8 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public boolean remove(Object o) {
+		if (isNewLL()) throw new UnsupportedOperationException();
+
 		if(o instanceof AbstractNuclosValueObject<?>) {
 			AbstractNuclosValueObject<T> aevo = (AbstractNuclosValueObject<T>) o;
 			final Object oId = aevo.getId();
@@ -338,6 +363,8 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public E remove(int iIndex) {
+		if (isNewLL()) throw new UnsupportedOperationException();
+
 		assert(lstIds.size() > iIndex);
 
 		final Object oId = lstIds.remove(iIndex);
@@ -358,6 +385,12 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public E set(int index, E element) {
+		if (isNewLL()) {
+			T tindex = (T)Integer.valueOf(index);
+			E oldValue = mpObjects.remove(tindex);
+			mpObjects.put(tindex, element);
+			return oldValue;
+		}
 		Object oOldId = lstIds.get(index);
 		E oldValue = mpObjects.remove(oOldId);
 
@@ -385,12 +418,17 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	@Override
 	public void clear() {
+		if (isNewLL()) {
+			mpObjects.clear();
+			return;
+		}
 		this.lstIds.clear();
 		this.mpObjects.clear();
 	}
 
 	@Override
 	public boolean isEmpty() {
+		if (isNewLL()) return mpObjects.isEmpty();
 		return lstIds.isEmpty();
 	}
 
@@ -410,6 +448,13 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 */
 	@Override
 	public int getIndexById(Object oId) {
+		if (isNewLL()) {
+			for (T key : mpObjects.keySet()) {
+				E value = mpObjects.get(key);
+				if (LangUtils.equals(value.getId(), oId)) return (Integer)key;
+			}
+			return -1;
+		}
 		for (int i = 0; i < lstIds.size(); i++) {
 			T checkid = lstIds.get(i);
 			if (LangUtils.equals(oId, checkid)) {

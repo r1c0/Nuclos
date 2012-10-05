@@ -752,7 +752,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         }
 
         protected void postprocessSelect(PreparedStringBuilder ps, DbQuery<?> query) {
-
+        	
         }
 
         private void appendSelection(PreparedStringBuilder ps, List<? extends DbSelection<?>> selections) {

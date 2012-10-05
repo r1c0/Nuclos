@@ -49,5 +49,4 @@ public interface JdbcEntityObjectProcessor extends
 	EntityMetaDataVO getMeta();	
 	
 	List<EntityObjectVO> getChunkBySearchExpression(CollectableSearchExpression clctexpr, int istart, int iend);
-
 }

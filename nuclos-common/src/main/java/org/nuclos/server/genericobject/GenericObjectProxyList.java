@@ -138,5 +138,11 @@ public class GenericObjectProxyList extends AbstractProxyList<Integer, GenericOb
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	protected Integer countMasterDataRows() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }	// class GenericObjectProxyList

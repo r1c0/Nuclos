@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.EntityAndFieldName;
@@ -71,6 +73,12 @@ public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWit
 	protected Collection<MasterDataWithDependantsVO> fetchChunk(int istart, int iend) throws RemoteException {
 		return this.getMasterDataFacade().getMasterDataChunk(this.sEntityName, this.clctexpr, istart, iend);
 	}
+	
+	@Override
+	protected Integer countMasterDataRows() {
+    	return this.getMasterDataFacade().countMasterDataRows(this.sEntityName, this.clctexpr);
+	}
+
 	
 	@Override
 	protected void fillListOfIds() {

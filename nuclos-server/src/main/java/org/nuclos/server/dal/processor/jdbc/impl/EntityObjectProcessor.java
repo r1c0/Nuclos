@@ -278,17 +278,17 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	@Override
     public List<EntityObjectVO> getChunkBySearchExpression(CollectableSearchExpression clctexpr, int istart, int iend) {
 		DbQuery<Object[]> query = createQuery(allColumns);
-		query.offset(istart);
-		query.maxResults(iend - istart + 1);
-		
 		// we modify the search expr here...
 		clctexpr = addJoinedRefs(null, clctexpr);
 		
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(clctexpr));
+		unparser.unparseSortingOrder(clctexpr.getSortingOrder());
 
 		Transformer<Object[], EntityObjectVO> transformer = createResultTransformer(allColumns);
 
+		query.offset(istart);
+		query.maxResults(iend - istart + 1);
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
 		result.addAll(dataBaseHelper.getDbAccess().executeQuery(query, transformer));
 		return result;

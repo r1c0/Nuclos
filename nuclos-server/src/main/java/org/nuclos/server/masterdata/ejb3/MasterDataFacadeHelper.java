@@ -1174,6 +1174,11 @@ public class MasterDataFacadeHelper {
 		});
 		return result;	
 	}
+	
+	public Integer countMasterDataRows(String sEntityName, final CollectableSearchExpression clctexpr) {
+		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(sEntityName);
+		return eoProcessor.count(clctexpr);
+	}
 
 	/**
 	 * create or replace a file attachement in the file system
