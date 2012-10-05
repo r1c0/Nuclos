@@ -150,7 +150,7 @@ public class IOUtils {
 	public static byte[] readFromBinaryFile(File file) throws IOException {
 		final FileInputStream fis = new FileInputStream(file);
 		final long lFileSize = file.length();
-		if (lFileSize > 100000L) {
+		if (lFileSize > Integer.MAX_VALUE) {
 			throw new CommonFatalException(StringUtils.getParameterizedExceptionMessage("ioutils.file.error", file.getAbsolutePath()));
 		}
 		return readFromBinaryStream(fis);
