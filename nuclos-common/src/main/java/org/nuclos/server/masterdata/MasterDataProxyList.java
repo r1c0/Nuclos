@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.genericobject.AbstractProxyList;
@@ -74,7 +75,8 @@ public class MasterDataProxyList extends AbstractProxyList<Object, MasterDataWit
 	private synchronized MasterDataFacadeRemote getMasterDataFacade() {
 		if (mdfacade == null) {
 			try {
-				mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+				// mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+				mdfacade = (MasterDataFacadeRemote) SpringApplicationContextHolder.getBean("masterDataService");
 			}
 			catch (RuntimeException ex) {
 				throw new NuclosFatalException(ex);
