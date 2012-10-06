@@ -16,27 +16,27 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.genericobject;
 
-import org.nuclos.common.HasId;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.LangUtils;
-import org.nuclos.server.common.valueobject.AbstractNuclosValueObject;
-import org.nuclos.server.masterdata.MasterDataProxyList;
-import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.apache.log4j.Logger;
-
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.apache.log4j.Logger;
+import org.nuclos.common.HasId;
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common2.LangUtils;
+import org.nuclos.server.common.valueobject.AbstractNuclosValueObject;
+import org.nuclos.server.masterdata.MasterDataProxyList;
 
 /**
  * Abstract implementation of a <code>ProxyList</code>.
@@ -51,6 +51,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 
 	/** @todo tune the PAGESIZE, better: make it configurable in users advanced settings dialogue */
 	public static final int PAGESIZE = 100;
+	public static final int CHUNKSIZE = 40;
 
 	private static final long serialVersionUID = 815L;
 
@@ -67,10 +68,12 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	/**
 	 * The real data containers: id -> values
 	 */
-	protected final HashMap<T, E> mpObjects;
+	protected final Map<T, E> mpObjects;
+	protected final Set<T> idLoaded;
 
 	public AbstractProxyList() {
 		mpObjects = new HashMap<T, E>();
+		idLoaded = new HashSet<T>();
 	}
 
 	private static boolean newLazyLoad = true;
@@ -168,26 +171,43 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 			}
 		}
 	}
-	
+
+/**
+ * fetchChunk: Method in order to read a data chunk 
+ * @param istart Integer: Starting Rownumber (exclusive)
+ * @param iend Integer: Ending Rownumber (inclusive)
+ * @param append Boolean: Is the Data chunk appended at the End of the list. Only for Debugging purposes
+ * @return Boolean: True when at least on row was read and inserted in the list
+ * @throws RemoteException
+ */
+	@SuppressWarnings("unchecked")
 	private boolean fetchChunk(int istart, int iend, boolean append) throws RemoteException {
-		System.out.println("FDC2: " + istart + "+" + (iend - istart + 1) + " APPEND:" + append);
+//		System.out.println("FDC2: " + istart + "+" + (iend - istart) + " APPEND:" + append);
 		Collection<E> mdwv = this.fetchChunk(istart, iend);
 		int icount = 0;
 		for (Iterator<E> iter = mdwv.iterator(); iter.hasNext();) {
-			int index = istart + (icount++);
 			E eRow = iter.next();
+			T tId = eRow.getId();
+			if (idLoaded.contains(tId)) continue;
+			int index = istart + (icount++);
 			T tIndex = (T)Integer.valueOf(index);
 			mpObjects.put(tIndex, eRow);
+			idLoaded.add(tId);
 			if (index > iLastIndexRead) iLastIndexRead = index;
 		}
 		return icount > 0;
 	}
-
+	
+/**
+ * fetchDataChunk: Method for checking and reading datachunks
+ * @param iIndex Integer: The current index of displayed row in the tablemodel.
+ * @param changelistener ChangeListener: The ChangeListener to the JTable, can be null.
+ */
 	private void fetchDataChunk(int iIndex, ChangeListener changelistener) {
 		try {
 			boolean bchunk = false;
 			int iIndexStart = Math.max(0, iIndex - PAGESIZE);
-			int iIndexHot = Math.max(0, iIndex - PAGESIZE/2);
+			int iIndexSHot = Math.max(0, iIndex - PAGESIZE/2);
 			int iIndexEnd = Math.min(size(), iIndex + PAGESIZE);
 			
 			int chunkstart = -1;
@@ -197,13 +217,13 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 					continue;
 				}
 				if (chunkstart == -1) continue;
-				if (chunkstart >= iIndexHot || i - chunkstart >= PAGESIZE/4) {
+				if (chunkstart >= iIndexSHot || i - chunkstart >= CHUNKSIZE) {
 					bchunk = fetchChunk(chunkstart, i, false);
 				}
 				chunkstart = -1;					
 			}
 			if (chunkstart != -1) {
-				if (iIndexEnd - chunkstart >= PAGESIZE/4) {
+				if (iIndexEnd - chunkstart >= CHUNKSIZE) {
 					bchunk = fetchChunk(chunkstart, iIndexEnd, true);
 				}
 			}
