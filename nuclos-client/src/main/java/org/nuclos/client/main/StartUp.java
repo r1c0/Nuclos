@@ -540,7 +540,7 @@ public class StartUp  {
 							final ApplicationProperties.Version versionServer = SecurityDelegate.getInstance().getCurrentApplicationVersionOnServer();
 							if (!versionClient.equals(versionServer)) {
 								final String sMessage = "The version of this client is not compatible with the version of the connected server." +
-										"\nClient-version: " + versionClient.getVersionNumber() + "\nServer-version: " + versionServer.getVersionNumber() +
+										"\nClient-version: " + versionClient.toString() + "\nServer-version: " + versionServer.toString() +
 										"\n\nPlease contact the system administrator.";
 									//"Die Version dieses Clients ist nicht kompatibel mit der Version des verbundenen Servers.\n" + "Client-Version: " + versionClient + "\n" + "Server-Version: " + versionServer + "\n" + "\nBitte wenden Sie sich an den Systemadministrator.";
 								throw new NuclosFatalException(sMessage);
