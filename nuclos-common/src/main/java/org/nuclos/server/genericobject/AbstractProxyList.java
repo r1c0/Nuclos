@@ -134,14 +134,11 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 	 */
 	@Override
 	public E get(int iIndex) {
-		if (isNewLL()) {
-			this.fetchDataIfNecessary(iIndex, null);
-			return mpObjects.get(iIndex);
-		}
 		if (iIndex >= this.size()) {
 			throw new IndexOutOfBoundsException(Integer.toString(iIndex));
 		}
 		this.fetchDataIfNecessary(iIndex, null);
+		if (isNewLL()) return mpObjects.get(iIndex);
 		return mpObjects.get(lstIds.get(iIndex));
 	}
 
@@ -209,6 +206,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 			int iIndexStart = Math.max(0, iIndex - PAGESIZE);
 			int iIndexSHot = Math.max(0, iIndex - PAGESIZE/2);
 			int iIndexEnd = Math.min(size(), iIndex + PAGESIZE);
+			int iIndexEHot = Math.min(size(), iIndex + PAGESIZE/2);
 			
 			int chunkstart = -1;
 			for (int i = iIndexStart; i <= iIndexEnd; i++) {
@@ -223,7 +221,7 @@ public abstract class AbstractProxyList<T, E extends HasId<T>> implements ProxyL
 				chunkstart = -1;					
 			}
 			if (chunkstart != -1) {
-				if (iIndexEnd - chunkstart >= CHUNKSIZE) {
+				if (chunkstart <= iIndexEHot || iIndexEnd - chunkstart >= CHUNKSIZE) {
 					bchunk = fetchChunk(chunkstart, iIndexEnd, true);
 				}
 			}
