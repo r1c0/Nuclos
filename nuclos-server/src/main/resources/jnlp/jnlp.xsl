@@ -31,7 +31,8 @@
 			<security>
 				<all-permissions />
 			</security>
-			<update check="background" policy="prompt-run"/>
+			<!-- This as proofed to be problematic. (tp)  -->
+			<!-- update check="background" policy="prompt-run"/ -->
 			<resources>
 				<!--
 					-XX:+HeapDumpOnOutOfMemoryError
