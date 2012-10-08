@@ -468,7 +468,7 @@ public class ApplicationProperties implements Serializable, InitializingBean {
 				return false;
 			}
 			final Version that = (Version) o;
-			return this.sVersionNumber.equals(that.sVersionNumber) && this.sVersionDate.equals(that.sVersionDate) && this.sSchemaVersion.equals(that.sSchemaVersion);
+			return this.getVersionNumber().equals(that.getVersionNumber()) && this.getVersionDate().equals(that.getVersionDate()) && this.getSchemaVersion().equals(that.getSchemaVersion());
 		}
 
 		/**
@@ -487,7 +487,7 @@ public class ApplicationProperties implements Serializable, InitializingBean {
 
 		@Override
 		public String toString() {
-			return this.getLongName();
+			return getAppName() + " V" + getSimpleVersionNumber() + " - " + this.getSchemaVersion()  + " (" + getVersionDateString() + ")";
 		}
 
 		static Version fromProperties(Properties props, String prefix) {
